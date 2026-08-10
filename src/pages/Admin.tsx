@@ -531,6 +531,7 @@ function CopyPanel({
 		["cta_label", "CTA"],
 		["contact_email", "Email"],
 		["contact_telegram", "Telegram"],
+		["cf_beacon_token", "CF Web Analytics token"],
 	] as const;
 
 	return (

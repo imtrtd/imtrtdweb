@@ -36,6 +36,28 @@ export function LandingPage() {
 	const email = content.copy.contact_email || FALLBACK_CONTENT.copy.contact_email;
 	const telegram =
 		content.copy.contact_telegram || FALLBACK_CONTENT.copy.contact_telegram;
+	const beaconToken = content.copy.cf_beacon_token?.trim() || "";
+
+	useEffect(() => {
+		if (!beaconToken) {
+			return;
+		}
+		const existing = document.querySelector("script[data-cf-beacon]");
+		if (existing) {
+			return;
+		}
+		const script = document.createElement("script");
+		script.defer = true;
+		script.src = "https://static.cloudflareinsights.com/beacon.min.js";
+		script.setAttribute(
+			"data-cf-beacon",
+			JSON.stringify({ token: beaconToken }),
+		);
+		document.body.appendChild(script);
+		return () => {
+			script.remove();
+		};
+	}, [beaconToken]);
 
 	return (
 		<div className="relative min-h-screen overflow-x-hidden bg-ink text-paper">

@@ -226,9 +226,18 @@ export async function markReminded(db: D1Database, leadId: string) {
 		.run();
 }
 
+function isEmail(value: string): boolean {
+	return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value);
+}
+
 export async function notifyStudio(env: Env, lead: Lead): Promise<void> {
-	await sendStudioEmail(
+	const to = env.STUDIO_NOTIFY_EMAIL;
+	if (!to) {
+		return;
+	}
+	await sendEmail(
 		env,
+		to,
 		`Новая заявка: ${lead.name}`,
 		[
 			`Имя: ${lead.name}`,
@@ -243,9 +252,35 @@ export async function notifyStudio(env: Env, lead: Lead): Promise<void> {
 	);
 }
 
-export async function notifyStaleLead(env: Env, lead: Lead): Promise<void> {
-	await sendStudioEmail(
+/** Auto-reply to the client when contact looks like an email. */
+export async function notifyClient(env: Env, lead: Lead): Promise<void> {
+	if (!isEmail(lead.contact)) {
+		return;
+	}
+	await sendEmail(
 		env,
+		lead.contact,
+		"Заявка получена — I'm Trying To Design",
+		[
+			`Здравствуйте, ${lead.name}!`,
+			"",
+			"Мы получили вашу заявку и ответим в течение одного рабочего дня.",
+			"",
+			"Если срочно — напишите в Telegram: @imtrtd",
+			"",
+			"— I'm Trying To Design",
+		].join("\n"),
+	);
+}
+
+export async function notifyStaleLead(env: Env, lead: Lead): Promise<void> {
+	const to = env.STUDIO_NOTIFY_EMAIL;
+	if (!to) {
+		return;
+	}
+	await sendEmail(
+		env,
+		to,
 		`Напоминание: заявка без ответа (${lead.name})`,
 		[
 			`Заявка старше 24 часов всё ещё в статусе new.`,
@@ -260,14 +295,14 @@ export async function notifyStaleLead(env: Env, lead: Lead): Promise<void> {
 	);
 }
 
-async function sendStudioEmail(
+async function sendEmail(
 	env: Env,
+	to: string,
 	subject: string,
 	text: string,
 ): Promise<void> {
 	const apiKey = env.RESEND_API_KEY;
-	const to = env.STUDIO_NOTIFY_EMAIL;
-	if (!apiKey || !to) {
+	if (!apiKey) {
 		return;
 	}
 

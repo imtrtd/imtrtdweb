@@ -48,7 +48,8 @@
 		"preview": "npm run build && vite preview",
 		"test": "vitest run",
 		"db:migrate:local": "wrangler d1 migrations apply imtrtdweb --local",
-		"db:migrate:remote": "wrangler d1 migrations apply imtrtdweb --remote"
+		"db:migrate:remote": "wrangler d1 migrations apply imtrtdweb --remote",
+		"publish:cloudflare": "node scripts/bootstrap-cloudflare.mjs"
 	},
 	"type": "module"
 }

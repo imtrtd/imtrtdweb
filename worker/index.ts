@@ -22,6 +22,7 @@ import {
 	createLead,
 	getLeadStats,
 	listLeads,
+	notifyClient,
 	notifyStudio,
 	remindStaleLeads,
 	updateLead,
@@ -76,6 +77,7 @@ const worker = {
 
 				const lead = await createLead(env.DB, body);
 				void notifyStudio(env, lead);
+				void notifyClient(env, lead);
 				return json({ ok: true, id: lead.id }, 201);
 			}
 
