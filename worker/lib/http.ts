@@ -9,10 +9,17 @@ export type Lead = {
 	message: string;
 	status: LeadStatus;
 	note: string;
+	next_step: string;
+	brief_url: string;
 	first_response_at: string | null;
+	reminded_at: string | null;
 	created_at: string;
 	updated_at: string;
 };
+
+export function forbidden(message = "Forbidden") {
+	return json({ error: message }, 403);
+}
 
 export type CaseItem = {
 	id: string;

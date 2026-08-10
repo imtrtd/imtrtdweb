@@ -1,4 +1,11 @@
-import type { Lead, LeadPayload, LeadStatus, SiteContent } from "../types";
+import type {
+	AdminRole,
+	Lead,
+	LeadPayload,
+	LeadStats,
+	LeadStatus,
+	SiteContent,
+} from "../types";
 
 const TOKEN_KEY = "imtrtd_admin_token";
 
@@ -14,14 +21,26 @@ export function clearAdminToken() {
 	localStorage.removeItem(TOKEN_KEY);
 }
 
-function adminHeaders(): HeadersInit {
+function adminHeaders(json = true): HeadersInit {
 	const token = getAdminToken();
-	return token
-		? {
-				Authorization: `Bearer ${token}`,
-				"Content-Type": "application/json",
-			}
-		: { "Content-Type": "application/json" };
+	const headers: Record<string, string> = {};
+	if (token) {
+		headers.Authorization = `Bearer ${token}`;
+	}
+	if (json) {
+		headers["Content-Type"] = "application/json";
+	}
+	return headers;
+}
+
+async function assertAdmin(res: Response) {
+	if (res.status === 401) {
+		throw new Error("unauthorized");
+	}
+	if (res.status === 403) {
+		const data = await res.json().catch(() => ({}));
+		throw new Error(data.error || "Forbidden");
+	}
 }
 
 export async function fetchContent(): Promise<SiteContent> {
@@ -45,11 +64,27 @@ export async function submitLead(payload: LeadPayload) {
 	return data;
 }
 
+export async function adminFetchMe(): Promise<{ role: AdminRole }> {
+	const res = await fetch("/api/admin/me", { headers: adminHeaders() });
+	await assertAdmin(res);
+	if (!res.ok) {
+		throw new Error("Failed to load session");
+	}
+	return res.json();
+}
+
+export async function adminFetchStats(): Promise<LeadStats> {
+	const res = await fetch("/api/admin/stats", { headers: adminHeaders() });
+	await assertAdmin(res);
+	if (!res.ok) {
+		throw new Error("Failed to load stats");
+	}
+	return res.json();
+}
+
 export async function adminFetchContent(): Promise<SiteContent> {
 	const res = await fetch("/api/admin/content", { headers: adminHeaders() });
-	if (res.status === 401) {
-		throw new Error("unauthorized");
-	}
+	await assertAdmin(res);
 	if (!res.ok) {
 		throw new Error("Failed to load admin content");
 	}
@@ -59,9 +94,7 @@ export async function adminFetchContent(): Promise<SiteContent> {
 export async function adminFetchLeads(status?: string): Promise<Lead[]> {
 	const q = status ? `?status=${encodeURIComponent(status)}` : "";
 	const res = await fetch(`/api/admin/leads${q}`, { headers: adminHeaders() });
-	if (res.status === 401) {
-		throw new Error("unauthorized");
-	}
+	await assertAdmin(res);
 	if (!res.ok) {
 		throw new Error("Failed to load leads");
 	}
@@ -71,16 +104,19 @@ export async function adminFetchLeads(status?: string): Promise<Lead[]> {
 
 export async function adminUpdateLead(
 	id: string,
-	patch: { status?: LeadStatus; note?: string },
+	patch: {
+		status?: LeadStatus;
+		note?: string;
+		next_step?: string;
+		brief_url?: string;
+	},
 ) {
 	const res = await fetch(`/api/admin/leads/${id}`, {
 		method: "PATCH",
 		headers: adminHeaders(),
 		body: JSON.stringify(patch),
 	});
-	if (res.status === 401) {
-		throw new Error("unauthorized");
-	}
+	await assertAdmin(res);
 	if (!res.ok) {
 		throw new Error("Failed to update lead");
 	}
@@ -93,6 +129,7 @@ export async function adminSaveCopy(copy: Record<string, string>) {
 		headers: adminHeaders(),
 		body: JSON.stringify(copy),
 	});
+	await assertAdmin(res);
 	if (!res.ok) {
 		throw new Error("Failed to save copy");
 	}
@@ -104,6 +141,7 @@ export async function adminSaveCase(body: Record<string, unknown>) {
 		headers: adminHeaders(),
 		body: JSON.stringify(body),
 	});
+	await assertAdmin(res);
 	if (!res.ok) {
 		throw new Error("Failed to save case");
 	}
@@ -115,6 +153,7 @@ export async function adminDeleteCase(id: string) {
 		method: "DELETE",
 		headers: adminHeaders(),
 	});
+	await assertAdmin(res);
 	if (!res.ok) {
 		throw new Error("Failed to delete case");
 	}
@@ -126,6 +165,7 @@ export async function adminSaveService(body: Record<string, unknown>) {
 		headers: adminHeaders(),
 		body: JSON.stringify(body),
 	});
+	await assertAdmin(res);
 	if (!res.ok) {
 		throw new Error("Failed to save service");
 	}
@@ -137,7 +177,24 @@ export async function adminDeleteService(id: string) {
 		method: "DELETE",
 		headers: adminHeaders(),
 	});
+	await assertAdmin(res);
 	if (!res.ok) {
 		throw new Error("Failed to delete service");
 	}
+}
+
+export async function adminUploadMedia(file: File): Promise<{ url: string }> {
+	const form = new FormData();
+	form.append("file", file);
+	const res = await fetch("/api/admin/media", {
+		method: "POST",
+		headers: adminHeaders(false),
+		body: form,
+	});
+	await assertAdmin(res);
+	const data = await res.json().catch(() => ({}));
+	if (!res.ok) {
+		throw new Error(data.error || "Upload failed");
+	}
+	return data;
 }

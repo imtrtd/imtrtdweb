@@ -1,4 +1,4 @@
-import { requireAdmin } from "./lib/auth";
+import { canDelete, getAdminSession } from "./lib/auth";
 import {
 	getAdminContent,
 	getPublicContent,
@@ -10,6 +10,7 @@ import {
 } from "./lib/cms";
 import {
 	badRequest,
+	forbidden,
 	json,
 	notFound,
 	serverError,
@@ -19,12 +20,15 @@ import {
 import {
 	checkRateLimit,
 	createLead,
+	getLeadStats,
 	listLeads,
 	notifyStudio,
+	remindStaleLeads,
 	updateLead,
 	validateLead,
 	type CreateLeadInput,
 } from "./lib/leads";
+import { getMedia, uploadMedia } from "./lib/media";
 
 function clientIp(request: Request): string {
 	return (
@@ -34,12 +38,21 @@ function clientIp(request: Request): string {
 	);
 }
 
-export default {
+const worker = {
 	async fetch(request: Request, env: Env): Promise<Response> {
 		const url = new URL(request.url);
 		const { pathname } = url;
 
 		try {
+			if (pathname.startsWith("/api/media/") && request.method === "GET") {
+				const key = decodeURIComponent(pathname.slice("/api/media/".length));
+				if (!key || key.includes("..")) {
+					return badRequest("invalid key");
+				}
+				const response = await getMedia(env.MEDIA, key);
+				return response ?? notFound("Media not found");
+			}
+
 			if (pathname === "/api/content" && request.method === "GET") {
 				const content = await getPublicContent(env.DB);
 				return json(content, 200, {
@@ -67,8 +80,17 @@ export default {
 			}
 
 			if (pathname.startsWith("/api/admin/")) {
-				if (!requireAdmin(request, env)) {
+				const session = getAdminSession(request, env);
+				if (!session) {
 					return unauthorized();
+				}
+
+				if (pathname === "/api/admin/me" && request.method === "GET") {
+					return json({ role: session.role });
+				}
+
+				if (pathname === "/api/admin/stats" && request.method === "GET") {
+					return json(await getLeadStats(env.DB));
 				}
 
 				if (pathname === "/api/admin/content" && request.method === "GET") {
@@ -79,6 +101,22 @@ export default {
 					const body = (await request.json()) as Record<string, string>;
 					await upsertCopy(env.DB, body);
 					return json({ ok: true });
+				}
+
+				if (pathname === "/api/admin/media" && request.method === "POST") {
+					const form = await request.formData();
+					const file = form.get("file");
+					if (!(file instanceof File)) {
+						return badRequest("file required");
+					}
+					try {
+						const uploaded = await uploadMedia(env.MEDIA, file);
+						return json(uploaded, 201);
+					} catch (err) {
+						return badRequest(
+							err instanceof Error ? err.message : "Upload failed",
+						);
+					}
 				}
 
 				if (pathname === "/api/admin/cases" && request.method === "POST") {
@@ -101,6 +139,9 @@ export default {
 					pathname.startsWith("/api/admin/cases/") &&
 					request.method === "DELETE"
 				) {
+					if (!canDelete(session)) {
+						return forbidden("Только owner может удалять");
+					}
 					const caseId = pathname.split("/").pop();
 					if (!caseId) {
 						return badRequest("id required");
@@ -127,6 +168,9 @@ export default {
 					pathname.startsWith("/api/admin/services/") &&
 					request.method === "DELETE"
 				) {
+					if (!canDelete(session)) {
+						return forbidden("Только owner может удалять");
+					}
 					const serviceId = pathname.split("/").pop();
 					if (!serviceId) {
 						return badRequest("id required");
@@ -151,6 +195,8 @@ export default {
 					const body = (await request.json()) as {
 						status?: LeadStatus;
 						note?: string;
+						next_step?: string;
+						brief_url?: string;
 					};
 					const updated = await updateLead(env.DB, leadId, body);
 					if (!updated) {
@@ -168,4 +214,18 @@ export default {
 			return serverError();
 		}
 	},
-} satisfies ExportedHandler<Env>;
+
+	async scheduled(
+		_controller: ScheduledController,
+		env: Env,
+		ctx: ExecutionContext,
+	): Promise<void> {
+		ctx.waitUntil(
+			remindStaleLeads(env).then((count) => {
+				console.log(`Stale lead reminders sent: ${count}`);
+			}),
+		);
+	},
+};
+
+export default worker satisfies ExportedHandler<Env>;

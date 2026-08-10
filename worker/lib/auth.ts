@@ -1,19 +1,42 @@
-export function requireAdmin(request: Request, env: Env): boolean {
-	const token = env.ADMIN_TOKEN;
-	if (!token) {
-		// Local/dev without secret: allow only when explicitly open via header match "dev"
-		return false;
-	}
+export type AdminRole = "owner" | "editor";
 
+export type AdminSession = {
+	role: AdminRole;
+};
+
+function extractToken(request: Request): string | null {
 	const auth = request.headers.get("Authorization");
-	if (auth?.startsWith("Bearer ") && auth.slice(7) === token) {
-		return true;
+	if (auth?.startsWith("Bearer ")) {
+		return auth.slice(7);
+	}
+	return request.headers.get("X-Admin-Token");
+}
+
+export function getAdminSession(
+	request: Request,
+	env: Env,
+): AdminSession | null {
+	const token = extractToken(request);
+	if (!token) {
+		return null;
 	}
 
-	const headerToken = request.headers.get("X-Admin-Token");
-	if (headerToken === token) {
-		return true;
+	if (env.ADMIN_TOKEN && token === env.ADMIN_TOKEN) {
+		return { role: "owner" };
 	}
 
-	return false;
+	if (env.EDITOR_TOKEN && token === env.EDITOR_TOKEN) {
+		return { role: "editor" };
+	}
+
+	return null;
+}
+
+/** @deprecated use getAdminSession */
+export function requireAdmin(request: Request, env: Env): boolean {
+	return getAdminSession(request, env) !== null;
+}
+
+export function canDelete(session: AdminSession): boolean {
+	return session.role === "owner";
 }

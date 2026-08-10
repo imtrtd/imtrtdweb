@@ -1,9 +1,7 @@
 /**
- * For more details on how to configure Wrangler, refer to:
- * https://developers.cloudflare.com/workers/wrangler/configuration/
- *
- * After creating the D1 database, replace database_id:
+ * After creating cloud resources, replace placeholders:
  *   npx wrangler d1 create imtrtdweb
+ *   npx wrangler r2 bucket create imtrtdweb-media
  */
 {
 	"$schema": "node_modules/wrangler/config-schema.json",
@@ -31,6 +29,15 @@
 			"migrations_dir": "migrations"
 		}
 	],
+	"r2_buckets": [
+		{
+			"binding": "MEDIA",
+			"bucket_name": "imtrtdweb-media"
+		}
+	],
+	"triggers": {
+		"crons": ["0 * * * *"]
+	},
 	"vars": {
 		"STUDIO_NOTIFY_EMAIL": "hello@imtryingtodesign.com"
 	},

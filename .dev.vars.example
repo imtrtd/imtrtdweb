@@ -1,3 +1,4 @@
 ADMIN_TOKEN=dev-admin-token
+EDITOR_TOKEN=dev-editor-token
 # RESEND_API_KEY=
 # STUDIO_NOTIFY_EMAIL=hello@imtryingtodesign.com

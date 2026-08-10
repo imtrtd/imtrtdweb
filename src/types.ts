@@ -1,4 +1,5 @@
 export type LeadStatus = "new" | "in_progress" | "done" | "archived";
+export type AdminRole = "owner" | "editor";
 
 export type Lead = {
 	id: string;
@@ -9,9 +10,20 @@ export type Lead = {
 	message: string;
 	status: LeadStatus;
 	note: string;
+	next_step: string;
+	brief_url: string;
 	first_response_at: string | null;
+	reminded_at: string | null;
 	created_at: string;
 	updated_at: string;
+};
+
+export type LeadStats = {
+	total: number;
+	week: number;
+	new_count: number;
+	in_progress: number;
+	stale_over_24h: number;
 };
 
 export type CaseItem = {

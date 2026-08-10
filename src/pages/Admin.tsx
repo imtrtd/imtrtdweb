@@ -1,42 +1,67 @@
 import { useEffect, useState } from "react";
 import type { FormEvent } from "react";
-import type { CaseItem, Lead, LeadStatus, ServiceItem, SiteContent } from "../types";
+import type {
+	AdminRole,
+	CaseItem,
+	Lead,
+	LeadStats,
+	LeadStatus,
+	ServiceItem,
+	SiteContent,
+} from "../types";
 import {
 	adminDeleteCase,
 	adminDeleteService,
 	adminFetchContent,
 	adminFetchLeads,
+	adminFetchMe,
+	adminFetchStats,
 	adminSaveCase,
 	adminSaveCopy,
 	adminSaveService,
 	adminUpdateLead,
+	adminUploadMedia,
 	clearAdminToken,
 	getAdminToken,
 	setAdminToken,
 } from "../lib/api";
 
-type Tab = "leads" | "copy" | "cases" | "services";
+type Tab = "dashboard" | "leads" | "copy" | "cases" | "services";
 
 const STATUSES: LeadStatus[] = ["new", "in_progress", "done", "archived"];
+
+const EMPTY_STATS: LeadStats = {
+	total: 0,
+	week: 0,
+	new_count: 0,
+	in_progress: 0,
+	stale_over_24h: 0,
+};
 
 export function AdminPage() {
 	const [tokenInput, setTokenInput] = useState(getAdminToken());
 	const [authed, setAuthed] = useState(Boolean(getAdminToken()));
-	const [tab, setTab] = useState<Tab>("leads");
+	const [role, setRole] = useState<AdminRole>("owner");
+	const [tab, setTab] = useState<Tab>("dashboard");
 	const [error, setError] = useState("");
 	const [leads, setLeads] = useState<Lead[]>([]);
+	const [stats, setStats] = useState<LeadStats>(EMPTY_STATS);
 	const [content, setContent] = useState<SiteContent | null>(null);
 	const [statusFilter, setStatusFilter] = useState<string>("");
 	const [busy, setBusy] = useState(false);
 
 	async function load() {
 		try {
-			const [leadRows, adminContent] = await Promise.all([
+			const [me, leadRows, adminContent, leadStats] = await Promise.all([
+				adminFetchMe(),
 				adminFetchLeads(statusFilter || undefined),
 				adminFetchContent(),
+				adminFetchStats(),
 			]);
+			setRole(me.role);
 			setLeads(leadRows);
 			setContent(adminContent);
+			setStats(leadStats);
 			setAuthed(true);
 			setError("");
 		} catch (err) {
@@ -57,15 +82,19 @@ export function AdminPage() {
 		let cancelled = false;
 		void (async () => {
 			try {
-				const [leadRows, adminContent] = await Promise.all([
+				const [me, leadRows, adminContent, leadStats] = await Promise.all([
+					adminFetchMe(),
 					adminFetchLeads(statusFilter || undefined),
 					adminFetchContent(),
+					adminFetchStats(),
 				]);
 				if (cancelled) {
 					return;
 				}
+				setRole(me.role);
 				setLeads(leadRows);
 				setContent(adminContent);
+				setStats(leadStats);
 				setError("");
 			} catch (err) {
 				if (cancelled) {
@@ -100,15 +129,14 @@ export function AdminPage() {
 				>
 					<h1 className="font-display text-2xl font-bold">Кабинет студии</h1>
 					<p className="text-sm text-mist">
-						Введите ADMIN_TOKEN (секрет Worker). Позже можно закрыть /admin через
-						Cloudflare Access.
+						Войдите с ADMIN_TOKEN (owner) или EDITOR_TOKEN (editor).
 					</p>
 					<input
 						type="password"
 						value={tokenInput}
 						onChange={(e) => setTokenInput(e.target.value)}
 						className="w-full rounded-xl border border-white/10 bg-ink px-4 py-3 outline-none focus:border-signal/50"
-						placeholder="Admin token"
+						placeholder="Admin / editor token"
 						required
 					/>
 					{error ? <p className="text-sm text-red-300">{error}</p> : null}
@@ -123,17 +151,20 @@ export function AdminPage() {
 		);
 	}
 
+	const isOwner = role === "owner";
+
 	return (
 		<div className="min-h-screen bg-ink text-paper">
 			<header className="border-b border-white/10 px-6 py-4">
 				<div className="mx-auto flex max-w-6xl flex-wrap items-center justify-between gap-4">
 					<div>
 						<p className="font-display text-lg font-bold">IMTRTD Admin</p>
-						<p className="text-xs text-mist">Inbox + CMS</p>
+						<p className="text-xs text-mist">Роль: {role}</p>
 					</div>
 					<div className="flex flex-wrap gap-2">
 						{(
 							[
+								["dashboard", "Дашборд"],
 								["leads", "Заявки"],
 								["copy", "Тексты"],
 								["cases", "Кейсы"],
@@ -153,7 +184,10 @@ export function AdminPage() {
 								{label}
 							</button>
 						))}
-						<a href="/" className="rounded-full border border-white/15 px-4 py-2 text-sm text-fog">
+						<a
+							href="/"
+							className="rounded-full border border-white/15 px-4 py-2 text-sm text-fog"
+						>
 							На сайт
 						</a>
 						<button
@@ -172,6 +206,16 @@ export function AdminPage() {
 
 			<main className="mx-auto max-w-6xl px-6 py-8">
 				{error ? <p className="mb-4 text-sm text-red-300">{error}</p> : null}
+
+				{tab === "dashboard" ? (
+					<DashboardPanel
+						stats={stats}
+						onOpenLeads={(status) => {
+							setStatusFilter(status);
+							setTab("leads");
+						}}
+					/>
+				) : null}
 
 				{tab === "leads" ? (
 					<LeadsPanel
@@ -202,6 +246,7 @@ export function AdminPage() {
 						setError={setError}
 						busy={busy}
 						setBusy={setBusy}
+						canDelete={isOwner}
 					/>
 				) : null}
 
@@ -212,9 +257,49 @@ export function AdminPage() {
 						setError={setError}
 						busy={busy}
 						setBusy={setBusy}
+						canDelete={isOwner}
 					/>
 				) : null}
 			</main>
+		</div>
+	);
+}
+
+function DashboardPanel({
+	stats,
+	onOpenLeads,
+}: {
+	stats: LeadStats;
+	onOpenLeads: (status: string) => void;
+}) {
+	const cards = [
+		["За неделю", String(stats.week), ""],
+		["Новые", String(stats.new_count), "new"],
+		["В работе", String(stats.in_progress), "in_progress"],
+		[">24ч без ответа", String(stats.stale_over_24h), "new"],
+	] as const;
+
+	return (
+		<div className="space-y-6">
+			<div>
+				<h2 className="font-display text-2xl font-bold">Дашборд</h2>
+				<p className="mt-1 text-sm text-mist">
+					Всего заявок: {stats.total}. Напоминания по «висящим» уходят hourly cron.
+				</p>
+			</div>
+			<div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+				{cards.map(([label, value, filter]) => (
+					<button
+						key={label}
+						type="button"
+						onClick={() => onOpenLeads(filter)}
+						className="rounded-2xl border border-white/10 bg-ink-soft p-5 text-left transition hover:border-signal/40"
+					>
+						<p className="text-xs uppercase tracking-[0.14em] text-mist">{label}</p>
+						<p className="mt-3 font-display text-3xl font-bold text-signal">{value}</p>
+					</button>
+				))}
+			</div>
 		</div>
 	);
 }
@@ -236,7 +321,15 @@ function LeadsPanel({
 	setBusy: (v: boolean) => void;
 	setError: (v: string) => void;
 }) {
-	async function patch(id: string, data: { status?: LeadStatus; note?: string }) {
+	async function patch(
+		id: string,
+		data: {
+			status?: LeadStatus;
+			note?: string;
+			next_step?: string;
+			brief_url?: string;
+		},
+	) {
 		setBusy(true);
 		setError("");
 		try {
@@ -288,7 +381,16 @@ function LeadsPanel({
 							<div className="flex flex-wrap items-start justify-between gap-3">
 								<div>
 									<p className="font-display text-lg font-semibold">{lead.name}</p>
-									<p className="text-sm text-fog">{lead.contact}</p>
+									<p className="text-sm text-fog">
+										<a
+											className="hover:text-signal"
+											href={contactHref(lead.contact)}
+											target="_blank"
+											rel="noreferrer"
+										>
+											{lead.contact}
+										</a>
+									</p>
 									<p className="mt-1 text-xs text-mist">
 										{new Date(lead.created_at).toLocaleString("ru-RU")} · {lead.id}
 									</p>
@@ -330,6 +432,43 @@ function LeadsPanel({
 									}}
 								/>
 							</label>
+							<div className="mt-3 grid gap-3 md:grid-cols-2">
+								<label className="block space-y-2">
+									<span className="text-xs text-mist">Следующий шаг</span>
+									<input
+										defaultValue={lead.next_step ?? ""}
+										className="w-full rounded-xl border border-white/10 bg-ink px-3 py-2 text-sm"
+										onBlur={(e) => {
+											if (e.target.value !== (lead.next_step ?? "")) {
+												void patch(lead.id, { next_step: e.target.value });
+											}
+										}}
+									/>
+								</label>
+								<label className="block space-y-2">
+									<span className="text-xs text-mist">Ссылка на бриф</span>
+									<input
+										defaultValue={lead.brief_url ?? ""}
+										placeholder="https://..."
+										className="w-full rounded-xl border border-white/10 bg-ink px-3 py-2 text-sm"
+										onBlur={(e) => {
+											if (e.target.value !== (lead.brief_url ?? "")) {
+												void patch(lead.id, { brief_url: e.target.value });
+											}
+										}}
+									/>
+								</label>
+							</div>
+							{lead.brief_url ? (
+								<a
+									href={lead.brief_url}
+									target="_blank"
+									rel="noreferrer"
+									className="mt-2 inline-block text-xs text-signal hover:underline"
+								>
+									Открыть бриф →
+								</a>
+							) : null}
 							{lead.first_response_at ? (
 								<p className="mt-2 text-xs text-signal">
 									Первый ответ:{" "}
@@ -342,6 +481,14 @@ function LeadsPanel({
 			)}
 		</div>
 	);
+}
+
+function contactHref(contact: string) {
+	if (contact.includes("@") && !contact.startsWith("@")) {
+		return `mailto:${contact}`;
+	}
+	const handle = contact.replace(/^@/, "");
+	return `https://t.me/${handle}`;
 }
 
 function CopyPanel({
@@ -428,12 +575,14 @@ function CasesPanel({
 	setError,
 	busy,
 	setBusy,
+	canDelete,
 }: {
 	cases: CaseItem[];
 	onSaved: () => Promise<void>;
 	setError: (v: string) => void;
 	busy: boolean;
 	setBusy: (v: boolean) => void;
+	canDelete: boolean;
 }) {
 	const blank = {
 		title: "",
@@ -460,9 +609,28 @@ function CasesPanel({
 		}
 	}
 
+	async function onUpload(file: File | null) {
+		if (!file) {
+			return;
+		}
+		setBusy(true);
+		setError("");
+		try {
+			const uploaded = await adminUploadMedia(file);
+			setDraft((prev) => ({ ...prev, image_url: uploaded.url }));
+		} catch (err) {
+			setError(err instanceof Error ? err.message : "Ошибка загрузки");
+		} finally {
+			setBusy(false);
+		}
+	}
+
 	return (
 		<div className="space-y-8">
-			<form onSubmit={save} className="grid gap-3 rounded-2xl border border-white/10 p-5 md:grid-cols-2">
+			<form
+				onSubmit={save}
+				className="grid gap-3 rounded-2xl border border-white/10 p-5 md:grid-cols-2"
+			>
 				<input
 					required
 					placeholder="Название"
@@ -483,10 +651,16 @@ function CasesPanel({
 					className="md:col-span-2 rounded-xl border border-white/10 bg-ink-soft px-3 py-2"
 				/>
 				<input
-					placeholder="Image URL"
+					placeholder="Image URL или загрузите файл"
 					value={draft.image_url}
 					onChange={(e) => setDraft({ ...draft, image_url: e.target.value })}
-					className="md:col-span-2 rounded-xl border border-white/10 bg-ink-soft px-3 py-2"
+					className="rounded-xl border border-white/10 bg-ink-soft px-3 py-2"
+				/>
+				<input
+					type="file"
+					accept="image/jpeg,image/png,image/webp,image/gif"
+					onChange={(e) => void onUpload(e.target.files?.[0] ?? null)}
+					className="rounded-xl border border-white/10 bg-ink-soft px-3 py-2 text-sm file:mr-3 file:rounded-full file:border-0 file:bg-signal file:px-3 file:py-1 file:text-ink"
 				/>
 				<button
 					type="submit"
@@ -503,16 +677,25 @@ function CasesPanel({
 						key={item.id}
 						className="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-white/10 px-4 py-3"
 					>
-						<div>
-							<p className="font-semibold">
-								{item.title}{" "}
-								<span className="text-xs text-mist">
-									{item.published ? "published" : "draft"}
-								</span>
-							</p>
-							<p className="text-sm text-mist">
-								{item.role} · {item.result}
-							</p>
+						<div className="flex min-w-0 items-center gap-3">
+							{item.image_url ? (
+								<img
+									src={item.image_url}
+									alt=""
+									className="h-12 w-16 rounded-lg object-cover"
+								/>
+							) : null}
+							<div>
+								<p className="font-semibold">
+									{item.title}{" "}
+									<span className="text-xs text-mist">
+										{item.published ? "published" : "draft"}
+									</span>
+								</p>
+								<p className="text-sm text-mist">
+									{item.role} · {item.result}
+								</p>
+							</div>
 						</div>
 						<div className="flex gap-2">
 							<button
@@ -529,9 +712,7 @@ function CasesPanel({
 											});
 											await onSaved();
 										} catch (err) {
-											setError(
-												err instanceof Error ? err.message : "Ошибка",
-											);
+											setError(err instanceof Error ? err.message : "Ошибка");
 										} finally {
 											setBusy(false);
 										}
@@ -540,28 +721,28 @@ function CasesPanel({
 							>
 								{item.published ? "Скрыть" : "Опубликовать"}
 							</button>
-							<button
-								type="button"
-								className="rounded-full border border-red-400/30 px-3 py-1.5 text-xs text-red-200"
-								disabled={busy}
-								onClick={() =>
-									void (async () => {
-										setBusy(true);
-										try {
-											await adminDeleteCase(item.id);
-											await onSaved();
-										} catch (err) {
-											setError(
-												err instanceof Error ? err.message : "Ошибка",
-											);
-										} finally {
-											setBusy(false);
-										}
-									})()
-								}
-							>
-								Удалить
-							</button>
+							{canDelete ? (
+								<button
+									type="button"
+									className="rounded-full border border-red-400/30 px-3 py-1.5 text-xs text-red-200"
+									disabled={busy}
+									onClick={() =>
+										void (async () => {
+											setBusy(true);
+											try {
+												await adminDeleteCase(item.id);
+												await onSaved();
+											} catch (err) {
+												setError(err instanceof Error ? err.message : "Ошибка");
+											} finally {
+												setBusy(false);
+											}
+										})()
+									}
+								>
+									Удалить
+								</button>
+							) : null}
 						</div>
 					</li>
 				))}
@@ -576,12 +757,14 @@ function ServicesPanel({
 	setError,
 	busy,
 	setBusy,
+	canDelete,
 }: {
 	services: ServiceItem[];
 	onSaved: () => Promise<void>;
 	setError: (v: string) => void;
 	busy: boolean;
 	setBusy: (v: boolean) => void;
+	canDelete: boolean;
 }) {
 	const blank = {
 		title: "",
@@ -642,26 +825,28 @@ function ServicesPanel({
 							<p className="font-semibold">{item.title}</p>
 							<p className="text-sm text-mist">{item.description}</p>
 						</div>
-						<button
-							type="button"
-							className="rounded-full border border-red-400/30 px-3 py-1.5 text-xs text-red-200"
-							disabled={busy}
-							onClick={() =>
-								void (async () => {
-									setBusy(true);
-									try {
-										await adminDeleteService(item.id);
-										await onSaved();
-									} catch (err) {
-										setError(err instanceof Error ? err.message : "Ошибка");
-									} finally {
-										setBusy(false);
-									}
-								})()
-							}
-						>
-							Удалить
-						</button>
+						{canDelete ? (
+							<button
+								type="button"
+								className="rounded-full border border-red-400/30 px-3 py-1.5 text-xs text-red-200"
+								disabled={busy}
+								onClick={() =>
+									void (async () => {
+										setBusy(true);
+										try {
+											await adminDeleteService(item.id);
+											await onSaved();
+										} catch (err) {
+											setError(err instanceof Error ? err.message : "Ошибка");
+										} finally {
+											setBusy(false);
+										}
+									})()
+								}
+							>
+								Удалить
+							</button>
+						) : null}
 					</li>
 				))}
 			</ul>
