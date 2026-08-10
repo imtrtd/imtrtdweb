@@ -1,39 +1,61 @@
-# Cloudflare Workflows Starter Template
+# imtrtdweb
 
-[![Deploy to Cloudflare](https://deploy.workers.cloudflare.com/button)](https://deploy.workers.cloudflare.com/?url=https://github.com/cloudflare/templates/tree/main/workflows-starter-template)
+Сайт на Cloudflare Workers (React + Vite) с custom domain `imtryingtodesign.com`.
 
-<!-- dash-content-start -->
-
-A real-time, interactive demonstration of [Cloudflare Workflows](https://developers.cloudflare.com/workflows) with live updates via WebSockets and Durable Objects. This template showcases durable multi-step workflows with time-based delays, event-driven pauses, and real-time status visualization.
-
-<!-- dash-content-end -->
-
-![Cloudflare Workflows Starter Template](assets/template-screenshot.png)
-
-## Getting Started
-
-### Installation
+## Локальная разработка
 
 ```bash
 npm install
-```
-
-### Development
-
-```bash
 npm run dev
 ```
 
-Visit `http://localhost:5173` to see the interactive demo.
+Откройте `http://localhost:5173`.
 
-### Deployment
+## Публикация на Cloudflare
+
+Проект уже настроен под Cloudflare Workers (`wrangler.jsonc`). Статика отдаётся как SPA, API — через Worker.
+
+### 1. Секреты в GitHub
+
+В репозитории: **Settings → Secrets and variables → Actions** добавьте:
+
+| Secret | Где взять |
+| --- | --- |
+| `CLOUDFLARE_API_TOKEN` | [Create Token](https://dash.cloudflare.com/profile/api-tokens) → шаблон **Edit Cloudflare Workers** |
+| `CLOUDFLARE_ACCOUNT_ID` | Dashboard → Workers & Pages → справа **Account ID** |
+
+### 2. Домен
+
+`imtryingtodesign.com` должен быть в вашем аккаунте Cloudflare (NS у регистратора → Cloudflare). В `wrangler.jsonc` уже указан custom domain.
+
+### 3. Деплой
+
+**Автоматически:** каждый push в `main` запускает workflow `.github/workflows/deploy.yml`.
+
+**Вручную из терминала:**
 
 ```bash
 npm run deploy
 ```
 
-## Learn More
+Нужна авторизация Wrangler (`npx wrangler login`) или переменные `CLOUDFLARE_API_TOKEN` и `CLOUDFLARE_ACCOUNT_ID`.
 
-- [Cloudflare Workflows Documentation](https://developers.cloudflare.com/workflows)
-- [Durable Objects Documentation](https://developers.cloudflare.com/durable-objects)
-- [Workers Documentation](https://developers.cloudflare.com/workers)
+После успешного деплоя сайт будет доступен на:
+
+- `https://imtryingtodesign.com`
+- `https://imtrtdweb.<subdomain>.workers.dev`
+
+## Полезные команды
+
+```bash
+npm run build      # production-сборка
+npm run preview    # локальный preview собранного билда
+npm run check      # typecheck + dry-run deploy
+npm test           # vitest
+```
+
+## Документация
+
+- [Cloudflare Workers](https://developers.cloudflare.com/workers/)
+- [Wrangler](https://developers.cloudflare.com/workers/wrangler/)
+- [Workers + Assets (SPA)](https://developers.cloudflare.com/workers/static-assets/)
