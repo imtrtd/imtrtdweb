@@ -42,11 +42,36 @@ export type SiteContent = {
 	services: ServiceItem[];
 };
 
-export type LeadPayload = {
-	name: string;
-	contact: string;
-	task_type: string;
-	budget: string;
-	message: string;
-	website?: string;
-};
+export function json(data: unknown, status = 200, headers: HeadersInit = {}) {
+	return Response.json(data, {
+		status,
+		headers: {
+			"Cache-Control": "no-store",
+			...headers,
+		},
+	});
+}
+
+export function badRequest(message: string) {
+	return json({ error: message }, 400);
+}
+
+export function unauthorized() {
+	return json({ error: "Unauthorized" }, 401);
+}
+
+export function notFound(message = "Not Found") {
+	return json({ error: message }, 404);
+}
+
+export function serverError(message = "Internal Server Error") {
+	return json({ error: message }, 500);
+}
+
+export function nowIso() {
+	return new Date().toISOString();
+}
+
+export function id(prefix: string) {
+	return `${prefix}_${crypto.randomUUID().slice(0, 8)}`;
+}

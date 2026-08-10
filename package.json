@@ -1,20 +1,16 @@
 {
 	"name": "imtrtdweb",
-	"description": "Interactive starter template demonstrating Cloudflare Workflows with real-time status updates",
+	"description": "I'm Trying To Design — studio landing, leads inbox, and CMS on Cloudflare Workers",
 	"cloudflare": {
-		"label": "Workflows Starter",
+		"label": "IMTRTD Studio",
 		"products": [
 			"Workers",
-			"Workflows",
-			"Durable Objects"
+			"D1"
 		],
 		"categories": [
 			"starter"
 		],
-		"publish": true,
-		"preview_image_url": "https://imagedelivery.net/wSMYJvS3Xw-n339CbDyDIA/4380d39a-b907-437c-e784-500fcc10cb00/preview",
-		"preview_icon_url": "https://imagedelivery.net/wSMYJvS3Xw-n339CbDyDIA/6d6e9a49-5c10-4ef6-bfa8-b6577a656300/public",
-		"docs_url": "https://developers.cloudflare.com/workflows/"
+		"publish": true
 	},
 	"dependencies": {
 		"react": "19.2.1",
@@ -50,7 +46,9 @@
 		"dev": "vite",
 		"lint": "eslint .",
 		"preview": "npm run build && vite preview",
-		"test": "vitest run"
+		"test": "vitest run",
+		"db:migrate:local": "wrangler d1 migrations apply imtrtdweb --local",
+		"db:migrate:remote": "wrangler d1 migrations apply imtrtdweb --remote"
 	},
 	"type": "module"
 }

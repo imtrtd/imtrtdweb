@@ -1,61 +1,79 @@
-# imtrtdweb
+# I'm Trying To Design (imtrtdweb)
 
-Сайт на Cloudflare Workers (React + Vite) с custom domain `imtryingtodesign.com`.
+Лендинг студии дизайна + заявки + внутренний кабинет (`/admin`) на Cloudflare Workers + D1.
 
-## Локальная разработка
+Домен: `imtryingtodesign.com`
+
+## Возможности
+
+- Публичный лендинг (hero, работы, услуги, процесс, форма заявки)
+- `POST /api/leads` → D1, honeypot + rate limit
+- Кабинет `/admin`: inbox заявок и CMS (тексты, кейсы, услуги)
+- Опционально: email через Resend (`RESEND_API_KEY`)
+
+## Локально
 
 ```bash
 npm install
+cp .dev.vars.example .dev.vars   # задайте ADMIN_TOKEN
+npm run db:migrate:local
 npm run dev
 ```
 
-Откройте `http://localhost:5173`.
+- Сайт: http://localhost:5173
+- Админка: http://localhost:5173/admin
 
 ## Публикация на Cloudflare
 
-Проект уже настроен под Cloudflare Workers (`wrangler.jsonc`). Статика отдаётся как SPA, API — через Worker.
+### 1. Секреты GitHub Actions
 
-### 1. Секреты в GitHub
-
-В репозитории: **Settings → Secrets and variables → Actions** добавьте:
-
-| Secret | Где взять |
+| Secret | Назначение |
 | --- | --- |
-| `CLOUDFLARE_API_TOKEN` | [Create Token](https://dash.cloudflare.com/profile/api-tokens) → шаблон **Edit Cloudflare Workers** |
-| `CLOUDFLARE_ACCOUNT_ID` | Dashboard → Workers & Pages → справа **Account ID** |
+| `CLOUDFLARE_API_TOKEN` | шаблон **Edit Cloudflare Workers** |
+| `CLOUDFLARE_ACCOUNT_ID` | Account ID в Dashboard |
 
-### 2. Домен
+### 2. D1
 
-`imtryingtodesign.com` должен быть в вашем аккаунте Cloudflare (NS у регистратора → Cloudflare). В `wrangler.jsonc` уже указан custom domain.
+```bash
+npx wrangler login
+npx wrangler d1 create imtrtdweb
+```
 
-### 3. Деплой
+Подставьте полученный `database_id` в [wrangler.jsonc](wrangler.jsonc), затем:
 
-**Автоматически:** каждый push в `main` запускает workflow `.github/workflows/deploy.yml`.
+```bash
+npm run db:migrate:remote
+```
 
-**Вручную из терминала:**
+### 3. Worker secrets
+
+```bash
+npx wrangler secret put ADMIN_TOKEN
+# опционально:
+npx wrangler secret put RESEND_API_KEY
+```
+
+### 4. Деплой
+
+Push в `main` запускает [.github/workflows/deploy.yml](.github/workflows/deploy.yml), или вручную:
 
 ```bash
 npm run deploy
 ```
 
-Нужна авторизация Wrangler (`npx wrangler login`) или переменные `CLOUDFLARE_API_TOKEN` и `CLOUDFLARE_ACCOUNT_ID`.
+После деплоя желательно закрыть `/admin` через [Cloudflare Access](https://developers.cloudflare.com/cloudflare-one/applications/configure-apps/self-hosted-public-app/).
 
-После успешного деплоя сайт будет доступен на:
+## API кратко
 
-- `https://imtryingtodesign.com`
-- `https://imtrtdweb.<subdomain>.workers.dev`
-
-## Полезные команды
-
-```bash
-npm run build      # production-сборка
-npm run preview    # локальный preview собранного билда
-npm run check      # typecheck + dry-run deploy
-npm test           # vitest
-```
-
-## Документация
-
-- [Cloudflare Workers](https://developers.cloudflare.com/workers/)
-- [Wrangler](https://developers.cloudflare.com/workers/wrangler/)
-- [Workers + Assets (SPA)](https://developers.cloudflare.com/workers/static-assets/)
+| Метод | Путь | Доступ |
+| --- | --- | --- |
+| GET | `/api/content` | public |
+| POST | `/api/leads` | public |
+| GET | `/api/admin/leads` | Bearer ADMIN_TOKEN |
+| PATCH | `/api/admin/leads/:id` | Bearer ADMIN_TOKEN |
+| GET | `/api/admin/content` | Bearer ADMIN_TOKEN |
+| PUT | `/api/admin/copy` | Bearer ADMIN_TOKEN |
+| POST | `/api/admin/cases` | Bearer ADMIN_TOKEN |
+| DELETE | `/api/admin/cases/:id` | Bearer ADMIN_TOKEN |
+| POST | `/api/admin/services` | Bearer ADMIN_TOKEN |
+| DELETE | `/api/admin/services/:id` | Bearer ADMIN_TOKEN |
