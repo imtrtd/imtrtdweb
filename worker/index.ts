@@ -46,6 +46,9 @@ const worker = {
 
 		try {
 			if (pathname.startsWith("/api/media/") && request.method === "GET") {
+				if (!env.MEDIA) {
+					return notFound("Media storage not configured");
+				}
 				const key = decodeURIComponent(pathname.slice("/api/media/".length));
 				if (!key || key.includes("..")) {
 					return badRequest("invalid key");
@@ -106,6 +109,11 @@ const worker = {
 				}
 
 				if (pathname === "/api/admin/media" && request.method === "POST") {
+					if (!env.MEDIA) {
+						return badRequest(
+							"R2 не включён. Включите R2 в Dashboard и добавьте binding MEDIA.",
+						);
+					}
 					const form = await request.formData();
 					const file = form.get("file");
 					if (!(file instanceof File)) {

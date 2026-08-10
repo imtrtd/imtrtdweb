@@ -10,14 +10,14 @@
 	"compatibility_date": "2026-08-10",
 	"assets": {
 		"directory": "./dist",
-		"not_found_handling": "single-page-application"
+		"not_found_handling": "single-page-application",
+		"run_worker_first": ["/api/*"]
 	},
-	"routes": [
-		{
-			"pattern": "imtryingtodesign.com",
-			"custom_domain": true
-		}
-	],
+	/**
+	 * Apex custom domain blocked while zone NS are mismatched / existing DNS present.
+	 * Attach hostnames after NS are active, e.g.:
+	 *   npx wrangler domains add www.imtryingtodesign.com
+	 */
 	"workers_dev": true,
 	"observability": {
 		"enabled": true
@@ -26,16 +26,18 @@
 		{
 			"binding": "DB",
 			"database_name": "imtrtdweb",
-			"database_id": "00000000-0000-0000-0000-000000000001",
+			"database_id": "64e84c88-3ece-4f03-afe0-cf4dd9bef52b",
 			"migrations_dir": "migrations"
 		}
 	],
-	"r2_buckets": [
-		{
-			"binding": "MEDIA",
-			"bucket_name": "imtrtdweb-media"
-		}
-	],
+	/**
+	 * Re-enable after R2 is turned on in the Cloudflare Dashboard:
+	 *   npx wrangler r2 bucket create imtrtdweb-media
+	 *
+	 * "r2_buckets": [
+	 *   { "binding": "MEDIA", "bucket_name": "imtrtdweb-media" }
+	 * ],
+	 */
 	"triggers": {
 		"crons": ["0 * * * *"]
 	},
