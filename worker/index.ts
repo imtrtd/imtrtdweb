@@ -30,6 +30,16 @@ import {
 	type CreateLeadInput,
 } from "./lib/leads";
 import { getMedia, uploadMedia } from "./lib/media";
+import { AppStore, doDatabase } from "./lib/store-do";
+
+export { AppStore };
+
+function db(env: Env): D1Database {
+	if (env.DB) {
+		return env.DB;
+	}
+	return doDatabase(env);
+}
 
 function clientIp(request: Request): string {
 	return (
@@ -43,6 +53,7 @@ const worker = {
 	async fetch(request: Request, env: Env): Promise<Response> {
 		const url = new URL(request.url);
 		const { pathname } = url;
+		const database = db(env);
 
 		try {
 			if (pathname.startsWith("/api/media/") && request.method === "GET") {
@@ -58,7 +69,7 @@ const worker = {
 			}
 
 			if (pathname === "/api/content" && request.method === "GET") {
-				const content = await getPublicContent(env.DB);
+				const content = await getPublicContent(database);
 				return json(content, 200, {
 					"Cache-Control": "public, max-age=30",
 				});
@@ -78,7 +89,7 @@ const worker = {
 					return badRequest(error);
 				}
 
-				const lead = await createLead(env.DB, body);
+				const lead = await createLead(database, body);
 				void notifyStudio(env, lead);
 				void notifyClient(env, lead);
 				return json({ ok: true, id: lead.id }, 201);
@@ -95,16 +106,16 @@ const worker = {
 				}
 
 				if (pathname === "/api/admin/stats" && request.method === "GET") {
-					return json(await getLeadStats(env.DB));
+					return json(await getLeadStats(database));
 				}
 
 				if (pathname === "/api/admin/content" && request.method === "GET") {
-					return json(await getAdminContent(env.DB));
+					return json(await getAdminContent(database));
 				}
 
 				if (pathname === "/api/admin/copy" && request.method === "PUT") {
 					const body = (await request.json()) as Record<string, string>;
-					await upsertCopy(env.DB, body);
+					await upsertCopy(database, body);
 					return json({ ok: true });
 				}
 
@@ -142,7 +153,7 @@ const worker = {
 					if (!body.title?.trim()) {
 						return badRequest("title required");
 					}
-					return json(await upsertCase(env.DB, body));
+					return json(await upsertCase(database, body));
 				}
 
 				if (
@@ -156,7 +167,7 @@ const worker = {
 					if (!caseId) {
 						return badRequest("id required");
 					}
-					await deleteCase(env.DB, caseId);
+					await deleteCase(database, caseId);
 					return json({ ok: true });
 				}
 
@@ -171,7 +182,7 @@ const worker = {
 					if (!body.title?.trim()) {
 						return badRequest("title required");
 					}
-					return json(await upsertService(env.DB, body));
+					return json(await upsertService(database, body));
 				}
 
 				if (
@@ -185,13 +196,13 @@ const worker = {
 					if (!serviceId) {
 						return badRequest("id required");
 					}
-					await deleteService(env.DB, serviceId);
+					await deleteService(database, serviceId);
 					return json({ ok: true });
 				}
 
 				if (pathname === "/api/admin/leads" && request.method === "GET") {
 					const status = url.searchParams.get("status") ?? undefined;
-					return json({ leads: await listLeads(env.DB, status) });
+					return json({ leads: await listLeads(database, status) });
 				}
 
 				if (
@@ -208,7 +219,7 @@ const worker = {
 						next_step?: string;
 						brief_url?: string;
 					};
-					const updated = await updateLead(env.DB, leadId, body);
+					const updated = await updateLead(database, leadId, body);
 					if (!updated) {
 						return notFound("Lead not found");
 					}
@@ -230,8 +241,9 @@ const worker = {
 		env: Env,
 		ctx: ExecutionContext,
 	): Promise<void> {
+		const bound = { ...env, DB: db(env) } as Env;
 		ctx.waitUntil(
-			remindStaleLeads(env).then((count) => {
+			remindStaleLeads(bound).then((count) => {
 				console.log(`Stale lead reminders sent: ${count}`);
 			}),
 		);

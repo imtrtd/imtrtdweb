@@ -1,7 +1,6 @@
 /**
- * After creating cloud resources, replace placeholders:
- *   npx wrangler d1 create imtrtdweb
- *   npx wrangler r2 bucket create imtrtdweb-media
+ * Production Worker for Unitl@proton.me account (active domain zone).
+ * Uses Durable Object SQLite store instead of D1 (token lacks D1 permission).
  */
 {
 	"$schema": "node_modules/wrangler/config-schema.json",
@@ -13,31 +12,29 @@
 		"not_found_handling": "single-page-application",
 		"run_worker_first": ["/api/*"]
 	},
-	/**
-	 * Apex custom domain blocked while zone NS are mismatched / existing DNS present.
-	 * Attach hostnames after NS are active, e.g.:
-	 *   npx wrangler domains add www.imtryingtodesign.com
-	 */
 	"workers_dev": true,
 	"observability": {
 		"enabled": true
 	},
-	"d1_databases": [
+	"durable_objects": {
+		"bindings": [
+			{
+				"name": "APP_STORE",
+				"class_name": "AppStore"
+			}
+		]
+	},
+	"migrations": [
 		{
-			"binding": "DB",
-			"database_name": "imtrtdweb",
-			"database_id": "64e84c88-3ece-4f03-afe0-cf4dd9bef52b",
-			"migrations_dir": "migrations"
+			"tag": "v1",
+			"new_sqlite_classes": ["WorkflowStatusDO"]
+		},
+		{
+			"tag": "v2",
+			"deleted_classes": ["WorkflowStatusDO"],
+			"new_sqlite_classes": ["AppStore"]
 		}
 	],
-	/**
-	 * Re-enable after R2 is turned on in the Cloudflare Dashboard:
-	 *   npx wrangler r2 bucket create imtrtdweb-media
-	 *
-	 * "r2_buckets": [
-	 *   { "binding": "MEDIA", "bucket_name": "imtrtdweb-media" }
-	 * ],
-	 */
 	"triggers": {
 		"crons": ["0 * * * *"]
 	},
