@@ -1,4 +1,4 @@
-﻿import type {
+import type {
 	AdminRole,
 	Lead,
 	LeadPayload,

@@ -1,5 +1,4 @@
 export type LeadStatus = "new" | "in_progress" | "done" | "archived";
-export type AdminRole = "owner" | "editor";
 
 export type Lead = {
 	id: string;
@@ -18,13 +17,9 @@ export type Lead = {
 	updated_at: string;
 };
 
-export type LeadStats = {
-	total: number;
-	week: number;
-	new_count: number;
-	in_progress: number;
-	stale_over_24h: number;
-};
+export function forbidden(message = "Forbidden") {
+	return json({ error: message }, 403);
+}
 
 export type CaseItem = {
 	id: string;
@@ -54,11 +49,36 @@ export type SiteContent = {
 	services: ServiceItem[];
 };
 
-export type LeadPayload = {
-	name: string;
-	contact: string;
-	task_type: string;
-	budget: string;
-	message: string;
-	website?: string;
-};
+export function json(data: unknown, status = 200, headers: HeadersInit = {}) {
+	return Response.json(data, {
+		status,
+		headers: {
+			"Cache-Control": "no-store",
+			...headers,
+		},
+	});
+}
+
+export function badRequest(message: string) {
+	return json({ error: message }, 400);
+}
+
+export function unauthorized() {
+	return json({ error: "Unauthorized" }, 401);
+}
+
+export function notFound(message = "Not Found") {
+	return json({ error: message }, 404);
+}
+
+export function serverError(message = "Internal Server Error") {
+	return json({ error: message }, 500);
+}
+
+export function nowIso() {
+	return new Date().toISOString();
+}
+
+export function id(prefix: string) {
+	return `${prefix}_${crypto.randomUUID().slice(0, 8)}`;
+}

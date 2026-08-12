@@ -1,125 +1,253 @@
-// Export the Workflow and Durable Object classes
-export { MyWorkflow } from "./workflow";
-export { WorkflowStatusDO } from "./durable-object";
+import { canDelete, getAdminSession } from "./lib/auth";
+import {
+	getAdminContent,
+	getPublicContent,
+	upsertCase,
+	upsertCopy,
+	upsertService,
+	deleteCase,
+	deleteService,
+} from "./lib/cms";
+import {
+	badRequest,
+	forbidden,
+	json,
+	notFound,
+	serverError,
+	unauthorized,
+	type LeadStatus,
+} from "./lib/http";
+import {
+	checkRateLimit,
+	createLead,
+	getLeadStats,
+	listLeads,
+	notifyClient,
+	notifyStudio,
+	remindStaleLeads,
+	updateLead,
+	validateLead,
+	type CreateLeadInput,
+} from "./lib/leads";
+import { getMedia, uploadMedia } from "./lib/media";
+import { AppStore, doDatabase } from "./lib/store-do";
 
-/**
- * Main Worker fetch handler
- *
- * Handles API routes and WebSocket upgrade requests for workflow management:
- * - POST /api/workflow/start - Create new workflow instance
- * - GET /api/workflow/status/:id - Get workflow status
- * - POST /api/workflow/event/:id - Send events to workflow
- * - GET /ws - WebSocket connection for real-time updates
- */
-export default {
+export { AppStore };
+
+function db(env: Env): D1Database {
+	if (env.DB) {
+		return env.DB;
+	}
+	return doDatabase(env);
+}
+
+function clientIp(request: Request): string {
+	return (
+		request.headers.get("CF-Connecting-IP") ||
+		request.headers.get("X-Forwarded-For")?.split(",")[0]?.trim() ||
+		"unknown"
+	);
+}
+
+const worker = {
 	async fetch(request: Request, env: Env): Promise<Response> {
 		const url = new URL(request.url);
+		const { pathname } = url;
+		const database = db(env);
 
-		// API: Start a new workflow instance
-		if (url.pathname === "/api/workflow/start" && request.method === "POST") {
-			try {
-				const instance = await env.MY_WORKFLOW.create({
-					params: {
-						timestamp: Date.now(),
-					},
-				});
-
-				return Response.json({
-					instanceId: instance.id,
-					message: "Workflow started successfully",
-				});
-			} catch {
-				return Response.json(
-					{ error: "Failed to start workflow" },
-					{ status: 500 },
-				);
+		try {
+			if (pathname.startsWith("/api/media/") && request.method === "GET") {
+				if (!env.MEDIA) {
+					return notFound("Media storage not configured");
+				}
+				const key = decodeURIComponent(pathname.slice("/api/media/".length));
+				if (!key || key.includes("..")) {
+					return badRequest("invalid key");
+				}
+				const response = await getMedia(env.MEDIA, key);
+				return response ?? notFound("Media not found");
 			}
+
+			if (pathname === "/api/content" && request.method === "GET") {
+				const content = await getPublicContent(database);
+				return json(content, 200, {
+					"Cache-Control": "public, max-age=30",
+				});
+			}
+
+			if (pathname === "/api/leads" && request.method === "POST") {
+				if (!checkRateLimit(clientIp(request))) {
+					return json({ error: "Слишком много заявок. Попробуйте позже." }, 429);
+				}
+
+				const body = (await request.json()) as CreateLeadInput;
+				const error = validateLead(body);
+				if (error === "rejected") {
+					return json({ ok: true });
+				}
+				if (error) {
+					return badRequest(error);
+				}
+
+				const lead = await createLead(database, body);
+				void notifyStudio(env, lead);
+				void notifyClient(env, lead);
+				return json({ ok: true, id: lead.id }, 201);
+			}
+
+			if (pathname.startsWith("/api/admin/")) {
+				const session = getAdminSession(request, env);
+				if (!session) {
+					return unauthorized();
+				}
+
+				if (pathname === "/api/admin/me" && request.method === "GET") {
+					return json({ role: session.role });
+				}
+
+				if (pathname === "/api/admin/stats" && request.method === "GET") {
+					return json(await getLeadStats(database));
+				}
+
+				if (pathname === "/api/admin/content" && request.method === "GET") {
+					return json(await getAdminContent(database));
+				}
+
+				if (pathname === "/api/admin/copy" && request.method === "PUT") {
+					const body = (await request.json()) as Record<string, string>;
+					await upsertCopy(database, body);
+					return json({ ok: true });
+				}
+
+				if (pathname === "/api/admin/media" && request.method === "POST") {
+					if (!env.MEDIA) {
+						return badRequest(
+							"R2 не включён. Включите R2 в Dashboard и добавьте binding MEDIA.",
+						);
+					}
+					const form = await request.formData();
+					const file = form.get("file");
+					if (!(file instanceof File)) {
+						return badRequest("file required");
+					}
+					try {
+						const uploaded = await uploadMedia(env.MEDIA, file);
+						return json(uploaded, 201);
+					} catch (err) {
+						return badRequest(
+							err instanceof Error ? err.message : "Upload failed",
+						);
+					}
+				}
+
+				if (pathname === "/api/admin/cases" && request.method === "POST") {
+					const body = (await request.json()) as {
+						id?: string;
+						title: string;
+						role?: string;
+						result?: string;
+						image_url?: string;
+						sort_order?: number;
+						published?: number;
+					};
+					if (!body.title?.trim()) {
+						return badRequest("title required");
+					}
+					return json(await upsertCase(database, body));
+				}
+
+				if (
+					pathname.startsWith("/api/admin/cases/") &&
+					request.method === "DELETE"
+				) {
+					if (!canDelete(session)) {
+						return forbidden("Только owner может удалять");
+					}
+					const caseId = pathname.split("/").pop();
+					if (!caseId) {
+						return badRequest("id required");
+					}
+					await deleteCase(database, caseId);
+					return json({ ok: true });
+				}
+
+				if (pathname === "/api/admin/services" && request.method === "POST") {
+					const body = (await request.json()) as {
+						id?: string;
+						title: string;
+						description?: string;
+						sort_order?: number;
+						published?: number;
+					};
+					if (!body.title?.trim()) {
+						return badRequest("title required");
+					}
+					return json(await upsertService(database, body));
+				}
+
+				if (
+					pathname.startsWith("/api/admin/services/") &&
+					request.method === "DELETE"
+				) {
+					if (!canDelete(session)) {
+						return forbidden("Только owner может удалять");
+					}
+					const serviceId = pathname.split("/").pop();
+					if (!serviceId) {
+						return badRequest("id required");
+					}
+					await deleteService(database, serviceId);
+					return json({ ok: true });
+				}
+
+				if (pathname === "/api/admin/leads" && request.method === "GET") {
+					const status = url.searchParams.get("status") ?? undefined;
+					return json({ leads: await listLeads(database, status) });
+				}
+
+				if (
+					pathname.startsWith("/api/admin/leads/") &&
+					request.method === "PATCH"
+				) {
+					const leadId = pathname.split("/").pop();
+					if (!leadId) {
+						return badRequest("id required");
+					}
+					const body = (await request.json()) as {
+						status?: LeadStatus;
+						note?: string;
+						next_step?: string;
+						brief_url?: string;
+					};
+					const updated = await updateLead(database, leadId, body);
+					if (!updated) {
+						return notFound("Lead not found");
+					}
+					return json(updated);
+				}
+
+				return notFound();
+			}
+
+			return notFound();
+		} catch (error) {
+			console.error(error);
+			return serverError();
 		}
-
-		// API: Get workflow status
-		if (url.pathname.startsWith("/api/workflow/status/")) {
-			const instanceId = url.pathname.split("/").pop();
-			if (!instanceId) {
-				return Response.json(
-					{ error: "Instance ID required" },
-					{ status: 400 },
-				);
-			}
-
-			try {
-				const instance = await env.MY_WORKFLOW.get(instanceId);
-				const status = await instance.status();
-				return Response.json(status);
-			} catch {
-				return Response.json(
-					{ error: "Failed to get workflow status" },
-					{ status: 500 },
-				);
-			}
-		}
-
-		// API: Send event to workflow instance
-		if (
-			url.pathname.startsWith("/api/workflow/event/") &&
-			request.method === "POST"
-		) {
-			const instanceId = url.pathname.split("/").pop();
-			if (!instanceId) {
-				return Response.json(
-					{ error: "Instance ID required" },
-					{ status: 400 },
-				);
-			}
-
-			try {
-				const body = (await request.json()) as {
-					approved: boolean;
-					comment?: string;
-				};
-				const instance = await env.MY_WORKFLOW.get(instanceId);
-
-				await instance.sendEvent({
-					type: "user-approval",
-					payload: body,
-				});
-
-				return Response.json({
-					success: true,
-					message: "Event sent successfully",
-				});
-			} catch {
-				return Response.json(
-					{ error: "Failed to send event" },
-					{ status: 500 },
-				);
-			}
-		}
-
-		// WebSocket: Connect to workflow status updates
-		if (url.pathname === "/ws") {
-			const instanceId = url.searchParams.get("instanceId");
-			if (!instanceId) {
-				return new Response("instanceId query parameter required", {
-					status: 400,
-				});
-			}
-
-			const upgradeHeader = request.headers.get("Upgrade");
-			if (upgradeHeader !== "websocket") {
-				return new Response("Expected Upgrade: websocket", { status: 426 });
-			}
-
-			try {
-				const doId = env.WORKFLOW_STATUS.idFromName(instanceId);
-				const stub = env.WORKFLOW_STATUS.get(doId);
-				return stub.fetch(request);
-			} catch {
-				return new Response("Failed to establish WebSocket connection", {
-					status: 500,
-				});
-			}
-		}
-
-		return Response.json({ error: "Not Found" }, { status: 404 });
 	},
-} satisfies ExportedHandler<Env>;
+
+	async scheduled(
+		_controller: ScheduledController,
+		env: Env,
+		ctx: ExecutionContext,
+	): Promise<void> {
+		const bound = { ...env, DB: db(env) } as Env;
+		ctx.waitUntil(
+			remindStaleLeads(bound).then((count) => {
+				console.log(`Stale lead reminders sent: ${count}`);
+			}),
+		);
+	},
+};
+
+export default worker satisfies ExportedHandler<Env>;
