@@ -43,7 +43,7 @@ export function LeadForm() {
 
 	if (status === "done") {
 		return (
-			<div className="rounded-[24px] border border-signal/30 bg-[#121821] p-8 shadow-[0_18px_60px_rgba(0,0,0,0.24)]">
+			<div className="rounded-2xl border border-signal/30 bg-ink-soft/80 p-8">
 				<p className="font-display text-2xl text-signal">Заявка отправлена</p>
 				<p className="mt-3 max-w-md text-mist">
 					Мы ответим в течение одного рабочего дня. Если срочно — напишите в
@@ -51,7 +51,7 @@ export function LeadForm() {
 				</p>
 				<button
 					type="button"
-					className="mt-6 text-sm font-medium text-paper underline-offset-4 transition hover:text-signal hover:underline"
+					className="mt-6 text-sm font-medium text-paper underline-offset-4 hover:underline"
 					onClick={() => setStatus("idle")}
 				>
 					Отправить ещё одну
@@ -69,7 +69,7 @@ export function LeadForm() {
 						required
 						name="name"
 						autoComplete="name"
-						className="w-full rounded-xl border border-white/10 bg-[#121821] px-4 py-3 text-paper outline-none transition placeholder:text-mist/70 focus:border-signal/60 focus:ring-2 focus:ring-signal/15"
+						className="w-full rounded-xl border border-white/10 bg-ink-soft px-4 py-3 outline-none transition focus:border-signal/50"
 					/>
 				</label>
 				<label className="block space-y-2">
@@ -78,7 +78,7 @@ export function LeadForm() {
 						required
 						name="contact"
 						autoComplete="email"
-						className="w-full rounded-xl border border-white/10 bg-[#121821] px-4 py-3 text-paper outline-none transition placeholder:text-mist/70 focus:border-signal/60 focus:ring-2 focus:ring-signal/15"
+						className="w-full rounded-xl border border-white/10 bg-ink-soft px-4 py-3 outline-none transition focus:border-signal/50"
 					/>
 				</label>
 			</div>
@@ -89,7 +89,7 @@ export function LeadForm() {
 					<select
 						name="task_type"
 						defaultValue=""
-						className="w-full rounded-xl border border-white/10 bg-[#121821] px-4 py-3 text-paper outline-none transition focus:border-signal/60 focus:ring-2 focus:ring-signal/15"
+						className="w-full rounded-xl border border-white/10 bg-ink-soft px-4 py-3 outline-none transition focus:border-signal/50"
 					>
 						<option value="" disabled>
 							Выберите
@@ -106,7 +106,7 @@ export function LeadForm() {
 					<input
 						name="budget"
 						placeholder="Опционально"
-						className="w-full rounded-xl border border-white/10 bg-[#121821] px-4 py-3 text-paper outline-none transition placeholder:text-mist/70 focus:border-signal/60 focus:ring-2 focus:ring-signal/15"
+						className="w-full rounded-xl border border-white/10 bg-ink-soft px-4 py-3 outline-none transition focus:border-signal/50"
 					/>
 				</label>
 			</div>
@@ -116,7 +116,7 @@ export function LeadForm() {
 				<textarea
 					name="message"
 					rows={4}
-					className="w-full resize-y rounded-xl border border-white/10 bg-[#121821] px-4 py-3 text-paper outline-none transition placeholder:text-mist/70 focus:border-signal/60 focus:ring-2 focus:ring-signal/15"
+					className="w-full resize-y rounded-xl border border-white/10 bg-ink-soft px-4 py-3 outline-none transition focus:border-signal/50"
 				/>
 			</label>
 
