@@ -1,15 +1,21 @@
-name: Deploy to Cloudflare
+name: Deploy Studio to Cloudflare
 
 on:
   push:
     branches:
       - main
+    paths:
+      - "apps/studio/**"
+      - ".github/workflows/deploy.yml"
   workflow_dispatch:
 
 jobs:
   deploy:
     runs-on: ubuntu-latest
     timeout-minutes: 15
+    defaults:
+      run:
+        working-directory: apps/studio
     permissions:
       contents: read
       deployments: write
@@ -22,6 +28,7 @@ jobs:
         with:
           node-version: "22"
           cache: npm
+          cache-dependency-path: apps/studio/package-lock.json
 
       - name: Install dependencies
         run: npm ci
@@ -35,6 +42,7 @@ jobs:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
           wranglerVersion: "4.88.0"
+          workingDirectory: apps/studio
           command: d1 migrations apply imtrtdweb --remote
 
       - name: Deploy Worker
@@ -43,4 +51,5 @@ jobs:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
           wranglerVersion: "4.88.0"
+          workingDirectory: apps/studio
           command: deploy

@@ -1,0 +1,11 @@
+{
+  "name": "Cuebox",
+  "image": "mcr.microsoft.com/devcontainers/javascript-node:22",
+  "postCreateCommand": "npm install",
+  "forwardPorts": [3000],
+  "customizations": {
+    "vscode": {
+      "extensions": ["prisma.prisma", "dbaeumer.vscode-eslint"]
+    }
+  }
+}

@@ -1,0 +1,391 @@
+/* Cuebox × I'm Trying To Design — product identity layer
+   Keeps the existing component structure while replacing the cyan/magenta
+   cyber aesthetic with a quieter deep-violet design system. */
+
+:root {
+  --void: #050309;
+  --paper: #09060f;
+  --ink: #f7f3ff;
+  --ink-soft: #a79db8;
+  --mist: #21162f;
+
+  --accent: #9b5cff;
+  --accent-deep: #5a23a7;
+  --accent-text: #c7a8ff;
+  --magenta: #c45cff;
+  --violet: #7b3cff;
+  --amber: #f2b84b;
+  --danger: #ff6685;
+
+  --glass-soft: rgba(157, 92, 255, 0.035);
+  --glass: rgba(157, 92, 255, 0.065);
+  --glass-strong: rgba(183, 132, 255, 0.11);
+  --panel: rgba(15, 9, 23, 0.78);
+  --panel-strong: rgba(18, 11, 28, 0.94);
+  --panel-solid: #120b1c;
+
+  --line: rgba(183, 132, 255, 0.13);
+  --line-strong: rgba(183, 132, 255, 0.27);
+  --accent-soft: rgba(155, 92, 255, 0.11);
+  --accent-line: rgba(155, 92, 255, 0.24);
+  --accent-edge: rgba(177, 120, 255, 0.52);
+  --ink-veil: rgba(5, 3, 9, 0.62);
+  --ink-veil-soft: rgba(5, 3, 9, 0.38);
+
+  --shadow: 0 24px 70px rgba(0, 0, 0, 0.46);
+  --shadow-soft: 0 12px 36px rgba(0, 0, 0, 0.3);
+  --shadow-lift: 0 30px 80px rgba(0, 0, 0, 0.55);
+  --glow: 0 0 0 1px rgba(174, 117, 255, 0.08), 0 10px 34px rgba(92, 38, 166, 0.2);
+  --glow-strong: 0 0 0 1px rgba(194, 153, 255, 0.16), 0 14px 46px rgba(111, 49, 199, 0.3);
+  --glow-magenta: 0 12px 40px rgba(154, 72, 214, 0.24);
+
+  --radius: 18px;
+  --radius-sm: 12px;
+}
+
+html {
+  background: var(--void);
+}
+
+body {
+  background:
+    radial-gradient(900px 560px at 8% -10%, rgba(110, 47, 196, 0.22), transparent 62%),
+    radial-gradient(780px 520px at 94% 4%, rgba(72, 31, 128, 0.16), transparent 62%),
+    radial-gradient(680px 420px at 50% 108%, rgba(155, 92, 255, 0.12), transparent 64%),
+    linear-gradient(165deg, #0b0712 0%, #08050d 48%, #050309 100%);
+}
+
+body::before {
+  inset: 0;
+  opacity: 0.28;
+  transform: none;
+  mask-image: linear-gradient(to bottom, rgba(0,0,0,.75), transparent 82%);
+  background-image:
+    linear-gradient(rgba(176, 126, 255, 0.055) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(176, 126, 255, 0.055) 1px, transparent 1px);
+  background-size: 72px 72px;
+  animation: none;
+}
+
+body::after {
+  opacity: 0.18;
+  mix-blend-mode: soft-light;
+  background-image:
+    radial-gradient(circle at 50% 0%, rgba(255,255,255,.08), transparent 38%),
+    repeating-linear-gradient(to bottom, rgba(255,255,255,.018) 0 1px, transparent 1px 4px);
+}
+
+.app-shell {
+  width: min(1360px, calc(100% - 3rem));
+  padding-top: 1.6rem;
+}
+
+/* Product mark: a compact cue / container monogram.
+   The existing SVG remains as a semantic fallback; CSS turns it into the new identity. */
+.brand-mark {
+  width: 2.45rem;
+  height: 2.45rem;
+  isolation: isolate;
+  border-radius: 12px;
+  background:
+    linear-gradient(145deg, rgba(255,255,255,.13), transparent 32%),
+    linear-gradient(145deg, #a76bff 0%, #7133c7 48%, #3d176f 100%);
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.22),
+    inset 0 -1px 0 rgba(22, 7, 41, .7),
+    0 10px 30px rgba(93, 39, 164, .34);
+  transform: rotate(-2deg);
+}
+
+.brand-mark svg {
+  opacity: 0;
+  animation: none;
+}
+
+.brand-mark::before {
+  content: "C";
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  display: grid;
+  place-items: center;
+  color: #fff;
+  font-family: var(--font-display);
+  font-size: 1.42rem;
+  font-weight: 800;
+  line-height: 1;
+  letter-spacing: -0.08em;
+  text-shadow: 0 2px 12px rgba(20, 4, 39, .55);
+  transform: translateX(-.02em);
+}
+
+.brand-mark::after {
+  inset: auto;
+  right: .38rem;
+  bottom: .42rem;
+  width: .34rem;
+  height: .34rem;
+  border: 0;
+  border-radius: 50%;
+  background: #e9d9ff;
+  box-shadow: 0 0 12px rgba(226, 204, 255, .9);
+  opacity: 1;
+  animation: none;
+}
+
+.brand {
+  font-size: clamp(2rem, 3.4vw, 2.7rem);
+  font-weight: 800;
+  letter-spacing: -0.055em;
+  background: linear-gradient(110deg, #fff 0%, #eee4ff 42%, #b989ff 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  filter: none;
+  animation: brand-in .65s var(--ease-out) both;
+}
+
+.tagline {
+  max-width: 31rem;
+  margin-top: .48rem;
+  color: #9d93ad;
+  font-size: .94rem;
+}
+
+.site-header {
+  margin-bottom: 1.5rem;
+}
+
+.site-nav-pill {
+  padding: .3rem;
+  border-color: rgba(183, 132, 255, .1);
+  background: rgba(14, 9, 22, .7);
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.035), var(--shadow-soft);
+}
+
+.nav-tab {
+  min-height: 2.35rem;
+  padding: .55rem 1.05rem;
+}
+
+.nav-tab.active {
+  color: #f5edff;
+  background: linear-gradient(180deg, rgba(150, 88, 245, .2), rgba(101, 49, 168, .16));
+  box-shadow: inset 0 0 0 1px rgba(181, 126, 255, .15), 0 8px 22px rgba(57, 24, 97, .22);
+}
+
+.toolbar,
+.sidebar,
+.main-pane,
+.folder-sidebar,
+.home-card,
+.dashboard-card,
+.explore-card,
+.auth-card,
+.modal-card {
+  border-color: var(--line);
+  background-color: var(--panel);
+  box-shadow: var(--shadow), inset 0 1px 0 rgba(255,255,255,.035);
+}
+
+.toolbar::before {
+  display: none;
+}
+
+.search-field input,
+.field input,
+.field textarea,
+.field select,
+.sort-field select,
+.move-field select {
+  border-color: rgba(181, 128, 255, .14);
+  background: rgba(8, 5, 13, .72);
+}
+
+.search-field input:focus,
+.field input:focus,
+.field textarea:focus,
+.field select:focus,
+.sort-field select:focus,
+.move-field select:focus {
+  border-color: rgba(177, 118, 255, .55);
+  box-shadow: 0 0 0 3px rgba(143, 76, 238, .14);
+}
+
+.btn {
+  min-height: 2.45rem;
+  border-radius: 11px;
+  font-weight: 650;
+}
+
+.btn-primary {
+  color: #fff;
+  border-color: rgba(202, 164, 255, .22);
+  background:
+    linear-gradient(180deg, rgba(255,255,255,.1), transparent 42%),
+    linear-gradient(135deg, #9b5cff 0%, #6f35c1 100%);
+  box-shadow: 0 10px 28px rgba(95, 42, 166, .28), inset 0 1px 0 rgba(255,255,255,.18);
+}
+
+.btn-primary::after {
+  display: none;
+}
+
+.btn-primary:hover {
+  filter: brightness(1.08);
+  box-shadow: 0 12px 34px rgba(107, 47, 186, .36), inset 0 1px 0 rgba(255,255,255,.2);
+}
+
+.btn-ghost {
+  color: #ded5ea;
+  background: rgba(255,255,255,.025);
+  border-color: rgba(185, 142, 242, .12);
+}
+
+.btn-ghost:hover {
+  background: rgba(150, 89, 237, .09);
+  border-color: rgba(177, 119, 255, .26);
+}
+
+.ai-folder.active,
+.kind-tab.active,
+.pill.active {
+  border-color: rgba(176, 118, 255, .34);
+  background: rgba(135, 70, 220, .12);
+}
+
+.sync-banner {
+  border-color: rgba(178, 124, 255, .18);
+  background: rgba(91, 42, 150, .09);
+}
+
+::selection {
+  color: #fff;
+  background: rgba(137, 74, 225, .72);
+}
+
+:focus-visible {
+  outline: 2px solid rgba(190, 145, 255, .78);
+  outline-offset: 3px;
+}
+
+/* Auth lockup mirrors the app mark without adding extra component weight. */
+.auth-brand {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: .65rem;
+  color: #f5efff;
+  text-decoration: none;
+  letter-spacing: -.04em;
+}
+
+.auth-brand::before {
+  content: "C";
+  display: grid;
+  place-items: center;
+  width: 2rem;
+  height: 2rem;
+  border-radius: 10px;
+  color: #fff;
+  font-family: var(--font-display);
+  font-size: 1.12rem;
+  font-weight: 800;
+  background: linear-gradient(145deg, #a76bff 0%, #7133c7 55%, #3d176f 100%);
+  box-shadow: 0 8px 24px rgba(93, 39, 164, .3);
+}
+
+.auth-brand::after {
+  content: "";
+  position: absolute;
+  left: 1.42rem;
+  top: 1.45rem;
+  width: .25rem;
+  height: .25rem;
+  border-radius: 50%;
+  background: #eadcff;
+  box-shadow: 0 0 8px rgba(232, 218, 255, .8);
+}
+
+@media (max-width: 900px) {
+  .app-shell {
+    width: min(100% - 1.5rem, 760px);
+    padding-top: 1rem;
+  }
+
+  .site-header {
+    gap: .8rem;
+  }
+
+  .brand-mark {
+    width: 2.25rem;
+    height: 2.25rem;
+  }
+
+  .brand {
+    font-size: 2.05rem;
+  }
+
+  .tagline {
+    font-size: .9rem;
+  }
+}
+
+@media (max-width: 640px) {
+  body::before {
+    background-size: 48px 48px;
+    opacity: .18;
+  }
+
+  .app-shell {
+    width: calc(100% - 1rem);
+    padding-bottom: 1.25rem;
+  }
+
+  .site-header {
+    margin-bottom: 1rem;
+  }
+
+  .brand-row {
+    gap: .55rem;
+  }
+
+  .brand-mark {
+    width: 2rem;
+    height: 2rem;
+    border-radius: 10px;
+  }
+
+  .brand-mark::before {
+    font-size: 1.16rem;
+  }
+
+  .brand-mark::after {
+    right: .31rem;
+    bottom: .34rem;
+    width: .28rem;
+    height: .28rem;
+  }
+
+  .brand {
+    font-size: 1.82rem;
+  }
+
+  .tagline {
+    max-width: 22rem;
+    font-size: .84rem;
+    line-height: 1.4;
+  }
+
+  .btn {
+    min-height: 2.6rem;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .brand,
+  .brand-mark,
+  .tagline,
+  .site-nav-pill {
+    animation: none !important;
+  }
+}
