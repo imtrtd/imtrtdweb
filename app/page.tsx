@@ -138,7 +138,7 @@ export default function Home() {
       <section className="hero">
         <div className="hero-copy" data-reveal>
           <p className="kicker"><span>01</span> Design with intent.<br />Code with character.</p>
-          <h1><span>WE MAKE</span><span className="hero-serif">digital</span><span>FEEL ALIVE.</span></h1>
+          <h1><span>WE MAKE</span><span className="hero-serif glitch" data-text="your idea">your idea</span><span>FEEL ALIVE.</span></h1>
           <div className="hero-intro">
             <p>Distinctive websites for ambitious brands worth noticing. Strategy, interface, code and motion—one continuous thought.</p>
             <a className="disc-link sphere-atom" href="#work" data-motion>
@@ -153,10 +153,10 @@ export default function Home() {
           <span className="visual-index">I/TD — 001</span>
           <div className="visual-figure">
             <img
-              src="/studio-hero.svg"
+              src="/studio-hero.png"
               alt="Abstract chrome and glass sculpture illuminated in cobalt and coral"
-              width={800}
-              height={1000}
+              width={1600}
+              height={2000}
               decoding="async"
               fetchPriority="high"
               draggable={false}
