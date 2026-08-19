@@ -1,5 +1,4 @@
 import type { Metadata, Viewport } from "next";
-import { preload } from "react-dom";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 
@@ -25,6 +24,5 @@ export const viewport: Viewport = {
 };
 
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
-  preload("/studio-hero.png", { as: "image", type: "image/png" });
   return <html lang="en"><body className={`${sans.variable} ${mono.variable}`}>{children}</body></html>;
 }

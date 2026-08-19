@@ -151,19 +151,16 @@ export default function Home() {
 
         <div className="hero-visual" data-reveal data-motion>
           <span className="visual-index">I/TD — 001</span>
-          <div className="visual-figure">
-            <img
-              src="/studio-hero.png"
-              alt="Abstract chrome and glass sculpture illuminated in cobalt and coral"
-              width={1600}
-              height={2000}
-              decoding="async"
-              fetchPriority="high"
-              draggable={false}
-            />
+          <div className="hero-rings" aria-hidden="true"><span /><span /><span /></div>
+          <div className="hero-orb-stage">
+            <div className="hero-orb" aria-hidden="true">
+              <div className="hero-orb-glow" />
+              <span className="hero-orb-label hero-orb-label-top">FORM</span>
+              <span className="hero-orb-arrow">↗</span>
+              <span className="hero-orb-label hero-orb-label-bottom">ENERGY</span>
+            </div>
           </div>
           <span className="visual-caption">FORM / SYSTEM / ENERGY</span>
-          <div className="orbit orbit-a" /><div className="orbit orbit-b" />
         </div>
         <p className="hero-side-note">SCROLL TO DISCOVER — 2026</p>
       </section>
