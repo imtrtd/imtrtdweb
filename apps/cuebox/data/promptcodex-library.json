@@ -1,0 +1,1510 @@
+{
+  "version": 1,
+  "exportDate": "2026-08-12T17:45:32Z",
+  "globalVariables": [
+    {
+      "createdDate": "2026-08-11T18:52:09Z",
+      "defaultValue": "Imtryingtodesign.com",
+      "description": "Название сайта",
+      "displayOrder": 0,
+      "id": "7325EDF2-DC28-4A8C-9885-CC5ABB615EF5",
+      "modifiedDate": "2026-08-11T18:55:00Z",
+      "name": "image",
+      "optionsValue": "",
+      "typeRawValue": "string"
+    }
+  ],
+  "projects": [
+    {
+      "createdDate": "2026-08-11T18:50:37Z",
+      "displayOrder": 0,
+      "id": "9DE969B3-4FD7-4F39-8873-AB1DF90441BB",
+      "modifiedDate": "2026-08-11T18:50:37Z",
+      "name": "Imtrtd",
+      "projectDescription": "Personal website",
+      "projectTypeRawValue": "websiteWebApp",
+      "repositoryURL": "https://github.com/imtrtd/imtrtdweb",
+      "startDate": "2026-08-07T18:49:00Z",
+      "statusRawValue": "active",
+      "targetDate": "2026-08-31T18:49:00Z",
+      "websiteURL": "imtryingtodesign.com"
+    }
+  ],
+  "services": [
+    {
+      "displayOrder": 0,
+      "id": "4A3999F3-4A83-44B2-A814-728E1DC43623",
+      "isBuiltIn": false,
+      "name": "I’m trying to design"
+    },
+    {
+      "displayOrder": 1,
+      "id": "A8CD8788-9E94-4C74-B951-F7A3B2AC8ED0",
+      "isBuiltIn": false,
+      "name": "Grok"
+    }
+  ],
+  "tags": [
+    "adaptation",
+    "audit",
+    "authenticity",
+    "breakpoints",
+    "ChatGPT",
+    "churn",
+    "Claude",
+    "color",
+    "communication",
+    "component",
+    "content",
+    "conversion",
+    "Copilot",
+    "critique",
+    "cross-platform",
+    "deep-dive",
+    "Deepseek",
+    "design sprint",
+    "design system",
+    "devops",
+    "efficiency",
+    "email",
+    "engagement",
+    "expansion",
+    "facilitation",
+    "feasibility",
+    "feedback",
+    "forms",
+    "franchise",
+    "git",
+    "Grok",
+    "investigation",
+    "layout",
+    "localization",
+    "native",
+    "operations",
+    "Perplexity",
+    "process",
+    "product-analytics",
+    "prototype",
+    "qa",
+    "quality",
+    "research",
+    "responsive",
+    "retention",
+    "review",
+    "spec",
+    "stakeholders",
+    "testing",
+    "theming",
+    "tokens",
+    "UI",
+    "updates",
+    "usability",
+    "website",
+    "workflow",
+    "workshop"
+  ],
+  "prompts": [
+    {
+      "categoryId": "builtin.social",
+      "categoryName": "Социальные сети",
+      "copyCount": 0,
+      "createdDate": "2026-08-10T20:03:06Z",
+      "description": "Адаптируйте одно сообщение для собственного стиля каждой основной платформы социальных сетей.",
+      "id": "0AD6B2C5-2BE4-47AE-B7EC-ED2F3029C63C",
+      "isArchived": false,
+      "isFavorite": false,
+      "isPinned": false,
+      "modifiedDate": "2026-08-10T20:03:06Z",
+      "tags": [
+        "adaptation",
+        "content",
+        "cross-platform"
+      ],
+      "title": "Адаптер контента кроссплатформы",
+      "variables": [],
+      "variants": [
+        {
+          "body": "Take one core message and adapt it for each platform's native format:\n\n**Instagram (feed post):** Visual-first. Write a caption that starts with a hook line, uses line breaks, and ends with a question. Suggest image style.\n\n**Twitter/X:** Compress to 280 characters. Prioritize wit or a hot take. No hashtags in the main tweet — save them for a reply.\n\n**LinkedIn:** Expand into a short narrative. First line must create curiosity. Write in first person.\n\n**TikTok:** Script a 15-second video. Text on screen plus voiceover. End with a hook to watch part 2.\n\n**Email newsletter:** 3-paragraph version with a personal anecdote and one clear CTA.\n\nEach version must feel like it was written for that platform, not repurposed.",
+          "displayOrder": 0,
+          "id": "98CB4717-1ED5-4114-A499-3B4D556B926A"
+        }
+      ]
+    },
+    {
+      "categoryId": "builtin.translation",
+      "categoryName": "Перевод",
+      "copyCount": 0,
+      "createdDate": "2026-08-11T18:55:47Z",
+      "description": "Шаблон аудита для оценки готовности локализации веб-сайта.",
+      "id": "B30BB875-6855-445B-8C01-E8E9C39FBD46",
+      "isArchived": false,
+      "isFavorite": false,
+      "isPinned": false,
+      "modifiedDate": "2026-08-11T18:55:47Z",
+      "tags": [
+        "audit",
+        "localization",
+        "website"
+      ],
+      "title": "Аудит локализации веб-сайта",
+      "variables": [
+        {
+          "description": "The website localization audit you want to create",
+          "displayOrder": 0,
+          "id": "B4814094-AC47-4878-B494-17E2C723442F",
+          "name": "primaryInput",
+          "optionsValue": "",
+          "typeRawValue": "string"
+        },
+        {
+          "description": "The content you need translated",
+          "displayOrder": 1,
+          "id": "77D7A7B0-6CE5-4243-99C1-54D80A29C7D2",
+          "name": "sourceText",
+          "optionsValue": "",
+          "typeRawValue": "string"
+        },
+        {
+          "description": "The original language of the content",
+          "displayOrder": 2,
+          "id": "2713F416-7F43-412F-92B9-BDC6EC9410DA",
+          "name": "sourceLanguage",
+          "optionsValue": "",
+          "typeRawValue": "string"
+        },
+        {
+          "description": "The language and regional variant to translate into",
+          "displayOrder": 3,
+          "id": "D7C3AD3D-885C-4BC2-BDB5-76C8A868916E",
+          "name": "targetLanguage",
+          "optionsValue": "",
+          "typeRawValue": "string"
+        },
+        {
+          "description": "The type of content being translated",
+          "displayOrder": 4,
+          "id": "3674B0FE-2559-495F-B7E7-E4DEFAE2F225",
+          "name": "contentType",
+          "optionsValue": "",
+          "typeRawValue": "string"
+        },
+        {
+          "description": "The desired tone for the translated text",
+          "displayOrder": 5,
+          "id": "EC01BD7C-5CDE-498E-B146-C570542E579C",
+          "name": "tone",
+          "optionsValue": "",
+          "typeRawValue": "string"
+        },
+        {
+          "description": "The target audience in the destination market",
+          "displayOrder": 6,
+          "id": "090F42CF-1F23-4133-A96D-363F50278455",
+          "name": "audience",
+          "optionsValue": "",
+          "typeRawValue": "string"
+        },
+        {
+          "description": "Any translation constraints to follow",
+          "displayOrder": 7,
+          "id": "FF75DBC9-3F98-4DBB-A5C7-944E5795967A",
+          "name": "constraints",
+          "optionsValue": "",
+          "typeRawValue": "string"
+        }
+      ],
+      "variants": [
+        {
+          "body": "Act as a localization specialist who preserves meaning, tone, cultural fit, and product context across languages.\n\nMission:\nCreate a website localization audit for {{primaryInput}} that checks UI strings for length, placeholders, consistency, tone, truncation risk, and locale fit. Make it deeply specific to the variables, useful on the first pass, and substantial enough that the user can apply it immediately without asking for a generic follow-up.\n\nContext variables:\n- {{sourceText}} - Use this value to tailor the website localization audit to the user's real context.\n- {{sourceLanguage}} - Use this value to tailor the website localization audit to the user's real context.\n- {{targetLanguage}} - Use this value to tailor the website localization audit to the user's real context.\n- {{contentType}} - Use this value to tailor the website localization audit to the user's real context.\n- {{tone}} - Use this value to tailor the website localization audit to the user's real context.\n- {{audience}} - Use this value to tailor the website localization audit to the user's real context.\n- {{constraints}} - Use this value to tailor the website localization audit to the user's real context.\n\nWorking process:\n1. Identify intent, audience, tone, format constraints, placeholders, and culturally sensitive references.\n2. Translate for natural meaning first, then adapt idioms, examples, units, date formats, and register.\n3. Preserve variables, markup, product names, and formatting exactly where required.\n4. Explain meaningful adaptation choices and alternatives.\n5. Run a QA pass for completeness, consistency, locale conventions, and tone.\n\nRequired deliverables:\n1. A context brief that restates the goal, audience, constraints, and success criteria for the website localization audit.\n2. The main website localization audit itself, written in a polished, ready-to-use form rather than a loose outline.\n3. A customization section showing how to adapt the output for at least three different situations, levels, or formats.\n4. A pitfalls section naming what could go wrong, how to avoid it, and what details the user should verify.\n5. A final checklist the user can run before copying, publishing, implementing, generating, or sharing the result.\n\nContext-matching rules:\n- Do not translate placeholders, code, or brand terms unless instructed.\n- Avoid literal translations that sound unnatural in the target locale.\n- Respect formality systems, gendered language, and local expectations.\n- Flag ambiguities instead of silently choosing a risky interpretation.\n\nQuality bar:\n- The translation sounds written in the target language, not converted from another language.\n- Tone and register fit the stated audience.\n- All variables, numbers, and formatting survive intact.\n- Localization notes make important choices transparent.\n\nOutput format:\nReturn Final Translation, Literal Notes if useful, Localization Choices, Glossary, QA Checklist, and Alternatives.\n\nIf important information is missing, add an \"Assumptions\" section with one or two reasonable assumptions, then continue. Do not stall unless the missing information would make the output unsafe, legally risky, medically risky, financially risky, or impossible to tailor.",
+          "displayOrder": 0,
+          "id": "CA37767E-5A88-479E-9810-7CBDF6FA3521"
+        }
+      ]
+    },
+    {
+      "categoryId": "builtin.businessStrategy",
+      "categoryName": "Бизнес и стратегия",
+      "copyCount": 0,
+      "createdDate": "2026-08-10T20:00:17Z",
+      "description": "Проведите аудит операций бизнеса для поиска отходов и возможностей улучшения.",
+      "id": "35A60046-3A2A-4A28-8113-2DE21BF836EF",
+      "isArchived": false,
+      "isFavorite": false,
+      "isPinned": false,
+      "modifiedDate": "2026-08-10T20:00:17Z",
+      "tags": [
+        "audit",
+        "efficiency",
+        "operations"
+      ],
+      "title": "Аудит операционной эффективности",
+      "variables": [],
+      "variants": [
+        {
+          "body": "Conduct an operational efficiency audit across the organization. For each department or function:\n\n1. **Process inventory** — List the top 5 processes by time or cost consumption\n2. **Bottleneck identification** — Where do delays, handoff failures, or rework occur?\n3. **Automation potential** — Which manual tasks could be automated and with what tools?\n4. **Headcount utilization** — Are people spending time on high-value work or administrative overhead?\n5. **Tool and system redundancy** — Identify overlapping software licenses or duplicate data entry\n6. **Quick wins** — Changes that can be implemented within 30 days with minimal investment\n7. **Strategic improvements** — Larger initiatives requiring budget approval and 3-6 months to implement\n\nSummarize total estimated savings in hours per week and annual cost reduction.",
+          "displayOrder": 0,
+          "id": "6B11F0D4-2DCF-4853-86A2-6082AE64698C"
+        }
+      ]
+    },
+    {
+      "categoryId": "builtin.dataAnalytics",
+      "categoryName": "Данные и аналитика",
+      "copyCount": 0,
+      "createdDate": "2026-08-11T18:58:29Z",
+      "description": "Шаблон для проведения глубокого аналитического исследования конкретной функции или показателя продукта.",
+      "id": "E638E82E-ABE4-4E37-9A0C-291A11A5EEFF",
+      "isArchived": false,
+      "isFavorite": false,
+      "isPinned": false,
+      "modifiedDate": "2026-08-11T18:58:29Z",
+      "tags": [
+        "deep-dive",
+        "investigation",
+        "product-analytics"
+      ],
+      "title": "Глубокое погружение в аналитику продукта",
+      "variables": [
+        {
+          "description": "The product analytics deep dive you want to create",
+          "displayOrder": 0,
+          "id": "035B613E-7AC1-4C7D-8A2D-795E8E893AA9",
+          "name": "primaryInput",
+          "optionsValue": "",
+          "typeRawValue": "string"
+        },
+        {
+          "description": "The type of data source you're working with",
+          "displayOrder": 1,
+          "id": "F6557BEB-5B0B-4BAF-B97E-D06EBD01FEF1",
+          "name": "dataset",
+          "optionsValue": "",
+          "typeRawValue": "string"
+        },
+        {
+          "description": "The business question or decision this analysis should answer",
+          "displayOrder": 2,
+          "id": "74D03AC1-25C0-41E4-B407-83A9E2A1C582",
+          "name": "businessQuestion",
+          "optionsValue": "",
+          "typeRawValue": "string"
+        },
+        {
+          "description": "The level of detail for each row in the analysis",
+          "displayOrder": 3,
+          "id": "77DF38B6-64CB-446A-B2C5-CAC568AD5AF3",
+          "name": "grain",
+          "optionsValue": "",
+          "typeRawValue": "string"
+        },
+        {
+          "description": "The date range the analysis should cover",
+          "displayOrder": 4,
+          "id": "465B13D9-D07E-44EB-A147-740836C551E8",
+          "name": "timeRange",
+          "optionsValue": "",
+          "typeRawValue": "string"
+        },
+        {
+          "description": "The tools or languages you'll use for the analysis",
+          "displayOrder": 5,
+          "id": "24B713A5-814D-4F12-8E0B-CFAC1C794C01",
+          "name": "tools",
+          "optionsValue": "",
+          "typeRawValue": "string"
+        },
+        {
+          "description": "The key metrics you want to measure",
+          "displayOrder": 6,
+          "id": "8321FA8B-BDCC-4A5B-9603-3F80D34427EC",
+          "name": "metrics",
+          "optionsValue": "",
+          "typeRawValue": "string"
+        },
+        {
+          "description": "Who will read the analysis results",
+          "displayOrder": 7,
+          "id": "5ADF302E-C275-4192-9B91-09F292631FDE",
+          "name": "audience",
+          "optionsValue": "",
+          "typeRawValue": "string"
+        }
+      ],
+      "variants": [
+        {
+          "body": "Act as a data analyst who turns messy data questions into rigorous analysis plans, code, visuals, and executive insight.\n\nMission:\nCreate a product analytics deep dive for {{primaryInput}} that defines metrics, grain, visual hierarchy, filters, alert thresholds, and decision usage. Make it deeply specific to the variables, useful on the first pass, and substantial enough that the user can apply it immediately without asking for a generic follow-up.\n\nContext variables:\n- {{dataset}} - Use this value to tailor the product analytics deep dive to the user's real context.\n- {{businessQuestion}} - Use this value to tailor the product analytics deep dive to the user's real context.\n- {{grain}} - Use this value to tailor the product analytics deep dive to the user's real context.\n- {{timeRange}} - Use this value to tailor the product analytics deep dive to the user's real context.\n- {{tools}} - Use this value to tailor the product analytics deep dive to the user's real context.\n- {{metrics}} - Use this value to tailor the product analytics deep dive to the user's real context.\n- {{audience}} - Use this value to tailor the product analytics deep dive to the user's real context.\n\nWorking process:\n1. Translate the business question into measurable hypotheses and required fields.\n2. Audit data quality, grain, missingness, duplication, outliers, and instrumentation gaps.\n3. Design the analysis path, including filters, cohorts, segments, comparisons, and statistical cautions.\n4. Recommend queries, code, and visualizations that expose the insight honestly.\n5. Summarize findings as decisions, risks, and next analyses rather than charts for their own sake.\n\nRequired deliverables:\n1. A context brief that restates the goal, audience, constraints, and success criteria for the product analytics deep dive.\n2. The main product analytics deep dive itself, written in a polished, ready-to-use form rather than a loose outline.\n3. A customization section showing how to adapt the output for at least three different situations, levels, or formats.\n4. A pitfalls section naming what could go wrong, how to avoid it, and what details the user should verify.\n5. A final checklist the user can run before copying, publishing, implementing, generating, or sharing the result.\n\nContext-matching rules:\n- Do not confuse correlation with causation.\n- State data limitations and confidence levels.\n- Use the correct grain and avoid double-counting.\n- Make charts explain one message each.\n\nQuality bar:\n- The analysis answers a decision-relevant question.\n- Metric definitions are explicit.\n- The plan includes data quality checks before conclusions.\n- The executive summary is clear enough for non-technical stakeholders.\n\nOutput format:\nReturn Question, Data Requirements, Cleaning Plan, Analysis Steps, Queries or Code, Visuals, Findings Template, and Caveats.\n\nIf important information is missing, add an \"Assumptions\" section with one or two reasonable assumptions, then continue. Do not stall unless the missing information would make the output unsafe, legally risky, medically risky, financially risky, or impossible to tailor.",
+          "displayOrder": 0,
+          "id": "1B75D10F-45EF-4422-8AAD-5BE4E24C0186"
+        }
+      ]
+    },
+    {
+      "categoryId": "builtin.social",
+      "categoryName": "Социальные сети",
+      "copyCount": 0,
+      "createdDate": "2026-08-10T20:02:59Z",
+      "description": "Выявляйте и переписывайте приманку для взаимодействия, чтобы ваши посты вдохновляли реальное взаимодействие.",
+      "id": "B7C5B7C7-1943-4C50-8EDF-65ED33CEAA22",
+      "isArchived": false,
+      "isFavorite": false,
+      "isPinned": false,
+      "modifiedDate": "2026-08-10T20:02:59Z",
+      "tags": [
+        "authenticity",
+        "engagement",
+        "quality"
+      ],
+      "title": "Детектор приманки для взаимодействия",
+      "variables": [],
+      "variants": [
+        {
+          "body": "Audit a post for engagement bait and rewrite it for genuine interaction:\n\n**Red flags to check:**\n- 'Like if you agree' or 'Share if you care' — platforms penalize these\n- Vague emotional hooks with no real content behind them\n- Asking for comments with single-word responses (YES/NO, emoji reactions)\n- Misleading thumbnails or text that don't match the content\n- Rage bait designed to provoke argument, not discussion\n\n**Rewrite principles:**\n1. Replace 'like if' with a genuine question that invites a story\n2. Replace clickbait hooks with specific, honest previews of value\n3. Replace 'comment YES' with open-ended prompts that require thought\n4. Replace emotional manipulation with authentic vulnerability\n\n**The goal:** Posts that earn engagement through value, not tricks. Algorithms increasingly reward meaningful interaction over hollow metrics.",
+          "displayOrder": 0,
+          "id": "D1AD8B8D-EC4A-4C90-B7F4-99DF461E9F8C"
+        }
+      ]
+    },
+    {
+      "categoryId": "builtin.coding",
+      "categoryName": "Кодирование",
+      "copyCount": 0,
+      "createdDate": "2026-08-10T20:02:07Z",
+      "description": "Спроектируйте стратегию ветвления Git и выпуска, подходящую для вашей команды.",
+      "id": "22FE3748-3C3D-430C-A97C-77F006D067B2",
+      "isArchived": false,
+      "isFavorite": false,
+      "isPinned": false,
+      "modifiedDate": "2026-08-10T20:02:07Z",
+      "tags": [
+        "devops",
+        "git",
+        "workflow"
+      ],
+      "title": "Дизайнер рабочего процесса Git",
+      "variables": [],
+      "variants": [
+        {
+          "body": "Design a Git workflow for a team of 8 developers shipping a mobile app with bi-weekly releases.\n\nCover:\n1. **Branch strategy** — trunk-based, Git Flow, or hybrid; justify the choice\n2. **Branch naming** — convention for features, fixes, releases\n3. **Merge policy** — squash, rebase, or merge commit; when to use each\n4. **Code review** — required approvals, auto-assign rules\n5. **Release process** — how to cut a release, hotfix flow\n6. **CI integration** — which branches trigger builds, tests, deployments\n\nOutput a visual branch diagram in ASCII art plus a one-page reference guide.",
+          "displayOrder": 0,
+          "id": "BEDA6F68-9F8D-4FB0-B1F2-A6BF7C1CDB3D"
+        }
+      ]
+    },
+    {
+      "categoryId": "builtin.businessStrategy",
+      "categoryName": "Бизнес и стратегия",
+      "copyCount": 0,
+      "createdDate": "2026-08-10T20:01:54Z",
+      "description": "Оцените, подходит ли концепция бизнеса для франшизы.",
+      "id": "8C4841C6-26BA-4907-8E17-9144951E05F1",
+      "isArchived": false,
+      "isFavorite": false,
+      "isPinned": false,
+      "modifiedDate": "2026-08-10T20:01:54Z",
+      "tags": [
+        "expansion",
+        "feasibility",
+        "franchise"
+      ],
+      "title": "Исследование осуществимости франшизы",
+      "variables": [],
+      "variants": [
+        {
+          "body": "Conduct a franchise feasibility study for a business considering expansion through franchising.\n\nAddress each of the following:\n\n1. **Concept replicability** — Can the business model be standardized and taught to franchisees?\n2. **Unit economics** — What are the startup costs, break-even timeline, and expected ROI per franchise unit?\n3. **Market demand** — Is there sufficient demand in target markets to support multiple locations?\n4. **Competitive landscape** — Who are the existing franchise competitors and what differentiates this concept?\n5. **Legal requirements** — Outline the Franchise Disclosure Document obligations and regulatory considerations\n6. **Support infrastructure** — What training, supply chain, and ongoing support must the franchisor provide?\n7. **Go / No-Go recommendation** — Summarize findings and state whether franchising is viable",
+          "displayOrder": 0,
+          "id": "FD081F96-4483-4A15-804F-FE35057F9648"
+        }
+      ]
+    },
+    {
+      "categoryId": "builtin.marketing",
+      "categoryName": "Маркетинг",
+      "copyCount": 0,
+      "createdDate": "2026-08-10T20:00:00Z",
+      "description": "Разработайте последовательность электронной почты для повторного вовлечения упущенных клиентов.",
+      "id": "8C8625FB-BA79-4550-9100-B9C81E49E513",
+      "isArchived": false,
+      "isFavorite": false,
+      "isPinned": false,
+      "modifiedDate": "2026-08-10T20:00:00Z",
+      "tags": [
+        "churn",
+        "email",
+        "retention"
+      ],
+      "title": "Кампания отвоевания отвала",
+      "variables": [],
+      "variants": [
+        {
+          "body": "Design a win-back email campaign for customers who canceled in the last 90 days.\n\nSequence:\n1. **Day 3 — 'We miss you'** — Acknowledge departure, no pitch, ask one survey question about why they left\n2. **Day 10 — 'Here's what's new'** — Highlight 2-3 improvements shipped since they left\n3. **Day 21 — Social proof** — Share a testimonial from a similar customer who came back\n4. **Day 35 — Incentive** — Offer a comeback discount or extended trial\n5. **Day 50 — Final farewell** — Graceful close, leave the door open, unsubscribe from win-back sequence\n\nInclude subject lines for each email. Keep tone warm and low-pressure throughout.",
+          "displayOrder": 0,
+          "id": "BAD7B782-0F3E-4D35-BE66-3B0CC1658A41"
+        }
+      ]
+    },
+    {
+      "categoryId": "builtin.designUX",
+      "categoryName": "Design & UX",
+      "copyCount": 0,
+      "createdDate": "2026-08-12T04:04:31Z",
+      "description": "Разработайте масштабируемую цветовую систему с семантическими токенами, поддержкой тёмного режима и соответствием нормам доступности.",
+      "id": "AC2F52D5-E144-46D0-9133-454A7BE83597",
+      "isArchived": false,
+      "isFavorite": false,
+      "isPinned": false,
+      "modifiedDate": "2026-08-12T04:04:31Z",
+      "tags": [
+        "color",
+        "design system",
+        "tokens"
+      ],
+      "title": "Конструктор цветовой системы",
+      "variables": [
+        {
+          "description": "The color system builder you want to create",
+          "displayOrder": 0,
+          "id": "D7DD2288-636F-41C5-A342-5DBA2A22A2DB",
+          "name": "primaryInput",
+          "optionsValue": "",
+          "typeRawValue": "string"
+        },
+        {
+          "description": "The product or feature you're designing for",
+          "displayOrder": 1,
+          "id": "D1D48E98-5012-492A-9E3A-49899657BAB6",
+          "name": "product",
+          "optionsValue": "",
+          "typeRawValue": "string"
+        },
+        {
+          "description": "What the user is trying to achieve",
+          "displayOrder": 2,
+          "id": "15CEC8FB-8E25-474E-B601-6FD11CB117C5",
+          "name": "userGoal",
+          "optionsValue": "",
+          "typeRawValue": "string"
+        },
+        {
+          "description": "The type of user you're designing for",
+          "displayOrder": 3,
+          "id": "09AD8476-6456-489B-988E-2B7237F03F91",
+          "name": "userSegment",
+          "optionsValue": "",
+          "typeRawValue": "string"
+        },
+        {
+          "description": "The platform or device your product targets",
+          "displayOrder": 4,
+          "id": "93B1B75A-B49F-441B-BEEF-887823FD6A66",
+          "name": "platform",
+          "optionsValue": "",
+          "typeRawValue": "string"
+        },
+        {
+          "description": "The main UX problem you're trying to solve",
+          "displayOrder": 5,
+          "id": "B9323FAB-5E88-42FE-8EA6-8178E5EA413B",
+          "name": "currentProblem",
+          "optionsValue": "",
+          "typeRawValue": "string"
+        },
+        {
+          "description": "Constraints that affect the design solution",
+          "displayOrder": 6,
+          "id": "98565848-E3C1-43E4-8766-675B18FAFC6C",
+          "name": "constraints",
+          "optionsValue": "",
+          "typeRawValue": "string"
+        },
+        {
+          "description": "How you'll measure whether the design succeeds",
+          "displayOrder": 7,
+          "id": "7A46C1E5-5520-4818-958D-C3D92BD8B5B4",
+          "name": "successMetric",
+          "optionsValue": "",
+          "typeRawValue": "string"
+        }
+      ],
+      "variants": [
+        {
+          "body": "Act as a senior product designer and UX researcher who turns user goals into usable, accessible, testable experiences.\n\nMission:\nCreate a color system builder for {{primaryInput}} that elicits behavior, context, pain, workarounds, language, and decision triggers without leading questions. Make it deeply specific to the variables, useful on the first pass, and substantial enough that the user can apply it immediately without asking for a generic follow-up.\n\nContext variables:\n- {{product}} - Use this value to tailor the color system builder to the user's real context.\n- {{userGoal}} - Use this value to tailor the color system builder to the user's real context.\n- {{userSegment}} - Use this value to tailor the color system builder to the user's real context.\n- {{platform}} - Use this value to tailor the color system builder to the user's real context.\n- {{currentProblem}} - Use this value to tailor the color system builder to the user's real context.\n- {{constraints}} - Use this value to tailor the color system builder to the user's real context.\n- {{successMetric}} - Use this value to tailor the color system builder to the user's real context.\n\nWorking process:\n1. Clarify user intent, context, mental model, and current friction.\n2. Map the flow or component from entry point to successful completion.\n3. Evaluate hierarchy, layout, content, interaction states, accessibility, and error recovery.\n4. Propose design improvements with rationale, trade-offs, and implementation notes.\n5. Define how to test the design with users or analytics.\n\nRequired deliverables:\n1. A context brief that restates the goal, audience, constraints, and success criteria for the color system builder.\n2. The main color system builder itself, written in a polished, ready-to-use form rather than a loose outline.\n3. A customization section showing how to adapt the output for at least three different situations, levels, or formats.\n4. A pitfalls section naming what could go wrong, how to avoid it, and what details the user should verify.\n5. A final checklist the user can run before copying, publishing, implementing, generating, or sharing the result.\n\nContext-matching rules:\n- Do not optimize aesthetics at the expense of comprehension or accessibility.\n- Include empty, loading, error, success, and edge states when relevant.\n- Respect platform conventions unless breaking them creates clear value.\n- Make recommendations concrete enough for a designer or engineer to implement.\n\nQuality bar:\n- The output improves a real user task, not just surface polish.\n- Accessibility and content clarity are included by default.\n- Recommendations are prioritized by impact and effort.\n- Testing guidance can validate whether the design works.\n\nOutput format:\nReturn User Goal, Flow or Component Analysis, Recommendations, State Coverage, Accessibility Notes, and Test Plan.\n\nIf important information is missing, add an \"Assumptions\" section with one or two reasonable assumptions, then continue. Do not stall unless the missing information would make the output unsafe, legally risky, medically risky, financially risky, or impossible to tailor.",
+          "displayOrder": 0,
+          "id": "1FC97005-A77E-4027-854B-1AA5B588AB8B"
+        }
+      ]
+    },
+    {
+      "categoryId": "builtin.designUX",
+      "categoryName": "Design & UX",
+      "copyCount": 0,
+      "createdDate": "2026-08-12T04:04:08Z",
+      "description": "Создайте подробный план тестирования удобства использования, который определяет задачи, гипотезы, участников, критерии успеха, сценарий, примечания наблюдения и план синтеза.",
+      "id": "D8439859-671E-4F47-8150-AEEC85003E3F",
+      "isArchived": false,
+      "isFavorite": false,
+      "isPinned": false,
+      "modifiedDate": "2026-08-12T04:04:08Z",
+      "tags": [
+        "prototype",
+        "research",
+        "testing",
+        "usability"
+      ],
+      "title": "План тестирования прототипа",
+      "variables": [
+        {
+          "description": "The prototype and the questions you want answered",
+          "displayOrder": 0,
+          "id": "0C3BCBCE-0CCC-4F33-92E4-D65809B90941",
+          "name": "primaryInput",
+          "optionsValue": "",
+          "typeRawValue": "string"
+        },
+        {
+          "description": "The product or feature you're designing for",
+          "displayOrder": 1,
+          "id": "987990DE-C4A5-4506-881B-0F9BD5715FA9",
+          "name": "product",
+          "optionsValue": "",
+          "typeRawValue": "string"
+        },
+        {
+          "description": "What the user is trying to achieve",
+          "displayOrder": 2,
+          "id": "19734986-760F-4AB4-92D7-8BCAD63D84BD",
+          "name": "userGoal",
+          "optionsValue": "",
+          "typeRawValue": "string"
+        },
+        {
+          "description": "The type of user you're designing for",
+          "displayOrder": 3,
+          "id": "44381A57-81AD-45A1-BFB2-0B18CC6E9C47",
+          "name": "userSegment",
+          "optionsValue": "",
+          "typeRawValue": "string"
+        },
+        {
+          "description": "The platform or device your product targets",
+          "displayOrder": 4,
+          "id": "BAD132DD-66D3-44DE-9FC6-AF0C43EDA135",
+          "name": "platform",
+          "optionsValue": "",
+          "typeRawValue": "string"
+        },
+        {
+          "description": "The main UX problem you're trying to solve",
+          "displayOrder": 5,
+          "id": "950BD959-1445-4221-A178-C42917D0BB09",
+          "name": "currentProblem",
+          "optionsValue": "",
+          "typeRawValue": "string"
+        },
+        {
+          "description": "Constraints that affect the design solution",
+          "displayOrder": 6,
+          "id": "8F85CDB5-97C9-4FDC-A1A8-D2728F428852",
+          "name": "constraints",
+          "optionsValue": "",
+          "typeRawValue": "string"
+        },
+        {
+          "description": "How you'll measure whether the design succeeds",
+          "displayOrder": 7,
+          "id": "31EA956A-3A3B-4869-9FB1-B1C61E21CB6C",
+          "name": "successMetric",
+          "optionsValue": "",
+          "typeRawValue": "string"
+        }
+      ],
+      "variants": [
+        {
+          "body": "Act as a senior product designer and UX researcher who turns user goals into usable, accessible, testable experiences.\n\nMission:\nCreate a usability test plan for {{primaryInput}} that defines tasks, hypotheses, participants, success criteria, script, observation notes, and synthesis plan. Make it deeply specific to the variables, useful on the first pass, and substantial enough that the user can apply it immediately without asking for a generic follow-up.\n\nContext variables:\n- {{product}} - Use this value to tailor the usability test plan to the user's real context.\n- {{userGoal}} - Use this value to tailor the usability test plan to the user's real context.\n- {{userSegment}} - Use this value to tailor the usability test plan to the user's real context.\n- {{platform}} - Use this value to tailor the usability test plan to the user's real context.\n- {{currentProblem}} - Use this value to tailor the usability test plan to the user's real context.\n- {{constraints}} - Use this value to tailor the usability test plan to the user's real context.\n- {{successMetric}} - Use this value to tailor the usability test plan to the user's real context.\n\nWorking process:\n1. Clarify user intent, context, mental model, and current friction.\n2. Map the flow or component from entry point to successful completion.\n3. Evaluate hierarchy, layout, content, interaction states, accessibility, and error recovery.\n4. Propose design improvements with rationale, trade-offs, and implementation notes.\n5. Define how to test the design with users or analytics.\n\nRequired deliverables:\n1. A context brief that restates the goal, audience, constraints, and success criteria for the usability test plan.\n2. The main usability test plan itself, written in a polished, ready-to-use form rather than a loose outline.\n3. A customization section showing how to adapt the output for at least three different situations, levels, or formats.\n4. A pitfalls section naming what could go wrong, how to avoid it, and what details the user should verify.\n5. A final checklist the user can run before copying, publishing, implementing, generating, or sharing the result.\n\nContext-matching rules:\n- Do not optimize aesthetics at the expense of comprehension or accessibility.\n- Include empty, loading, error, success, and edge states when relevant.\n- Respect platform conventions unless breaking them creates clear value.\n- Make recommendations concrete enough for a designer or engineer to implement.\n\nQuality bar:\n- The output improves a real user task, not just surface polish.\n- Accessibility and content clarity are included by default.\n- Recommendations are prioritized by impact and effort.\n- Testing guidance can validate whether the design works.\n\nOutput format:\nReturn User Goal, Flow or Component Analysis, Recommendations, State Coverage, Accessibility Notes, and Test Plan.\n\nIf important information is missing, add an \"Assumptions\" section with one or two reasonable assumptions, then continue. Do not stall unless the missing information would make the output unsafe, legally risky, medically risky, financially risky, or impossible to tailor.",
+          "displayOrder": 0,
+          "id": "F9C57CC7-522E-4228-8D6D-0888336A15EB"
+        }
+      ]
+    },
+    {
+      "categoryId": "builtin.designUX",
+      "categoryName": "Design & UX",
+      "copyCount": 0,
+      "createdDate": "2026-08-12T04:04:06Z",
+      "description": "Разработайте многоуровневую систему дизайн-токенов, которая связывает инструменты дизайна и код.",
+      "id": "EB1068EE-6EC0-4952-AE44-6C194A0EAB0D",
+      "isArchived": false,
+      "isFavorite": false,
+      "isPinned": false,
+      "modifiedDate": "2026-08-12T04:04:06Z",
+      "tags": [
+        "design system",
+        "theming",
+        "tokens"
+      ],
+      "title": "Система дизайн-токенов",
+      "variables": [
+        {
+          "description": "The design token system you want to create",
+          "displayOrder": 0,
+          "id": "30EEC4C9-4152-4BEF-9256-0E63268A212D",
+          "name": "primaryInput",
+          "optionsValue": "",
+          "typeRawValue": "string"
+        },
+        {
+          "description": "The product or feature you're designing for",
+          "displayOrder": 1,
+          "id": "EF5192DD-5E1D-4A94-A054-CCF249D53614",
+          "name": "product",
+          "optionsValue": "",
+          "typeRawValue": "string"
+        },
+        {
+          "description": "What the user is trying to achieve",
+          "displayOrder": 2,
+          "id": "CF476934-7D3B-41C0-9B2D-7D750CCD8F7B",
+          "name": "userGoal",
+          "optionsValue": "",
+          "typeRawValue": "string"
+        },
+        {
+          "description": "The type of user you're designing for",
+          "displayOrder": 3,
+          "id": "B74B60D2-8361-4162-A111-CE99F053201A",
+          "name": "userSegment",
+          "optionsValue": "",
+          "typeRawValue": "string"
+        },
+        {
+          "description": "The platform or device your product targets",
+          "displayOrder": 4,
+          "id": "E4872F8C-423C-4951-A5AB-82D33A582727",
+          "name": "platform",
+          "optionsValue": "",
+          "typeRawValue": "string"
+        },
+        {
+          "description": "The main UX problem you're trying to solve",
+          "displayOrder": 5,
+          "id": "E6E6CAC8-B646-4797-A3FC-0E30EC64724B",
+          "name": "currentProblem",
+          "optionsValue": "",
+          "typeRawValue": "string"
+        },
+        {
+          "description": "Constraints that affect the design solution",
+          "displayOrder": 6,
+          "id": "01CAF3A5-7509-4916-8A33-3DB4D31AA7C3",
+          "name": "constraints",
+          "optionsValue": "",
+          "typeRawValue": "string"
+        },
+        {
+          "description": "How you'll measure whether the design succeeds",
+          "displayOrder": 7,
+          "id": "81479933-F31C-4558-A5AC-29D951B7514B",
+          "name": "successMetric",
+          "optionsValue": "",
+          "typeRawValue": "string"
+        }
+      ],
+      "variants": [
+        {
+          "body": "Act as a senior product designer and UX researcher who turns user goals into usable, accessible, testable experiences.\n\nMission:\nCreate a design token system for {{primaryInput}} that elicits behavior, context, pain, workarounds, language, and decision triggers without leading questions. Make it deeply specific to the variables, useful on the first pass, and substantial enough that the user can apply it immediately without asking for a generic follow-up.\n\nContext variables:\n- {{product}} - Use this value to tailor the design token system to the user's real context.\n- {{userGoal}} - Use this value to tailor the design token system to the user's real context.\n- {{userSegment}} - Use this value to tailor the design token system to the user's real context.\n- {{platform}} - Use this value to tailor the design token system to the user's real context.\n- {{currentProblem}} - Use this value to tailor the design token system to the user's real context.\n- {{constraints}} - Use this value to tailor the design token system to the user's real context.\n- {{successMetric}} - Use this value to tailor the design token system to the user's real context.\n\nWorking process:\n1. Clarify user intent, context, mental model, and current friction.\n2. Map the flow or component from entry point to successful completion.\n3. Evaluate hierarchy, layout, content, interaction states, accessibility, and error recovery.\n4. Propose design improvements with rationale, trade-offs, and implementation notes.\n5. Define how to test the design with users or analytics.\n\nRequired deliverables:\n1. A context brief that restates the goal, audience, constraints, and success criteria for the design token system.\n2. The main design token system itself, written in a polished, ready-to-use form rather than a loose outline.\n3. A customization section showing how to adapt the output for at least three different situations, levels, or formats.\n4. A pitfalls section naming what could go wrong, how to avoid it, and what details the user should verify.\n5. A final checklist the user can run before copying, publishing, implementing, generating, or sharing the result.\n\nContext-matching rules:\n- Do not optimize aesthetics at the expense of comprehension or accessibility.\n- Include empty, loading, error, success, and edge states when relevant.\n- Respect platform conventions unless breaking them creates clear value.\n- Make recommendations concrete enough for a designer or engineer to implement.\n\nQuality bar:\n- The output improves a real user task, not just surface polish.\n- Accessibility and content clarity are included by default.\n- Recommendations are prioritized by impact and effort.\n- Testing guidance can validate whether the design works.\n\nOutput format:\nReturn User Goal, Flow or Component Analysis, Recommendations, State Coverage, Accessibility Notes, and Test Plan.\n\nIf important information is missing, add an \"Assumptions\" section with one or two reasonable assumptions, then continue. Do not stall unless the missing information would make the output unsafe, legally risky, medically risky, financially risky, or impossible to tailor.",
+          "displayOrder": 0,
+          "id": "F14DB2B8-E98B-4A31-92C2-44D82CCDC3A9"
+        }
+      ]
+    },
+    {
+      "categoryId": "builtin.designUX",
+      "categoryName": "Design & UX",
+      "copyCount": 0,
+      "createdDate": "2026-08-12T04:04:04Z",
+      "description": "Создайте подробную спецификацию дизайна компонента, которая определяет анатомию, варианты, состояния, поведение, доступность, правила содержимого и примечания реализации.",
+      "id": "B515C8CD-F1D8-40D7-894A-59472FD1B646",
+      "isArchived": false,
+      "isFavorite": false,
+      "isPinned": false,
+      "modifiedDate": "2026-08-12T04:04:04Z",
+      "tags": [
+        "UI",
+        "component",
+        "design system",
+        "spec"
+      ],
+      "title": "Спецификация компонента системы дизайна",
+      "variables": [
+        {
+          "description": "The UI component to spec out",
+          "displayOrder": 0,
+          "id": "BB7B30D1-8BAA-4187-9CA6-AE10D369DA21",
+          "name": "primaryInput",
+          "optionsValue": "",
+          "typeRawValue": "string"
+        },
+        {
+          "description": "The product or feature you're designing for",
+          "displayOrder": 1,
+          "id": "A64381A9-056F-4B68-A56E-6DA530B00EAA",
+          "name": "product",
+          "optionsValue": "",
+          "typeRawValue": "string"
+        },
+        {
+          "description": "What the user is trying to achieve",
+          "displayOrder": 2,
+          "id": "036DBB7E-AB08-4A14-A263-BE14968A7867",
+          "name": "userGoal",
+          "optionsValue": "",
+          "typeRawValue": "string"
+        },
+        {
+          "description": "The type of user you're designing for",
+          "displayOrder": 3,
+          "id": "3F5E5CDF-8353-4058-AC71-EBFEDBCA4908",
+          "name": "userSegment",
+          "optionsValue": "",
+          "typeRawValue": "string"
+        },
+        {
+          "description": "The platform or device your product targets",
+          "displayOrder": 4,
+          "id": "8CD78D35-5CA2-4A2E-B54F-8A6E9A9AC40D",
+          "name": "platform",
+          "optionsValue": "",
+          "typeRawValue": "string"
+        },
+        {
+          "description": "The main UX problem you're trying to solve",
+          "displayOrder": 5,
+          "id": "7108E9E5-041E-4912-BA30-2777A8DBDC2A",
+          "name": "currentProblem",
+          "optionsValue": "",
+          "typeRawValue": "string"
+        },
+        {
+          "description": "Constraints that affect the design solution",
+          "displayOrder": 6,
+          "id": "B79FC443-1570-41B9-A1CB-68395922BE8C",
+          "name": "constraints",
+          "optionsValue": "",
+          "typeRawValue": "string"
+        },
+        {
+          "description": "How you'll measure whether the design succeeds",
+          "displayOrder": 7,
+          "id": "75F78598-917D-4604-B7C7-9911592B552E",
+          "name": "successMetric",
+          "optionsValue": "",
+          "typeRawValue": "string"
+        }
+      ],
+      "variants": [
+        {
+          "body": "Act as a senior product designer and UX researcher who turns user goals into usable, accessible, testable experiences.\n\nMission:\nCreate a component design specification for {{primaryInput}} that defines anatomy, variants, states, behavior, accessibility, content rules, and implementation notes. Make it deeply specific to the variables, useful on the first pass, and substantial enough that the user can apply it immediately without asking for a generic follow-up.\n\nContext variables:\n- {{product}} - Use this value to tailor the component design specification to the user's real context.\n- {{userGoal}} - Use this value to tailor the component design specification to the user's real context.\n- {{userSegment}} - Use this value to tailor the component design specification to the user's real context.\n- {{platform}} - Use this value to tailor the component design specification to the user's real context.\n- {{currentProblem}} - Use this value to tailor the component design specification to the user's real context.\n- {{constraints}} - Use this value to tailor the component design specification to the user's real context.\n- {{successMetric}} - Use this value to tailor the component design specification to the user's real context.\n\nWorking process:\n1. Clarify user intent, context, mental model, and current friction.\n2. Map the flow or component from entry point to successful completion.\n3. Evaluate hierarchy, layout, content, interaction states, accessibility, and error recovery.\n4. Propose design improvements with rationale, trade-offs, and implementation notes.\n5. Define how to test the design with users or analytics.\n\nRequired deliverables:\n1. A context brief that restates the goal, audience, constraints, and success criteria for the component design specification.\n2. The main component design specification itself, written in a polished, ready-to-use form rather than a loose outline.\n3. A customization section showing how to adapt the output for at least three different situations, levels, or formats.\n4. A pitfalls section naming what could go wrong, how to avoid it, and what details the user should verify.\n5. A final checklist the user can run before copying, publishing, implementing, generating, or sharing the result.\n\nContext-matching rules:\n- Do not optimize aesthetics at the expense of comprehension or accessibility.\n- Include empty, loading, error, success, and edge states when relevant.\n- Respect platform conventions unless breaking them creates clear value.\n- Make recommendations concrete enough for a designer or engineer to implement.\n\nQuality bar:\n- The output improves a real user task, not just surface polish.\n- Accessibility and content clarity are included by default.\n- Recommendations are prioritized by impact and effort.\n- Testing guidance can validate whether the design works.\n\nOutput format:\nReturn User Goal, Flow or Component Analysis, Recommendations, State Coverage, Accessibility Notes, and Test Plan.\n\nIf important information is missing, add an \"Assumptions\" section with one or two reasonable assumptions, then continue. Do not stall unless the missing information would make the output unsafe, legally risky, medically risky, financially risky, or impossible to tailor.",
+          "displayOrder": 0,
+          "id": "C8AA9543-8658-476E-BB92-E8CA09778E4A"
+        }
+      ]
+    },
+    {
+      "categoryId": "builtin.designUX",
+      "categoryName": "Design & UX",
+      "copyCount": 0,
+      "createdDate": "2026-08-12T04:03:56Z",
+      "description": "Спланируйте систему адаптивного макета с точками останова, поведением сетки и правилами адаптации компонентов.",
+      "id": "97678E5E-5816-4566-9240-53106FC2FFC6",
+      "isArchived": false,
+      "isFavorite": false,
+      "isPinned": false,
+      "modifiedDate": "2026-08-12T04:03:56Z",
+      "tags": [
+        "breakpoints",
+        "layout",
+        "responsive"
+      ],
+      "title": "Стратегия адаптивного макета",
+      "variables": [
+        {
+          "description": "The responsive layout strategy you want to create",
+          "displayOrder": 0,
+          "id": "F818525C-8784-4917-B885-3613DB364272",
+          "name": "primaryInput",
+          "optionsValue": "",
+          "typeRawValue": "string"
+        },
+        {
+          "description": "The product or feature you're designing for",
+          "displayOrder": 1,
+          "id": "F365FE05-7AF3-4D9D-B11C-E151A4CBD595",
+          "name": "product",
+          "optionsValue": "",
+          "typeRawValue": "string"
+        },
+        {
+          "description": "What the user is trying to achieve",
+          "displayOrder": 2,
+          "id": "3AAC5F08-8822-4240-92CD-E80DC5687B46",
+          "name": "userGoal",
+          "optionsValue": "",
+          "typeRawValue": "string"
+        },
+        {
+          "description": "The type of user you're designing for",
+          "displayOrder": 3,
+          "id": "DA16A8A4-F1E5-4074-A33F-B3922D9E2E8A",
+          "name": "userSegment",
+          "optionsValue": "",
+          "typeRawValue": "string"
+        },
+        {
+          "description": "The platform or device your product targets",
+          "displayOrder": 4,
+          "id": "9F827741-AA3C-484D-B41A-1177D4FFBE20",
+          "name": "platform",
+          "optionsValue": "",
+          "typeRawValue": "string"
+        },
+        {
+          "description": "The main UX problem you're trying to solve",
+          "displayOrder": 5,
+          "id": "CD52C356-860E-453A-A145-9C71230B913A",
+          "name": "currentProblem",
+          "optionsValue": "",
+          "typeRawValue": "string"
+        },
+        {
+          "description": "Constraints that affect the design solution",
+          "displayOrder": 6,
+          "id": "33DB92C9-219B-4509-82A9-5287AA7F0ABD",
+          "name": "constraints",
+          "optionsValue": "",
+          "typeRawValue": "string"
+        },
+        {
+          "description": "How you'll measure whether the design succeeds",
+          "displayOrder": 7,
+          "id": "D7C56C6C-25B8-4B96-A931-51F869D6D33B",
+          "name": "successMetric",
+          "optionsValue": "",
+          "typeRawValue": "string"
+        }
+      ],
+      "variants": [
+        {
+          "body": "Act as a senior product designer and UX researcher who turns user goals into usable, accessible, testable experiences.\n\nMission:\nCreate a responsive layout strategy for {{primaryInput}} that elicits behavior, context, pain, workarounds, language, and decision triggers without leading questions. Make it deeply specific to the variables, useful on the first pass, and substantial enough that the user can apply it immediately without asking for a generic follow-up.\n\nContext variables:\n- {{product}} - Use this value to tailor the responsive layout strategy to the user's real context.\n- {{userGoal}} - Use this value to tailor the responsive layout strategy to the user's real context.\n- {{userSegment}} - Use this value to tailor the responsive layout strategy to the user's real context.\n- {{platform}} - Use this value to tailor the responsive layout strategy to the user's real context.\n- {{currentProblem}} - Use this value to tailor the responsive layout strategy to the user's real context.\n- {{constraints}} - Use this value to tailor the responsive layout strategy to the user's real context.\n- {{successMetric}} - Use this value to tailor the responsive layout strategy to the user's real context.\n\nWorking process:\n1. Clarify user intent, context, mental model, and current friction.\n2. Map the flow or component from entry point to successful completion.\n3. Evaluate hierarchy, layout, content, interaction states, accessibility, and error recovery.\n4. Propose design improvements with rationale, trade-offs, and implementation notes.\n5. Define how to test the design with users or analytics.\n\nRequired deliverables:\n1. A context brief that restates the goal, audience, constraints, and success criteria for the responsive layout strategy.\n2. The main responsive layout strategy itself, written in a polished, ready-to-use form rather than a loose outline.\n3. A customization section showing how to adapt the output for at least three different situations, levels, or formats.\n4. A pitfalls section naming what could go wrong, how to avoid it, and what details the user should verify.\n5. A final checklist the user can run before copying, publishing, implementing, generating, or sharing the result.\n\nContext-matching rules:\n- Do not optimize aesthetics at the expense of comprehension or accessibility.\n- Include empty, loading, error, success, and edge states when relevant.\n- Respect platform conventions unless breaking them creates clear value.\n- Make recommendations concrete enough for a designer or engineer to implement.\n\nQuality bar:\n- The output improves a real user task, not just surface polish.\n- Accessibility and content clarity are included by default.\n- Recommendations are prioritized by impact and effort.\n- Testing guidance can validate whether the design works.\n\nOutput format:\nReturn User Goal, Flow or Component Analysis, Recommendations, State Coverage, Accessibility Notes, and Test Plan.\n\nIf important information is missing, add an \"Assumptions\" section with one or two reasonable assumptions, then continue. Do not stall unless the missing information would make the output unsafe, legally risky, medically risky, financially risky, or impossible to tailor.",
+          "displayOrder": 0,
+          "id": "5A0865AB-C4B8-426E-A275-2376783988FD"
+        }
+      ]
+    },
+    {
+      "categoryId": "builtin.designUX",
+      "categoryName": "Design & UX",
+      "copyCount": 0,
+      "createdDate": "2026-08-12T04:03:54Z",
+      "description": "Структурируйте продуктивные дизайн-критики, которые отделяют субъективный вкус от объективной удобства использования.",
+      "id": "00A66A41-DEED-4680-B876-D84FA5669851",
+      "isArchived": false,
+      "isFavorite": false,
+      "isPinned": false,
+      "modifiedDate": "2026-08-12T04:03:54Z",
+      "tags": [
+        "critique",
+        "feedback",
+        "process"
+      ],
+      "title": "Структура дизайн-критики",
+      "variables": [
+        {
+          "description": "The design critique framework you want to create",
+          "displayOrder": 0,
+          "id": "4E7B5B97-EDA7-40E0-A1A9-19E6D78E7BAE",
+          "name": "primaryInput",
+          "optionsValue": "",
+          "typeRawValue": "string"
+        },
+        {
+          "description": "The product or feature you're designing for",
+          "displayOrder": 1,
+          "id": "5E87D71F-0D4A-4C31-844B-C9A0977B9197",
+          "name": "product",
+          "optionsValue": "",
+          "typeRawValue": "string"
+        },
+        {
+          "description": "What the user is trying to achieve",
+          "displayOrder": 2,
+          "id": "EAA2C1F2-2312-4785-A9EE-43542CA290D1",
+          "name": "userGoal",
+          "optionsValue": "",
+          "typeRawValue": "string"
+        },
+        {
+          "description": "The type of user you're designing for",
+          "displayOrder": 3,
+          "id": "FADD48EA-5C97-4B99-A166-244643206C4A",
+          "name": "userSegment",
+          "optionsValue": "",
+          "typeRawValue": "string"
+        },
+        {
+          "description": "The platform or device your product targets",
+          "displayOrder": 4,
+          "id": "BF7FCB4D-CC75-4597-913C-8D2539E53BDD",
+          "name": "platform",
+          "optionsValue": "",
+          "typeRawValue": "string"
+        },
+        {
+          "description": "The main UX problem you're trying to solve",
+          "displayOrder": 5,
+          "id": "D4683DE7-7753-422D-9A44-D24CDFA6BF71",
+          "name": "currentProblem",
+          "optionsValue": "",
+          "typeRawValue": "string"
+        },
+        {
+          "description": "Constraints that affect the design solution",
+          "displayOrder": 6,
+          "id": "E90C76DD-DBEA-43A5-9873-182E4BDFAE80",
+          "name": "constraints",
+          "optionsValue": "",
+          "typeRawValue": "string"
+        },
+        {
+          "description": "How you'll measure whether the design succeeds",
+          "displayOrder": 7,
+          "id": "C1B508E2-365C-488A-89A3-634D84118680",
+          "name": "successMetric",
+          "optionsValue": "",
+          "typeRawValue": "string"
+        }
+      ],
+      "variants": [
+        {
+          "body": "Act as a senior product designer and UX researcher who turns user goals into usable, accessible, testable experiences.\n\nMission:\nCreate a design critique framework for {{primaryInput}} that elicits behavior, context, pain, workarounds, language, and decision triggers without leading questions. Make it deeply specific to the variables, useful on the first pass, and substantial enough that the user can apply it immediately without asking for a generic follow-up.\n\nContext variables:\n- {{product}} - Use this value to tailor the design critique framework to the user's real context.\n- {{userGoal}} - Use this value to tailor the design critique framework to the user's real context.\n- {{userSegment}} - Use this value to tailor the design critique framework to the user's real context.\n- {{platform}} - Use this value to tailor the design critique framework to the user's real context.\n- {{currentProblem}} - Use this value to tailor the design critique framework to the user's real context.\n- {{constraints}} - Use this value to tailor the design critique framework to the user's real context.\n- {{successMetric}} - Use this value to tailor the design critique framework to the user's real context.\n\nWorking process:\n1. Clarify user intent, context, mental model, and current friction.\n2. Map the flow or component from entry point to successful completion.\n3. Evaluate hierarchy, layout, content, interaction states, accessibility, and error recovery.\n4. Propose design improvements with rationale, trade-offs, and implementation notes.\n5. Define how to test the design with users or analytics.\n\nRequired deliverables:\n1. A context brief that restates the goal, audience, constraints, and success criteria for the design critique framework.\n2. The main design critique framework itself, written in a polished, ready-to-use form rather than a loose outline.\n3. A customization section showing how to adapt the output for at least three different situations, levels, or formats.\n4. A pitfalls section naming what could go wrong, how to avoid it, and what details the user should verify.\n5. A final checklist the user can run before copying, publishing, implementing, generating, or sharing the result.\n\nContext-matching rules:\n- Do not optimize aesthetics at the expense of comprehension or accessibility.\n- Include empty, loading, error, success, and edge states when relevant.\n- Respect platform conventions unless breaking them creates clear value.\n- Make recommendations concrete enough for a designer or engineer to implement.\n\nQuality bar:\n- The output improves a real user task, not just surface polish.\n- Accessibility and content clarity are included by default.\n- Recommendations are prioritized by impact and effort.\n- Testing guidance can validate whether the design works.\n\nOutput format:\nReturn User Goal, Flow or Component Analysis, Recommendations, State Coverage, Accessibility Notes, and Test Plan.\n\nIf important information is missing, add an \"Assumptions\" section with one or two reasonable assumptions, then continue. Do not stall unless the missing information would make the output unsafe, legally risky, medically risky, financially risky, or impossible to tailor.",
+          "displayOrder": 0,
+          "id": "83642B6F-CB89-42AC-9972-DF5409F8C1B6"
+        }
+      ]
+    },
+    {
+      "categoryId": "builtin.designUX",
+      "categoryName": "Design & UX",
+      "copyCount": 0,
+      "createdDate": "2026-08-12T04:04:01Z",
+      "description": "Проведите 5-дневный дизайн-спринт с структурированными упражнениями, временными рамками и структурами принятия решений.",
+      "id": "1E18981A-3531-4FF0-91BE-A1CE3F888084",
+      "isArchived": false,
+      "isFavorite": false,
+      "isPinned": false,
+      "modifiedDate": "2026-08-12T04:04:01Z",
+      "tags": [
+        "design sprint",
+        "facilitation",
+        "workshop"
+      ],
+      "title": "Фасилитатор дизайн-спринта",
+      "variables": [
+        {
+          "description": "The design sprint facilitator you want to create",
+          "displayOrder": 0,
+          "id": "24752030-A45A-4F29-9908-29479879ACB6",
+          "name": "primaryInput",
+          "optionsValue": "",
+          "typeRawValue": "string"
+        },
+        {
+          "description": "The product or feature you're designing for",
+          "displayOrder": 1,
+          "id": "9D3B07AB-322A-4158-8135-0A5444F81AD6",
+          "name": "product",
+          "optionsValue": "",
+          "typeRawValue": "string"
+        },
+        {
+          "description": "What the user is trying to achieve",
+          "displayOrder": 2,
+          "id": "F0DEA15F-10E0-4AF2-8772-02B9D38F8843",
+          "name": "userGoal",
+          "optionsValue": "",
+          "typeRawValue": "string"
+        },
+        {
+          "description": "The type of user you're designing for",
+          "displayOrder": 3,
+          "id": "BA967B58-589E-498F-B57A-4EF68EF6A7BA",
+          "name": "userSegment",
+          "optionsValue": "",
+          "typeRawValue": "string"
+        },
+        {
+          "description": "The platform or device your product targets",
+          "displayOrder": 4,
+          "id": "20E59429-3802-4C89-8E6D-6895E2B265A2",
+          "name": "platform",
+          "optionsValue": "",
+          "typeRawValue": "string"
+        },
+        {
+          "description": "The main UX problem you're trying to solve",
+          "displayOrder": 5,
+          "id": "C1F73029-0530-42EB-B228-B4D5D9C1FE47",
+          "name": "currentProblem",
+          "optionsValue": "",
+          "typeRawValue": "string"
+        },
+        {
+          "description": "Constraints that affect the design solution",
+          "displayOrder": 6,
+          "id": "BF040BE6-D8F2-49D1-BB22-0FFBEB8381F4",
+          "name": "constraints",
+          "optionsValue": "",
+          "typeRawValue": "string"
+        },
+        {
+          "description": "How you'll measure whether the design succeeds",
+          "displayOrder": 7,
+          "id": "0BE4988C-8714-4828-BDE2-23084F2F0CE0",
+          "name": "successMetric",
+          "optionsValue": "",
+          "typeRawValue": "string"
+        }
+      ],
+      "variants": [
+        {
+          "body": "Act as a senior product designer and UX researcher who turns user goals into usable, accessible, testable experiences.\n\nMission:\nCreate a design sprint facilitator for {{primaryInput}} that elicits behavior, context, pain, workarounds, language, and decision triggers without leading questions. Make it deeply specific to the variables, useful on the first pass, and substantial enough that the user can apply it immediately without asking for a generic follow-up.\n\nContext variables:\n- {{product}} - Use this value to tailor the design sprint facilitator to the user's real context.\n- {{userGoal}} - Use this value to tailor the design sprint facilitator to the user's real context.\n- {{userSegment}} - Use this value to tailor the design sprint facilitator to the user's real context.\n- {{platform}} - Use this value to tailor the design sprint facilitator to the user's real context.\n- {{currentProblem}} - Use this value to tailor the design sprint facilitator to the user's real context.\n- {{constraints}} - Use this value to tailor the design sprint facilitator to the user's real context.\n- {{successMetric}} - Use this value to tailor the design sprint facilitator to the user's real context.\n\nWorking process:\n1. Clarify user intent, context, mental model, and current friction.\n2. Map the flow or component from entry point to successful completion.\n3. Evaluate hierarchy, layout, content, interaction states, accessibility, and error recovery.\n4. Propose design improvements with rationale, trade-offs, and implementation notes.\n5. Define how to test the design with users or analytics.\n\nRequired deliverables:\n1. A context brief that restates the goal, audience, constraints, and success criteria for the design sprint facilitator.\n2. The main design sprint facilitator itself, written in a polished, ready-to-use form rather than a loose outline.\n3. A customization section showing how to adapt the output for at least three different situations, levels, or formats.\n4. A pitfalls section naming what could go wrong, how to avoid it, and what details the user should verify.\n5. A final checklist the user can run before copying, publishing, implementing, generating, or sharing the result.\n\nContext-matching rules:\n- Do not optimize aesthetics at the expense of comprehension or accessibility.\n- Include empty, loading, error, success, and edge states when relevant.\n- Respect platform conventions unless breaking them creates clear value.\n- Make recommendations concrete enough for a designer or engineer to implement.\n\nQuality bar:\n- The output improves a real user task, not just surface polish.\n- Accessibility and content clarity are included by default.\n- Recommendations are prioritized by impact and effort.\n- Testing guidance can validate whether the design works.\n\nOutput format:\nReturn User Goal, Flow or Component Analysis, Recommendations, State Coverage, Accessibility Notes, and Test Plan.\n\nIf important information is missing, add an \"Assumptions\" section with one or two reasonable assumptions, then continue. Do not stall unless the missing information would make the output unsafe, legally risky, medically risky, financially risky, or impossible to tailor.",
+          "displayOrder": 0,
+          "id": "CC99231A-6326-4C48-9B86-433E0C51F789"
+        }
+      ]
+    },
+    {
+      "categoryId": "builtin.productivity",
+      "categoryName": "Продуктивность",
+      "copyCount": 0,
+      "createdDate": "2026-08-11T18:56:53Z",
+      "description": "Создавайте лаконичные профессиональные обновления для заинтересованных сторон, которые укрепляют доверие и уменьшают количество уточняющих вопросов.",
+      "id": "5385D110-0B3C-49C9-B683-596940FF3013",
+      "isArchived": false,
+      "isFavorite": false,
+      "isPinned": false,
+      "modifiedDate": "2026-08-11T18:56:53Z",
+      "tags": [
+        "communication",
+        "stakeholders",
+        "updates"
+      ],
+      "title": "Шаблон обновления для заинтересованных сторон",
+      "variables": [
+        {
+          "description": "The project name or description",
+          "displayOrder": 0,
+          "id": "5030BE78-C5FD-4C58-B65D-16177F3DA69D",
+          "name": "project",
+          "optionsValue": "",
+          "typeRawValue": "string"
+        }
+      ],
+      "variants": [
+        {
+          "body": "Write a stakeholder update email for {{project:website redesign}}. Use this structure:\n\n**Subject line** — One sentence with status emoji (green/yellow/red)\n\n**Body:**\n- TLDR (one sentence)\n- Progress since last update (3-5 bullets)\n- Risks and blockers (table: risk, impact, mitigation)\n- Key decisions needed (who, what, by when)\n- Next milestone and date\n\nKeep total length under 200 words. Tone: confident, factual, no filler. Include a tip for adapting the template to weekly vs. monthly cadences.",
+          "displayOrder": 0,
+          "id": "320739E5-413C-4F92-8CEC-0B382A98EA72"
+        }
+      ]
+    },
+    {
+      "categoryId": "builtin.designUX",
+      "categoryName": "Design & UX",
+      "copyCount": 0,
+      "createdDate": "2026-08-12T04:05:53Z",
+      "description": "Architect a scalable color system with semantic tokens, dark mode support, and accessibility compliance.",
+      "id": "B98C0968-B4D9-485E-B206-F9EE5100C9EC",
+      "isArchived": false,
+      "isFavorite": false,
+      "isPinned": false,
+      "modifiedDate": "2026-08-12T04:05:53Z",
+      "tags": [
+        "color",
+        "design system",
+        "tokens"
+      ],
+      "title": "Color System Builder",
+      "variables": [
+        {
+          "description": "The color system builder you want to create",
+          "displayOrder": 0,
+          "id": "EB181653-DD7A-4BAF-B8C1-1D58921592E8",
+          "name": "primaryInput",
+          "optionsValue": "",
+          "typeRawValue": "string"
+        },
+        {
+          "description": "The product or feature you're designing for",
+          "displayOrder": 1,
+          "id": "8EAE258F-1AD7-4A1C-9559-B4644ED6D469",
+          "name": "product",
+          "optionsValue": "",
+          "typeRawValue": "string"
+        },
+        {
+          "description": "What the user is trying to achieve",
+          "displayOrder": 2,
+          "id": "220FB470-B4A0-461B-9865-F2DFC04C7D3E",
+          "name": "userGoal",
+          "optionsValue": "",
+          "typeRawValue": "string"
+        },
+        {
+          "description": "The type of user you're designing for",
+          "displayOrder": 3,
+          "id": "7406C16D-A483-496D-BB5B-31E574CD988B",
+          "name": "userSegment",
+          "optionsValue": "",
+          "typeRawValue": "string"
+        },
+        {
+          "description": "The platform or device your product targets",
+          "displayOrder": 4,
+          "id": "B0B4CE1D-6C5C-47F1-8360-9EED2F6680C0",
+          "name": "platform",
+          "optionsValue": "",
+          "typeRawValue": "string"
+        },
+        {
+          "description": "The main UX problem you're trying to solve",
+          "displayOrder": 5,
+          "id": "504FB19A-7842-492C-A77D-3613E84777C7",
+          "name": "currentProblem",
+          "optionsValue": "",
+          "typeRawValue": "string"
+        },
+        {
+          "description": "Constraints that affect the design solution",
+          "displayOrder": 6,
+          "id": "BA557F2A-E19D-4523-AEAF-2AAB70DB0EB7",
+          "name": "constraints",
+          "optionsValue": "",
+          "typeRawValue": "string"
+        },
+        {
+          "description": "How you'll measure whether the design succeeds",
+          "displayOrder": 7,
+          "id": "C90AE2EE-E5A3-4D4D-8DCC-285EA86F9FBE",
+          "name": "successMetric",
+          "optionsValue": "",
+          "typeRawValue": "string"
+        }
+      ],
+      "variants": [
+        {
+          "body": "Act as a senior product designer and UX researcher who turns user goals into usable, accessible, testable experiences.\n\nMission:\nCreate a color system builder for {{primaryInput}} that elicits behavior, context, pain, workarounds, language, and decision triggers without leading questions. Make it deeply specific to the variables, useful on the first pass, and substantial enough that the user can apply it immediately without asking for a generic follow-up.\n\nContext variables:\n- {{product}} - Use this value to tailor the color system builder to the user's real context.\n- {{userGoal}} - Use this value to tailor the color system builder to the user's real context.\n- {{userSegment}} - Use this value to tailor the color system builder to the user's real context.\n- {{platform}} - Use this value to tailor the color system builder to the user's real context.\n- {{currentProblem}} - Use this value to tailor the color system builder to the user's real context.\n- {{constraints}} - Use this value to tailor the color system builder to the user's real context.\n- {{successMetric}} - Use this value to tailor the color system builder to the user's real context.\n\nWorking process:\n1. Clarify user intent, context, mental model, and current friction.\n2. Map the flow or component from entry point to successful completion.\n3. Evaluate hierarchy, layout, content, interaction states, accessibility, and error recovery.\n4. Propose design improvements with rationale, trade-offs, and implementation notes.\n5. Define how to test the design with users or analytics.\n\nRequired deliverables:\n1. A context brief that restates the goal, audience, constraints, and success criteria for the color system builder.\n2. The main color system builder itself, written in a polished, ready-to-use form rather than a loose outline.\n3. A customization section showing how to adapt the output for at least three different situations, levels, or formats.\n4. A pitfalls section naming what could go wrong, how to avoid it, and what details the user should verify.\n5. A final checklist the user can run before copying, publishing, implementing, generating, or sharing the result.\n\nContext-matching rules:\n- Do not optimize aesthetics at the expense of comprehension or accessibility.\n- Include empty, loading, error, success, and edge states when relevant.\n- Respect platform conventions unless breaking them creates clear value.\n- Make recommendations concrete enough for a designer or engineer to implement.\n\nQuality bar:\n- The output improves a real user task, not just surface polish.\n- Accessibility and content clarity are included by default.\n- Recommendations are prioritized by impact and effort.\n- Testing guidance can validate whether the design works.\n\nOutput format:\nReturn User Goal, Flow or Component Analysis, Recommendations, State Coverage, Accessibility Notes, and Test Plan.\n\nIf important information is missing, add an \"Assumptions\" section with one or two reasonable assumptions, then continue. Do not stall unless the missing information would make the output unsafe, legally risky, medically risky, financially risky, or impossible to tailor.",
+          "displayOrder": 0,
+          "id": "0DF39B4A-09FC-4B87-9B45-4AC05B718F07"
+        }
+      ]
+    },
+    {
+      "categoryId": "builtin.designUX",
+      "categoryName": "Design & UX",
+      "copyCount": 0,
+      "createdDate": "2026-08-12T04:05:38Z",
+      "description": "Define a design strategy that feels native on iOS, Android, and web while maintaining brand consistency.",
+      "id": "CF650AED-D153-4357-BD81-56F0FB1267F7",
+      "isArchived": false,
+      "isFavorite": false,
+      "isPinned": false,
+      "modifiedDate": "2026-08-12T04:05:38Z",
+      "tags": [
+        "cross-platform",
+        "design system",
+        "native"
+      ],
+      "title": "Cross-Platform Design Brief",
+      "variables": [
+        {
+          "description": "The product, service, or offering to focus on",
+          "displayOrder": 0,
+          "id": "B9F0F24E-C293-46BA-9499-90A8C4FB7E89",
+          "name": "product",
+          "optionsValue": "",
+          "typeRawValue": "string"
+        }
+      ],
+      "variants": [
+        {
+          "body": "Write a cross-platform design brief for {{product:a task management app}} shipping on iOS, Android, and web.\n\nAddress:\n1. **Shared DNA** — Brand colors, typography, iconography, and tone of voice that stay consistent\n2. **Platform-native patterns** — Navigation (tab bar on iOS, bottom nav on Android, sidebar on web), back gestures, system fonts\n3. **Component mapping** — How each shared component adapts (e.g. action sheet on iOS → bottom sheet on Android → dropdown on web)\n4. **Spacing and sizing** — 44pt tap targets on iOS, 48dp on Android, hover states on web\n5. **Platform features** — Widgets, Dynamic Island, Android shortcuts, PWA capabilities\n\nDeliver a comparison matrix with three columns (iOS, Android, Web) for the ten most common patterns.",
+          "displayOrder": 0,
+          "id": "F19BDFF7-4D1D-4B55-AA2F-FF02EB15EAB1"
+        }
+      ]
+    },
+    {
+      "categoryId": "builtin.designUX",
+      "categoryName": "Design & UX",
+      "copyCount": 0,
+      "createdDate": "2026-08-12T04:05:25Z",
+      "description": "Systematically compare a built feature against design specs to catch visual and interaction bugs.",
+      "id": "8F16405B-DA94-4E7E-9D3E-329EB12239AA",
+      "isArchived": false,
+      "isFavorite": false,
+      "isPinned": false,
+      "modifiedDate": "2026-08-12T04:05:25Z",
+      "tags": [
+        "qa",
+        "quality",
+        "review"
+      ],
+      "title": "Design QA Checklist",
+      "variables": [],
+      "variants": [
+        {
+          "body": "Design QA checklist for reviewing a built feature against its design spec.\n\nReview areas:\n1. **Layout** — Spacing and sizing match design within 1-2px tolerance\n2. **Typography** — Font, size, weight, line-height match token values\n3. **Colors** — All colors use correct semantic tokens\n4. **States** — Hover, pressed, focused, disabled implemented per spec\n5. **Responsive** — Test at 320, 375, 768, 1024, 1440px widths\n6. **Content** — Test min, average, and max content lengths\n7. **Animation** — Timing and easing match motion spec\n8. **Dark mode** — All elements correct in both themes\n9. **Accessibility** — Screen reader order and labels are correct\n10. **Cross-browser** — Chrome, Safari, Firefox; iOS and Android\n\nFor each issue: screenshot, expected vs. actual, severity (cosmetic, functional, blocking).",
+          "displayOrder": 0,
+          "id": "7FF35C10-4E52-409D-9450-B2DC4A288B7B"
+        }
+      ]
+    },
+    {
+      "categoryId": "builtin.designUX",
+      "categoryName": "Design & UX",
+      "copyCount": 0,
+      "createdDate": "2026-08-12T04:06:03Z",
+      "description": "Create a detailed component design specification that defines anatomy, variants, states, behavior, accessibility, content rules, and implementation notes.",
+      "id": "3266DD51-D79F-4E9A-B3F5-5B7F2B8B6B2A",
+      "isArchived": false,
+      "isFavorite": false,
+      "isPinned": false,
+      "modifiedDate": "2026-08-12T04:06:03Z",
+      "tags": [
+        "UI",
+        "component",
+        "design system",
+        "spec"
+      ],
+      "title": "Design System Component Spec",
+      "variables": [
+        {
+          "description": "The UI component to spec out",
+          "displayOrder": 0,
+          "id": "BBDC80C1-E692-4A8D-A400-60885361FEC3",
+          "name": "primaryInput",
+          "optionsValue": "",
+          "typeRawValue": "string"
+        },
+        {
+          "description": "The product or feature you're designing for",
+          "displayOrder": 1,
+          "id": "88918B2E-5172-4992-AFF8-4A4F1B08E364",
+          "name": "product",
+          "optionsValue": "",
+          "typeRawValue": "string"
+        },
+        {
+          "description": "What the user is trying to achieve",
+          "displayOrder": 2,
+          "id": "C46CE94E-D944-4861-8E4E-EAF7C62126F9",
+          "name": "userGoal",
+          "optionsValue": "",
+          "typeRawValue": "string"
+        },
+        {
+          "description": "The type of user you're designing for",
+          "displayOrder": 3,
+          "id": "02DE481E-8D4F-4AA7-AEAE-CF8C35AB0A41",
+          "name": "userSegment",
+          "optionsValue": "",
+          "typeRawValue": "string"
+        },
+        {
+          "description": "The platform or device your product targets",
+          "displayOrder": 4,
+          "id": "2F62555F-4B87-44F8-BB7D-CEB6476326DD",
+          "name": "platform",
+          "optionsValue": "",
+          "typeRawValue": "string"
+        },
+        {
+          "description": "The main UX problem you're trying to solve",
+          "displayOrder": 5,
+          "id": "0C1B5ED0-5E11-4876-A431-9FF42BC13E4A",
+          "name": "currentProblem",
+          "optionsValue": "",
+          "typeRawValue": "string"
+        },
+        {
+          "description": "Constraints that affect the design solution",
+          "displayOrder": 6,
+          "id": "CA8E8B37-A1AF-4CC6-9ED8-721BF64ED8D8",
+          "name": "constraints",
+          "optionsValue": "",
+          "typeRawValue": "string"
+        },
+        {
+          "description": "How you'll measure whether the design succeeds",
+          "displayOrder": 7,
+          "id": "18D750D0-014E-4560-AF69-70D2107AE9C1",
+          "name": "successMetric",
+          "optionsValue": "",
+          "typeRawValue": "string"
+        }
+      ],
+      "variants": [
+        {
+          "body": "Act as a senior product designer and UX researcher who turns user goals into usable, accessible, testable experiences.\n\nMission:\nCreate a component design specification for {{primaryInput}} that defines anatomy, variants, states, behavior, accessibility, content rules, and implementation notes. Make it deeply specific to the variables, useful on the first pass, and substantial enough that the user can apply it immediately without asking for a generic follow-up.\n\nContext variables:\n- {{product}} - Use this value to tailor the component design specification to the user's real context.\n- {{userGoal}} - Use this value to tailor the component design specification to the user's real context.\n- {{userSegment}} - Use this value to tailor the component design specification to the user's real context.\n- {{platform}} - Use this value to tailor the component design specification to the user's real context.\n- {{currentProblem}} - Use this value to tailor the component design specification to the user's real context.\n- {{constraints}} - Use this value to tailor the component design specification to the user's real context.\n- {{successMetric}} - Use this value to tailor the component design specification to the user's real context.\n\nWorking process:\n1. Clarify user intent, context, mental model, and current friction.\n2. Map the flow or component from entry point to successful completion.\n3. Evaluate hierarchy, layout, content, interaction states, accessibility, and error recovery.\n4. Propose design improvements with rationale, trade-offs, and implementation notes.\n5. Define how to test the design with users or analytics.\n\nRequired deliverables:\n1. A context brief that restates the goal, audience, constraints, and success criteria for the component design specification.\n2. The main component design specification itself, written in a polished, ready-to-use form rather than a loose outline.\n3. A customization section showing how to adapt the output for at least three different situations, levels, or formats.\n4. A pitfalls section naming what could go wrong, how to avoid it, and what details the user should verify.\n5. A final checklist the user can run before copying, publishing, implementing, generating, or sharing the result.\n\nContext-matching rules:\n- Do not optimize aesthetics at the expense of comprehension or accessibility.\n- Include empty, loading, error, success, and edge states when relevant.\n- Respect platform conventions unless breaking them creates clear value.\n- Make recommendations concrete enough for a designer or engineer to implement.\n\nQuality bar:\n- The output improves a real user task, not just surface polish.\n- Accessibility and content clarity are included by default.\n- Recommendations are prioritized by impact and effort.\n- Testing guidance can validate whether the design works.\n\nOutput format:\nReturn User Goal, Flow or Component Analysis, Recommendations, State Coverage, Accessibility Notes, and Test Plan.\n\nIf important information is missing, add an \"Assumptions\" section with one or two reasonable assumptions, then continue. Do not stall unless the missing information would make the output unsafe, legally risky, medically risky, financially risky, or impossible to tailor.",
+          "displayOrder": 0,
+          "id": "F7393C73-4481-4E74-99D0-1160A1703976"
+        }
+      ]
+    },
+    {
+      "categoryId": "builtin.designUX",
+      "categoryName": "Design & UX",
+      "copyCount": 0,
+      "createdDate": "2026-08-12T04:06:09Z",
+      "description": "Architect a multi-layer design token system that bridges design tools and code.",
+      "id": "13468518-05B3-45CE-9D5E-44D7D3B13890",
+      "isArchived": false,
+      "isFavorite": false,
+      "isPinned": false,
+      "modifiedDate": "2026-08-12T04:06:09Z",
+      "tags": [
+        "design system",
+        "theming",
+        "tokens"
+      ],
+      "title": "Design Token System",
+      "variables": [
+        {
+          "description": "The design token system you want to create",
+          "displayOrder": 0,
+          "id": "F8EEC87C-E454-464D-BF77-1BD943028024",
+          "name": "primaryInput",
+          "optionsValue": "",
+          "typeRawValue": "string"
+        },
+        {
+          "description": "The product or feature you're designing for",
+          "displayOrder": 1,
+          "id": "112F5F18-6763-4ADE-B995-15DF56867094",
+          "name": "product",
+          "optionsValue": "",
+          "typeRawValue": "string"
+        },
+        {
+          "description": "What the user is trying to achieve",
+          "displayOrder": 2,
+          "id": "06BC0F04-A7DA-4E72-8AD8-116C45918686",
+          "name": "userGoal",
+          "optionsValue": "",
+          "typeRawValue": "string"
+        },
+        {
+          "description": "The type of user you're designing for",
+          "displayOrder": 3,
+          "id": "0800A9B2-786B-4517-93D1-0F7BF980A05D",
+          "name": "userSegment",
+          "optionsValue": "",
+          "typeRawValue": "string"
+        },
+        {
+          "description": "The platform or device your product targets",
+          "displayOrder": 4,
+          "id": "4FCF6D12-7034-4D0D-B4D8-12B84BFBD1FB",
+          "name": "platform",
+          "optionsValue": "",
+          "typeRawValue": "string"
+        },
+        {
+          "description": "The main UX problem you're trying to solve",
+          "displayOrder": 5,
+          "id": "74F4CE92-787C-4DE4-B2B1-8FD4CDAFE748",
+          "name": "currentProblem",
+          "optionsValue": "",
+          "typeRawValue": "string"
+        },
+        {
+          "description": "Constraints that affect the design solution",
+          "displayOrder": 6,
+          "id": "FC5AE018-5C77-4488-A5F6-F7AD8DF794E9",
+          "name": "constraints",
+          "optionsValue": "",
+          "typeRawValue": "string"
+        },
+        {
+          "description": "How you'll measure whether the design succeeds",
+          "displayOrder": 7,
+          "id": "A29BA129-0A9D-4676-B796-96D98845985F",
+          "name": "successMetric",
+          "optionsValue": "",
+          "typeRawValue": "string"
+        }
+      ],
+      "variants": [
+        {
+          "body": "Act as a senior product designer and UX researcher who turns user goals into usable, accessible, testable experiences.\n\nMission:\nCreate a design token system for {{primaryInput}} that elicits behavior, context, pain, workarounds, language, and decision triggers without leading questions. Make it deeply specific to the variables, useful on the first pass, and substantial enough that the user can apply it immediately without asking for a generic follow-up.\n\nContext variables:\n- {{product}} - Use this value to tailor the design token system to the user's real context.\n- {{userGoal}} - Use this value to tailor the design token system to the user's real context.\n- {{userSegment}} - Use this value to tailor the design token system to the user's real context.\n- {{platform}} - Use this value to tailor the design token system to the user's real context.\n- {{currentProblem}} - Use this value to tailor the design token system to the user's real context.\n- {{constraints}} - Use this value to tailor the design token system to the user's real context.\n- {{successMetric}} - Use this value to tailor the design token system to the user's real context.\n\nWorking process:\n1. Clarify user intent, context, mental model, and current friction.\n2. Map the flow or component from entry point to successful completion.\n3. Evaluate hierarchy, layout, content, interaction states, accessibility, and error recovery.\n4. Propose design improvements with rationale, trade-offs, and implementation notes.\n5. Define how to test the design with users or analytics.\n\nRequired deliverables:\n1. A context brief that restates the goal, audience, constraints, and success criteria for the design token system.\n2. The main design token system itself, written in a polished, ready-to-use form rather than a loose outline.\n3. A customization section showing how to adapt the output for at least three different situations, levels, or formats.\n4. A pitfalls section naming what could go wrong, how to avoid it, and what details the user should verify.\n5. A final checklist the user can run before copying, publishing, implementing, generating, or sharing the result.\n\nContext-matching rules:\n- Do not optimize aesthetics at the expense of comprehension or accessibility.\n- Include empty, loading, error, success, and edge states when relevant.\n- Respect platform conventions unless breaking them creates clear value.\n- Make recommendations concrete enough for a designer or engineer to implement.\n\nQuality bar:\n- The output improves a real user task, not just surface polish.\n- Accessibility and content clarity are included by default.\n- Recommendations are prioritized by impact and effort.\n- Testing guidance can validate whether the design works.\n\nOutput format:\nReturn User Goal, Flow or Component Analysis, Recommendations, State Coverage, Accessibility Notes, and Test Plan.\n\nIf important information is missing, add an \"Assumptions\" section with one or two reasonable assumptions, then continue. Do not stall unless the missing information would make the output unsafe, legally risky, medically risky, financially risky, or impossible to tailor.",
+          "displayOrder": 0,
+          "id": "0B64A4F1-7B56-4D21-8392-133C109272B8"
+        }
+      ]
+    },
+    {
+      "categoryId": "builtin.designUX",
+      "categoryName": "Design & UX",
+      "copyCount": 0,
+      "createdDate": "2026-08-12T04:05:42Z",
+      "description": "Redesign forms to reduce abandonment and improve completion rates.",
+      "id": "46BBA958-B810-4B33-B599-671D61E65955",
+      "isArchived": false,
+      "isFavorite": false,
+      "isPinned": false,
+      "modifiedDate": "2026-08-12T04:05:42Z",
+      "tags": [
+        "conversion",
+        "forms",
+        "usability"
+      ],
+      "title": "Form Design Optimizer",
+      "variables": [
+        {
+          "description": "The type of form to optimize (signup, checkout, survey, etc.)",
+          "displayOrder": 0,
+          "id": "7F1C0968-C12F-4819-A0D2-578042B31D91",
+          "name": "formType",
+          "optionsValue": "",
+          "typeRawValue": "string"
+        }
+      ],
+      "variants": [
+        {
+          "body": "Analyze and optimize a {{formType:sign-up}} form for better completion rates.\n\nAudit checklist:\n1. **Field count** — Can any fields be removed, combined, or deferred to later?\n2. **Input types** — Are you using the right keyboard (email, tel, numeric) for each field?\n3. **Labels** — Floating labels or top-aligned? Consistent placement.\n4. **Validation** — Inline real-time validation, not after submit\n5. **Error messages** — Specific and actionable ('Password needs 1 number') not vague ('Invalid input')\n6. **Progress** — Multi-step forms need a progress indicator\n7. **Mobile** — Thumb-reachable submit button, no horizontal scrolling\n8. **Autofill** — Correct autocomplete attributes for browser autofill\n\nFor each recommendation explain the expected impact on conversion rate.",
+          "displayOrder": 0,
+          "id": "B79E94F2-3482-4E7F-A4B7-6C3F81AD3059"
+        }
+      ]
+    },
+    {
+      "copyCount": 0,
+      "createdDate": "2026-08-10T19:35:44Z",
+      "description": "",
+      "id": "A70C0A50-B923-4697-AE51-38E94DD77AE2",
+      "isArchived": false,
+      "isFavorite": false,
+      "isPinned": false,
+      "modifiedDate": "2026-08-10T19:35:44Z",
+      "tags": [],
+      "title": "Grok",
+      "variables": [],
+      "variants": [
+        {
+          "body": "Frhrhrh",
+          "displayOrder": 0,
+          "id": "7E0BE917-6287-4263-8DA4-CCE6C9173B95"
+        }
+      ]
+    }
+  ]
+}

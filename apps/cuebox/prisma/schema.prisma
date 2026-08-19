@@ -1,0 +1,68 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DATABASE_URL_UNPOOLED")
+}
+
+model User {
+  id           String         @id @default(cuid())
+  email        String         @unique
+  passwordHash String
+  createdAt    DateTime       @default(now())
+  items        LibraryItem[]
+  collections  Collection[]
+}
+
+model Collection {
+  id          String        @id @default(cuid())
+  name        String
+  userId      String
+  user        User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  parentId    String?
+  parent      Collection?   @relation("FolderTree", fields: [parentId], references: [id], onDelete: Cascade)
+  children    Collection[]  @relation("FolderTree")
+  /// Stable id for system-seeded folders (e.g. chatgpt)
+  slug        String?
+  /// Optional outbound link (e.g. ChatGPT web app)
+  externalUrl String?
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+  items       LibraryItem[]
+
+  @@index([userId])
+  @@index([parentId])
+  @@unique([userId, slug])
+}
+
+model LibraryItem {
+  id              String      @id @default(cuid())
+  userId          String
+  user            User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  collectionId    String?
+  collection      Collection? @relation(fields: [collectionId], references: [id], onDelete: SetNull)
+  kind            String
+  title           String
+  body            String
+  tags            String      @default("[]")
+  messages        String?
+  favorite        Boolean     @default(false)
+  archived        Boolean     @default(false)
+  copyCount       Int         @default(0)
+  lastUsedAt      DateTime?
+  models          String      @default("[]")
+  variableDefs    String      @default("[]")
+  variants        String      @default("[]")
+  activeVariantId String?
+  preset          String      @default("{}")
+  createdAt       DateTime    @default(now())
+  updatedAt       DateTime    @updatedAt
+
+  @@index([userId])
+  @@index([collectionId])
+  @@index([userId, kind])
+  @@index([userId, archived])
+}

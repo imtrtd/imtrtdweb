@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="Cuebox">
+  <defs>
+    <linearGradient id="bg" x1="10" y1="7" x2="55" y2="58" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#B276FF"/>
+      <stop offset="0.52" stop-color="#7133C7"/>
+      <stop offset="1" stop-color="#35135F"/>
+    </linearGradient>
+    <radialGradient id="shine" cx="0" cy="0" r="1" gradientTransform="translate(17 12) rotate(48) scale(36)">
+      <stop stop-color="#FFFFFF" stop-opacity=".28"/>
+      <stop offset="1" stop-color="#FFFFFF" stop-opacity="0"/>
+    </radialGradient>
+    <filter id="shadow" x="-30%" y="-30%" width="160%" height="160%">
+      <feDropShadow dx="0" dy="4" stdDeviation="4" flood-color="#1B082F" flood-opacity=".45"/>
+    </filter>
+  </defs>
+  <rect x="5" y="5" width="54" height="54" rx="17" fill="url(#bg)" filter="url(#shadow)"/>
+  <rect x="5.5" y="5.5" width="53" height="53" rx="16.5" fill="none" stroke="#E7D5FF" stroke-opacity=".2"/>
+  <rect x="5" y="5" width="54" height="54" rx="17" fill="url(#shine)"/>
+  <path d="M41.5 23.7a13.7 13.7 0 1 0 0 16.6" fill="none" stroke="#FFF" stroke-width="6.2" stroke-linecap="round"/>
+  <circle cx="43.5" cy="43.5" r="3.2" fill="#EEE2FF"/>
+</svg>
