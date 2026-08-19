@@ -1,6 +1,7 @@
 /**
- * Production Worker for Unitl@proton.me account (active domain zone).
- * Uses Durable Object SQLite store instead of D1 (token lacks D1 permission).
+ * Cloudflare Worker config for imtrtdweb studio app.
+ * Primary account: b6f57d806… (D1 + workers.dev).
+ * Falls back to Durable Object SQLite when DB binding is absent.
  */
 {
 	"$schema": "node_modules/wrangler/config-schema.json",
@@ -16,6 +17,13 @@
 	"observability": {
 		"enabled": true
 	},
+	"d1_databases": [
+		{
+			"binding": "DB",
+			"database_name": "imtrtdweb",
+			"database_id": "64e84c88-3ece-4f03-afe0-cf4dd9bef52b"
+		}
+	],
 	"durable_objects": {
 		"bindings": [
 			{
