@@ -1,0 +1,139 @@
+- main [ref=e2]:
+  - generic [ref=e3]:
+    - link "ImTryingToDesign home" [ref=e4] [cursor=pointer]:
+      - /url: "#top"
+      - generic [ref=e5]: I/TD
+      - generic [ref=e6]: IMTRYINGTODESIGN.COM
+    - generic [ref=e7]: AVAILABLE FOR Q4 2026
+    - navigation "Main navigation" [ref=e9]:
+      - link "WORK" [ref=e10] [cursor=pointer]:
+        - /url: "#work"
+      - link "SERVICES" [ref=e11] [cursor=pointer]:
+        - /url: "#services"
+      - link "CHANGELOG" [ref=e12] [cursor=pointer]:
+        - /url: "#changelog"
+      - link "CONTACT ↗" [ref=e13] [cursor=pointer]:
+        - /url: mailto:admin@imtryingtodesign.com
+  - generic [ref=e14]:
+    - generic [ref=e15]: INDEPENDENT WEB DEVELOPMENTKYIV / REMOTE / 50.4501° N
+    - heading "DIGITAL EXPERIENCES WITH A PULSE." [level=1] [ref=e20]:
+      - generic [ref=e21]: DIGITAL
+      - generic [ref=e22]: EXPERIENCES
+      - generic [ref=e23]: WITH A PULSE.
+    - generic [ref=e24]:
+      - paragraph [ref=e25]: I design and build expressive websites for independent studios, cafés, artists and small brands that refuse to look generic.
+      - link "Explore selected work" [ref=e26] [cursor=pointer]:
+        - /url: "#work"
+        - text: EXPLOREWORK
+        - generic [ref=e27]: ↓
+    - generic [ref=e28]: SCROLL_TO_EXPLORE [000—100]
+  - generic [ref=e29]:
+    - paragraph [ref=e30]: // WHAT I DO
+    - heading [level=2] [ref=e31]:
+      - text: SMALL TEAM.BIG
+      - emphasis [ref=e32]: ENERGY.
+    - generic [ref=e33]:
+      - paragraph [ref=e34]: No bloated agency process. One person from first sketch to final deployment—strategy, interface, code and motion in one continuous system.
+      - text: "[ DESIGN × DEVELOPMENT × DIRECTION ]"
+  - generic [ref=e35]:
+    - generic [ref=e36]:
+      - paragraph [ref=e37]: // SELECTED WORK
+      - generic [ref=e38]: 03 CASES / 2025—26
+    - article [ref=e39]:
+      - generic [ref=e40]: /01
+      - generic [ref=e41]:
+        - paragraph [ref=e42]: TATTOO STUDIO / BOOKING
+        - heading "NAMENLOS" [level=3] [ref=e43]
+      - paragraph [ref=e44]: Identity-led website that turns a raw visual language into a clear booking flow.
+      - generic [ref=e45]: ↗
+    - article [ref=e46]:
+      - generic [ref=e47]: /02
+      - generic [ref=e48]:
+        - paragraph [ref=e49]: EVENT SERIES / TICKETS
+        - heading "NACHTWERK" [level=3] [ref=e50]
+      - paragraph [ref=e51]: Fast, atmospheric event page built around line-ups, motion and conversion.
+      - generic [ref=e52]: ↗
+    - article [ref=e53]:
+      - generic [ref=e54]: /03
+      - generic [ref=e55]:
+        - paragraph [ref=e56]: CAFÉ / LOCAL COMMERCE
+        - heading "KIOSK 23" [level=3] [ref=e57]
+      - paragraph [ref=e58]: A compact digital home for a small space with a loud point of view.
+      - generic [ref=e59]: ↗
+  - generic [ref=e60]:
+    - generic [ref=e61]:
+      - paragraph [ref=e62]: // CAPABILITIES
+      - heading "FROM ZERO TO ONLINE." [level=2] [ref=e63]: FROM ZEROTO ONLINE.
+    - generic [ref=e64]:
+      - generic [ref=e65]:
+        - generic [ref=e66]: "01"
+        - heading "WEB DESIGN" [level=3] [ref=e67]
+        - paragraph [ref=e68]: Visual systems, responsive interfaces and prototypes.
+      - generic [ref=e69]:
+        - generic [ref=e70]: "02"
+        - heading "DEVELOPMENT" [level=3] [ref=e71]
+        - paragraph [ref=e72]: Fast, accessible builds with clean interactions.
+      - generic [ref=e73]:
+        - generic [ref=e74]: "03"
+        - heading "CREATIVE DIRECTION" [level=3] [ref=e75]
+        - paragraph [ref=e76]: A coherent digital voice, not another template.
+      - generic [ref=e77]:
+        - generic [ref=e78]: "04"
+        - heading "CARE & EVOLUTION" [level=3] [ref=e79]
+        - paragraph [ref=e80]: Launch support, improvements and new releases.
+  - generic [ref=e81]:
+    - generic [ref=e82]:
+      - generic [ref=e87]: ~/imtryingtodesign/changelog.log
+      - generic [ref=e88]: LIVE
+    - generic [ref=e89]:
+      - paragraph [ref=e90]: // BUILD IN PUBLIC
+      - heading "CHANGE LOG_" [level=2] [ref=e91]: CHANGELOG_
+      - paragraph [ref=e92]: Websites are never truly finished. Here’s what changed, what improved and what shipped.
+    - generic [ref=e93]:
+      - article [ref=e94]:
+        - generic [ref=e95]:
+          - generic [ref=e96]: v1.4.0
+          - time [ref=e97]: 08.08.26
+        - generic [ref=e98]:
+          - heading "IMMERSION UPDATENEW" [level=3] [ref=e99]
+          - paragraph [ref=e100]: + cursor-reactive light field
+          - paragraph [ref=e101]: + project reveal transitions
+          - paragraph [ref=e102]: + confetti contact trigger
+      - article [ref=e103]:
+        - generic [ref=e104]:
+          - generic [ref=e105]: v1.3.2
+          - time [ref=e106]: 31.07.26
+        - generic [ref=e107]:
+          - heading "SYSTEM POLISH" [level=3] [ref=e108]
+          - paragraph [ref=e109]: + reduced motion mode
+          - paragraph [ref=e110]: + mobile navigation pass
+          - paragraph [ref=e111]: + sharper type rhythm
+      - article [ref=e112]:
+        - generic [ref=e113]:
+          - generic [ref=e114]: v1.3.0
+          - time [ref=e115]: 18.07.26
+        - generic [ref=e116]:
+          - heading "PROJECT ARCHIVE" [level=3] [ref=e117]
+          - paragraph [ref=e118]: + case-study grid
+          - paragraph [ref=e119]: + service modules
+          - paragraph [ref=e120]: + bilingual structure
+  - generic [ref=e121]:
+    - generic [ref=e122]: ACCEPTING SELECT PROJECTS / Q4 2026
+    - paragraph [ref=e124]: // HAVE A PROJECT?
+    - heading "LET'S MAKE SOMETHING UNMISSABLE." [level=2] [ref=e125]: LET'S MAKESOMETHINGUNMISSABLE.
+    - link "START A PROJECT ↗" [ref=e126] [cursor=pointer]:
+      - /url: mailto:admin@imtryingtodesign.com
+      - text: START A PROJECT
+      - generic [ref=e127]: ↗
+    - generic [ref=e128]:
+      - generic [ref=e129]: © 2026 IMTRYINGTODESIGN
+      - generic [ref=e130]: KYIV / REMOTE
+      - generic [ref=e131]:
+        - 'link "TG: @IMTRTD" [ref=e132] [cursor=pointer]':
+          - /url: https://t.me/IMTRTD
+        - link "+1 973 381 5151" [ref=e133] [cursor=pointer]:
+          - /url: tel:+19733815151
+        - 'link "IG: @IMTRYINGTODESIGN" [ref=e134] [cursor=pointer]':
+          - /url: https://www.instagram.com/imtryingtodesign
+        - link "BACK TO TOP ↑" [ref=e135] [cursor=pointer]:
+          - /url: "#top"

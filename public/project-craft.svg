@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 1200" width="1600" height="1200" role="img" aria-hidden="true">
+  <defs>
+    <linearGradient id="craft" x1="0" y1="1" x2="1" y2="0">
+      <stop offset="0" stop-color="#cfc8b8"/>
+      <stop offset=".45" stop-color="#f0eee7"/>
+      <stop offset="1" stop-color="#2148ff"/>
+    </linearGradient>
+  </defs>
+  <rect width="1600" height="1200" fill="url(#craft)"/>
+  <rect x="180" y="220" width="520" height="760" fill="#080807" opacity=".88"/>
+  <rect x="220" y="280" width="440" height="280" fill="#d8ff37"/>
+  <rect x="220" y="590" width="440" height="18" fill="#f0eee7" opacity=".35"/>
+  <rect x="220" y="640" width="300" height="12" fill="#f0eee7" opacity=".25"/>
+  <circle cx="1180" cy="420" r="210" fill="none" stroke="#080807" stroke-width="18"/>
+  <circle cx="1180" cy="420" r="8" fill="#ff5c44"/>
+</svg>

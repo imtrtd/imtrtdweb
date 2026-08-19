@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 1200" width="1600" height="1200" role="img" aria-hidden="true">
+  <defs>
+    <linearGradient id="night" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#1a0708"/>
+      <stop offset=".55" stop-color="#3a0f12"/>
+      <stop offset="1" stop-color="#ff5c44"/>
+    </linearGradient>
+  </defs>
+  <rect width="1600" height="1200" fill="url(#night)"/>
+  <path fill="#080807" d="M0 740c180-80 340-40 520 40 210 90 390 70 560-20 150-80 340-90 520 10v430H0z" opacity=".55"/>
+  <path fill="none" stroke="#d8ff37" stroke-width="10" d="M180 260c120 180 80 420-40 620"/>
+  <path fill="none" stroke="#f0eee7" stroke-width="3" opacity=".4" d="M280 200c40 160 20 360-60 540"/>
+  <circle cx="1180" cy="340" r="160" fill="#2148ff" opacity=".18"/>
+  <text x="980" y="820" fill="#f0eee7" font-size="220" font-family="Georgia, serif" font-style="italic" opacity=".9">N</text>
+</svg>

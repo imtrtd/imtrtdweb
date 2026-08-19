@@ -1,0 +1,27 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 920" width="720" height="920">
+  <defs>
+    <linearGradient id="chrome" x1="0.15" y1="0" x2="0.9" y2="1">
+      <stop offset="0" stop-color="#f7fbff"/>
+      <stop offset=".18" stop-color="#9eb6ff"/>
+      <stop offset=".42" stop-color="#2148ff"/>
+      <stop offset=".68" stop-color="#ff6a52"/>
+      <stop offset="1" stop-color="#3a1214"/>
+    </linearGradient>
+    <linearGradient id="sheen" x1="0.2" y1="0" x2="0.8" y2="1">
+      <stop offset="0" stop-color="#ffffff" stop-opacity=".85"/>
+      <stop offset=".35" stop-color="#2148ff" stop-opacity=".08"/>
+      <stop offset="1" stop-color="#ff5c44" stop-opacity=".28"/>
+    </linearGradient>
+    <filter id="glow" x="-25%" y="-25%" width="150%" height="150%">
+      <feGaussianBlur stdDeviation="18" result="b"/>
+      <feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+  </defs>
+  <g filter="url(#glow)">
+    <path fill="url(#chrome)" d="M390 48c118 28 228 148 248 318-8 188-92 268-228 348-152 88-278 28-338-92-48-92 2-214 92-278 44-34 52-98 18-152 46-96 148-156 208-144z"/>
+    <path fill="url(#sheen)" d="M368 142c92 18 168 96 188 196-18 124-96 188-196 228-102 42-186 4-218-82-24-66 12-132 78-164 34-22 44-78 20-122 34-54 86-70 128-56z"/>
+    <path fill="none" stroke="#d8ff37" stroke-opacity=".4" stroke-width="1.4" d="M156 390c96-138 248-198 392-118"/>
+    <circle cx="228" cy="268" r="7" fill="#d8ff37"/>
+    <circle cx="548" cy="512" r="4" fill="#f0eee7" opacity=".75"/>
+  </g>
+</svg>

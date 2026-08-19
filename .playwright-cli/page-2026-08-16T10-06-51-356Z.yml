@@ -1,0 +1,181 @@
+- main [ref=e2]:
+  - generic [ref=e3]:
+    - link "ImTryingToDesign home" [ref=e4] [cursor=pointer]:
+      - /url: "#top"
+      - img "I slash TD monogram" [ref=e5]
+    - navigation "Main navigation" [ref=e12]:
+      - link "Work" [ref=e13] [cursor=pointer]:
+        - /url: "#work"
+      - link "Studio" [ref=e14] [cursor=pointer]:
+        - /url: "#studio"
+      - link "Services" [ref=e15] [cursor=pointer]:
+        - /url: "#services"
+      - link "Start a project ↗" [ref=e16] [cursor=pointer]:
+        - /url: mailto:admin@imtryingtodesign.com
+        - text: Start a project
+        - generic [ref=e17]: ↗
+    - button "Close" [expanded] [active] [ref=e178]
+  - generic [ref=e18]:
+    - generic [ref=e19]:
+      - paragraph [ref=e20]: 01 Design with intent.Code with character.
+      - heading "WE MAKE digital FEEL ALIVE." [level=1] [ref=e21]:
+        - generic [ref=e22]: WE MAKE
+        - generic [ref=e23]: digital
+        - generic [ref=e24]: FEEL ALIVE.
+      - generic [ref=e25]:
+        - paragraph [ref=e26]: Distinctive websites for people building something worth noticing. Strategy, interface, code and motion—one continuous thought.
+        - link "View selected work ↓" [ref=e27] [cursor=pointer]:
+          - /url: "#work"
+          - generic [ref=e28]: View selected work
+          - generic [ref=e29]: ↓
+    - generic [ref=e31]:
+      - img "Abstract chrome and glass sculpture illuminated in cobalt and coral" [ref=e32]
+      - generic [ref=e33]: I/TD — 001
+      - generic [ref=e34]: FORM / SYSTEM / ENERGY
+  - generic "Studio capabilities" [ref=e36]:
+    - generic [ref=e37]:
+      - generic [ref=e38]: ART DIRECTION
+      - generic [ref=e39]: ✦
+      - generic [ref=e40]: WEB DESIGN
+      - generic [ref=e41]: ✦
+      - generic [ref=e42]: CREATIVE DEVELOPMENT
+      - generic [ref=e43]: ✦
+      - generic [ref=e44]: MOTION
+      - generic [ref=e45]: ✦
+      - generic [ref=e46]: ART DIRECTION
+      - generic [ref=e47]: ✦
+      - generic [ref=e48]: WEB DESIGN
+      - generic [ref=e49]: ✦
+      - generic [ref=e50]: CREATIVE DEVELOPMENT
+      - generic [ref=e51]: ✦
+      - generic [ref=e52]: MOTION
+      - generic [ref=e53]: ✦
+  - generic [ref=e54]:
+    - generic [ref=e55]:
+      - generic [ref=e56]: "02"
+      - paragraph [ref=e57]: Independent by design
+    - generic [ref=e58]:
+      - heading [level=2] [ref=e59]:
+        - text: Small studio.Unusually
+        - emphasis [ref=e60]: big
+        - text: energy.
+      - generic [ref=e61]:
+        - paragraph [ref=e62]: You work directly with the person shaping the idea and building the product. Less ceremony. Better decisions. A result that actually feels like you.
+        - generic [ref=e63]: One partner—from blank page to live URL.
+  - generic [ref=e64]:
+    - generic [ref=e65]:
+      - generic [ref=e66]:
+        - generic [ref=e67]: "03"
+        - paragraph [ref=e68]: Selected work
+      - heading [level=2] [ref=e69]:
+        - text: Built to be
+        - emphasis [ref=e70]: remembered.
+      - paragraph [ref=e71]: 03 / 2025—26
+    - generic [ref=e72]:
+      - article [ref=e73]:
+        - generic [ref=e74]:
+          - img "Original art direction for Namenlos" [ref=e75]
+          - generic [ref=e76]: /01
+          - generic [ref=e77]:
+            - text: Open case
+            - generic [ref=e78]: ↗
+        - generic [ref=e79]:
+          - paragraph [ref=e80]: Digital identity / Booking / Motion
+          - heading "Namenlos" [level=3] [ref=e81]
+          - paragraph [ref=e82]: A raw, conversion-focused home for a tattoo studio that treats every interaction like a mark on skin.
+      - article [ref=e83]:
+        - generic [ref=e84]:
+          - img "Original art direction for Kiosk 23" [ref=e85]
+          - generic [ref=e86]: /02
+          - generic [ref=e87]:
+            - text: Open case
+            - generic [ref=e88]: ↗
+        - generic [ref=e89]:
+          - paragraph [ref=e90]: Strategy / Commerce / Art direction
+          - heading "Kiosk 23" [level=3] [ref=e91]
+          - paragraph [ref=e92]: A compact digital system for a small place with a big personality—built for daily updates and repeat visits.
+      - article [ref=e93]:
+        - generic [ref=e94]:
+          - generic [ref=e95]:
+            - generic [ref=e96]: "N"
+            - generic [ref=e97]: W
+          - generic [ref=e99]: /03
+          - generic [ref=e100]:
+            - text: Open case
+            - generic [ref=e101]: ↗
+        - generic [ref=e102]:
+          - paragraph [ref=e103]: Campaign / Tickets / Creative code
+          - heading "Nachtwerk" [level=3] [ref=e104]
+          - paragraph [ref=e105]: A fast, atmospheric event platform where line-ups, rhythm and ticket conversion share the same pulse.
+  - generic [ref=e106]:
+    - generic [ref=e107]:
+      - generic [ref=e108]:
+        - generic [ref=e109]: "04"
+        - paragraph [ref=e110]: Capabilities
+      - heading [level=2] [ref=e111]:
+        - text: From first signalto
+        - emphasis [ref=e112]: full volume.
+      - paragraph [ref=e113]: A joined-up process where strategy informs design, design anticipates code, and motion carries the idea through.
+    - generic [ref=e114]:
+      - article [ref=e115]:
+        - generic [ref=e116]: "01"
+        - heading "Direction" [level=3] [ref=e117]
+        - paragraph [ref=e118]: Positioning, visual language and a sharp digital point of view.
+        - generic [ref=e119]: ↗
+      - article [ref=e120]:
+        - generic [ref=e121]: "02"
+        - heading "Design" [level=3] [ref=e122]
+        - paragraph [ref=e123]: Responsive interfaces, design systems and high-fidelity prototypes.
+        - generic [ref=e124]: ↗
+      - article [ref=e125]:
+        - generic [ref=e126]: "03"
+        - heading "Development" [level=3] [ref=e127]
+        - paragraph [ref=e128]: Fast, accessible builds with expressive motion and clean code.
+        - generic [ref=e129]: ↗
+      - article [ref=e130]:
+        - generic [ref=e131]: "04"
+        - heading "Evolution" [level=3] [ref=e132]
+        - paragraph [ref=e133]: Launch support, experiments and the next useful version.
+        - generic [ref=e134]: ↗
+  - generic [ref=e135]:
+    - generic [ref=e136]:
+      - generic [ref=e137]: "05"
+      - paragraph [ref=e138]: A clear way through
+    - generic [ref=e139]:
+      - article [ref=e140]:
+        - generic [ref=e141]: "01"
+        - heading "Discover" [level=3] [ref=e142]
+        - paragraph [ref=e143]: Find the real opportunity and the sharpest story.
+        - generic [ref=e144]: →
+      - article [ref=e145]:
+        - generic [ref=e146]: "02"
+        - heading "Define" [level=3] [ref=e147]
+        - paragraph [ref=e148]: Turn strategy into a flexible visual and interaction system.
+        - generic [ref=e149]: →
+      - article [ref=e150]:
+        - generic [ref=e151]: "03"
+        - heading "Deliver" [level=3] [ref=e152]
+        - paragraph [ref=e153]: Build, refine, test and launch with care.
+        - generic [ref=e154]: →
+  - generic [ref=e155]:
+    - paragraph [ref=e157]: Booking selected projectsfor Q4 2026
+    - generic [ref=e160]:
+      - paragraph [ref=e161]: Have a project in mind?
+      - heading [level=2] [ref=e162]:
+        - text: LET'S MAKE
+        - emphasis [ref=e163]: SOMETHING
+        - text: UNMISSABLE.
+      - link "Start a project ↗" [ref=e164] [cursor=pointer]:
+        - /url: mailto:admin@imtryingtodesign.com
+        - generic [ref=e165]: Start a project
+        - generic [ref=e166]: ↗
+    - generic [ref=e167]:
+      - img "I slash TD monogram" [ref=e168]
+      - paragraph [ref=e172]: © 2026 IMTRYINGTODESIGN
+      - generic [ref=e173]:
+        - link "Telegram ↗" [ref=e174] [cursor=pointer]:
+          - /url: https://t.me/IMTRTD
+        - link "Instagram ↗" [ref=e175] [cursor=pointer]:
+          - /url: https://www.instagram.com/imtryingtodesign
+        - link "Back to top ↑" [ref=e176] [cursor=pointer]:
+          - /url: "#top"

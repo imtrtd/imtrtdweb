@@ -1,0 +1,12 @@
+- generic [active] [ref=e1]:
+  - article
+  - generic [ref=e8]:
+    - link "imtryingtodesign - Cloudflare Access" [ref=e9] [cursor=pointer]:
+      - /url: ""
+    - heading "Log in to imtryingtodesign - Cloudflare Workers" [level=1] [ref=e12]
+    - generic [ref=e15]:
+      - generic [ref=e16]:
+        - generic [ref=e17]: Email
+        - textbox "Email" [ref=e18]:
+          - /placeholder: example@email.com
+      - button "Send login code" [ref=e20] [cursor=pointer]
