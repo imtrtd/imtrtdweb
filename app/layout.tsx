@@ -10,8 +10,8 @@ export const metadata: Metadata = {
   description: "Distinctive websites, art direction and creative development for ambitious brands worth noticing.",
   other: { "codex-preview": "development" },
   icons: {
-    icon: [{ url: "/favicon.svg?v=2", type: "image/svg+xml" }],
-    shortcut: "/favicon.svg?v=2",
+    icon: [{ url: "/favicon.svg?v=3", type: "image/svg+xml" }],
+    shortcut: "/favicon.svg?v=3",
   },
 };
 

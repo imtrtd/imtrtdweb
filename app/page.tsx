@@ -1,6 +1,8 @@
 "use client";
 
 import { useEffect, useRef, useState, type CSSProperties } from "react";
+import { HeroFigure } from "./hero-figure";
+import { PulseControl } from "./pulse-audio";
 
 const work = [
   {
@@ -37,6 +39,12 @@ const services = [
   ["02", "Design", "Responsive interfaces, design systems and high-fidelity prototypes."],
   ["03", "Development", "Fast, accessible builds with expressive motion and clean code."],
   ["04", "Evolution", "Launch support, experiments and the next useful version."],
+];
+
+const releases = [
+  { version: "v1.5.0", date: "20.08.26", title: "PULSE MIX", items: ["local mark.svg identity", "mirror-glass purple sculpture", "orb CTAs + live changelog", "glitch + original DnB pulse"] },
+  { version: "v1.4.0", date: "13.08.26", title: "IDENTITY UPDATE", items: ["purple light field", "glass hero photograph", "cleaner mobile brand treatment"] },
+  { version: "v1.3.2", date: "31.07.26", title: "SYSTEM POLISH", items: ["reduced motion mode", "mobile navigation pass", "sharper type rhythm"] },
 ];
 
 export default function Home() {
@@ -120,8 +128,9 @@ export default function Home() {
         <nav id="site-nav" className={menuOpen ? "main-nav is-open" : "main-nav"} aria-label="Main navigation">
           <a href="#work" onClick={closeMenu}>Work</a>
           <a href="#studio" onClick={closeMenu}>Studio</a>
-          <a href="#services" onClick={closeMenu}>Services</a>
+          <a href="#changelog" onClick={closeMenu}>Log</a>
           <a href="#contact" onClick={closeMenu}>Contact</a>
+          <PulseControl />
           <a className="nav-cta" href="mailto:admin@imtryingtodesign.com">Start a project <span>↗</span></a>
         </nav>
         <button
@@ -136,31 +145,18 @@ export default function Home() {
       </header>
 
       <section className="hero">
+        <HeroFigure />
         <div className="hero-copy" data-reveal>
           <p className="kicker"><span>01</span> Design with intent.<br />Code with character.</p>
           <h1><span>WE MAKE</span><span className="hero-serif glitch" data-text="your idea">your idea</span><span>FEEL ALIVE.</span></h1>
           <div className="hero-intro">
             <p>Distinctive websites for ambitious brands worth noticing. Strategy, interface, code and motion—one continuous thought.</p>
             <a className="disc-link sphere-atom" href="#work" data-motion>
-              <SphereOrbits />
+              <SphereShell />
               <span>View selected work</span>
               <b>↓</b>
             </a>
           </div>
-        </div>
-
-        <div className="hero-visual" data-reveal data-motion>
-          <span className="visual-index">I/TD — 001</span>
-          <div className="hero-rings" aria-hidden="true"><span /><span /><span /></div>
-          <div className="hero-orb-stage">
-            <div className="hero-orb" aria-hidden="true">
-              <div className="hero-orb-glow" />
-              <span className="hero-orb-label hero-orb-label-top">FORM</span>
-              <span className="hero-orb-arrow">↗</span>
-              <span className="hero-orb-label hero-orb-label-bottom">ENERGY</span>
-            </div>
-          </div>
-          <span className="visual-caption">FORM / SYSTEM / ENERGY</span>
         </div>
         <p className="hero-side-note">SCROLL TO DISCOVER — 2026</p>
       </section>
@@ -213,7 +209,7 @@ export default function Home() {
                 )}
                 <div className="case-no">/{project.index}</div>
                 <div className="case-hover sphere-planet" data-motion>
-                  <SphereOrbits count={2} />
+                  <SphereShell count={2} />
                   <span>Open case</span>
                   <b>↗</b>
                 </div>
@@ -241,8 +237,32 @@ export default function Home() {
         </div>
       </section>
 
+      <section className="changelog section-shell" id="changelog">
+        <div className="terminal-title" data-reveal>
+          <div><i /><i /><i /></div>
+          <span>~/imtryingtodesign/changelog.log</span>
+          <span className="terminal-live">LIVE</span>
+        </div>
+        <div className="change-intro" data-reveal>
+          <div className="section-label"><span>05</span><p>Build in public</p></div>
+          <h2>CHANGE<br /><em>LOG_</em></h2>
+          <p>The site evolves with the work. This log tracks the visible product and design changes.</p>
+        </div>
+        <div className="release-list">
+          {releases.map((release, index) => (
+            <article className="release" data-reveal key={release.version} style={{ "--delay": `${index * 70}ms` } as CSSProperties}>
+              <div className="release-version"><span>{release.version}</span><time>{release.date}</time></div>
+              <div>
+                <h3>{release.title}{index === 0 ? <b>NEW</b> : null}</h3>
+                {release.items.map((item) => <p key={item}><span>+</span> {item}</p>)}
+              </div>
+            </article>
+          ))}
+        </div>
+      </section>
+
       <section className="process section-shell">
-        <div className="section-label" data-reveal><span>05</span><p>A clear way through</p></div>
+        <div className="section-label" data-reveal><span>06</span><p>A clear way through</p></div>
         <div className="process-grid">
           {[["Discover", "Find the real opportunity and the sharpest story."], ["Define", "Turn strategy into a flexible visual and interaction system."], ["Deliver", "Build, refine, test and launch with care."]].map(([title, copy], index) => (
             <article data-reveal key={title} style={{ "--delay": `${index * 80}ms` } as CSSProperties}>
@@ -260,7 +280,7 @@ export default function Home() {
           <p>Have a project in mind?</p>
           <h2>LET&apos;S MAKE<br /><em>YOUR IDEA</em><br />UNMISSABLE.</h2>
           <a className="project-cta sphere-planet" href="mailto:admin@imtryingtodesign.com" data-motion>
-            <SphereOrbits ring />
+            <SphereShell count={3} ring />
             <span>Start a project</span>
             <b>↗</b>
           </a>
@@ -278,19 +298,27 @@ export default function Home() {
   );
 }
 
-function SphereOrbits({ count = 3, ring = false }: { count?: number; ring?: boolean }) {
+function SphereShell({ count = 3, ring = false }: { count?: number; ring?: boolean }) {
   return (
-    <span className="sphere-orbits" aria-hidden="true">
-      {ring ? <em className="sphere-ring" /> : null}
-      {Array.from({ length: count }, (_, index) => <i key={index} />)}
-    </span>
+    <>
+      <span className="sphere-body" aria-hidden="true" />
+      <span className="sphere-orbits" aria-hidden="true">
+        {ring ? <em className="sphere-ring" /> : null}
+        {Array.from({ length: count }, (_, index) => <i key={index} />)}
+      </span>
+    </>
   );
 }
 
 function Logo() {
-  return <svg className="logo" viewBox="0 0 64 64" role="img" aria-label="ImTryingToDesign open signal mark">
-    <path className="logo-frame" d="M13 26V13h13M13 38v13h13M51 26V13H38M51 38v13H38" />
-    <path className="logo-slash" d="M38 8 26 56" />
-    <circle className="logo-signal" cx="32" cy="32" r="3.5" />
-  </svg>;
+  return (
+    <img
+      className="logo"
+      src="/mark.svg"
+      alt="ImTryingToDesign"
+      width={64}
+      height={64}
+      decoding="async"
+    />
+  );
 }
