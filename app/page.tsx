@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState, type CSSProperties, type FormEvent } from "react";
 import { HeroFigure } from "./hero-figure";
-import { BrandLockup } from "./logo";
+import { BrandLockup, MonolithPlate } from "./logo";
 import { PulseControl } from "./pulse-audio";
 
 const nav = [
