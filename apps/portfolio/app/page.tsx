@@ -9,6 +9,7 @@ const projects = [
 ];
 
 const releases = [
+  { version: "v1.4.1", date: "20.08.26", title: "PLANET CTAS", items: ["pulse orb with FORM / ENERGY", "atom explore disc", "saturn project sphere"] },
   { version: "v1.4.0", date: "13.08.26", title: "IDENTITY UPDATE", items: ["purple identity system", "Space Grotesk typography", "cleaner mobile brand treatment"] },
   { version: "v1.3.2", date: "31.07.26", title: "SYSTEM POLISH", items: ["reduced motion mode", "mobile navigation pass", "sharper type rhythm"] },
   { version: "v1.3.0", date: "18.07.26", title: "PROJECT ARCHIVE", items: ["case-study grid", "service modules", "bilingual structure"] },
@@ -24,6 +25,8 @@ export default function Home() {
       if (!glow.current) return;
       glow.current.style.setProperty("--x", `${event.clientX}px`);
       glow.current.style.setProperty("--y", `${event.clientY}px`);
+      document.documentElement.style.setProperty("--px", String((event.clientX / window.innerWidth - 0.5) * 2));
+      document.documentElement.style.setProperty("--py", String((event.clientY / window.innerHeight - 0.5) * 2));
     };
     window.addEventListener("pointermove", move, { passive: true });
     return () => window.removeEventListener("pointermove", move);
@@ -59,11 +62,21 @@ export default function Home() {
 
       <section className="hero" id="top">
         <div className="hero-meta mono">INDEPENDENT WEB DEVELOPMENT<br />KYIV / REMOTE / 50.4501° N</div>
-        <div className="orb" aria-hidden="true"><span /><span /><span /></div>
+        <div className="orb-stage">
+          <div className="orb" aria-hidden="true">
+            <div className="orb-glow" />
+            <span className="orb-label orb-label-top">FORM</span>
+            <span className="orb-arrow">↗</span>
+            <span className="orb-label orb-label-bottom">ENERGY</span>
+            <span className="orb-ring" />
+            <span className="orb-ring" />
+            <span className="orb-ring" />
+          </div>
+        </div>
         <h1><span>DIGITAL</span><span className="outline glitch" data-text="EXPERIENCES">EXPERIENCES</span><span>WITH A PULSE.</span></h1>
         <div className="hero-bottom">
           <p>I design and build expressive websites, interfaces and digital systems for independent studios, artists and small brands that refuse to look generic.</p>
-          <a className="round-link" href="#work" aria-label="Explore selected work">EXPLORE<br />WORK <b>↓</b></a>
+          <a className="round-link sphere-atom" href="#work" aria-label="Explore selected work"><SphereOrbits />EXPLORE<br />WORK <b>↓</b></a>
         </div>
         <div className="scroll-code mono">SCROLL_TO_EXPLORE [000—100]</div>
       </section>
@@ -115,7 +128,7 @@ export default function Home() {
         <div className="footer-status mono"><i /> ACCEPTING SELECT PROJECTS / Q4 2026</div>
         <p className="eyebrow">// HAVE A PROJECT?</p>
         <h2>LET&apos;S MAKE<br /><span>SOMETHING</span><br />UNMISSABLE.</h2>
-        <a className="contact-button" href="mailto:info@imtryingtodesign.com" onClick={celebrate}>START A PROJECT <span>↗</span></a>
+        <a className="contact-button sphere-planet" href="mailto:info@imtryingtodesign.com" onClick={celebrate}><SphereOrbits ring />START A PROJECT <span>↗</span></a>
         <div className="footer-row mono">
           <span>© 2026 IMTRYINGTODESIGN</span>
           <span>KYIV / REMOTE</span>
@@ -124,6 +137,15 @@ export default function Home() {
         </div>
       </footer>
     </main>
+  );
+}
+
+function SphereOrbits({ count = 3, ring = false }: { count?: number; ring?: boolean }) {
+  return (
+    <span className="sphere-orbits" aria-hidden="true">
+      {ring ? <em className="sphere-ring" /> : null}
+      {Array.from({ length: count }, (_, index) => <i key={index} />)}
+    </span>
   );
 }
 
