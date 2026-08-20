@@ -11,13 +11,8 @@ export const metadata: Metadata = {
   description: "We bridge developer engineering with high-fidelity creative precision. Beautiful interfaces backed by brutalist code structures.",
   other: { "codex-preview": "development" },
   icons: {
-    icon: [
-      { url: "/favicon.png?v=10", type: "image/png", sizes: "any" },
-      { url: "/favicon-32.png?v=10", type: "image/png", sizes: "32x32" },
-      { url: "/favicon.svg?v=10", type: "image/svg+xml" },
-    ],
-    shortcut: "/favicon.png?v=10",
-    apple: "/favicon-180.png?v=10",
+    icon: [{ url: "/favicon.svg?v=11", type: "image/svg+xml" }],
+    shortcut: "/favicon.svg?v=11",
   },
 };
 

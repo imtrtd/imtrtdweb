@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 
-const MARK = "/mark.png?v=10";
+const MARK = "/favicon.svg?v=11";
 
 export function MiniLogo() {
   const [failed, setFailed] = useState(false);
