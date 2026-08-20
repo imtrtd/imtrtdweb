@@ -1,8 +1,3 @@
-/**
- * Cloudflare Worker config for imtrtdweb studio app.
- * Primary account: b6f57d806… (D1 + workers.dev).
- * Falls back to Durable Object SQLite when DB binding is absent.
- */
 {
 	"$schema": "node_modules/wrangler/config-schema.json",
 	"name": "imtrtdweb",
@@ -13,23 +8,6 @@
 		"not_found_handling": "single-page-application",
 		"run_worker_first": ["/api/*"]
 	},
-	"workers_dev": true,
-	"observability": {
-		"enabled": true
-	},
-	"d1_databases": [
-		{
-			"binding": "DB",
-			"database_name": "imtrtdweb",
-			"database_id": "64e84c88-3ece-4f03-afe0-cf4dd9bef52b"
-		}
-	],
-	"r2_buckets": [
-		{
-			"binding": "MEDIA",
-			"bucket_name": "imtrtdweb-media"
-		}
-	],
 	"durable_objects": {
 		"bindings": [
 			{
@@ -49,11 +27,7 @@
 			"new_sqlite_classes": ["AppStore"]
 		}
 	],
-	"triggers": {
-		"crons": ["0 * * * *"]
-	},
 	"vars": {
 		"STUDIO_NOTIFY_EMAIL": "hello@imtryingtodesign.com"
-	},
-	"upload_source_maps": true
+	}
 }
