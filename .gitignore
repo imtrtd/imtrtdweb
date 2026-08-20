@@ -37,6 +37,17 @@ yarn-error.log*
 next-env.d.ts
 /dist/
 /.wrangler/
+/.vinext/
 /.sites-runtime/
 /outputs/
 /work/
+/_recovery/
+/.playwright-cli/
+
+# generated / leftover brand intermediates — current site uses public/mark.png
+/artifacts/original-logo.*
+/artifacts/favicon-source.*
+/artifacts/itd-mark-source.png
+/artifacts/logo-crop-report.txt
+/public/logo.png
+/public/logo.svg
