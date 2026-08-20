@@ -1,6 +1,5 @@
-"use client";
-
 import { useEffect, useRef, useState } from "react";
+import { PulseControl } from "../components/landing/PulseControl";
 
 const projects = [
 	{
@@ -31,6 +30,16 @@ const projects = [
 
 const releases = [
 	{
+		version: "v1.5.0",
+		date: "20.08.26",
+		title: "PULSE ORB",
+		items: [
+			"lime pulse orb with FORM / ENERGY lockup",
+			"planet and atom volume on circular CTAs",
+			"live drum-and-bass pulse in the header",
+		],
+	},
+	{
 		version: "v1.4.0",
 		date: "13.08.26",
 		title: "IDENTITY UPDATE",
@@ -60,12 +69,24 @@ export function LandingPage() {
 	const glow = useRef<HTMLDivElement>(null);
 
 	useEffect(() => {
+		const reduce = window.matchMedia("(prefers-reduced-motion: reduce)");
+		const coarse = window.matchMedia("(pointer: coarse)");
 		const move = (event: PointerEvent) => {
 			if (!glow.current) return;
 			glow.current.style.setProperty("--x", `${event.clientX}px`);
 			glow.current.style.setProperty("--y", `${event.clientY}px`);
+			document.documentElement.style.setProperty(
+				"--px",
+				String((event.clientX / window.innerWidth - 0.5) * 2),
+			);
+			document.documentElement.style.setProperty(
+				"--py",
+				String((event.clientY / window.innerHeight - 0.5) * 2),
+			);
 		};
-		window.addEventListener("pointermove", move, { passive: true });
+		if (!coarse.matches && !reduce.matches) {
+			window.addEventListener("pointermove", move, { passive: true });
+		}
 		return () => window.removeEventListener("pointermove", move);
 	}, []);
 
@@ -92,6 +113,7 @@ export function LandingPage() {
 				</a>
 				<div className="status">
 					<i /> AVAILABLE FOR Q4 <span>2026</span>
+					<PulseControl />
 				</div>
 				<nav
 					className={menuOpen ? "nav open" : "nav"}
@@ -127,10 +149,16 @@ export function LandingPage() {
 					<br />
 					KYIV / REMOTE / 50.4501° N
 				</div>
+				<div className="hero-rings" aria-hidden="true">
+					<span />
+					<span />
+					<span />
+				</div>
 				<div className="orb" aria-hidden="true">
-					<span />
-					<span />
-					<span />
+					<div className="orb-glow" />
+					<span className="orb-label orb-label-top">FORM</span>
+					<span className="orb-arrow">↗</span>
+					<span className="orb-label orb-label-bottom">ENERGY</span>
 				</div>
 				<h1>
 					<span>DIGITAL</span>
@@ -145,10 +173,18 @@ export function LandingPage() {
 						for independent studios, artists and small brands that refuse to look
 						generic.
 					</p>
-					<a className="round-link" href="#work" aria-label="Explore selected work">
-						EXPLORE
-						<br />
-						WORK <b>↓</b>
+					<a
+						className="round-link sphere-atom"
+						href="#work"
+						aria-label="Explore selected work"
+					>
+						<SphereShell />
+						<span>
+							EXPLORE
+							<br />
+							WORK
+						</span>
+						<b>↓</b>
 					</a>
 				</div>
 				<div className="scroll-code mono">SCROLL_TO_EXPLORE [000—100]</div>
@@ -290,11 +326,14 @@ export function LandingPage() {
 					UNMISSABLE.
 				</h2>
 				<a
-					className="contact-button"
+					className="contact-button sphere-planet"
 					href="mailto:info@imtryingtodesign.com"
 					onClick={celebrate}
 				>
-					START A PROJECT <span>↗</span>
+					<SphereShell count={3} ring />
+					<span className="contact-copy">
+						START A PROJECT <b>↗</b>
+					</span>
 				</a>
 				<div className="footer-row mono">
 					<span>© 2026 IMTRYINGTODESIGN</span>
@@ -316,6 +355,20 @@ export function LandingPage() {
 				</div>
 			</footer>
 		</main>
+	);
+}
+
+function SphereShell({ count = 3, ring = false }: { count?: number; ring?: boolean }) {
+	return (
+		<>
+			<span className="sphere-body" aria-hidden="true" />
+			<span className="sphere-orbits" aria-hidden="true">
+				{ring ? <em className="sphere-ring" /> : null}
+				{Array.from({ length: count }, (_, index) => (
+					<i key={index} />
+				))}
+			</span>
+		</>
 	);
 }
 

@@ -62,15 +62,9 @@ body::selection {
 }
 
 .orb {
-  background:
-    radial-gradient(circle at 40% 35%, #efe6ff 0 1%, #b28dff 2%, #6d3be7 14%, #26103f 42%, #0a0a0f 70%);
-  filter: drop-shadow(0 0 85px rgba(123, 92, 255, .35));
-  opacity: .9;
-}
-
-.orb::after,
-.orb span:nth-child(3) {
-  border-color: rgba(178, 141, 255, .48);
+  background: radial-gradient(circle at 38% 32%, #80a81b, #25320e 28%, #11160e 54%, #080b0c 72%);
+  filter: none;
+  opacity: 1;
 }
 
 .round-link b,
@@ -81,8 +75,10 @@ body::selection {
   color: #b28dff;
 }
 
-.round-link:hover,
-.contact-button,
+.round-link:hover {
+  color: #0a0a0f;
+}
+
 .release h3 b {
   background: linear-gradient(135deg, #b28dff, #7b5cff);
   color: #0a0a0f;
@@ -109,11 +105,11 @@ body::selection {
 }
 
 .contact-button {
-  box-shadow: 0 0 55px rgba(123, 92, 255, .24);
+  box-shadow: none;
 }
 
 .contact-button:hover {
-  box-shadow: 0 0 90px rgba(178, 141, 255, .48);
+  box-shadow: 0 0 72px rgba(216, 255, 55, .28);
 }
 
 @media (max-width: 800px) {
