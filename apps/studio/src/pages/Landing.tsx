@@ -31,6 +31,16 @@ const projects = [
 
 const releases = [
 	{
+		version: "v1.4.1",
+		date: "20.08.26",
+		title: "PLANET CTAS",
+		items: [
+			"pulse orb with FORM / ENERGY",
+			"atom explore disc",
+			"saturn project sphere",
+		],
+	},
+	{
 		version: "v1.4.0",
 		date: "13.08.26",
 		title: "IDENTITY UPDATE",
@@ -64,6 +74,14 @@ export function LandingPage() {
 			if (!glow.current) return;
 			glow.current.style.setProperty("--x", `${event.clientX}px`);
 			glow.current.style.setProperty("--y", `${event.clientY}px`);
+			document.documentElement.style.setProperty(
+				"--px",
+				String((event.clientX / window.innerWidth - 0.5) * 2),
+			);
+			document.documentElement.style.setProperty(
+				"--py",
+				String((event.clientY / window.innerHeight - 0.5) * 2),
+			);
 		};
 		window.addEventListener("pointermove", move, { passive: true });
 		return () => window.removeEventListener("pointermove", move);
@@ -127,10 +145,16 @@ export function LandingPage() {
 					<br />
 					KYIV / REMOTE / 50.4501° N
 				</div>
-				<div className="orb" aria-hidden="true">
-					<span />
-					<span />
-					<span />
+				<div className="orb-stage">
+					<div className="orb" aria-hidden="true">
+						<div className="orb-glow" />
+						<span className="orb-label orb-label-top">FORM</span>
+						<span className="orb-arrow">↗</span>
+						<span className="orb-label orb-label-bottom">ENERGY</span>
+						<span className="orb-ring" />
+						<span className="orb-ring" />
+						<span className="orb-ring" />
+					</div>
 				</div>
 				<h1>
 					<span>DIGITAL</span>
@@ -145,7 +169,12 @@ export function LandingPage() {
 						for independent studios, artists and small brands that refuse to look
 						generic.
 					</p>
-					<a className="round-link" href="#work" aria-label="Explore selected work">
+					<a
+						className="round-link sphere-atom"
+						href="#work"
+						aria-label="Explore selected work"
+					>
+						<SphereOrbits />
 						EXPLORE
 						<br />
 						WORK <b>↓</b>
@@ -290,10 +319,11 @@ export function LandingPage() {
 					UNMISSABLE.
 				</h2>
 				<a
-					className="contact-button"
+					className="contact-button sphere-planet"
 					href="mailto:info@imtryingtodesign.com"
 					onClick={celebrate}
 				>
+					<SphereOrbits ring />
 					START A PROJECT <span>↗</span>
 				</a>
 				<div className="footer-row mono">
@@ -316,6 +346,17 @@ export function LandingPage() {
 				</div>
 			</footer>
 		</main>
+	);
+}
+
+function SphereOrbits({ count = 3, ring = false }: { count?: number; ring?: boolean }) {
+	return (
+		<span className="sphere-orbits" aria-hidden="true">
+			{ring ? <em className="sphere-ring" /> : null}
+			{Array.from({ length: count }, (_, index) => (
+				<i key={index} />
+			))}
+		</span>
 	);
 }
 
