@@ -1,58 +1,41 @@
 # Карта продуктов imtryingtodesign.com
 
-## Домены
+## Домены (Proton account — custom domain)
 
-| Host | App | Worker / platform | Назначение |
-| --- | --- | --- | --- |
-| `imtryingtodesign.com` | studio **или** portfolio | `imtrtdweb` / `imtryingtodesign` | ⚠️ два деплоя на один домен — выбрать один canonical |
-| `www.imtryingtodesign.com` | studio / portfolio | см. выше | зеркало apex |
-| `app.imtryingtodesign.com` | cuebox | Vercel | библиотека промптов |
-| `*.unitl.workers.dev` | studio | `imtrtdweb` | preview / fallback |
+| Host | Worker | App |
+| --- | --- | --- |
+| `imtryingtodesign.com` | `imtrtdweb` | studio |
+| `www.imtryingtodesign.com` | `imtrtdweb` | studio |
+| `studio.imtryingtodesign.com` | `imtrtdweb` | studio |
+| `site.imtryingtodesign.com` | `imtrtdweb` | studio |
+| `go.imtryingtodesign.com` | `imtrtdweb` | studio |
+| `app.imtryingtodesign.com` | Vercel | cuebox |
 
-## apps/studio (canonical ops)
+Fallback: `https://imtrtdweb.unitl.workers.dev` (Proton), `https://imtrtdweb.gw44ptx87t.workers.dev` (Apple + D1).
 
-- Публичный лендинг (RU)
-- `POST /api/leads` — заявки, Resend, rate limit
-- `/admin` — CMS кейсов, услуг, текстов; inbox заявок
-- Хранилище: D1 или Durable Object SQLite (`AppStore`)
-- Worker: `imtrtdweb`
+## Cloudflare accounts
 
-## apps/portfolio
+| Account ID | Назначение | Config |
+| --- | --- | --- |
+| `b6f57d806…` Apple | CI, D1, R2, workers.dev | `wrangler.jsonc` |
+| `c6768e43…` Proton | Custom domain zone | `wrangler.proton.jsonc` |
 
-- Портфолио (EN), concept case studies `/work/[slug]`, `/systems`
-- Vinext → Cloudflare Worker `imtryingtodesign`
-- Контакт: mailto (без backend заявок)
+## apps/studio
 
-## apps/cuebox
+- Лендинг (RU), `/admin`, `POST /api/leads`
+- D1 + R2 on Apple; DO SQLite fallback on Proton
+- `npm run deploy` / `npm run deploy:proton`
 
-- Prompt library, variables, collections, Explore
-- Local-first + cloud sync (Postgres/Prisma)
-- Auth.js, деплой на Vercel
+## apps/portfolio / apps/cuebox
 
-## Legacy (архивировать после миграции)
+- Portfolio: Next/Vinext worker `imtryingtodesign` (optional, not on apex)
+- Cuebox: Vercel + Postgres
 
-| Репозиторий | Статус |
+## GitHub Actions secrets
+
+| Secret | Account |
 | --- | --- |
-| `imtrtd/imtrtdweb` | → `apps/studio` |
-| `imtrtd/www.imtryingtodesign.com` | → `apps/portfolio` |
-| `imtrtd/cuebox` | → `apps/cuebox` |
-| `imtrtd/cuebox1` | boilerplate, не использовать |
-
-## Cloudflare Workers (Proton account)
-
-| Worker | Действие |
-| --- | --- |
-| `imtrtdweb` | **prod studio** — оставить |
-| `imtryingtodesign` | portfolio — оставить до слияния |
-| `imtryingtodesign-worker` | stub — удалить |
-| `imtryingtodesign-worker-production` | redirect proxy — влить в main worker |
-| `imtryingtodesign-public` | дубликат — проверить и удалить |
-
-## Секреты CI (GitHub Actions)
-
-| Secret | Для |
-| --- | --- |
-| `CLOUDFLARE_API_TOKEN` | deploy studio |
-| `CLOUDFLARE_ACCOUNT_ID` | Proton account |
-
-Cuebox: секреты в Vercel (`DATABASE_URL`, `AUTH_SECRET`, …).
+| `CLOUDFLARE_API_TOKEN` | Apple |
+| `CLOUDFLARE_ACCOUNT_ID` | `b6f57d806c999f1a03efca808701883e` |
+| `CLOUDFLARE_PROTON_API_TOKEN` | Proton (Workers Edit) |
+| `CLOUDFLARE_PROTON_ACCOUNT_ID` | `c6768e43a40f0e876c28a2c8089d0edc` |
