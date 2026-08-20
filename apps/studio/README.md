@@ -1,8 +1,8 @@
-# I'm Trying To Design (imtrtdweb)
+# Studio (`apps/studio`)
 
-Лендинг студии дизайна + заявки + кабинет (`/admin`) на Cloudflare Workers, D1 и R2.
+Публичный сайт — дизайн **ImTryingToDesign** (I/TD). Кабинет: `/admin`.
 
-Домен: `imtryingtodesign.com`
+Единственный Cloudflare-аккаунт: Proton. См. [docs/PROJECTS.md](../../docs/PROJECTS.md).
 
 ## Возможности
 

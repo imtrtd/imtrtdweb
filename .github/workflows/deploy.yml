@@ -10,8 +10,8 @@ on:
   workflow_dispatch:
 
 jobs:
-  deploy-apple:
-    name: Apple account (D1 + workers.dev)
+  deploy:
+    name: Deploy to Cloudflare (Proton)
     runs-on: ubuntu-latest
     timeout-minutes: 15
     defaults:
@@ -37,17 +37,6 @@ jobs:
       - name: Build
         run: npm run build
 
-      - name: Apply D1 migrations
-        run: |
-          if grep -q '"d1_databases"' wrangler.jsonc && grep -q 'database_id' wrangler.jsonc; then
-            npx wrangler d1 migrations apply imtrtdweb --remote
-          else
-            echo "No D1 in wrangler.jsonc — skipping."
-          fi
-        env:
-          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-
       - name: Deploy Worker
         uses: cloudflare/wrangler-action@v4
         with:
@@ -56,39 +45,3 @@ jobs:
           wranglerVersion: "4.88.0"
           workingDirectory: apps/studio
           command: deploy
-
-  deploy-proton:
-    name: Proton account (custom domain)
-    runs-on: ubuntu-latest
-    timeout-minutes: 15
-    needs: deploy-apple
-    defaults:
-      run:
-        working-directory: apps/studio
-    permissions:
-      contents: read
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: "22"
-          cache: npm
-          cache-dependency-path: apps/studio/package-lock.json
-
-      - name: Install dependencies
-        run: npm ci
-
-      - name: Build
-        run: npm run build
-
-      - name: Deploy Worker (Proton)
-        uses: cloudflare/wrangler-action@v4
-        with:
-          apiToken: ${{ secrets.CLOUDFLARE_PROTON_API_TOKEN }}
-          accountId: ${{ secrets.CLOUDFLARE_PROTON_ACCOUNT_ID }}
-          wranglerVersion: "4.88.0"
-          workingDirectory: apps/studio
-          command: deploy --config wrangler.proton.jsonc

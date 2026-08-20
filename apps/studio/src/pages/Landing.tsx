@@ -1,238 +1,330 @@
-import { useEffect, useState } from "react";
-import type { SiteContent } from "../types";
-import { fetchContent } from "../lib/api";
-import { FALLBACK_CONTENT } from "../lib/fallback";
-import { LeadForm } from "../components/landing/LeadForm";
+"use client";
+
+import { useEffect, useRef, useState } from "react";
+
+const projects = [
+	{
+		n: "01",
+		title: "NAMENLOS",
+		type: "TATTOO STUDIO / BOOKING",
+		color: "acid",
+		href: "/work/namenlos",
+		note: "Concept case study: identity-led booking flow with a raw visual language.",
+	},
+	{
+		n: "02",
+		title: "NACHTWERK",
+		type: "EVENT SERIES / TICKETS",
+		color: "violet",
+		href: "/work/nachtwerk",
+		note: "Concept case study: an atmospheric event page built around line-ups and conversion.",
+	},
+	{
+		n: "03",
+		title: "KIOSK 23",
+		type: "CAFÉ / LOCAL COMMERCE",
+		color: "orange",
+		href: "/work/kiosk-23",
+		note: "Concept case study: a compact digital home for a small space with a loud point of view.",
+	},
+];
+
+const releases = [
+	{
+		version: "v1.4.0",
+		date: "13.08.26",
+		title: "IDENTITY UPDATE",
+		items: [
+			"purple identity system",
+			"Space Grotesk typography",
+			"cleaner mobile brand treatment",
+		],
+	},
+	{
+		version: "v1.3.2",
+		date: "31.07.26",
+		title: "SYSTEM POLISH",
+		items: ["reduced motion mode", "mobile navigation pass", "sharper type rhythm"],
+	},
+	{
+		version: "v1.3.0",
+		date: "18.07.26",
+		title: "PROJECT ARCHIVE",
+		items: ["case-study grid", "service modules", "bilingual structure"],
+	},
+];
 
 export function LandingPage() {
-	const [content, setContent] = useState<SiteContent>(FALLBACK_CONTENT);
+	const [menuOpen, setMenuOpen] = useState(false);
+	const [burst, setBurst] = useState(false);
+	const glow = useRef<HTMLDivElement>(null);
 
 	useEffect(() => {
-		let cancelled = false;
-		fetchContent()
-			.then((data) => {
-				if (!cancelled) {
-					setContent({
-						copy: { ...FALLBACK_CONTENT.copy, ...data.copy },
-						cases: data.cases?.length ? data.cases : FALLBACK_CONTENT.cases,
-						services: data.services?.length
-							? data.services
-							: FALLBACK_CONTENT.services,
-					});
-				}
-			})
-			.catch(() => {
-				/* keep fallback */
-			});
-		return () => {
-			cancelled = true;
+		const move = (event: PointerEvent) => {
+			if (!glow.current) return;
+			glow.current.style.setProperty("--x", `${event.clientX}px`);
+			glow.current.style.setProperty("--y", `${event.clientY}px`);
 		};
+		window.addEventListener("pointermove", move, { passive: true });
+		return () => window.removeEventListener("pointermove", move);
 	}, []);
 
-	const brand = content.copy.brand || FALLBACK_CONTENT.copy.brand;
-	const headline = content.copy.headline || FALLBACK_CONTENT.copy.headline;
-	const subhead = content.copy.subhead || FALLBACK_CONTENT.copy.subhead;
-	const cta = content.copy.cta_label || FALLBACK_CONTENT.copy.cta_label;
-	const email = content.copy.contact_email || FALLBACK_CONTENT.copy.contact_email;
-	const telegram =
-		content.copy.contact_telegram || FALLBACK_CONTENT.copy.contact_telegram;
-	const beaconToken = content.copy.cf_beacon_token?.trim() || "";
-
-	useEffect(() => {
-		if (!beaconToken) {
-			return;
-		}
-		const existing = document.querySelector("script[data-cf-beacon]");
-		if (existing) {
-			return;
-		}
-		const script = document.createElement("script");
-		script.defer = true;
-		script.src = "https://static.cloudflareinsights.com/beacon.min.js";
-		script.setAttribute(
-			"data-cf-beacon",
-			JSON.stringify({ token: beaconToken }),
-		);
-		document.body.appendChild(script);
-		return () => {
-			script.remove();
-		};
-	}, [beaconToken]);
+	const celebrate = () => {
+		setBurst(false);
+		requestAnimationFrame(() => setBurst(true));
+		window.setTimeout(() => setBurst(false), 1600);
+	};
 
 	return (
-		<div className="relative min-h-screen overflow-x-hidden bg-ink text-paper">
-			<div
-				aria-hidden
-				className="pointer-events-none absolute inset-0 -z-10 overflow-hidden"
-			>
-				<div className="animate-drift absolute -left-24 top-[-10%] h-[55vh] w-[55vh] rounded-full bg-[radial-gradient(circle,rgba(210,243,92,0.22),transparent_65%)] blur-2xl" />
-				<div className="animate-drift absolute right-[-10%] top-[20%] h-[48vh] w-[48vh] rounded-full bg-[radial-gradient(circle,rgba(120,140,255,0.16),transparent_70%)] blur-2xl [animation-delay:-4s]" />
-				<div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(16,18,24,0.2),rgba(16,18,24,0.92)),repeating-linear-gradient(90deg,transparent,transparent_79px,rgba(255,255,255,0.025)_80px)]" />
-			</div>
+		<main>
+			<div className="cursor-glow" ref={glow} aria-hidden="true" />
+			<div className="noise" aria-hidden="true" />
+			{burst ? <Confetti /> : null}
 
-			<header className="mx-auto flex w-full max-w-6xl items-center justify-between px-6 py-6 md:px-8">
-				<a href="/" className="font-display text-lg font-bold tracking-tight md:text-xl">
-					{brand}
+			<header className="topbar">
+				<a className="brand" href="#top" aria-label="ImTryingToDesign home">
+					<span className="brand-mark">I/TD</span>
+					<span>
+						IMTRYINGTO
+						<br />
+						DESIGN.COM
+					</span>
 				</a>
-				<nav className="flex items-center gap-5 text-sm text-fog">
-					<a href="#work" className="transition hover:text-paper">
-						Работы
+				<div className="status">
+					<i /> AVAILABLE FOR Q4 <span>2026</span>
+				</div>
+				<nav
+					className={menuOpen ? "nav open" : "nav"}
+					aria-label="Main navigation"
+				>
+					<a href="#work" onClick={() => setMenuOpen(false)}>
+						WORK
 					</a>
-					<a href="#services" className="hidden transition hover:text-paper sm:inline">
-						Услуги
+					<a href="#services" onClick={() => setMenuOpen(false)}>
+						SERVICES
 					</a>
-					<a
-						href="#lead"
-						className="rounded-full bg-signal px-4 py-2 font-semibold text-ink transition hover:bg-signal-deep"
-					>
-						{cta}
+					<a href="/systems" onClick={() => setMenuOpen(false)}>
+						SYSTEMS
 					</a>
+					<a href="#changelog" onClick={() => setMenuOpen(false)}>
+						CHANGELOG
+					</a>
+					<a href="mailto:info@imtryingtodesign.com">CONTACT ↗</a>
 				</nav>
+				<button
+					className="menu"
+					onClick={() => setMenuOpen((v) => !v)}
+					aria-expanded={menuOpen}
+					aria-label="Toggle menu"
+				>
+					{menuOpen ? "CLOSE" : "MENU"}
+				</button>
 			</header>
 
-			<section className="relative mx-auto flex min-h-[calc(100vh-5.5rem)] w-full max-w-6xl flex-col justify-end px-6 pb-16 pt-10 md:px-8 md:pb-24">
-				<div className="animate-signal pointer-events-none absolute right-8 top-10 hidden h-28 w-28 rounded-full border border-signal/40 md:block" />
-				<p className="animate-rise font-display text-sm font-semibold uppercase tracking-[0.22em] text-signal">
-					{brand}
-				</p>
-				<h1 className="animate-rise mt-5 max-w-4xl font-display text-4xl font-extrabold leading-[1.05] tracking-tight text-paper sm:text-6xl md:text-7xl [animation-delay:80ms]">
-					{headline}
+			<section className="hero" id="top">
+				<div className="hero-meta mono">
+					INDEPENDENT WEB DEVELOPMENT
+					<br />
+					KYIV / REMOTE / 50.4501° N
+				</div>
+				<div className="orb" aria-hidden="true">
+					<span />
+					<span />
+					<span />
+				</div>
+				<h1>
+					<span>DIGITAL</span>
+					<span className="outline glitch" data-text="EXPERIENCES">
+						EXPERIENCES
+					</span>
+					<span>WITH A PULSE.</span>
 				</h1>
-				<p className="animate-rise mt-6 max-w-xl text-base text-fog sm:text-lg [animation-delay:160ms]">
-					{subhead}
-				</p>
-				<div className="animate-rise mt-10 flex flex-wrap gap-4 [animation-delay:240ms]">
-					<a
-						href="#lead"
-						className="rounded-full bg-signal px-7 py-3 text-sm font-semibold text-ink transition hover:bg-signal-deep"
-					>
-						{cta}
+				<div className="hero-bottom">
+					<p>
+						I design and build expressive websites, interfaces and digital systems
+						for independent studios, artists and small brands that refuse to look
+						generic.
+					</p>
+					<a className="round-link" href="#work" aria-label="Explore selected work">
+						EXPLORE
+						<br />
+						WORK <b>↓</b>
 					</a>
+				</div>
+				<div className="scroll-code mono">SCROLL_TO_EXPLORE [000—100]</div>
+			</section>
+
+			<section className="manifesto section-pad">
+				<p className="eyebrow">// WHAT I DO</p>
+				<h2>
+					ONE PERSON.
+					<br />
+					FULL <em>SYSTEM.</em>
+				</h2>
+				<div className="manifesto-copy">
+					<p>
+						From first sketch to deployment: strategy, interface, code and motion
+						developed as one continuous product system.
+					</p>
+					<span className="mono">[ DESIGN × DEVELOPMENT × VISUALIZATION ]</span>
+				</div>
+			</section>
+
+			<section className="projects" id="work">
+				<div className="section-head section-pad">
+					<p className="eyebrow">// SELECTED WORK</p>
+					<span className="mono">03 CONCEPT CASES / 03 SYSTEMS</span>
+				</div>
+				{projects.map((project) => (
 					<a
-						href="#work"
-						className="rounded-full border border-white/15 px-7 py-3 text-sm font-medium text-paper transition hover:border-white/35"
+						className={`project ${project.color}`}
+						href={project.href}
+						key={project.title}
+						aria-label={`Open ${project.title} concept case study`}
 					>
-						Смотреть работы
+						<span className="project-number mono">/{project.n}</span>
+						<div>
+							<p className="mono">{project.type}</p>
+							<h3>{project.title}</h3>
+						</div>
+						<p className="project-note">{project.note}</p>
+						<span className="project-arrow">↗</span>
+					</a>
+				))}
+				<div className="work-archive section-pad">
+					<p className="mono">
+						ALL CASE STUDIES ARE CLEARLY LABELED CONCEPT / PLACEHOLDER WORK.
+					</p>
+					<a className="systems-link" href="/systems">
+						OPEN THE REFERENCE SYSTEMS <span>↗</span>
 					</a>
 				</div>
 			</section>
 
-			<section id="work" className="mx-auto w-full max-w-6xl px-6 py-20 md:px-8">
-				<div className="mb-10 max-w-2xl">
-					<h2 className="font-display text-3xl font-bold tracking-tight md:text-4xl">
-						Работы
+			<section className="services section-pad" id="services">
+				<div>
+					<p className="eyebrow">// CAPABILITIES</p>
+					<h2>
+						FROM IDEA
+						<br />
+						TO <span>ONLINE.</span>
 					</h2>
-					<p className="mt-3 text-mist">
-						Коротко о результате — без лишней витрины.
+				</div>
+				<div className="service-list">
+					{(
+						[
+							["01", "WEB DESIGN", "Visual systems, responsive interfaces and prototypes."],
+							["02", "DEVELOPMENT", "Fast, accessible builds with clean interactions."],
+							[
+								"03",
+								"VISUALIZATION",
+								"Presentations, product concepts and visual systems from text.",
+							],
+							["04", "CARE & EVOLUTION", "Launch support, improvements and new releases."],
+						] as const
+					).map(([n, title, desc]) => (
+						<div className="service" key={n}>
+							<b>{n}</b>
+							<h3>{title}</h3>
+							<p>{desc}</p>
+						</div>
+					))}
+				</div>
+			</section>
+
+			<section className="changelog section-pad" id="changelog">
+				<div className="terminal-title">
+					<div>
+						<i />
+						<i />
+						<i />
+					</div>
+					<span className="mono">~/imtryingtodesign/changelog.log</span>
+					<span className="mono">LIVE</span>
+				</div>
+				<div className="change-intro">
+					<p className="eyebrow">// BUILD IN PUBLIC</p>
+					<h2>
+						CHANGE
+						<br />
+						<span>LOG_</span>
+					</h2>
+					<p>
+						The site evolves with the work. This log tracks the visible product and
+						design changes.
 					</p>
 				</div>
-				<div className="grid gap-8 md:grid-cols-2">
-					{content.cases.map((item, index) => (
-						<article
-							key={item.id}
-							className="group border-t border-white/10 pt-6"
-						>
-							<div
-								className="mb-5 aspect-[16/10] overflow-hidden rounded-2xl bg-ink-soft"
-								style={{
-									backgroundImage: item.image_url
-										? `url(${item.image_url})`
-										: `linear-gradient(135deg, rgba(210,243,92,${0.08 + (index % 3) * 0.05}), rgba(255,255,255,0.04) 45%, rgba(90,110,220,0.18))`,
-									backgroundSize: "cover",
-									backgroundPosition: "center",
-								}}
-							/>
-							<p className="text-sm uppercase tracking-[0.16em] text-signal">
-								{item.role}
-							</p>
-							<h3 className="mt-2 font-display text-2xl font-bold">{item.title}</h3>
-							<p className="mt-2 text-mist">{item.result}</p>
+				<div className="release-list">
+					{releases.map((release, index) => (
+						<article className="release" key={release.version}>
+							<div className="release-version">
+								<span>{release.version}</span>
+								<time>{release.date}</time>
+							</div>
+							<div>
+								<h3>
+									{release.title}
+									{index === 0 ? <b>NEW</b> : null}
+								</h3>
+								{release.items.map((item) => (
+									<p key={item}>
+										<span>+</span> {item}
+									</p>
+								))}
+							</div>
 						</article>
 					))}
 				</div>
 			</section>
 
-			<section id="services" className="mx-auto w-full max-w-6xl px-6 py-20 md:px-8">
-				<div className="mb-10 max-w-2xl">
-					<h2 className="font-display text-3xl font-bold tracking-tight md:text-4xl">
-						Услуги
-					</h2>
-					<p className="mt-3 text-mist">Один фокус на раздел — ясный результат.</p>
+			<footer className="footer section-pad" id="contact">
+				<div className="footer-status mono">
+					<i /> ACCEPTING SELECT PROJECTS / Q4 2026
 				</div>
-				<ul className="space-y-0">
-					{content.services.map((service) => (
-						<li
-							key={service.id}
-							className="grid gap-3 border-t border-white/10 py-7 md:grid-cols-[0.35fr_1fr] md:gap-10"
+				<p className="eyebrow">// HAVE A PROJECT?</p>
+				<h2>
+					LET&apos;S MAKE
+					<br />
+					<span>SOMETHING</span>
+					<br />
+					UNMISSABLE.
+				</h2>
+				<a
+					className="contact-button"
+					href="mailto:info@imtryingtodesign.com"
+					onClick={celebrate}
+				>
+					START A PROJECT <span>↗</span>
+				</a>
+				<div className="footer-row mono">
+					<span>© 2026 IMTRYINGTODESIGN</span>
+					<span>KYIV / REMOTE</span>
+					<span>
+						<a href="https://t.me/IMTRTD" target="_blank" rel="noreferrer">
+							TELEGRAM ↗
+						</a>{" "}
+						·{" "}
+						<a
+							href="https://www.instagram.com/imtryingtodesign/"
+							target="_blank"
+							rel="noreferrer"
 						>
-							<h3 className="font-display text-xl font-semibold">{service.title}</h3>
-							<p className="text-fog">{service.description}</p>
-						</li>
-					))}
-				</ul>
-			</section>
-
-			<section className="mx-auto w-full max-w-6xl px-6 py-20 md:px-8">
-				<div className="max-w-2xl">
-					<h2 className="font-display text-3xl font-bold tracking-tight md:text-4xl">
-						Как работаем
-					</h2>
-					<p className="mt-3 text-mist">Короткий цикл без лишних созвонов.</p>
-				</div>
-				<ol className="mt-10 grid gap-8 md:grid-cols-3">
-					{[
-						["01", "Бриф", "Собираем цель, ограничения и критерии успеха."],
-						["02", "Направление", "1–2 визуальных направления и структура."],
-						["03", "Сборка", "Финальные экраны/носители и передача команде."],
-					].map(([num, title, text]) => (
-						<li key={num}>
-							<p className="font-display text-signal">{num}</p>
-							<h3 className="mt-3 font-display text-xl font-semibold">{title}</h3>
-							<p className="mt-2 text-mist">{text}</p>
-						</li>
-					))}
-				</ol>
-			</section>
-
-			<section id="lead" className="mx-auto w-full max-w-6xl px-6 py-20 md:px-8">
-				<div className="grid gap-12 lg:grid-cols-[0.9fr_1.1fr]">
-					<div>
-						<h2 className="font-display text-3xl font-bold tracking-tight md:text-4xl">
-							Оставить заявку
-						</h2>
-						<p className="mt-3 max-w-md text-mist">
-							Расскажите о задаче — вернёмся с вопросами и следующим шагом.
-						</p>
-						<div className="mt-8 space-y-2 text-sm text-fog">
-							<p>
-								Email:{" "}
-								<a className="text-paper hover:text-signal" href={`mailto:${email}`}>
-									{email}
-								</a>
-							</p>
-							<p>
-								Telegram:{" "}
-								<a
-									className="text-paper hover:text-signal"
-									href={`https://t.me/${telegram.replace("@", "")}`}
-									target="_blank"
-									rel="noreferrer"
-								>
-									{telegram}
-								</a>
-							</p>
-						</div>
-					</div>
-					<LeadForm />
-				</div>
-			</section>
-
-			<footer className="border-t border-white/10 px-6 py-8 md:px-8">
-				<div className="mx-auto flex w-full max-w-6xl flex-col gap-3 text-sm text-mist sm:flex-row sm:items-center sm:justify-between">
-					<p>{brand}</p>
-					<p>imtryingtodesign.com</p>
+							INSTAGRAM ↗
+						</a>
+					</span>
+					<a href="#top">BACK TO TOP ↑</a>
 				</div>
 			</footer>
+		</main>
+	);
+}
+
+function Confetti() {
+	return (
+		<div className="confetti" aria-hidden="true">
+			{Array.from({ length: 32 }).map((_, i) => (
+				<i key={i} style={{ "--i": i } as React.CSSProperties} />
+			))}
 		</div>
 	);
 }

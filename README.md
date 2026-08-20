@@ -1,31 +1,17 @@
 # I'm Trying To Design — monorepo
 
-Единый репозиторий экосистемы **imtryingtodesign.com**: маркетинговый сайт студии, портфолио и Cuebox.
+Публичный сайт: **I/TD portfolio** на Cloudflare Workers (аккаунт Proton).
 
-## Приложения
-
-| App | Путь | Домен | Стек | Деплой |
-| --- | --- | --- | --- | --- |
-| **Studio** | `apps/studio` | `imtryingtodesign.com` (prod Worker `imtrtdweb`) | Vite + React + Worker API + D1/DO | Cloudflare Workers |
-| **Portfolio** | `apps/portfolio` | `imtryingtodesign.com` (Worker `imtryingtodesign`) | Next.js + Vinext | Cloudflare Workers |
-| **Cuebox** | `apps/cuebox` | `app.imtryingtodesign.com` | Next.js + Prisma + Auth.js | Vercel |
-
-Подробнее: [docs/PROJECTS.md](./docs/PROJECTS.md)
-
-## Быстрый старт
+| App | Путь | Домен |
+| --- | --- | --- |
+| **Studio** | `apps/studio` | `imtryingtodesign.com` — I/TD design + `/admin` |
+| **Portfolio** | `apps/portfolio` | исходник того же дизайна (Next/Vinext) |
+| **Cuebox** | `apps/cuebox` | `app.imtryingtodesign.com` |
 
 ```bash
-# Установить зависимости всех приложений
-npm run install:all
-
-# Studio — лендинг + /admin + API заявок
-npm run dev:studio          # http://localhost:5173
-
-# Portfolio — портфолио с case studies
-npm run dev:portfolio
-
-# Cuebox — библиотека промптов
-npm run dev:cuebox
+npm --prefix apps/studio ci
+npm run dev:studio
+npm run deploy:studio
 ```
 
 ## Деплой

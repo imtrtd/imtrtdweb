@@ -1,7 +1,6 @@
 /**
- * Cloudflare Worker config for imtrtdweb studio app.
- * Primary account: b6f57d806… (D1 + workers.dev).
- * Falls back to Durable Object SQLite when DB binding is absent.
+ * Studio Worker — Proton Cloudflare account (custom domain).
+ * Durable Object SQLite store (no D1 on this account).
  */
 {
 	"$schema": "node_modules/wrangler/config-schema.json",
@@ -17,19 +16,6 @@
 	"observability": {
 		"enabled": true
 	},
-	"d1_databases": [
-		{
-			"binding": "DB",
-			"database_name": "imtrtdweb",
-			"database_id": "64e84c88-3ece-4f03-afe0-cf4dd9bef52b"
-		}
-	],
-	"r2_buckets": [
-		{
-			"binding": "MEDIA",
-			"bucket_name": "imtrtdweb-media"
-		}
-	],
 	"durable_objects": {
 		"bindings": [
 			{

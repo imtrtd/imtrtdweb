@@ -1,86 +1,30 @@
-@import url("https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700&family=Syne:wght@600;700;800&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Geist+Mono:wght@400;600;700&family=Space+Grotesk:wght@400;500;600;700&display=swap");
 @import "tailwindcss";
+@import "./styles/portfolio.css";
+@import "./styles/brand.css";
 
 @theme {
-	--font-display: "Syne", sans-serif;
-	--font-sans: "Manrope", sans-serif;
-	--color-ink: #101218;
-	--color-ink-soft: #1a1d27;
+	--font-display: "Space Grotesk", sans-serif;
+	--font-sans: "Space Grotesk", sans-serif;
+	--font-mono: "Geist Mono", ui-monospace, monospace;
+	--color-ink: #0a0a0f;
+	--color-ink-soft: #14141c;
 	--color-fog: #c8cedb;
 	--color-mist: #8b93a7;
-	--color-signal: #d2f35c;
-	--color-signal-deep: #b6d63a;
-	--color-paper: #eef1f6;
+	--color-signal: #b28dff;
+	--color-signal-deep: #7b5cff;
+	--color-paper: #f3effa;
 }
 
-@layer base {
-	:root {
-		color-scheme: dark;
-		font-family: var(--font-sans);
-		line-height: 1.5;
-		font-weight: 400;
-		font-synthesis: none;
-		text-rendering: optimizeLegibility;
-		-webkit-font-smoothing: antialiased;
-		-moz-osx-font-smoothing: grayscale;
-	}
-
-	html {
-		scroll-behavior: smooth;
-	}
-
-	body {
-		margin: 0;
-		min-height: 100vh;
-		background: var(--color-ink);
-		color: var(--color-paper);
-	}
-
-	::selection {
-		background: var(--color-signal);
-		color: var(--color-ink);
-	}
+:root {
+	--font-sans: "Space Grotesk", sans-serif;
+	--font-mono: "Geist Mono", ui-monospace, monospace;
+	color-scheme: dark;
 }
 
-@keyframes rise-in {
-	from {
-		opacity: 0;
-		transform: translateY(18px);
-	}
-	to {
-		opacity: 1;
-		transform: translateY(0);
-	}
-}
-
-@keyframes drift {
-	0%,
-	100% {
-		transform: translate3d(0, 0, 0) scale(1);
-	}
-	50% {
-		transform: translate3d(2%, -3%, 0) scale(1.05);
-	}
-}
-
-@keyframes signal-pulse {
-	0%,
-	100% {
-		opacity: 0.45;
-	}
-	50% {
-		opacity: 0.9;
-	}
-}
-
-@utility animate-rise {
-	animation: rise-in 0.8s cubic-bezier(0.22, 1, 0.36, 1) both;
-}
-
-@utility animate-drift {
-	animation: drift 14s ease-in-out infinite;
-}
-
-@utility animate-signal {
-	animation: signal-pulse 3.5s ease-in-out infinite;
+.admin-shell {
+	min-height: 100vh;
+	background: #101218;
+	color: #eef1f6;
+	font-family: "Space Grotesk", sans-serif;
 }
