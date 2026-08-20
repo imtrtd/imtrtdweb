@@ -1,41 +1,26 @@
 # Карта продуктов imtryingtodesign.com
 
-## Домены (Proton account — custom domain)
+Единственный Cloudflare-аккаунт: **Proton** (`c6768e43a40f0e876c28a2c8089d0edc`).
+
+## Домены
 
 | Host | Worker | App |
 | --- | --- | --- |
-| `imtryingtodesign.com` | `imtrtdweb` | studio |
-| `www.imtryingtodesign.com` | `imtrtdweb` | studio |
-| `studio.imtryingtodesign.com` | `imtrtdweb` | studio |
-| `site.imtryingtodesign.com` | `imtrtdweb` | studio |
-| `go.imtryingtodesign.com` | `imtrtdweb` | studio |
-| `app.imtryingtodesign.com` | Vercel | cuebox |
+| `imtryingtodesign.com` | `imtrtdweb` | I/TD portfolio + `/admin` |
+| `www.imtryingtodesign.com` | `imtrtdweb` | то же |
+| `studio.imtryingtodesign.com` | `imtrtdweb` | то же |
+| `app.imtryingtodesign.com` | Vercel | Cuebox |
 
-Fallback: `https://imtrtdweb.unitl.workers.dev` (Proton), `https://imtrtdweb.gw44ptx87t.workers.dev` (Apple + D1).
-
-## Cloudflare accounts
-
-| Account ID | Назначение | Config |
-| --- | --- | --- |
-| `b6f57d806…` Apple | CI, D1, R2, workers.dev | `wrangler.jsonc` |
-| `c6768e43…` Proton | Custom domain zone | `wrangler.proton.jsonc` |
+Fallback: `https://imtrtdweb.unitl.workers.dev`
 
 ## apps/studio
 
-- Лендинг (RU), `/admin`, `POST /api/leads`
-- D1 + R2 on Apple; DO SQLite fallback on Proton
-- `npm run deploy` / `npm run deploy:proton`
+Публичный дизайн — I/TD portfolio (`DIGITAL EXPERIENCES WITH A PULSE`).
+Кабинет: `/admin`. API заявок: `/api/*`. Хранение: Durable Object SQLite.
 
-## apps/portfolio / apps/cuebox
+## GitHub Actions
 
-- Portfolio: Next/Vinext worker `imtryingtodesign` (optional, not on apex)
-- Cuebox: Vercel + Postgres
-
-## GitHub Actions secrets
-
-| Secret | Account |
+| Secret | Значение |
 | --- | --- |
-| `CLOUDFLARE_API_TOKEN` | Apple |
-| `CLOUDFLARE_ACCOUNT_ID` | `b6f57d806c999f1a03efca808701883e` |
-| `CLOUDFLARE_PROTON_API_TOKEN` | Proton (Workers Edit) |
-| `CLOUDFLARE_PROTON_ACCOUNT_ID` | `c6768e43a40f0e876c28a2c8089d0edc` |
+| `CLOUDFLARE_API_TOKEN` | Proton, Workers Edit |
+| `CLOUDFLARE_ACCOUNT_ID` | `c6768e43a40f0e876c28a2c8089d0edc` |

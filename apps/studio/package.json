@@ -43,7 +43,6 @@
 		"cf-typegen": "wrangler types",
 		"check": "tsc && wrangler deploy --dry-run",
 		"deploy": "npm run build && wrangler deploy",
-		"deploy:proton": "npm run build && wrangler deploy --config wrangler.proton.jsonc",
 		"dev": "vite",
 		"lint": "eslint .",
 		"preview": "npm run build && vite preview",

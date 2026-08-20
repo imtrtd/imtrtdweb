@@ -1,0 +1,128 @@
+:root {
+  --paper: #f3effa;
+  --acid: #7b5cff;
+  --violet: #b28dff;
+  --orange: #8b5cf6;
+}
+
+body {
+  background:
+    radial-gradient(900px 520px at 75% 8%, rgba(123, 92, 255, .13), transparent 62%),
+    radial-gradient(680px 420px at 16% 18%, rgba(178, 141, 255, .08), transparent 65%),
+    #0a0a0f;
+}
+
+body::selection {
+  color: #0a0a0f;
+  background: #b28dff;
+}
+
+.topbar {
+  background: rgba(10, 10, 15, .82);
+  border-bottom-color: rgba(178, 141, 255, .18);
+}
+
+.brand {
+  letter-spacing: .12em;
+}
+
+.brand-mark {
+  width: 46px;
+  height: 46px;
+  padding: 0;
+  color: transparent;
+  background: transparent url('/favicon.svg') center/contain no-repeat;
+  clip-path: none;
+}
+
+.status i,
+.footer-status i {
+  background: #7b5cff;
+  box-shadow: 0 0 16px rgba(123, 92, 255, .85);
+}
+
+.nav a:hover {
+  color: #b28dff;
+  text-shadow: 0 0 14px rgba(178, 141, 255, .45);
+}
+
+.hero h1 {
+  font-family: var(--font-sans), sans-serif;
+  font-weight: 600;
+  letter-spacing: -.045em;
+}
+
+.outline {
+  -webkit-text-stroke-color: #d8d2e2;
+}
+
+.glitch:hover {
+  color: #b28dff;
+  text-shadow: 4px 0 #7b5cff, -4px 0 #160b26;
+}
+
+.orb {
+  background:
+    radial-gradient(circle at 40% 35%, #efe6ff 0 1%, #b28dff 2%, #6d3be7 14%, #26103f 42%, #0a0a0f 70%);
+  filter: drop-shadow(0 0 85px rgba(123, 92, 255, .35));
+  opacity: .9;
+}
+
+.orb::after,
+.orb span:nth-child(3) {
+  border-color: rgba(178, 141, 255, .48);
+}
+
+.round-link b,
+.eyebrow,
+.service b,
+.release-version span,
+.terminal-title span:last-child {
+  color: #b28dff;
+}
+
+.round-link:hover,
+.contact-button,
+.release h3 b {
+  background: linear-gradient(135deg, #b28dff, #7b5cff);
+  color: #0a0a0f;
+}
+
+.manifesto h2 em {
+  color: #7b5cff;
+  text-shadow: none;
+}
+
+.services h2 span,
+.release p span {
+  color: #b28dff;
+}
+
+.project.acid::before,
+.project.violet::before,
+.project.orange::before {
+  background: linear-gradient(110deg, #7b5cff, #b28dff);
+}
+
+.footer {
+  background: radial-gradient(circle at 72% 42%, rgba(123, 92, 255, .24), transparent 30%), #0a0a0f;
+}
+
+.contact-button {
+  box-shadow: 0 0 55px rgba(123, 92, 255, .24);
+}
+
+.contact-button:hover {
+  box-shadow: 0 0 90px rgba(178, 141, 255, .48);
+}
+
+@media (max-width: 800px) {
+  .nav {
+    background: #0a0a0f;
+  }
+
+  .brand-mark {
+    width: 40px;
+    height: 40px;
+  }
+}

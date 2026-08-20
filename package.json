@@ -13,7 +13,6 @@
 		"test:studio": "npm --prefix apps/studio run test",
 		"test:portfolio": "npm --prefix apps/portfolio run test",
 		"deploy:studio": "npm --prefix apps/studio run deploy",
-		"deploy:studio:proton": "npm --prefix apps/studio run deploy:proton",
 		"deploy:portfolio": "npm --prefix apps/portfolio run deploy",
 		"publish:studio": "npm --prefix apps/studio run publish:cloudflare"
 	}
