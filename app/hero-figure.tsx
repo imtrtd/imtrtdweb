@@ -1,27 +1,32 @@
+import { MonolithPlate } from "./logo";
+
 export function HeroFigure() {
   return (
-    <div className="hero-figure" data-motion aria-hidden="true">
-      <span className="hero-figure-index">I/TD — 001</span>
-      <div className="hero-figure-stage">
-        <div className="hero-figure-glow" />
-        <img
-          className="hero-figure-photo"
-          src="/studio-hero.png"
-          alt=""
-          width={1440}
-          height={1840}
-          decoding="async"
-          draggable={false}
-        />
-        <span className="hero-figure-tint" />
-        <svg className="hero-figure-svg" viewBox="0 0 720 920">
-          <ellipse className="hero-figure-ring" cx="360" cy="400" rx="280" ry="96" />
-          <ellipse className="hero-figure-ring hero-figure-ring-alt" cx="360" cy="400" rx="210" ry="70" />
-          <circle className="hero-figure-signal" cx="228" cy="268" r="8" />
-          <circle className="hero-figure-speck" cx="548" cy="512" r="4.5" />
-        </svg>
+    <aside className="hero-showcase" data-motion>
+      <p className="hero-showcase-kicker">[ HERO EMBLEM LOCKUP // LIGHT EMITTING MODEL ]</p>
+      <div className="monolith-stage">
+        <div className="hero-glass" aria-hidden="true">
+          <span className="hero-figure-glow" />
+          <img
+            className="hero-figure-photo"
+            src="/studio-hero.png"
+            alt=""
+            width={1440}
+            height={1840}
+            decoding="async"
+            draggable={false}
+          />
+          <span className="hero-figure-tint" />
+        </div>
+        <span className="monolith-orbit monolith-orbit-a" aria-hidden="true" />
+        <span className="monolith-orbit monolith-orbit-b" aria-hidden="true" />
+        <span className="monolith-orbit monolith-orbit-c" aria-hidden="true" />
+        <MonolithPlate />
       </div>
-      <span className="hero-figure-caption">FORM / SYSTEM / ENERGY</span>
-    </div>
+      <div className="hero-showcase-caption">
+        <p>THE REFRACTED MONOLITH</p>
+        <span>The idea, made physical — 45° shear, glass mass, and a live pulse.</span>
+      </div>
+    </aside>
   );
 }
