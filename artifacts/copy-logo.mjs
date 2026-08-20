@@ -19,3 +19,4 @@ for (const name of ["mark.png", "favicon.png", "favicon-32.png", "favicon-180.pn
   copyFileSync(src, join(root, "public", name));
 }
 console.log("ok");
+de
