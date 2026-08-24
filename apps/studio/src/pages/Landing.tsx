@@ -1,34 +1,18 @@
 import { useEffect, useRef, useState } from "react";
 import { PulseControl } from "../components/landing/PulseControl";
-
-const projects = [
-	{
-		n: "01",
-		title: "NAMENLOS",
-		type: "TATTOO STUDIO / BOOKING",
-		color: "acid",
-		href: "/work/namenlos",
-		note: "Concept case study: identity-led booking flow with a raw visual language.",
-	},
-	{
-		n: "02",
-		title: "NACHTWERK",
-		type: "EVENT SERIES / TICKETS",
-		color: "violet",
-		href: "/work/nachtwerk",
-		note: "Concept case study: an atmospheric event page built around line-ups and conversion.",
-	},
-	{
-		n: "03",
-		title: "KIOSK 23",
-		type: "CAFÉ / LOCAL COMMERCE",
-		color: "orange",
-		href: "/work/kiosk-23",
-		note: "Concept case study: a compact digital home for a small space with a loud point of view.",
-	},
-];
+import { ECOSYSTEM, PROJECTS, STATUS_LABELS } from "../data/projects";
 
 const releases = [
+	{
+		version: "v2.0.0",
+		date: "24.08.26",
+		title: "ECOSYSTEM HUB",
+		items: [
+			"unified project map for Brandcultura, I/TD, Namenlos, Cuebox and Neon Stripe",
+			"ecosystem page with live status and cross-links",
+			"case studies for every project in the portfolio",
+		],
+	},
 	{
 		version: "v1.5.0",
 		date: "20.08.26",
@@ -48,18 +32,6 @@ const releases = [
 			"Space Grotesk typography",
 			"cleaner mobile brand treatment",
 		],
-	},
-	{
-		version: "v1.3.2",
-		date: "31.07.26",
-		title: "SYSTEM POLISH",
-		items: ["reduced motion mode", "mobile navigation pass", "sharper type rhythm"],
-	},
-	{
-		version: "v1.3.0",
-		date: "18.07.26",
-		title: "PROJECT ARCHIVE",
-		items: ["case-study grid", "service modules", "bilingual structure"],
 	},
 ];
 
@@ -96,6 +68,8 @@ export function LandingPage() {
 		window.setTimeout(() => setBurst(false), 1600);
 	};
 
+	const liveCount = PROJECTS.filter((p) => p.status === "live").length;
+
 	return (
 		<main>
 			<div className="cursor-glow" ref={glow} aria-hidden="true" />
@@ -112,13 +86,16 @@ export function LandingPage() {
 					</span>
 				</a>
 				<div className="status">
-					<i /> AVAILABLE FOR Q4 <span>2026</span>
+					<i /> {liveCount} LIVE · {PROJECTS.length} PROJECTS
 					<PulseControl />
 				</div>
 				<nav
 					className={menuOpen ? "nav open" : "nav"}
 					aria-label="Main navigation"
 				>
+					<a href="#ecosystem" onClick={() => setMenuOpen(false)}>
+						ECOSYSTEM
+					</a>
 					<a href="#work" onClick={() => setMenuOpen(false)}>
 						WORK
 					</a>
@@ -145,7 +122,7 @@ export function LandingPage() {
 
 			<section className="hero" id="top">
 				<div className="hero-meta mono">
-					INDEPENDENT WEB DEVELOPMENT
+					{ECOSYSTEM.name.toUpperCase()} ECOSYSTEM
 					<br />
 					KYIV / REMOTE / 50.4501° N
 				</div>
@@ -161,28 +138,28 @@ export function LandingPage() {
 					<span className="orb-label orb-label-bottom">ENERGY</span>
 				</div>
 				<h1>
-					<span>DIGITAL</span>
-					<span className="outline glitch" data-text="EXPERIENCES">
-						EXPERIENCES
+					<span>ONE</span>
+					<span className="outline glitch" data-text="ECOSYSTEM">
+						ECOSYSTEM
 					</span>
-					<span>WITH A PULSE.</span>
+					<span>MANY PULSES.</span>
 				</h1>
 				<div className="hero-bottom">
 					<p>
-						I design and build expressive websites, interfaces and digital systems
-						for independent studios, artists and small brands that refuse to look
-						generic.
+						Brandcultura, Namenlos, Cuebox and Neon Stripe — unified under one
+						design language, one deployment stack and one point of view: digital
+						experiences that refuse to look generic.
 					</p>
 					<a
 						className="round-link sphere-atom"
-						href="#work"
-						aria-label="Explore selected work"
+						href="#ecosystem"
+						aria-label="Explore the ecosystem"
 					>
 						<SphereShell />
 						<span>
 							EXPLORE
 							<br />
-							WORK
+							ALL
 						</span>
 						<b>↓</b>
 					</a>
@@ -191,48 +168,94 @@ export function LandingPage() {
 			</section>
 
 			<section className="manifesto section-pad">
-				<p className="eyebrow">// WHAT I DO</p>
+				<p className="eyebrow">// THE HUB</p>
 				<h2>
-					ONE PERSON.
+					FIVE PROJECTS.
 					<br />
-					FULL <em>SYSTEM.</em>
+					ONE <em>SYSTEM.</em>
 				</h2>
 				<div className="manifesto-copy">
 					<p>
-						From first sketch to deployment: strategy, interface, code and motion
-						developed as one continuous product system.
+						From brand culture to tattoo booking, from AI tooling to neon visual
+						systems — every project shares the same foundation: strategy,
+						interface, code and motion developed as one continuous product.
 					</p>
-					<span className="mono">[ DESIGN × DEVELOPMENT × VISUALIZATION ]</span>
+					<span className="mono">
+						[ BRANDCULTURA × I/TD × NAMENLOS × CUEBOX × NEON STRIPE ]
+					</span>
+				</div>
+			</section>
+
+			<section className="ecosystem-preview section-pad" id="ecosystem">
+				<div className="section-head ecosystem-head">
+					<p className="eyebrow">// ECOSYSTEM</p>
+					<span className="mono">
+						{PROJECTS.length} PROJECTS / {liveCount} LIVE
+					</span>
+				</div>
+				<div className="ecosystem-strip">
+					{PROJECTS.map((project) => (
+						<a
+							className={`ecosystem-chip ${project.color}`}
+							href={project.href}
+							key={project.slug}
+							{...(project.external
+								? { target: "_blank", rel: "noreferrer" }
+								: {})}
+						>
+							<span className="mono">{project.index}</span>
+							<strong>{project.title}</strong>
+							<em>{STATUS_LABELS[project.status]}</em>
+						</a>
+					))}
+				</div>
+				<div className="work-archive">
+					<p className="mono">
+						EVERY PROJECT HAS ITS OWN DOMAIN, VISUAL LANGUAGE AND PURPOSE — BUT
+						THEY ALL RUN ON THE SAME DESIGN DNA.
+					</p>
+					<a className="systems-link" href="/ecosystem">
+						OPEN ECOSYSTEM MAP <span>↗</span>
+					</a>
 				</div>
 			</section>
 
 			<section className="projects" id="work">
 				<div className="section-head section-pad">
 					<p className="eyebrow">// SELECTED WORK</p>
-					<span className="mono">03 CONCEPT CASES / 03 SYSTEMS</span>
+					<span className="mono">
+						{String(PROJECTS.length).padStart(2, "0")} PROJECTS /{" "}
+						{String(liveCount).padStart(2, "0")} LIVE
+					</span>
 				</div>
-				{projects.map((project) => (
+				{PROJECTS.map((project) => (
 					<a
 						className={`project ${project.color}`}
 						href={project.href}
-						key={project.title}
-						aria-label={`Open ${project.title} concept case study`}
+						key={project.slug}
+						aria-label={`Open ${project.title}`}
+						{...(project.external
+							? { target: "_blank", rel: "noreferrer" }
+							: {})}
 					>
-						<span className="project-number mono">/{project.n}</span>
+						<span className="project-number mono">/{project.index}</span>
 						<div>
-							<p className="mono">{project.type}</p>
+							<p className="mono">
+								{project.type} · {STATUS_LABELS[project.status]}
+							</p>
 							<h3>{project.title}</h3>
 						</div>
 						<p className="project-note">{project.note}</p>
-						<span className="project-arrow">↗</span>
+						<span className="project-arrow">{project.external ? "↗" : "→"}</span>
 					</a>
 				))}
 				<div className="work-archive section-pad">
 					<p className="mono">
-						ALL CASE STUDIES ARE CLEARLY LABELED CONCEPT / PLACEHOLDER WORK.
+						CUEBOX IS LIVE AT APP.IMTRYINGTODESIGN.COM — THE REST EVOLVES IN
+						PUBLIC.
 					</p>
 					<a className="systems-link" href="/systems">
-						OPEN THE REFERENCE SYSTEMS <span>↗</span>
+						OPEN REFERENCE SYSTEMS <span>↗</span>
 					</a>
 				</div>
 			</section>
@@ -249,14 +272,26 @@ export function LandingPage() {
 				<div className="service-list">
 					{(
 						[
-							["01", "WEB DESIGN", "Visual systems, responsive interfaces and prototypes."],
-							["02", "DEVELOPMENT", "Fast, accessible builds with clean interactions."],
+							[
+								"01",
+								"WEB DESIGN",
+								"Visual systems, responsive interfaces and prototypes.",
+							],
+							[
+								"02",
+								"DEVELOPMENT",
+								"Fast, accessible builds with clean interactions.",
+							],
 							[
 								"03",
-								"VISUALIZATION",
-								"Presentations, product concepts and visual systems from text.",
+								"PRODUCT",
+								"SaaS tools like Cuebox — from concept to shipped product.",
 							],
-							["04", "CARE & EVOLUTION", "Launch support, improvements and new releases."],
+							[
+								"04",
+								"CARE & EVOLUTION",
+								"Launch support, improvements and new releases.",
+							],
 						] as const
 					).map(([n, title, desc]) => (
 						<div className="service" key={n}>
@@ -286,8 +321,8 @@ export function LandingPage() {
 						<span>LOG_</span>
 					</h2>
 					<p>
-						The site evolves with the work. This log tracks the visible product and
-						design changes.
+						The ecosystem evolves with the work. This log tracks visible product
+						and design changes across all projects.
 					</p>
 				</div>
 				<div className="release-list">
@@ -335,6 +370,19 @@ export function LandingPage() {
 						START A PROJECT <b>↗</b>
 					</span>
 				</a>
+				<div className="footer-ecosystem mono">
+					{PROJECTS.map((project) => (
+						<a
+							href={project.href}
+							key={project.slug}
+							{...(project.external
+								? { target: "_blank", rel: "noreferrer" }
+								: {})}
+						>
+							{project.title} {project.external ? "↗" : ""}
+						</a>
+					))}
+				</div>
 				<div className="footer-row mono">
 					<span>© 2026 IMTRYINGTODESIGN</span>
 					<span>KYIV / REMOTE</span>

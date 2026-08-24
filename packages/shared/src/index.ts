@@ -48,7 +48,17 @@ export type SiteContent = {
 
 export const BRAND = {
 	name: "I'm Trying To Design",
-	email: "hello@imtryingtodesign.com",
+	email: "info@imtryingtodesign.com",
 	telegram: "@imtrtd",
 	domain: "imtryingtodesign.com",
 } as const;
+
+export {
+	ECOSYSTEM,
+	PROJECTS,
+	STATUS_LABELS,
+	getProject,
+	type EcosystemProject,
+	type ProjectColor,
+	type ProjectStatus,
+} from "./projects";

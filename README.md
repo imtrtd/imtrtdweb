@@ -1,12 +1,22 @@
 # I'm Trying To Design — monorepo
 
-Публичный сайт: **I/TD portfolio** на Cloudflare Workers (аккаунт Proton).
+Публичный сайт: **I/TD ecosystem hub** на Cloudflare Workers (аккаунт Proton).
 
 | App | Путь | Домен |
 | --- | --- | --- |
-| **Studio** | `apps/studio` | `imtryingtodesign.com` — I/TD design + `/admin` |
+| **Studio** | `apps/studio` | `imtryingtodesign.com` — ecosystem hub + `/admin` |
 | **Portfolio** | `apps/portfolio` | исходник того же дизайна (Next/Vinext) |
 | **Cuebox** | `apps/cuebox` | `app.imtryingtodesign.com` |
+
+## Экосистема
+
+| Проект | Статус | Страница |
+| --- | --- | --- |
+| Brandcultura | in progress | `/work/brandcultura` |
+| I/TD | live | `/` |
+| Namenlos | in progress | `/work/namenlos` |
+| Cuebox | live | app.imtryingtodesign.com |
+| Neon Stripe | concept | `/work/neon-stripe` |
 
 ```bash
 npm --prefix apps/studio ci
