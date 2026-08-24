@@ -354,15 +354,30 @@ export function LandingPage() {
 					<a href="#top">BACK TO TOP ↑</a>
 				</div>
 			</footer>
+
+			<section className="page-end-sphere" aria-hidden="true">
+				<div className="end-sphere">
+					<SphereShell count={4} ring large />
+				</div>
+				<span className="end-sphere-label mono">ORBIT / CORE</span>
+			</section>
 		</main>
 	);
 }
 
-function SphereShell({ count = 3, ring = false }: { count?: number; ring?: boolean }) {
+function SphereShell({
+	count = 3,
+	ring = false,
+	large = false,
+}: {
+	count?: number;
+	ring?: boolean;
+	large?: boolean;
+}) {
 	return (
 		<>
 			<span className="sphere-body" aria-hidden="true" />
-			<span className="sphere-orbits" aria-hidden="true">
+			<span className={large ? "sphere-orbits sphere-orbits-large" : "sphere-orbits"} aria-hidden="true">
 				{ring ? <em className="sphere-ring" /> : null}
 				{Array.from({ length: count }, (_, index) => (
 					<i key={index} />
