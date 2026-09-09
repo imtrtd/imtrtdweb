@@ -332,7 +332,7 @@ export const PROJECTS: EcosystemProject[] = [
 	{
 		slug: "kava-noir",
 		index: "09",
-		title: "KAVA NOIR",
+		title: "Kava Noir",
 		type: "HOSPITALITY / KYIV",
 		color: "mint",
 		status: "concept",
