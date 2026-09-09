@@ -1,34 +1,28 @@
 import { useEffect, useRef, useState } from "react";
 import { PulseControl } from "../components/landing/PulseControl";
-
-const projects = [
-	{
-		n: "01",
-		title: "NAMENLOS",
-		type: "TATTOO STUDIO / BOOKING",
-		color: "acid",
-		href: "/work/namenlos",
-		note: "Concept case study: identity-led booking flow with a raw visual language.",
-	},
-	{
-		n: "02",
-		title: "NACHTWERK",
-		type: "EVENT SERIES / TICKETS",
-		color: "violet",
-		href: "/work/nachtwerk",
-		note: "Concept case study: an atmospheric event page built around line-ups and conversion.",
-	},
-	{
-		n: "03",
-		title: "KIOSK 23",
-		type: "CAFÉ / LOCAL COMMERCE",
-		color: "orange",
-		href: "/work/kiosk-23",
-		note: "Concept case study: a compact digital home for a small space with a loud point of view.",
-	},
-];
+import { ECOSYSTEM, PROJECTS, STATUS_LABELS } from "../data/projects";
 
 const releases = [
+	{
+		version: "v2.1.0",
+		date: "09.09.26",
+		title: "PROJECT INDEX",
+		items: [
+			"live domains, descriptions and covers for all known projects",
+			"Brandcultura, Namenlos, Cuebox and I/TD linked to production URLs",
+			"Club Stereo, Atelier SOL, Vela, Kava Noir and Neon Stripe in the archive",
+		],
+	},
+	{
+		version: "v2.0.0",
+		date: "24.08.26",
+		title: "ECOSYSTEM HUB",
+		items: [
+			"unified project map across the I/TD ecosystem",
+			"ecosystem page with live status and cross-links",
+			"case studies for every project in the portfolio",
+		],
+	},
 	{
 		version: "v1.5.0",
 		date: "20.08.26",
@@ -38,28 +32,6 @@ const releases = [
 			"planet and atom volume on circular CTAs",
 			"live drum-and-bass pulse in the header",
 		],
-	},
-	{
-		version: "v1.4.0",
-		date: "13.08.26",
-		title: "IDENTITY UPDATE",
-		items: [
-			"purple identity system",
-			"Space Grotesk typography",
-			"cleaner mobile brand treatment",
-		],
-	},
-	{
-		version: "v1.3.2",
-		date: "31.07.26",
-		title: "SYSTEM POLISH",
-		items: ["reduced motion mode", "mobile navigation pass", "sharper type rhythm"],
-	},
-	{
-		version: "v1.3.0",
-		date: "18.07.26",
-		title: "PROJECT ARCHIVE",
-		items: ["case-study grid", "service modules", "bilingual structure"],
 	},
 ];
 
@@ -96,6 +68,8 @@ export function LandingPage() {
 		window.setTimeout(() => setBurst(false), 1600);
 	};
 
+	const liveCount = PROJECTS.filter((p) => p.status === "live").length;
+
 	return (
 		<main>
 			<div className="cursor-glow" ref={glow} aria-hidden="true" />
@@ -112,13 +86,16 @@ export function LandingPage() {
 					</span>
 				</a>
 				<div className="status">
-					<i /> AVAILABLE FOR Q4 <span>2026</span>
+					<i /> {liveCount} LIVE · {PROJECTS.length} PROJECTS
 					<PulseControl />
 				</div>
 				<nav
 					className={menuOpen ? "nav open" : "nav"}
 					aria-label="Main navigation"
 				>
+					<a href="#ecosystem" onClick={() => setMenuOpen(false)}>
+						ECOSYSTEM
+					</a>
 					<a href="#work" onClick={() => setMenuOpen(false)}>
 						WORK
 					</a>
@@ -145,7 +122,7 @@ export function LandingPage() {
 
 			<section className="hero" id="top">
 				<div className="hero-meta mono">
-					INDEPENDENT WEB DEVELOPMENT
+					{ECOSYSTEM.name.toUpperCase()} ECOSYSTEM
 					<br />
 					KYIV / REMOTE / 50.4501° N
 				</div>
@@ -161,28 +138,27 @@ export function LandingPage() {
 					<span className="orb-label orb-label-bottom">ENERGY</span>
 				</div>
 				<h1>
-					<span>DIGITAL</span>
-					<span className="outline glitch" data-text="EXPERIENCES">
-						EXPERIENCES
+					<span>ONE</span>
+					<span className="outline glitch" data-text="ECOSYSTEM">
+						ECOSYSTEM
 					</span>
-					<span>WITH A PULSE.</span>
+					<span>MANY PULSES.</span>
 				</h1>
 				<div className="hero-bottom">
 					<p>
-						I design and build expressive websites, interfaces and digital systems
-						for independent studios, artists and small brands that refuse to look
-						generic.
+						Brandcultura, Namenlos, Cuebox, Neon Stripe and the selected practice
+						archive — domains, descriptions and covers under one design language.
 					</p>
 					<a
 						className="round-link sphere-atom"
-						href="#work"
-						aria-label="Explore selected work"
+						href="#ecosystem"
+						aria-label="Explore the ecosystem"
 					>
 						<SphereShell />
 						<span>
 							EXPLORE
 							<br />
-							WORK
+							ALL
 						</span>
 						<b>↓</b>
 					</a>
@@ -191,48 +167,154 @@ export function LandingPage() {
 			</section>
 
 			<section className="manifesto section-pad">
-				<p className="eyebrow">// WHAT I DO</p>
+				<p className="eyebrow">// THE HUB</p>
 				<h2>
-					ONE PERSON.
+					{String(PROJECTS.length).padStart(2, "0")} PROJECTS.
 					<br />
-					FULL <em>SYSTEM.</em>
+					ONE <em>SYSTEM.</em>
 				</h2>
 				<div className="manifesto-copy">
 					<p>
-						From first sketch to deployment: strategy, interface, code and motion
-						developed as one continuous product system.
+						From culture agency to tattoo booking, from AI tooling to nightlife
+						and hospitality — every project shares the same foundation: strategy,
+						interface, code and motion as one continuous product.
 					</p>
-					<span className="mono">[ DESIGN × DEVELOPMENT × VISUALIZATION ]</span>
+					<span className="mono">
+						[ BRANDCULTURA × I/TD × NAMENLOS × CUEBOX × NEON STRIPE × STEREO × SOL
+						× VELA × KAVA ]
+					</span>
+				</div>
+			</section>
+
+			<section className="ecosystem-preview section-pad" id="ecosystem">
+				<div className="section-head ecosystem-head">
+					<p className="eyebrow">// ECOSYSTEM</p>
+					<span className="mono">
+						{PROJECTS.length} PROJECTS / {liveCount} LIVE
+					</span>
+				</div>
+				<div className="ecosystem-strip ecosystem-strip-scroll">
+					{PROJECTS.map((project) => (
+						<a
+							className={`ecosystem-chip ${project.color}`}
+							href={
+								project.slug === "imtrtd" ? "/" : `/work/${project.slug}`
+							}
+							key={project.slug}
+						>
+							<span className="mono">{project.index}</span>
+							<strong>{project.title}</strong>
+							<em>
+								{project.domain ?? STATUS_LABELS[project.status]}
+							</em>
+						</a>
+					))}
+				</div>
+				<div className="work-archive">
+					<p className="mono">
+						LIVE DOMAINS: BRANDCULTURA.COM · NAMENLOS.TATTOO ·
+						APP.IMTRYINGTODESIGN.COM · BRANDCULTURA.ART
+					</p>
+					<a className="systems-link" href="/ecosystem">
+						OPEN ECOSYSTEM MAP <span>↗</span>
+					</a>
 				</div>
 			</section>
 
 			<section className="projects" id="work">
 				<div className="section-head section-pad">
 					<p className="eyebrow">// SELECTED WORK</p>
-					<span className="mono">03 CONCEPT CASES / 03 SYSTEMS</span>
+					<span className="mono">
+						{String(PROJECTS.length).padStart(2, "0")} PROJECTS /{" "}
+						{String(liveCount).padStart(2, "0")} LIVE
+					</span>
 				</div>
-				{projects.map((project) => (
-					<a
-						className={`project ${project.color}`}
-						href={project.href}
-						key={project.title}
-						aria-label={`Open ${project.title} concept case study`}
-					>
-						<span className="project-number mono">/{project.n}</span>
-						<div>
-							<p className="mono">{project.type}</p>
-							<h3>{project.title}</h3>
-						</div>
-						<p className="project-note">{project.note}</p>
-						<span className="project-arrow">↗</span>
-					</a>
-				))}
+				<div className="project-gallery">
+					{PROJECTS.map((project) => (
+						<article className={`project-tile ${project.color} tile-${project.slug}`} key={project.slug}>
+							<a
+								className="project-tile-media"
+								href={
+									project.slug === "imtrtd" ? "/" : `/work/${project.slug}`
+								}
+								aria-label={`Open ${project.title} case study`}
+							>
+								<img
+									src={project.image}
+									alt=""
+									loading="lazy"
+									width={700}
+									height={440}
+								/>
+								<span className="project-tile-status mono">
+									{STATUS_LABELS[project.status]}
+								</span>
+							</a>
+							<div className="project-tile-body">
+								<p className="mono">
+									/{project.index} · {project.type}
+								</p>
+								<h3>{project.title}</h3>
+								<p>{project.note}</p>
+								{(() => {
+									const caseLink = project.links.find(
+										(l) => !l.external && l.href.startsWith("/work"),
+									);
+									const secondary = project.links.find(
+										(l) =>
+											l.external &&
+											project.domain &&
+											!l.href.replace(/^https?:\/\/(www\.)?/, "").startsWith(
+												project.domain,
+											),
+									);
+									return (
+										<div className="project-tile-links">
+											{project.domain ? (
+												<a
+													className="project-tile-domain"
+													href={
+														project.external
+															? project.href
+															: `https://${project.domain}`
+													}
+													target="_blank"
+													rel="noreferrer"
+												>
+													{project.domain} ↗
+												</a>
+											) : null}
+											{secondary ? (
+												<a
+													href={secondary.href}
+													target="_blank"
+													rel="noreferrer"
+												>
+													{secondary.label} ↗
+												</a>
+											) : null}
+											{caseLink ? (
+												<a href={caseLink.href}>{caseLink.label}</a>
+											) : null}
+										</div>
+									);
+								})()}
+							</div>
+						</article>
+					))}
+				</div>
 				<div className="work-archive section-pad">
 					<p className="mono">
-						ALL CASE STUDIES ARE CLEARLY LABELED CONCEPT / PLACEHOLDER WORK.
+						FULL INDEX WITH COVERS AND LINKS ALSO LIVES AT BRANDCULTURA.ART —
+						SEVEN SITES, SEVEN STRUCTURES.
 					</p>
-					<a className="systems-link" href="/systems">
-						OPEN THE REFERENCE SYSTEMS <span>↗</span>
+					<a
+						className="systems-link"
+						href="https://brandcultura.art"
+						target="_blank"
+						rel="noreferrer"
+					>
+						OPEN PORTFOLIO INDEX <span>↗</span>
 					</a>
 				</div>
 			</section>
@@ -249,14 +331,26 @@ export function LandingPage() {
 				<div className="service-list">
 					{(
 						[
-							["01", "WEB DESIGN", "Visual systems, responsive interfaces and prototypes."],
-							["02", "DEVELOPMENT", "Fast, accessible builds with clean interactions."],
+							[
+								"01",
+								"WEB DESIGN",
+								"Visual systems, responsive interfaces and prototypes.",
+							],
+							[
+								"02",
+								"DEVELOPMENT",
+								"Fast, accessible builds with clean interactions.",
+							],
 							[
 								"03",
-								"VISUALIZATION",
-								"Presentations, product concepts and visual systems from text.",
+								"PRODUCT",
+								"SaaS tools like Cuebox — from concept to shipped product.",
 							],
-							["04", "CARE & EVOLUTION", "Launch support, improvements and new releases."],
+							[
+								"04",
+								"CARE & EVOLUTION",
+								"Launch support, improvements and new releases.",
+							],
 						] as const
 					).map(([n, title, desc]) => (
 						<div className="service" key={n}>
@@ -286,8 +380,8 @@ export function LandingPage() {
 						<span>LOG_</span>
 					</h2>
 					<p>
-						The site evolves with the work. This log tracks the visible product and
-						design changes.
+						The ecosystem evolves with the work. This log tracks visible product
+						and design changes across all projects.
 					</p>
 				</div>
 				<div className="release-list">
@@ -335,6 +429,19 @@ export function LandingPage() {
 						START A PROJECT <b>↗</b>
 					</span>
 				</a>
+				<div className="footer-ecosystem mono">
+					{PROJECTS.map((project) => (
+						<a
+							href={project.href}
+							key={project.slug}
+							{...(project.external
+								? { target: "_blank", rel: "noreferrer" }
+								: {})}
+						>
+							{project.title} {project.external ? "↗" : ""}
+						</a>
+					))}
+				</div>
 				<div className="footer-row mono">
 					<span>© 2026 IMTRYINGTODESIGN</span>
 					<span>KYIV / REMOTE</span>
