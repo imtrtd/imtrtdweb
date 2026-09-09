@@ -256,23 +256,49 @@ export function LandingPage() {
 								</p>
 								<h3>{project.title}</h3>
 								<p>{project.note}</p>
-								{project.domain ? (
-									<p className="project-tile-domain mono">{project.domain}</p>
-								) : null}
-								<div className="project-tile-links">
-									{project.links.slice(0, 2).map((link) => (
-										<a
-											key={link.href + link.label}
-											href={link.href}
-											{...(link.external
-												? { target: "_blank", rel: "noreferrer" }
-												: {})}
-										>
-											{link.label}
-											{link.external ? " ↗" : ""}
-										</a>
-									))}
-								</div>
+								{(() => {
+									const caseLink = project.links.find(
+										(l) => !l.external && l.href.startsWith("/work"),
+									);
+									const secondary = project.links.find(
+										(l) =>
+											l.external &&
+											project.domain &&
+											!l.href.replace(/^https?:\/\/(www\.)?/, "").startsWith(
+												project.domain,
+											),
+									);
+									return (
+										<div className="project-tile-links">
+											{project.domain ? (
+												<a
+													className="project-tile-domain"
+													href={
+														project.external
+															? project.href
+															: `https://${project.domain}`
+													}
+													target="_blank"
+													rel="noreferrer"
+												>
+													{project.domain} ↗
+												</a>
+											) : null}
+											{secondary ? (
+												<a
+													href={secondary.href}
+													target="_blank"
+													rel="noreferrer"
+												>
+													{secondary.label} ↗
+												</a>
+											) : null}
+											{caseLink ? (
+												<a href={caseLink.href}>{caseLink.label}</a>
+											) : null}
+										</div>
+									);
+								})()}
 							</div>
 						</article>
 					))}
