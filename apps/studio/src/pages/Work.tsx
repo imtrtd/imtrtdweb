@@ -23,7 +23,7 @@ export function WorkPage({ slug }: { slug: string }) {
 	const caseHref = study.links.find((l) => !l.external && l.href.startsWith("/work"));
 
 	return (
-		<main className="case-page" style={caseStyle}>
+		<main className={`case-page case-${study.slug}`} style={caseStyle}>
 			<nav className="case-nav">
 				<a className="case-back" href="/#work">
 					BACK TO WORK

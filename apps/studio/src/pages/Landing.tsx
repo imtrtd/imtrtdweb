@@ -231,7 +231,7 @@ export function LandingPage() {
 				</div>
 				<div className="project-gallery">
 					{PROJECTS.map((project) => (
-						<article className={`project-tile ${project.color}`} key={project.slug}>
+						<article className={`project-tile ${project.color} tile-${project.slug}`} key={project.slug}>
 							<a
 								className="project-tile-media"
 								href={

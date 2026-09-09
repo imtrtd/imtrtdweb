@@ -59,7 +59,7 @@ export function EcosystemPage() {
 
 			<section className="project-cards">
 				{PROJECTS.map((project) => (
-					<article className={`project-card ${project.color}`} key={project.slug}>
+					<article className={`project-card ${project.color} tile-${project.slug}`} key={project.slug}>
 						<a
 							className="project-card-media"
 							href={project.external ? `/work/${project.slug}` : project.href}
