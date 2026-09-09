@@ -315,7 +315,7 @@ body.is-glitching .glitch { transform:rotate(-4deg) skewX(-9deg) translate3d(6px
 .project-card-links a { font:700 10px var(--font-mono); letter-spacing:.06em; color:#ddd; border-bottom:1px solid #444; padding-bottom:2px; }
 .project-card-links a:hover { color:var(--acid); border-color:var(--acid); }
 
-/* —— Kava Noir: menu-led serif —— */
+/* —— Kava Noir: menu-led soft serif —— */
 .case-kava-noir .case-hero h1,
 .case-kava-noir .case-detail h2,
 .case-kava-noir .case-prototype h2,
@@ -323,6 +323,7 @@ body.is-glitching .glitch { transform:rotate(-4deg) skewX(-9deg) translate3d(6px
 .tile-kava-noir h3 {
   font-family: var(--font-kava), "Times New Roman", serif;
   font-weight: 600;
+  font-optical-sizing: auto;
   letter-spacing: -.03em;
   text-transform: none;
 }
@@ -331,12 +332,13 @@ body.is-glitching .glitch { transform:rotate(-4deg) skewX(-9deg) translate3d(6px
   font-style: italic;
   font-weight: 600;
   line-height: .78;
-  letter-spacing: -.02em;
+  letter-spacing: -.035em;
 }
 .case-kava-noir .case-intro {
   font-size: clamp(18px, 1.7vw, 22px);
   line-height: 1.45;
   font-weight: 500;
+  font-style: normal;
 }
 .case-kava-noir .case-detail h2,
 .case-kava-noir .case-prototype h2 {
