@@ -10,13 +10,19 @@
 
 ## Экосистема
 
-| Проект | Статус | Страница |
+| Проект | Статус | Домен / страница |
 | --- | --- | --- |
-| Brandcultura | in progress | `/work/brandcultura` |
-| I/TD | live | `/` |
-| Namenlos | in progress | `/work/namenlos` |
+| Brandcultura | live | brandcultura.com · brandcultura.agency |
+| I/TD | live | imtryingtodesign.com · brandcultura.art |
+| Namenlos | live | namenlos.tattoo |
 | Cuebox | live | app.imtryingtodesign.com |
 | Neon Stripe | concept | `/work/neon-stripe` |
+| Club Stereo | concept | `/work/club-stereo` |
+| Atelier SOL | concept | `/work/atelier-sol` |
+| Vela | concept | `/work/vela` |
+| Kava Noir | concept | `/work/kava-noir` |
+
+Реестр и обложки: `packages/shared/src/projects.ts`, `apps/studio/public/projects/`.
 
 ```bash
 npm --prefix apps/studio ci

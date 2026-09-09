@@ -6,4 +6,5 @@ export {
 	type EcosystemProject,
 	type ProjectColor,
 	type ProjectStatus,
+	type ProjectLink,
 } from "../../../../packages/shared/src/projects";

@@ -4,11 +4,21 @@ import { ECOSYSTEM, PROJECTS, STATUS_LABELS } from "../data/projects";
 
 const releases = [
 	{
+		version: "v2.1.0",
+		date: "09.09.26",
+		title: "PROJECT INDEX",
+		items: [
+			"live domains, descriptions and covers for all known projects",
+			"Brandcultura, Namenlos, Cuebox and I/TD linked to production URLs",
+			"Club Stereo, Atelier SOL, Vela, Kava Noir and Neon Stripe in the archive",
+		],
+	},
+	{
 		version: "v2.0.0",
 		date: "24.08.26",
 		title: "ECOSYSTEM HUB",
 		items: [
-			"unified project map for Brandcultura, I/TD, Namenlos, Cuebox and Neon Stripe",
+			"unified project map across the I/TD ecosystem",
 			"ecosystem page with live status and cross-links",
 			"case studies for every project in the portfolio",
 		],
@@ -21,16 +31,6 @@ const releases = [
 			"lime pulse orb with FORM / ENERGY lockup",
 			"planet and atom volume on circular CTAs",
 			"live drum-and-bass pulse in the header",
-		],
-	},
-	{
-		version: "v1.4.0",
-		date: "13.08.26",
-		title: "IDENTITY UPDATE",
-		items: [
-			"purple identity system",
-			"Space Grotesk typography",
-			"cleaner mobile brand treatment",
 		],
 	},
 ];
@@ -146,9 +146,8 @@ export function LandingPage() {
 				</h1>
 				<div className="hero-bottom">
 					<p>
-						Brandcultura, Namenlos, Cuebox and Neon Stripe — unified under one
-						design language, one deployment stack and one point of view: digital
-						experiences that refuse to look generic.
+						Brandcultura, Namenlos, Cuebox, Neon Stripe and the selected practice
+						archive — domains, descriptions and covers under one design language.
 					</p>
 					<a
 						className="round-link sphere-atom"
@@ -170,18 +169,19 @@ export function LandingPage() {
 			<section className="manifesto section-pad">
 				<p className="eyebrow">// THE HUB</p>
 				<h2>
-					FIVE PROJECTS.
+					{String(PROJECTS.length).padStart(2, "0")} PROJECTS.
 					<br />
 					ONE <em>SYSTEM.</em>
 				</h2>
 				<div className="manifesto-copy">
 					<p>
-						From brand culture to tattoo booking, from AI tooling to neon visual
-						systems — every project shares the same foundation: strategy,
-						interface, code and motion developed as one continuous product.
+						From culture agency to tattoo booking, from AI tooling to nightlife
+						and hospitality — every project shares the same foundation: strategy,
+						interface, code and motion as one continuous product.
 					</p>
 					<span className="mono">
-						[ BRANDCULTURA × I/TD × NAMENLOS × CUEBOX × NEON STRIPE ]
+						[ BRANDCULTURA × I/TD × NAMENLOS × CUEBOX × NEON STRIPE × STEREO × SOL
+						× VELA × KAVA ]
 					</span>
 				</div>
 			</section>
@@ -193,26 +193,27 @@ export function LandingPage() {
 						{PROJECTS.length} PROJECTS / {liveCount} LIVE
 					</span>
 				</div>
-				<div className="ecosystem-strip">
+				<div className="ecosystem-strip ecosystem-strip-scroll">
 					{PROJECTS.map((project) => (
 						<a
 							className={`ecosystem-chip ${project.color}`}
-							href={project.href}
+							href={
+								project.slug === "imtrtd" ? "/" : `/work/${project.slug}`
+							}
 							key={project.slug}
-							{...(project.external
-								? { target: "_blank", rel: "noreferrer" }
-								: {})}
 						>
 							<span className="mono">{project.index}</span>
 							<strong>{project.title}</strong>
-							<em>{STATUS_LABELS[project.status]}</em>
+							<em>
+								{project.domain ?? STATUS_LABELS[project.status]}
+							</em>
 						</a>
 					))}
 				</div>
 				<div className="work-archive">
 					<p className="mono">
-						EVERY PROJECT HAS ITS OWN DOMAIN, VISUAL LANGUAGE AND PURPOSE — BUT
-						THEY ALL RUN ON THE SAME DESIGN DNA.
+						LIVE DOMAINS: BRANDCULTURA.COM · NAMENLOS.TATTOO ·
+						APP.IMTRYINGTODESIGN.COM · BRANDCULTURA.ART
 					</p>
 					<a className="systems-link" href="/ecosystem">
 						OPEN ECOSYSTEM MAP <span>↗</span>
@@ -228,34 +229,66 @@ export function LandingPage() {
 						{String(liveCount).padStart(2, "0")} LIVE
 					</span>
 				</div>
-				{PROJECTS.map((project) => (
-					<a
-						className={`project ${project.color}`}
-						href={project.href}
-						key={project.slug}
-						aria-label={`Open ${project.title}`}
-						{...(project.external
-							? { target: "_blank", rel: "noreferrer" }
-							: {})}
-					>
-						<span className="project-number mono">/{project.index}</span>
-						<div>
-							<p className="mono">
-								{project.type} · {STATUS_LABELS[project.status]}
-							</p>
-							<h3>{project.title}</h3>
-						</div>
-						<p className="project-note">{project.note}</p>
-						<span className="project-arrow">{project.external ? "↗" : "→"}</span>
-					</a>
-				))}
+				<div className="project-gallery">
+					{PROJECTS.map((project) => (
+						<article className={`project-tile ${project.color}`} key={project.slug}>
+							<a
+								className="project-tile-media"
+								href={
+									project.slug === "imtrtd" ? "/" : `/work/${project.slug}`
+								}
+								aria-label={`Open ${project.title} case study`}
+							>
+								<img
+									src={project.image}
+									alt=""
+									loading="lazy"
+									width={700}
+									height={440}
+								/>
+								<span className="project-tile-status mono">
+									{STATUS_LABELS[project.status]}
+								</span>
+							</a>
+							<div className="project-tile-body">
+								<p className="mono">
+									/{project.index} · {project.type}
+								</p>
+								<h3>{project.title}</h3>
+								<p>{project.note}</p>
+								{project.domain ? (
+									<p className="project-tile-domain mono">{project.domain}</p>
+								) : null}
+								<div className="project-tile-links">
+									{project.links.slice(0, 2).map((link) => (
+										<a
+											key={link.href + link.label}
+											href={link.href}
+											{...(link.external
+												? { target: "_blank", rel: "noreferrer" }
+												: {})}
+										>
+											{link.label}
+											{link.external ? " ↗" : ""}
+										</a>
+									))}
+								</div>
+							</div>
+						</article>
+					))}
+				</div>
 				<div className="work-archive section-pad">
 					<p className="mono">
-						CUEBOX IS LIVE AT APP.IMTRYINGTODESIGN.COM — THE REST EVOLVES IN
-						PUBLIC.
+						FULL INDEX WITH COVERS AND LINKS ALSO LIVES AT BRANDCULTURA.ART —
+						SEVEN SITES, SEVEN STRUCTURES.
 					</p>
-					<a className="systems-link" href="/systems">
-						OPEN REFERENCE SYSTEMS <span>↗</span>
+					<a
+						className="systems-link"
+						href="https://brandcultura.art"
+						target="_blank"
+						rel="noreferrer"
+					>
+						OPEN PORTFOLIO INDEX <span>↗</span>
 					</a>
 				</div>
 			</section>

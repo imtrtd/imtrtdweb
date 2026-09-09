@@ -1,26 +1,30 @@
 import { ECOSYSTEM, PROJECTS, STATUS_LABELS } from "../data/projects";
 
 export function EcosystemPage() {
+	const liveCount = PROJECTS.filter((p) => p.status === "live").length;
+
 	return (
 		<main className="systems-page">
 			<nav className="systems-nav">
 				<a className="case-back" href="/">
 					← HOME
 				</a>
-				<span className="mono">ECOSYSTEM MAP / 2026</span>
+				<span className="mono">
+					ECOSYSTEM MAP / {PROJECTS.length} PROJECTS / {liveCount} LIVE
+				</span>
 			</nav>
 
 			<section className="systems-intro">
 				<p className="mono">// ONE ECOSYSTEM</p>
 				<h1>
-					FIVE
+					{String(PROJECTS.length).padStart(2, "0")}
 					<br />
 					PULSES.
 				</h1>
 				<span>
-					{ECOSYSTEM.name} is the connective layer — a shared design language,
-					deployment stack and product mindset that ties Brandcultura, Namenlos,
-					Cuebox and Neon Stripe into one coherent whole.
+					{ECOSYSTEM.name} ties Brandcultura, Namenlos, Cuebox, Neon Stripe and the
+					selected practice archive into one coherent whole — domains, descriptions
+					and live links in one place.
 				</span>
 			</section>
 
@@ -29,48 +33,65 @@ export function EcosystemPage() {
 					<span className="mono">HUB</span>
 					<strong>I/TD</strong>
 					<p>imtryingtodesign.com</p>
+					<a className="mono" href={ECOSYSTEM.portfolio} target="_blank" rel="noreferrer">
+						brandcultura.art ↗
+					</a>
 				</div>
 				<div className="ecosystem-spokes">
 					{PROJECTS.filter((p) => p.slug !== "imtrtd").map((project) => (
 						<a
 							className={`ecosystem-node ${project.color}`}
-							href={project.href}
+							href={project.external ? `/work/${project.slug}` : project.href}
 							key={project.slug}
-							{...(project.external
-								? { target: "_blank", rel: "noreferrer" }
-								: {})}
 						>
 							<span className="mono">{project.index}</span>
 							<strong>{project.title}</strong>
 							<em>{STATUS_LABELS[project.status]}</em>
 							{project.domain ? (
 								<p className="mono">{project.domain}</p>
-							) : null}
+							) : (
+								<p className="mono">{project.location}</p>
+							)}
 						</a>
 					))}
 				</div>
 			</section>
 
-			<section className="ecosystem-list">
+			<section className="project-cards">
 				{PROJECTS.map((project) => (
-					<a
-						className={`project ${project.color}`}
-						href={project.href}
-						key={project.slug}
-						{...(project.external
-							? { target: "_blank", rel: "noreferrer" }
-							: {})}
-					>
-						<span className="project-number mono">/{project.index}</span>
-						<div>
+					<article className={`project-card ${project.color}`} key={project.slug}>
+						<a
+							className="project-card-media"
+							href={project.external ? `/work/${project.slug}` : project.href}
+						>
+							<img src={project.image} alt="" loading="lazy" />
+							<span className="mono">{STATUS_LABELS[project.status]}</span>
+						</a>
+						<div className="project-card-body">
 							<p className="mono">
-								{project.type} · {STATUS_LABELS[project.status]}
+								/{project.index} · {project.type}
 							</p>
 							<h3>{project.title}</h3>
+							<p>{project.description}</p>
+							{project.domain ? (
+								<p className="project-card-domain mono">{project.domain}</p>
+							) : null}
+							<div className="project-card-links">
+								{project.links.slice(0, 3).map((link) => (
+									<a
+										key={link.href + link.label}
+										href={link.href}
+										{...(link.external
+											? { target: "_blank", rel: "noreferrer" }
+											: {})}
+									>
+										{link.label}
+										{link.external ? " ↗" : ""}
+									</a>
+								))}
+							</div>
 						</div>
-						<p className="project-note">{project.tagline}</p>
-						<span className="project-arrow">{project.external ? "↗" : "→"}</span>
-					</a>
+					</article>
 				))}
 			</section>
 		</main>

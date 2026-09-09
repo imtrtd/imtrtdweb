@@ -61,4 +61,5 @@ export {
 	type EcosystemProject,
 	type ProjectColor,
 	type ProjectStatus,
+	type ProjectLink,
 } from "./projects";
