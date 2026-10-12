@@ -37,33 +37,6 @@ jobs:
       - name: Build
         run: npm run build
 
-      - name: Remove conflicting apex DNS
-        working-directory: .
-        env:
-          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-        run: |
-          set -euo pipefail
-          ZONE=$(curl -fsS -H "Authorization: Bearer $CLOUDFLARE_API_TOKEN" \
-            "https://api.cloudflare.com/client/v4/zones?name=imtrtd.space" \
-            | jq -r '.result[0].id // empty')
-          if [ -z "$ZONE" ]; then
-            echo "Zone imtrtd.space not found"
-            exit 1
-          fi
-          echo "zone=$ZONE"
-          curl -fsS -H "Authorization: Bearer $CLOUDFLARE_API_TOKEN" \
-            "https://api.cloudflare.com/client/v4/zones/$ZONE/dns_records?name=imtrtd.space" \
-            | jq -c '.result[] | {id,type,name,content,proxied}'
-          IDS=$(curl -fsS -H "Authorization: Bearer $CLOUDFLARE_API_TOKEN" \
-            "https://api.cloudflare.com/client/v4/zones/$ZONE/dns_records?name=imtrtd.space" \
-            | jq -r '.result[] | select(.type=="A" or .type=="AAAA" or .type=="CNAME") | .id')
-          for id in $IDS; do
-            echo "delete $id"
-            curl -fsS -X DELETE -H "Authorization: Bearer $CLOUDFLARE_API_TOKEN" \
-              "https://api.cloudflare.com/client/v4/zones/$ZONE/dns_records/$id" \
-              | jq -c '{success, errors}'
-          done
-
       - name: Deploy Worker
         uses: cloudflare/wrangler-action@v4
         with:
