@@ -12,6 +12,16 @@
 		"not_found_handling": "single-page-application",
 		"run_worker_first": ["/api/*"]
 	},
+	"routes": [
+		{
+			"pattern": "imtrtd.space",
+			"custom_domain": true
+		},
+		{
+			"pattern": "www.imtrtd.space",
+			"custom_domain": true
+		}
+	],
 	"workers_dev": true,
 	"observability": {
 		"enabled": true
