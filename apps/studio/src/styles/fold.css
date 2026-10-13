@@ -1,0 +1,150 @@
+
+.topbar { position: sticky; top: 0; }
+.pulse-copy h1 { margin: 0; font-size: clamp(48px, 7vw, 108px); letter-spacing: -.07em; line-height: .78; font-weight: 900; text-transform: uppercase; }
+.pulse-copy h1 span { display: block; }
+.pulse-copy p { max-width: 40ch; margin-top: 1.25rem; }
+.brief-panel h2 { margin: .35rem 0 1rem; font-size: clamp(32px, 4vw, 52px); letter-spacing: -.04em; line-height: .95; }
+.pulse-figure { min-width: 0; }
+.pulse-figure canvas { position: absolute; inset: 0; }
+
+.pulse-stage {
+  --fold: 0;
+  height: 220vh;
+}
+
+.pulse-pin {
+  position: sticky;
+  top: 5.75rem;
+  z-index: 1;
+  display: grid;
+  height: calc(100dvh - 5.75rem);
+  align-items: start;
+  align-content: start;
+  column-gap: 1.5rem;
+  row-gap: 0.75rem;
+  grid-template-columns: minmax(0, 1.05fr) minmax(18rem, 0.95fr);
+  grid-template-rows: auto minmax(0, 1fr);
+  padding: 1.25rem 2rem 1.25rem;
+  overflow: visible;
+}
+
+.pulse-copy {
+  grid-column: 1;
+  grid-row: 1;
+  max-height: calc(34rem * (1 - var(--fold)));
+  overflow: hidden;
+  opacity: calc(1 - var(--fold) * 1.45);
+  transform: translateY(calc(var(--fold) * -1rem));
+}
+
+.pulse-stage[data-open="1"] .pulse-copy {
+  pointer-events: none;
+}
+
+.pulse-figure {
+  grid-column: 2;
+  grid-row: 1 / span 2;
+  position: relative;
+  width: 100%;
+  height: calc((1 - var(--fold) * 0.58) * min(58vh, 32rem));
+  margin-top: 0.5rem;
+  justify-self: end;
+  align-self: end;
+  transform: none;
+}
+
+.pulse-figure canvas {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+.brief-panel {
+  grid-column: 1;
+  grid-row: 2;
+  align-self: end;
+  width: min(100%, 34rem);
+  max-height: calc(var(--fold) * 36rem);
+  overflow: hidden;
+  opacity: clamp(0, (var(--fold) - 0.38) * 2.5, 1);
+  transform: translateY(calc((1 - var(--fold)) * 0.75rem));
+  pointer-events: none;
+}
+
+.pulse-stage[data-open="1"] .brief-panel {
+  pointer-events: auto;
+}
+
+.brief-field {
+  width: 100%;
+  border: 0;
+  border-bottom: 1px solid color-mix(in oklab, var(--color-paper) 28%, transparent);
+  background: transparent;
+  color: var(--color-paper);
+  padding: 0.55rem 0;
+  font: inherit;
+  outline: none;
+}
+
+.brief-field:focus {
+  border-bottom-color: var(--color-signal);
+}
+
+@media (max-width: 1023px) {
+  .pulse-pin {
+    top: 5.75rem;
+    height: calc(100dvh - 5.75rem);
+    grid-template-columns: 1fr;
+    grid-template-rows: auto auto auto;
+    padding: 0.75rem 1rem 1rem;
+  }
+
+  .pulse-copy {
+    max-height: calc(42vh - var(--fold) * 36vh);
+    overflow: hidden;
+  }
+
+  .pulse-figure {
+    grid-column: 1;
+    grid-row: 2;
+    width: min(100%, 26rem);
+    height: calc((1 - var(--fold) * 0.62) * min(42vh, 20rem));
+    min-height: 0;
+    justify-self: center;
+    align-self: center;
+    transform: none;
+  }
+
+  .brief-panel {
+    grid-column: 1;
+    grid-row: 3;
+    width: 100%;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .pulse-stage {
+    height: auto;
+  }
+
+  .pulse-pin {
+    position: relative;
+    top: auto;
+    height: auto;
+  }
+
+  .pulse-copy,
+  .pulse-figure,
+  .brief-panel {
+    opacity: 1;
+    transform: none;
+    max-height: none;
+    pointer-events: auto;
+  }
+
+  .pulse-figure {
+    width: 100%;
+    height: min(70vw, 28rem);
+  }
+}
+

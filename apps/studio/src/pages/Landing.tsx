@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { PulseControl } from "../components/landing/PulseControl";
+import { FoldHero } from "../components/landing/FoldHero";
 
 const projects = [
 	{
@@ -131,7 +132,7 @@ export function LandingPage() {
 					<a href="#changelog" onClick={() => setMenuOpen(false)}>
 						CHANGELOG
 					</a>
-					<a href="mailto:info@imtryingtodesign.com">CONTACT ↗</a>
+					<a href="#brief">CONTACT</a>
 				</nav>
 				<button
 					className="menu"
@@ -143,52 +144,7 @@ export function LandingPage() {
 				</button>
 			</header>
 
-			<section className="hero" id="top">
-				<div className="hero-meta mono">
-					INDEPENDENT WEB DEVELOPMENT
-					<br />
-					KYIV / REMOTE / 50.4501° N
-				</div>
-				<div className="hero-rings" aria-hidden="true">
-					<span />
-					<span />
-					<span />
-				</div>
-				<div className="orb" aria-hidden="true">
-					<div className="orb-glow" />
-					<span className="orb-label orb-label-top">FORM</span>
-					<span className="orb-arrow">↗</span>
-					<span className="orb-label orb-label-bottom">ENERGY</span>
-				</div>
-				<h1>
-					<span>DIGITAL</span>
-					<span className="outline glitch" data-text="EXPERIENCES">
-						EXPERIENCES
-					</span>
-					<span>WITH A PULSE.</span>
-				</h1>
-				<div className="hero-bottom">
-					<p>
-						I design and build expressive websites, interfaces and digital systems
-						for independent studios, artists and small brands that refuse to look
-						generic.
-					</p>
-					<a
-						className="round-link sphere-atom"
-						href="#work"
-						aria-label="Explore selected work"
-					>
-						<SphereShell />
-						<span>
-							EXPLORE
-							<br />
-							WORK
-						</span>
-						<b>↓</b>
-					</a>
-				</div>
-				<div className="scroll-code mono">SCROLL_TO_EXPLORE [000—100]</div>
-			</section>
+			<FoldHero />
 
 			<section className="manifesto section-pad">
 				<p className="eyebrow">// WHAT I DO</p>
