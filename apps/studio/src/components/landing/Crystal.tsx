@@ -27,7 +27,6 @@ void main() {
 `;
 
 const FRAG = `
-#extension GL_OES_standard_derivatives : enable
 precision highp float;
 
 uniform vec2 u_res;
@@ -46,211 +45,60 @@ mat2 rot(float a) {
   return mat2(c, -s, s, c);
 }
 
-vec3 ov(int i, float s) {
-  if (i == 0) return vec3(s, 0.0, 0.0);
-  if (i == 1) return vec3(-s, 0.0, 0.0);
-  if (i == 2) return vec3(0.0, s, 0.0);
-  if (i == 3) return vec3(0.0, -s, 0.0);
-  if (i == 4) return vec3(0.0, 0.0, s);
-  return vec3(0.0, 0.0, -s);
+float hitSphere(vec3 ro, vec3 rd, vec3 c, float r) {
+  vec3 oc = ro - c;
+  float b = dot(oc, rd);
+  float disc = b * b - dot(oc, oc) + r * r;
+  if (disc < 0.0) return -1.0;
+  float t = -b - sqrt(disc);
+  return t > 0.02 ? t : -1.0;
 }
 
-void edgeIds(int e, out int ia, out int ib) {
-  if (e < 4) {
-    ia = 0;
-    ib = e + 2;
-  } else if (e < 8) {
-    ia = 1;
-    ib = e - 2;
-  } else if (e == 8) {
-    ia = 2;
-    ib = 4;
-  } else if (e == 9) {
-    ia = 2;
-    ib = 5;
-  } else if (e == 10) {
-    ia = 3;
-    ib = 4;
-  } else {
-    ia = 3;
-    ib = 5;
-  }
+float hitSpar(vec3 ro, vec3 rd, vec3 a, vec3 b, float r) {
+  vec3 ba = b - a;
+  vec3 oa = ro - a;
+  float baba = dot(ba, ba);
+  float bard = dot(ba, rd);
+  float baoa = dot(ba, oa);
+  float rdoa = dot(rd, oa);
+  float oaoa = dot(oa, oa);
+  float A = baba - bard * bard;
+  float B = baba * rdoa - baoa * bard;
+  float C = baba * oaoa - baoa * baoa - r * r * baba;
+  float h = B * B - A * C;
+  if (h < 0.0 || abs(A) < 0.0001) return -1.0;
+  float t = (-B - sqrt(h)) / A;
+  float y = baoa + t * bard;
+  if (y > 0.0 && y < baba && t > 0.02) return t;
+  return -1.0;
 }
 
-vec3 viewOf(vec3 p, float yaw, float pitch, float roll) {
-  p.xz *= rot(yaw);
-  p.yz *= rot(pitch);
-  p.xy *= rot(roll);
-  return p;
+vec3 shade(vec3 ro, vec3 rd, float t, vec3 c, vec3 tint, float time, float pulse) {
+  vec3 p = ro + rd * t;
+  vec3 n = normalize(p - c);
+  float fres = pow(1.0 - clamp(dot(n, -rd), 0.0, 1.0), 2.5);
+  float lat = abs(fract(n.y * 5.0 + time * 0.06) - 0.5);
+  float line = smoothstep(0.06, 0.0, lat - 0.015);
+  float scan = 0.65 + 0.35 * sin(p.y * 36.0 - time * 3.0);
+  vec3 body = vec3(0.02, 0.025, 0.04);
+  return body + tint * (0.12 + fres * (0.7 + pulse * 0.35)) + tint * line * 0.4 * scan;
 }
 
-vec2 project(vec3 p) {
-  return p.xy * 0.84 / (3.2 - p.z);
+void ring(inout vec3 col, inout float alpha, vec3 ro, vec3 rd, vec3 c, vec3 nrm, float radius, vec3 tint) {
+  float denom = dot(rd, nrm);
+  if (abs(denom) < 0.03) return;
+  float t = dot(c - ro, nrm) / denom;
+  if (t < 0.04) return;
+  float d = abs(length(ro + rd * t - c) - radius);
+  float band = smoothstep(0.028, 0.0, d);
+  float a = band * 0.5 * (1.0 - alpha);
+  col += tint * a;
+  alpha += a;
 }
 
-vec3 axisTint(vec3 n) {
-  vec3 ink = vec3(0.22, 0.23, 0.18);
-  if (abs(n.y) >= abs(n.x) && abs(n.y) >= abs(n.z)) {
-    ink = n.y > 0.0 ? vec3(0.72, 0.9, 0.16) : vec3(0.34, 0.42, 0.12);
-  } else if (abs(n.x) >= abs(n.z)) {
-    ink = n.x > 0.0 ? vec3(0.92, 0.22, 0.58) : vec3(0.16, 0.74, 0.9);
-  } else {
-    ink = n.z > 0.0 ? vec3(0.52, 0.32, 0.96) : vec3(0.9, 0.88, 0.8);
-  }
-  return mix(ink, u_color, 0.1);
-}
-
-float cracks(vec3 p, float time) {
-  float g = sin(p.x * 9.0 + time * 1.4) * sin(p.z * 8.0 - time);
-  float h = sin(p.y * 11.0 + p.x * 4.0 - time * 0.7);
-  return smoothstep(0.78, 0.98, g * g) * 0.65 + smoothstep(0.86, 0.995, abs(h)) * 0.35;
-}
-
-void stroke(inout vec3 col, inout float alpha, vec2 uv, vec2 p0, vec2 p1, vec3 tint, float gain, float travel) {
-  vec2 pa = uv - p0;
-  vec2 ba = p1 - p0;
-  float h = clamp(dot(pa, ba) / max(dot(ba, ba), 1e-4), 0.0, 1.0);
-  float d = length(pa - ba * h);
-  float px = max(fwidth(d), 0.0012);
-  float core = smoothstep(px * 1.65, px * 0.4, max(d - 0.0016, 0.0));
-  float glow = exp(-pow(d / (px * 4.2), 2.0)) * 0.16;
-  float glint = smoothstep(0.055, 0.0, abs(h - travel));
-  vec3 ink = mix(tint, vec3(0.96, 0.95, 0.9), core * glint * 0.8);
-  float cover = clamp((core + glow) * gain, 0.0, 1.0);
-  col = col * (1.0 - cover) + ink * cover;
-  alpha = max(alpha, cover);
-}
-
-void drawShell(inout vec3 col, inout float alpha, vec2 uv, float s, float spin, float gain, float yaw, float pitch, float roll, float time, vec3 tint) {
-  for (int e = 0; e < 12; e++) {
-    int ia;
-    int ib;
-    edgeIds(e, ia, ib);
-    vec3 oa = ov(ia, s);
-    vec3 ob = ov(ib, s);
-    oa.xz *= rot(spin);
-    ob.xz *= rot(spin);
-    vec3 va = viewOf(oa, yaw, pitch, roll);
-    vec3 vb = viewOf(ob, yaw, pitch, roll);
-    float depth = clamp((va.z + vb.z) * 0.22 + 0.72, 0.4, 1.0);
-    float travel = fract(time * 0.23 + float(e) * 0.083);
-    vec3 edge = mix(axisTint(oa + ob), tint, 0.55);
-    stroke(col, alpha, uv, project(va), project(vb), edge, gain * depth, travel);
-  }
-}
-
-void shadeHit(inout vec3 col, inout float alpha, vec3 hit, vec3 rd, float gain, float time) {
-  vec3 n = normalize(sign(hit) + vec3(0.001, 0.0013, 0.0008));
-  vec3 tint = axisTint(n);
-  vec3 L = normalize(vec3(-0.34 + u_light.x * 0.7, 0.76 - u_light.y * 0.4, 0.46));
-  vec3 V = normalize(-rd);
-  float wrap = clamp(dot(n, L) * 0.5 + 0.5, 0.0, 1.0);
-  float spec = pow(clamp(dot(n, normalize(L + V)), 0.0, 1.0), 42.0);
-  float fres = pow(1.0 - clamp(dot(n, V), 0.0, 1.0), 2.1);
-  float crack = cracks(hit, time);
-  vec3 body = mix(tint * 0.45, tint, wrap * 0.85);
-  body = mix(body, vec3(0.97, 0.96, 0.9), spec * 0.72);
-  body += mix(tint, u_color, 0.7) * fres * 0.55;
-  body += mix(tint, vec3(0.95, 0.92, 0.8), 0.3) * crack * 0.28;
-  float span = abs(hit.x) + abs(hit.y) + abs(hit.z);
-  vec3 an = abs(hit) / max(span, 0.001);
-  float belly = smoothstep(0.2, 0.72, max(an.x, max(an.y, an.z)));
-  body *= 0.62 + belly * 0.5;
-  float cover = clamp(gain, 0.0, 0.58);
-  col = col * (1.0 - cover) + min(body, vec3(1.0)) * cover;
-  alpha = max(alpha, cover);
-}
-
-void drawFaces(inout vec3 col, inout float alpha, vec3 ro, vec3 rd, float s, float spin, float time, float gain) {
-  vec3 o = ro;
-  vec3 d = rd;
-  o.xz *= rot(-spin);
-  d.xz *= rot(-spin);
-  float nearT = 80.0;
-  float farT = 0.0;
-  vec3 nearP = vec3(0.0);
-  vec3 farP = vec3(0.0);
-  for (int sx = 0; sx < 2; sx++) {
-    for (int sy = 0; sy < 2; sy++) {
-      for (int sz = 0; sz < 2; sz++) {
-        vec3 n = vec3(sx == 0 ? 1.0 : -1.0, sy == 0 ? 1.0 : -1.0, sz == 0 ? 1.0 : -1.0);
-        float denom = dot(n, d);
-        float t = (s - dot(n, o)) / denom;
-        if (abs(denom) > 1e-3 && t > 0.02 && t < 12.0) {
-          vec3 p = o + d * t;
-          float sum = abs(p.x) + abs(p.y) + abs(p.z);
-          if (n.x * p.x > -0.02 && n.y * p.y > -0.02 && n.z * p.z > -0.02 && abs(sum - s) < 0.045) {
-            if (t < nearT) {
-              nearT = t;
-              nearP = p;
-            }
-            if (t > farT) {
-              farT = t;
-              farP = p;
-            }
-          }
-        }
-      }
-    }
-  }
-  if (nearT > 40.0) return;
-  if (farT > nearT + 0.05) shadeHit(col, alpha, farP, d, gain * 0.4, time);
-  shadeHit(col, alpha, nearP, d, gain, time);
-}
-
-void drawPoles(inout vec3 col, inout float alpha, vec2 uv, float s, float yaw, float pitch, float roll, float time) {
-  for (int i = 0; i < 6; i++) {
-    vec3 p = viewOf(ov(i, s), yaw, pitch, roll);
-    vec2 q = project(p);
-    float d = length(uv - q);
-    float px = max(fwidth(d), 0.0012);
-    float bead = smoothstep(px * 4.2, px * 0.7, d);
-    float halo = exp(-pow(d / (px * 7.0), 2.0)) * 0.28;
-    vec3 tint = i < 2 ? vec3(0.95, 0.24, 0.62) : i < 4 ? vec3(0.78, 0.96, 0.2) : vec3(0.22, 0.84, 0.98);
-    tint = mix(tint, u_color, 0.28);
-    float blink = 0.72 + 0.28 * sin(time * 1.7 + float(i) * 1.05);
-    float cover = clamp((bead + halo) * blink, 0.0, 1.0);
-    col = col * (1.0 - cover) + tint * cover;
-    alpha = max(alpha, cover);
-  }
-}
-
-void drawRing(inout vec3 col, inout float alpha, vec3 ro, vec3 rd, float radius, int axis, float spin, vec3 tint) {
-  vec3 o = ro;
-  vec3 d = rd;
-  if (axis == 0) {
-    o.yz *= rot(-spin);
-    d.yz *= rot(-spin);
-  } else if (axis == 2) {
-    o.xy *= rot(-spin);
-    d.xy *= rot(-spin);
-  } else {
-    o.xz *= rot(-spin);
-    d.xz *= rot(-spin);
-  }
-  float t = 0.04;
-  float mind = 2.0;
-  vec3 nearP = o;
-  for (int i = 0; i < 36; i++) {
-    vec3 p = o + d * t;
-    float radial = axis == 0 ? length(p.yz) : axis == 2 ? length(p.xy) : length(p.xz);
-    float axial = axis == 0 ? p.x : axis == 2 ? p.z : p.y;
-    float dist = length(vec2(radial - radius, axial));
-    if (dist < mind) {
-      mind = dist;
-      nearP = p;
-    }
-    t += max(dist * 0.55, 0.012);
-    if (t > 6.2) break;
-  }
-  float core = smoothstep(0.042, 0.008, mind);
-  float glow = exp(-mind * mind * 70.0) * 0.2;
-  vec3 jewelAt = axis == 0 ? vec3(0.0, radius, 0.0) : vec3(radius, 0.0, 0.0);
-  float jewel = smoothstep(0.06, 0.014, length(nearP - jewelAt));
-  vec3 ink = mix(tint, vec3(0.97, 0.96, 0.9), jewel * 0.75);
-  float cover = clamp(core * 0.95 + glow + jewel, 0.0, 1.0);
-  col = col * (1.0 - cover) + ink * cover;
-  alpha = max(alpha, cover);
+void cover(inout vec3 col, inout float alpha, vec3 lit, float a) {
+  col = col * (1.0 - a) + lit * a;
+  alpha = alpha + (1.0 - alpha) * a;
 }
 
 void main() {
@@ -258,16 +106,13 @@ void main() {
   float time = u_time;
   float energy = clamp(u_energy, 0.0, 1.0);
   float fold = clamp(u_fold, 0.0, 1.0);
-  float yaw = u_yaw + time * 0.46;
-  float pitch = sin(time * 0.37) * 0.46 + u_pitch * 0.32;
-  float roll = sin(time * 0.23 + 0.6) * 0.28;
-  float s = (0.9 + sin(time * 0.72) * 0.02 + energy * 0.04) * mix(1.0, 0.78, fold);
+  float pulse = clamp(u_pulse, 0.0, 1.0);
+  float yaw = u_yaw + time * 0.28;
+  float pitch = sin(time * 0.33) * 0.38 + u_pitch * 0.28;
 
-  vec3 col = vec3(0.0);
-  float alpha = 0.0;
-
-  vec3 ro = vec3(u_light.x * 0.18, -u_light.y * 0.12, 3.2);
-  vec3 rd = normalize(vec3(uv, -1.15));
+  vec3 ro = vec3(u_light.x * 0.16, -u_light.y * 0.1, 2.7);
+  vec3 rd = normalize(vec3(uv * 1.02, -1.22));
+  float roll = sin(time * 0.19) * 0.18;
   ro.xy *= rot(-roll);
   rd.xy *= rot(-roll);
   ro.yz *= rot(-pitch);
@@ -275,24 +120,66 @@ void main() {
   ro.xz *= rot(-yaw);
   rd.xz *= rot(-yaw);
 
-  drawFaces(col, alpha, ro, rd, s, 0.0, time, 0.78);
-  drawShell(col, alpha, uv, s, 0.0, 1.0, yaw, pitch, roll, time, vec3(0.9, 0.89, 0.82));
-  drawShell(col, alpha, uv, s * 0.72, 0.85 + time * 0.16, 0.8, yaw, pitch, roll, time, vec3(0.58, 0.36, 0.98));
-  drawShell(col, alpha, uv, s * 0.46, time * 0.62, 0.86, yaw, pitch, roll, time, vec3(0.2, 0.78, 0.92));
-  drawShell(col, alpha, uv, s * 0.24, -time * 1.05, 0.9, yaw, pitch, roll, time, vec3(0.78, 0.96, 0.22));
-  drawPoles(col, alpha, uv, s, yaw, pitch, roll, time);
+  float sc = mix(1.0, 0.58, fold);
+  vec3 c0 = vec3(cos(time * 0.36), sin(time * 0.24) * 0.35, sin(time * 0.36) * 0.45) * 0.36 * sc;
+  vec3 c1 = vec3(cos(time * 0.36 + 2.15), 0.16 + sin(time * 0.3) * 0.2, sin(time * 0.36 + 2.15) * 0.4) * 0.42 * sc;
+  vec3 c2 = vec3(cos(time * 0.48 + 4.2) * 0.28, 0.46 + sin(time * 0.4) * 0.12, 0.16) * sc;
 
-  float pulse = clamp(u_pulse, 0.0, 1.0);
-  float orbit = (1.02 + sin(time * 0.5) * 0.028 + energy * 0.035 + pulse * 0.07) * mix(1.0, 0.48, fold);
-  drawRing(col, alpha, ro, rd, orbit, 1, time * 0.55, mix(vec3(0.78, 0.96, 0.22), u_color, 0.25));
-  drawRing(col, alpha, ro, rd, orbit * 0.8, 0, -time * 0.72, vec3(0.66, 0.38, 1.0));
-  drawRing(col, alpha, ro, rd, orbit * 1.14, 2, time * 0.3, vec3(0.22, 0.82, 0.98));
+  vec3 mag = mix(vec3(0.72, 0.28, 0.58), u_color, 0.2);
+  vec3 cyn = vec3(0.22, 0.7, 0.76);
+  vec3 vio = vec3(0.5, 0.3, 0.86);
+  float r0 = 0.34 * sc;
+  float r1 = 0.25 * sc;
+  float r2 = 0.15 * sc;
 
-  float edge = smoothstep(1.15, 0.9, length(uv));
-  col *= 1.0 + pulse * 0.45 + energy * 0.08;
-  gl_FragColor = vec4(min(col, vec3(1.0)) * alpha * edge, alpha * edge);
+  vec3 col = vec3(0.0);
+  float alpha = 0.0;
+  float glow = exp(-dot(uv, uv) * 3.2) * (0.1 + energy * 0.05);
+  col += cyn * glow * 0.45 + mag * glow * 0.25;
+  alpha = glow * 0.35;
+
+  ring(col, alpha, ro, rd, c0, normalize(vec3(0.15, 1.0, 0.08)), r0 + 0.16, mag);
+  ring(col, alpha, ro, rd, c1, normalize(vec3(0.35, 0.25, 1.0)), r1 + 0.14, cyn);
+  ring(col, alpha, ro, rd, c2, normalize(vec3(1.0, 0.15, 0.2)), r2 + 0.1, vio);
+
+  float best = 80.0;
+  vec3 bc = c0;
+  vec3 bt = mag;
+  float t0 = hitSphere(ro, rd, c0, r0);
+  float t1 = hitSphere(ro, rd, c1, r1);
+  float t2 = hitSphere(ro, rd, c2, r2);
+  if (t0 > 0.0 && t0 < best) { best = t0; bc = c0; bt = mag; }
+  if (t1 > 0.0 && t1 < best) { best = t1; bc = c1; bt = cyn; }
+  if (t2 > 0.0 && t2 < best) { best = t2; bc = c2; bt = vio; }
+  if (best < 40.0) cover(col, alpha, shade(ro, rd, best, bc, bt, time, pulse), 0.94);
+
+  vec3 s0 = c0 + vec3(cos(time * 1.1), sin(time * 0.8) * 0.35, sin(time * 1.1)) * (r0 + 0.2);
+  vec3 s1 = c1 + vec3(cos(time * -0.9 + 1.0), sin(time * 1.3) * 0.22, sin(time * -0.9)) * (r1 + 0.18);
+  vec3 s2 = c2 + vec3(cos(time * 1.4 + 2.0) * 0.7, sin(time * 1.1), sin(time * 1.4) * 0.7) * (r2 + 0.14);
+  vec3 s3 = mix(c0, c1, 0.5) + vec3(0.0, sin(time * 0.9) * 0.18, cos(time * 0.7) * 0.16);
+  float q0 = hitSphere(ro, rd, s0, 0.07 * sc);
+  float q1 = hitSphere(ro, rd, s1, 0.055 * sc);
+  float q2 = hitSphere(ro, rd, s2, 0.046 * sc);
+  float q3 = hitSphere(ro, rd, s3, 0.05 * sc);
+  if (q0 > 0.0 && (best > 40.0 || q0 < best)) cover(col, alpha, shade(ro, rd, q0, s0, cyn, time, pulse), 0.95);
+  if (q1 > 0.0 && (best > 40.0 || q1 < best)) cover(col, alpha, shade(ro, rd, q1, s1, mag, time, pulse), 0.95);
+  if (q2 > 0.0 && (best > 40.0 || q2 < best)) cover(col, alpha, shade(ro, rd, q2, s2, vio, time, pulse), 0.95);
+  if (q3 > 0.0 && (best > 40.0 || q3 < best)) cover(col, alpha, shade(ro, rd, q3, s3, mix(cyn, mag, 0.5), time, pulse), 0.95);
+
+  vec3 a0 = c0 + vec3(sin(time * 0.6), 0.2, cos(time * 0.6)) * 0.2;
+  vec3 b0 = a0 + vec3(0.16, 0.05, -0.04);
+  float spar = hitSpar(ro, rd, a0, b0, 0.02);
+  if (spar > 0.0 && (best > 40.0 || spar < best)) cover(col, alpha, cyn * (0.45 + pulse * 0.3), 0.8);
+  vec3 a1 = c1 + vec3(-0.1, sin(time * 0.8) * 0.16, 0.12);
+  vec3 b1 = a1 + vec3(0.05, 0.14, 0.08);
+  float spar2 = hitSpar(ro, rd, a1, b1, 0.018);
+  if (spar2 > 0.0 && (best > 40.0 || spar2 < best)) cover(col, alpha, vio * 0.55, 0.75);
+
+  float edge = smoothstep(1.18, 0.92, length(uv));
+  gl_FragColor = vec4(min(col, vec3(0.92)) * alpha * edge, alpha * edge);
 }
 `;
+
 
 function compile(gl: WebGLRenderingContext, type: number, source: string) {
   const shader = gl.createShader(type);
