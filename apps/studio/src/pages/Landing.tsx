@@ -31,6 +31,16 @@ const projects = [
 
 const releases = [
 	{
+		version: "v1.6.0",
+		date: "13.10.26",
+		title: "SAMPLE LAB",
+		items: [
+			"five site templates and a brief visualizer",
+			"a slow drift score under the whole site",
+			"the field is now open space",
+		],
+	},
+	{
 		version: "v1.5.0",
 		date: "20.08.26",
 		title: "PULSE ORB",
@@ -126,8 +136,8 @@ export function LandingPage() {
 					<a href="#services" onClick={() => setMenuOpen(false)}>
 						SERVICES
 					</a>
-					<a href="/systems" onClick={() => setMenuOpen(false)}>
-						SYSTEMS
+					<a href="/samples" onClick={() => setMenuOpen(false)}>
+						SAMPLES
 					</a>
 					<a href="#changelog" onClick={() => setMenuOpen(false)}>
 						CHANGELOG
@@ -187,6 +197,9 @@ export function LandingPage() {
 					<p className="mono">
 						ALL CASE STUDIES ARE CLEARLY LABELED CONCEPT / PLACEHOLDER WORK.
 					</p>
+					<a className="systems-link" href="/samples">
+						OPEN THE SAMPLE LAB <span>↗</span>
+					</a>
 					<a className="systems-link" href="/systems">
 						OPEN THE REFERENCE SYSTEMS <span>↗</span>
 					</a>
