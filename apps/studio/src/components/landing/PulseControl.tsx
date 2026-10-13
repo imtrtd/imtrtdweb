@@ -174,6 +174,7 @@ class PulseEngine {
   }
 
   private kick(time: number, volume = 1) {
+    window.dispatchEvent(new CustomEvent("imtrtd-pulse"));
     const ctx = this.ctx;
     const out = this.drums;
     const bass = this.bassBus;

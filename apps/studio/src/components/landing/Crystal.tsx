@@ -1,9 +1,23 @@
 import { useEffect, useRef } from "react";
 
-type LocalSignal = { x: number; y: number; energy: number; yaw: number; pitch: number };
-let signal: LocalSignal = { x: 0, y: 0.15, energy: 0.22, yaw: 0.35, pitch: 0.18 };
-function getSignal() { return signal; }
-function patchSignal(partial: Partial<LocalSignal>) { signal = { ...signal, ...partial }; }
+type LocalSignal = { x: number; y: number; energy: number; yaw: number; pitch: number; accent: number; pulse: number };
+let state: LocalSignal = { x: 0, y: 0.15, energy: 0.22, yaw: 0.35, pitch: 0.18, accent: 0, pulse: 0 };
+let touched = 0;
+function getSignal() {
+  const now = performance.now();
+  const dt = touched === 0 ? 0 : Math.min(0.05, (now - touched) / 1000);
+  touched = now;
+  if (state.energy > 0.12) state = { ...state, energy: Math.max(0.12, state.energy * Math.exp(-dt * 1.35)) };
+  if (state.pulse > 0.004) state = { ...state, pulse: state.pulse * Math.exp(-dt * 7.5) };
+  return state;
+}
+function patchSignal(partial: Partial<LocalSignal>) {
+  touched = performance.now();
+  state = { ...state, ...partial };
+}
+if (typeof window !== "undefined") {
+  window.addEventListener("imtrtd-pulse", () => patchSignal({ pulse: 1, energy: Math.min(1, state.energy + 0.35) }));
+}
 
 const VERT = `
 attribute vec2 a;
@@ -24,6 +38,7 @@ uniform float u_yaw;
 uniform float u_pitch;
 uniform float u_energy;
 uniform float u_fold;
+uniform float u_pulse;
 
 mat2 rot(float a) {
   float c = cos(a);
@@ -267,12 +282,14 @@ void main() {
   drawShell(col, alpha, uv, s * 0.24, -time * 1.05, 0.9, yaw, pitch, roll, time, vec3(0.78, 0.96, 0.22));
   drawPoles(col, alpha, uv, s, yaw, pitch, roll, time);
 
-  float orbit = (0.98 + sin(time * 0.5) * 0.03 + energy * 0.04) * mix(1.0, 0.42, fold);
+  float pulse = clamp(u_pulse, 0.0, 1.0);
+  float orbit = (1.02 + sin(time * 0.5) * 0.028 + energy * 0.035 + pulse * 0.07) * mix(1.0, 0.48, fold);
   drawRing(col, alpha, ro, rd, orbit, 1, time * 0.55, mix(vec3(0.78, 0.96, 0.22), u_color, 0.25));
   drawRing(col, alpha, ro, rd, orbit * 0.8, 0, -time * 0.72, vec3(0.66, 0.38, 1.0));
   drawRing(col, alpha, ro, rd, orbit * 1.14, 2, time * 0.3, vec3(0.22, 0.82, 0.98));
 
   float edge = smoothstep(1.15, 0.9, length(uv));
+  col *= 1.0 + pulse * 0.45 + energy * 0.08;
   gl_FragColor = vec4(min(col, vec3(1.0)) * alpha * edge, alpha * edge);
 }
 `;
@@ -322,13 +339,13 @@ export function Crystal({ foldRef }: { foldRef?: { current: number } }) {
   useEffect(() => {
     const canvas = ref.current;
     if (!canvas) return;
-    const gl = canvas.getContext("webgl", {
-      alpha: true,
-      antialias: false,
-      premultipliedAlpha: true,
-      preserveDrawingBuffer: true,
-      powerPreference: "high-performance",
-    });
+    const gl =
+      canvas.getContext("webgl", {
+        alpha: true,
+        antialias: false,
+        premultipliedAlpha: true,
+        powerPreference: "high-performance",
+      }) || canvas.getContext("webgl", { alpha: true, antialias: false, premultipliedAlpha: true });
     if (!gl) {
       canvas.dataset.fallback = "1";
       return;
@@ -362,6 +379,7 @@ export function Crystal({ foldRef }: { foldRef?: { current: number } }) {
     const uPitch = gl.getUniformLocation(program, "u_pitch");
     const uEnergy = gl.getUniformLocation(program, "u_energy");
     const uFold = gl.getUniformLocation(program, "u_fold");
+    const uPulse = gl.getUniformLocation(program, "u_pulse");
 
     let color = readSignal();
     const reduced = window.matchMedia("(prefers-reduced-motion: reduce)");
@@ -385,34 +403,34 @@ export function Crystal({ foldRef }: { foldRef?: { current: number } }) {
       gl.viewport(0, 0, canvas.width, canvas.height);
     };
 
+    let sized = false;
     const resize = () => {
       const rect = canvas.getBoundingClientRect();
-      const dpr = Math.min(window.devicePixelRatio || 1, rect.width < 700 ? 2 : 2.5);
+      const dpr = Math.min(window.devicePixelRatio || 1, 2);
       const w = Math.max(2, Math.round(rect.width * dpr));
       const h = Math.max(2, Math.round(rect.height * dpr));
-      if (canvas.width === w && canvas.height === h && gl.isProgram(program)) return;
+      if (sized && canvas.width === w && canvas.height === h) return;
       canvas.width = w;
       canvas.height = h;
+      sized = true;
       bind();
     };
 
     const draw = (now: number) => {
       if (!running) return;
-      resize();
+      if (canvas.width < 2 || canvas.height < 2) resize();
       if (canvas.width < 2 || canvas.height < 2) {
         raf = requestAnimationFrame(draw);
         return;
       }
+      gl.clearColor(0, 0, 0, 0);
+      gl.clear(gl.COLOR_BUFFER_BIT);
       if (now < colorUntil) color = readSignal();
       const signal = getSignal();
       if (!dragging && !reduced.matches) {
-        pose.yaw += (signal.x * 0.55 - pose.yaw) * 0.04;
-        pose.pitch += (signal.y * 0.28 - pose.pitch) * 0.04;
+        pose.yaw += (signal.x * 0.35 - pose.yaw) * 0.035;
+        pose.pitch += (signal.y * 0.22 - pose.pitch) * 0.035;
       }
-
-      bind();
-      gl.clearColor(0, 0, 0, 0);
-      gl.clear(gl.COLOR_BUFFER_BIT);
       gl.uniform2f(uRes, canvas.width, canvas.height);
       gl.uniform1f(uTime, now * (reduced.matches ? 0.00035 : 0.001));
       gl.uniform3f(uColor, color[0], color[1], color[2]);
@@ -421,10 +439,9 @@ export function Crystal({ foldRef }: { foldRef?: { current: number } }) {
       gl.uniform1f(uPitch, pose.pitch);
       gl.uniform1f(uEnergy, reduced.matches ? 0.2 : Math.max(signal.energy, 0.22));
       gl.uniform1f(uFold, foldRef?.current ?? 0);
+      gl.uniform1f(uPulse, signal.pulse);
       gl.drawArrays(gl.TRIANGLES, 0, 3);
-
-      const alive = visible && document.visibilityState !== "hidden";
-      if (alive) raf = requestAnimationFrame(draw);
+      if (visible && document.visibilityState !== "hidden") raf = requestAnimationFrame(draw);
     };
 
     const start = () => {
@@ -441,7 +458,7 @@ export function Crystal({ foldRef }: { foldRef?: { current: number } }) {
     const observer = new MutationObserver(onAccent);
     observer.observe(document.documentElement, {
       attributes: true,
-      attributeFilter: ["data-accent", "style", "class"],
+      attributeFilter: ["data-accent"],
     });
 
     const io = new IntersectionObserver(([entry]) => {
@@ -450,7 +467,10 @@ export function Crystal({ foldRef }: { foldRef?: { current: number } }) {
     });
     io.observe(canvas);
 
-    const box = new ResizeObserver(() => start());
+    const box = new ResizeObserver(() => {
+      resize();
+      start();
+    });
     box.observe(canvas);
 
     const onVis = () => {
@@ -495,6 +515,7 @@ export function Crystal({ foldRef }: { foldRef?: { current: number } }) {
     window.addEventListener("pointermove", onMove);
     window.addEventListener("pointerup", onUp);
     window.addEventListener("pointercancel", onUp);
+    resize();
     start();
 
     return () => {
