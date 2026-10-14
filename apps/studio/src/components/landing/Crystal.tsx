@@ -101,79 +101,80 @@ void cover(inout vec3 col, inout float alpha, vec3 lit, float a) {
   alpha = alpha + (1.0 - alpha) * a;
 }
 
+vec3 onOrbit(float time, float radius, float speed, float phase, float incline) {
+  float a = time * speed + phase;
+  vec3 p = vec3(cos(a), 0.0, sin(a)) * radius;
+  p.yz *= rot(incline);
+  return p;
+}
+
 void main() {
   vec2 uv = (gl_FragCoord.xy - 0.5 * u_res) / min(u_res.x, u_res.y);
   float time = u_time;
   float energy = clamp(u_energy, 0.0, 1.0);
   float fold = clamp(u_fold, 0.0, 1.0);
   float pulse = clamp(u_pulse, 0.0, 1.0);
-  float yaw = u_yaw + time * 0.28;
-  float pitch = sin(time * 0.33) * 0.38 + u_pitch * 0.28;
+  float yaw = u_yaw + time * 0.18;
+  float pitch = 0.42 + sin(time * 0.22) * 0.12 + u_pitch * 0.2;
+  vec3 ro = vec3(sin(yaw) * cos(pitch), sin(pitch) * 0.72, cos(yaw) * cos(pitch)) * 2.7;
+  vec3 ww = normalize(-ro);
+  vec3 uu = normalize(cross(vec3(0.0, 1.0, 0.0), ww));
+  vec3 vv = cross(ww, uu);
+  vec3 rd = normalize(uu * uv.x * 1.05 + vv * uv.y * 1.05 + ww * 1.4);
 
-  vec3 ro = vec3(u_light.x * 0.16, -u_light.y * 0.1, 2.7);
-  vec3 rd = normalize(vec3(uv * 1.02, -1.22));
-  float roll = sin(time * 0.19) * 0.18;
-  ro.xy *= rot(-roll);
-  rd.xy *= rot(-roll);
-  ro.yz *= rot(-pitch);
-  rd.yz *= rot(-pitch);
-  ro.xz *= rot(-yaw);
-  rd.xz *= rot(-yaw);
+  float sc = mix(1.0, 0.56, fold);
+  vec3 sunC = vec3(0.0);
+  vec3 p1 = onOrbit(time, 0.3, 1.15, 0.2, 0.7) * sc;
+  vec3 p2 = onOrbit(time, 0.44, 0.62, 1.8, 0.7) * sc;
+  vec3 p3 = onOrbit(time, 0.58, 0.36, 3.6, 0.7) * sc;
+  vec3 p4 = onOrbit(time, 0.72, 0.2, 5.1, 0.7) * sc;
+  vec3 moon = p3 + onOrbit(time, 0.16, 2.2, 0.0, 1.15) * sc;
 
-  float sc = mix(1.0, 0.58, fold);
-  vec3 c0 = vec3(cos(time * 0.36), sin(time * 0.24) * 0.35, sin(time * 0.36) * 0.45) * 0.36 * sc;
-  vec3 c1 = vec3(cos(time * 0.36 + 2.15), 0.16 + sin(time * 0.3) * 0.2, sin(time * 0.36 + 2.15) * 0.4) * 0.42 * sc;
-  vec3 c2 = vec3(cos(time * 0.48 + 4.2) * 0.28, 0.46 + sin(time * 0.4) * 0.12, 0.16) * sc;
-
-  vec3 mag = mix(vec3(0.72, 0.28, 0.58), u_color, 0.2);
-  vec3 cyn = vec3(0.22, 0.7, 0.76);
-  vec3 vio = vec3(0.5, 0.3, 0.86);
-  float r0 = 0.34 * sc;
-  float r1 = 0.25 * sc;
-  float r2 = 0.15 * sc;
+  vec3 amber = mix(vec3(0.95, 0.48, 0.22), u_color, 0.12);
+  vec3 cyn = vec3(0.25, 0.74, 0.8);
+  vec3 mag = vec3(0.78, 0.28, 0.55);
+  vec3 vio = vec3(0.5, 0.32, 0.88);
+  vec3 sand = vec3(0.82, 0.62, 0.38);
+  float rs = (0.15 + pulse * 0.018) * sc;
+  float r1 = 0.042 * sc;
+  float r2 = 0.064 * sc;
+  float r3 = 0.1 * sc;
+  float r4 = 0.05 * sc;
+  float rm = 0.026 * sc;
 
   vec3 col = vec3(0.0);
   float alpha = 0.0;
-  float glow = exp(-dot(uv, uv) * 3.2) * (0.1 + energy * 0.05);
-  col += cyn * glow * 0.45 + mag * glow * 0.25;
-  alpha = glow * 0.35;
+  float glow = exp(-dot(uv, uv) * 2.4) * (0.14 + energy * 0.08 + pulse * 0.08);
+  col += amber * glow * 0.7;
+  alpha = glow * 0.4;
 
-  ring(col, alpha, ro, rd, c0, normalize(vec3(0.15, 1.0, 0.08)), r0 + 0.16, mag);
-  ring(col, alpha, ro, rd, c1, normalize(vec3(0.35, 0.25, 1.0)), r1 + 0.14, cyn);
-  ring(col, alpha, ro, rd, c2, normalize(vec3(1.0, 0.15, 0.2)), r2 + 0.1, vio);
+  vec3 axis = normalize(vec3(0.0, cos(0.7), sin(0.7)));
+  ring(col, alpha, ro, rd, sunC, axis, 0.3 * sc, cyn * 0.7);
+  ring(col, alpha, ro, rd, sunC, axis, 0.44 * sc, mag * 0.65);
+  ring(col, alpha, ro, rd, sunC, axis, 0.58 * sc, vio * 0.6);
+  ring(col, alpha, ro, rd, sunC, axis, 0.72 * sc, sand * 0.55);
 
   float best = 80.0;
-  vec3 bc = c0;
-  vec3 bt = mag;
-  float t0 = hitSphere(ro, rd, c0, r0);
-  float t1 = hitSphere(ro, rd, c1, r1);
-  float t2 = hitSphere(ro, rd, c2, r2);
-  if (t0 > 0.0 && t0 < best) { best = t0; bc = c0; bt = mag; }
-  if (t1 > 0.0 && t1 < best) { best = t1; bc = c1; bt = cyn; }
-  if (t2 > 0.0 && t2 < best) { best = t2; bc = c2; bt = vio; }
-  if (best < 40.0) cover(col, alpha, shade(ro, rd, best, bc, bt, time, pulse), 0.94);
-
-  vec3 s0 = c0 + vec3(cos(time * 1.1), sin(time * 0.8) * 0.35, sin(time * 1.1)) * (r0 + 0.2);
-  vec3 s1 = c1 + vec3(cos(time * -0.9 + 1.0), sin(time * 1.3) * 0.22, sin(time * -0.9)) * (r1 + 0.18);
-  vec3 s2 = c2 + vec3(cos(time * 1.4 + 2.0) * 0.7, sin(time * 1.1), sin(time * 1.4) * 0.7) * (r2 + 0.14);
-  vec3 s3 = mix(c0, c1, 0.5) + vec3(0.0, sin(time * 0.9) * 0.18, cos(time * 0.7) * 0.16);
-  float q0 = hitSphere(ro, rd, s0, 0.07 * sc);
-  float q1 = hitSphere(ro, rd, s1, 0.055 * sc);
-  float q2 = hitSphere(ro, rd, s2, 0.046 * sc);
-  float q3 = hitSphere(ro, rd, s3, 0.05 * sc);
-  if (q0 > 0.0 && (best > 40.0 || q0 < best)) cover(col, alpha, shade(ro, rd, q0, s0, cyn, time, pulse), 0.95);
-  if (q1 > 0.0 && (best > 40.0 || q1 < best)) cover(col, alpha, shade(ro, rd, q1, s1, mag, time, pulse), 0.95);
-  if (q2 > 0.0 && (best > 40.0 || q2 < best)) cover(col, alpha, shade(ro, rd, q2, s2, vio, time, pulse), 0.95);
-  if (q3 > 0.0 && (best > 40.0 || q3 < best)) cover(col, alpha, shade(ro, rd, q3, s3, mix(cyn, mag, 0.5), time, pulse), 0.95);
-
-  vec3 a0 = c0 + vec3(sin(time * 0.6), 0.2, cos(time * 0.6)) * 0.2;
-  vec3 b0 = a0 + vec3(0.16, 0.05, -0.04);
-  float spar = hitSpar(ro, rd, a0, b0, 0.02);
-  if (spar > 0.0 && (best > 40.0 || spar < best)) cover(col, alpha, cyn * (0.45 + pulse * 0.3), 0.8);
-  vec3 a1 = c1 + vec3(-0.1, sin(time * 0.8) * 0.16, 0.12);
-  vec3 b1 = a1 + vec3(0.05, 0.14, 0.08);
-  float spar2 = hitSpar(ro, rd, a1, b1, 0.018);
-  if (spar2 > 0.0 && (best > 40.0 || spar2 < best)) cover(col, alpha, vio * 0.55, 0.75);
+  vec3 bc = sunC;
+  vec3 bt = amber;
+  float star = 0.0;
+  float tS = hitSphere(ro, rd, sunC, rs);
+  float t1 = hitSphere(ro, rd, p1, r1);
+  float t2 = hitSphere(ro, rd, p2, r2);
+  float t3 = hitSphere(ro, rd, p3, r3);
+  float t4 = hitSphere(ro, rd, p4, r4);
+  float tM = hitSphere(ro, rd, moon, rm);
+  if (tS > 0.0) { best = tS; bc = sunC; bt = amber; star = 1.0; }
+  if (t1 > 0.0 && t1 < best) { best = t1; bc = p1; bt = cyn; star = 0.0; }
+  if (t2 > 0.0 && t2 < best) { best = t2; bc = p2; bt = mag; star = 0.0; }
+  if (t3 > 0.0 && t3 < best) { best = t3; bc = p3; bt = vio; star = 0.0; }
+  if (t4 > 0.0 && t4 < best) { best = t4; bc = p4; bt = sand; star = 0.0; }
+  if (tM > 0.0 && tM < best) { best = tM; bc = moon; bt = cyn; star = 0.0; }
+  if (best < 40.0) {
+    vec3 lit = shade(ro, rd, best, bc, bt, time, pulse);
+    if (star > 0.5) lit = bt * (0.72 + pulse * 0.2) + vec3(1.0, 0.78, 0.45) * 0.18;
+    cover(col, alpha, lit, 0.94);
+  }
 
   float edge = smoothstep(1.18, 0.92, length(uv));
   gl_FragColor = vec4(min(col, vec3(0.92)) * alpha * edge, alpha * edge);
