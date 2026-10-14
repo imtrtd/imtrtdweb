@@ -90,8 +90,8 @@ void ring(inout vec3 col, inout float alpha, vec3 ro, vec3 rd, vec3 c, vec3 nrm,
   float t = dot(c - ro, nrm) / denom;
   if (t < 0.04) return;
   float d = abs(length(ro + rd * t - c) - radius);
-  float band = smoothstep(0.028, 0.0, d);
-  float a = band * 0.5 * (1.0 - alpha);
+  float band = smoothstep(0.008, 0.0, d);
+  float a = band * 0.055 * (1.0 - alpha);
   col += tint * a;
   alpha += a;
 }
@@ -123,18 +123,18 @@ void main() {
   float pulse = clamp(u_pulse, 0.0, 1.0);
   float yaw = u_yaw + time * 0.18;
   float pitch = 0.22 + sin(time * 0.22) * 0.08 + u_pitch * 0.15;
-  vec3 ro = vec3(sin(yaw) * cos(pitch), sin(pitch) * 0.72, cos(yaw) * cos(pitch)) * 2.7;
-  vec3 ww = normalize(-ro);
+  vec3 ro = vec3(sin(yaw) * cos(pitch), sin(pitch) * 0.45, cos(yaw) * cos(pitch)) * 3.4;
+  vec3 ww = normalize(vec3(0.0, 0.28, 0.0) - ro);
   vec3 uu = normalize(cross(vec3(0.0, 1.0, 0.0), ww));
   vec3 vv = cross(ww, uu);
-  vec3 rd = normalize(uu * uv.x * 1.05 + vv * uv.y * 1.05 + ww * 1.4);
+  vec3 rd = normalize(uu * uv.x * 0.9 + vv * uv.y * 0.9 + ww * 1.18);
 
-  float sc = mix(0.78, 0.46, fold);
+  float sc = mix(1.12, 0.64, fold);
   vec3 sunC = vec3(0.0);
-  vec3 p1 = onOrbit(time, 0.3, 1.15, 0.2, 0.42) * sc;
-  vec3 p2 = onOrbit(time, 0.44, 0.62, 1.8, 0.62) * sc;
-  vec3 p3 = onOrbit(time, 0.56, 0.36, 3.6, 0.82) * sc;
-  vec3 p4 = onOrbit(time, 0.7, 0.2, 5.1, 0.5) * sc;
+  vec3 p1 = onOrbit(time, 0.38, 1.15, 0.2, 0.42) * sc;
+  vec3 p2 = onOrbit(time, 0.54, 0.62, 1.8, 0.62) * sc;
+  vec3 p3 = onOrbit(time, 0.7, 0.36, 3.6, 0.82) * sc;
+  vec3 p4 = onOrbit(time, 0.88, 0.2, 5.1, 0.5) * sc;
   vec3 moon = p3 + onOrbit(time, 0.16, 2.2, 0.0, 1.35) * sc;
 
   vec3 amber = mix(vec3(0.95, 0.48, 0.22), u_color, 0.12);
@@ -142,12 +142,12 @@ void main() {
   vec3 mag = vec3(0.78, 0.28, 0.55);
   vec3 vio = vec3(0.5, 0.32, 0.88);
   vec3 sand = vec3(0.82, 0.62, 0.38);
-  float rs = (0.15 + pulse * 0.018) * sc;
-  float r1 = 0.042 * sc;
-  float r2 = 0.064 * sc;
-  float r3 = 0.1 * sc;
-  float r4 = 0.05 * sc;
-  float rm = 0.026 * sc;
+  float rs = (0.22 + pulse * 0.02) * sc;
+  float r1 = 0.072 * sc;
+  float r2 = 0.1 * sc;
+  float r3 = 0.155 * sc;
+  float r4 = 0.08 * sc;
+  float rm = 0.04 * sc;
 
   vec3 col = vec3(0.0);
   float alpha = 0.0;
@@ -155,10 +155,10 @@ void main() {
   col += amber * glow * 0.7;
   alpha = glow * 0.4;
 
-  ring(col, alpha, ro, rd, sunC, orbitPlane(0.42), 0.3 * sc, cyn * 0.8);
-  ring(col, alpha, ro, rd, sunC, orbitPlane(0.62), 0.44 * sc, mag * 0.75);
-  ring(col, alpha, ro, rd, sunC, orbitPlane(0.82), 0.56 * sc, vio * 0.7);
-  ring(col, alpha, ro, rd, sunC, orbitPlane(0.5), 0.7 * sc, sand * 0.65);
+  ring(col, alpha, ro, rd, sunC, orbitPlane(0.42), 0.38 * sc, cyn);
+  ring(col, alpha, ro, rd, sunC, orbitPlane(0.62), 0.54 * sc, mag);
+  ring(col, alpha, ro, rd, sunC, orbitPlane(0.82), 0.7 * sc, vio);
+  ring(col, alpha, ro, rd, sunC, orbitPlane(0.5), 0.88 * sc, sand);
 
   float best = 80.0;
   vec3 bc = sunC;
@@ -182,7 +182,7 @@ void main() {
     cover(col, alpha, lit, 0.94);
   }
 
-  float edge = smoothstep(1.18, 0.92, length(uv));
+  float edge = smoothstep(1.55, 1.22, length(uv));
   gl_FragColor = vec4(min(col, vec3(0.92)) * alpha * edge, alpha * edge);
 }
 `;

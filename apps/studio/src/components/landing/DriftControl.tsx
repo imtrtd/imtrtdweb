@@ -11,9 +11,9 @@ class Score {
 	private timer = 0;
 	private next = 0;
 	private step = 0;
-	private root = 45;
+	private root = 33;
 	private noise: AudioBuffer | null = null;
-	private readonly bassline = [0, -1, 0, 3, -1, 7, 0, -1, 0, 3, -1, 5, 7, -1, 3, 10];
+	private readonly bassline = [-1, -1, 0, -1, -1, -1, 0, -1, -1, -1, 3, -1, -1, -1, -2, -1];
 	private running = false;
 	private ducked = false;
 
@@ -27,7 +27,7 @@ class Score {
 			comp.ratio.value = 3;
 			const filter = ctx.createBiquadFilter();
 			filter.type = "lowpass";
-			filter.frequency.value = 1600;
+			filter.frequency.value = 480;
 			filter.connect(comp);
 			comp.connect(master);
 			master.connect(ctx.destination);
@@ -41,6 +41,7 @@ class Score {
 		}
 		await this.ctx.resume();
 		if (this.ctx.state !== "running") throw new Error("audio suspended");
+		if (this.running) return;
 		this.running = true;
 		this.master!.gain.cancelScheduledValues(this.ctx.currentTime);
 		this.master!.gain.linearRampToValueAtTime(this.ducked ? 0.0001 : 0.2, this.ctx.currentTime + 0.3);
@@ -65,26 +66,35 @@ class Score {
 
 	private pump = () => {
 		if (!this.ctx || !this.running) return;
-		const step = 60 / 140 / 4;
-		while (this.next < this.ctx.currentTime + 0.12) {
-			const beat = this.step % 16;
-			const time = this.next;
-			if (beat % 4 === 0) {
-				this.kick(time);
-				window.dispatchEvent(new CustomEvent("imtrtd-pulse"));
+		const step = 60 / 138 / 4;
+		if (this.next < this.ctx.currentTime - 0.04) this.next = this.ctx.currentTime + 0.03;
+		try {
+			let guard = 0;
+			while (this.next < this.ctx.currentTime + 0.16 && guard < 8) {
+				const beat = this.step % 16;
+				const time = Math.max(this.next, this.ctx.currentTime + 0.008);
+				if (beat % 4 === 0) {
+					this.kick(time);
+					window.dispatchEvent(new CustomEvent("imtrtd-pulse"));
+				}
+				if (beat === 4 || beat === 12) this.burst(time + 0.012, 0.032, 0.1, 1800);
+				if (beat === 2 || beat === 6 || beat === 10 || beat === 14) {
+					this.burst(time, beat === 14 ? 0.02 : 0.012, beat === 14 ? 0.08 : 0.03, 6500);
+				}
+				const note = this.bassline[beat];
+				if (note !== -1) this.tone(this.root + note, 0.22, "sawtooth", 0.07, time, true);
+				if (beat === 0 && this.step % 64 === 0) {
+					this.tone(this.root + 24, 0.28, "triangle", 0.02, time, false);
+					this.tone(this.root + 27, 0.28, "triangle", 0.014, time, false);
+				}
+				this.step += 1;
+				this.next += step;
+				guard += 1;
 			}
-			if (beat % 2 === 1) this.burst(time, beat === 7 || beat === 15 ? 0.04 : 0.025, beat === 15 ? 0.07 : 0.028, 7200);
-			if (beat === 4 || beat === 12) this.burst(time, 0.05, 0.08, 1200);
-			const note = this.bassline[beat];
-			if (note >= 0) this.tone(this.root + note, 0.1, "sawtooth", 0.04, time, true);
-			if (beat === 0 && this.step % 32 === 0) {
-				this.tone(this.root + 24, 0.16, "square", 0.028, time, true);
-				this.tone(this.root + 27, 0.16, "square", 0.018, time, true);
-			}
-			this.step += 1;
-			this.next += step;
+		} catch {
+			this.next = this.ctx.currentTime + step;
 		}
-		this.timer = window.setTimeout(this.pump, 25);
+		this.timer = window.setTimeout(this.pump, 40);
 	};
 
 	private tone(note: number, dur: number, type: OscillatorType, level: number, time: number, filtered: boolean) {
@@ -93,14 +103,16 @@ class Score {
 		const gain = this.ctx.createGain();
 		osc.type = type;
 		osc.frequency.value = midi(note);
-		const start = Math.max(time, this.ctx.currentTime);
+		const start = Math.max(time, this.ctx.currentTime + 0.005);
+		const attack = Math.min(0.012, dur * 0.3);
+		const end = start + Math.max(dur, attack + 0.03);
 		gain.gain.setValueAtTime(0.0001, start);
-		gain.gain.exponentialRampToValueAtTime(level, start + 0.01);
-		gain.gain.exponentialRampToValueAtTime(0.0001, start + dur);
+		gain.gain.exponentialRampToValueAtTime(level, start + attack);
+		gain.gain.exponentialRampToValueAtTime(0.0001, end);
 		osc.connect(gain);
 		gain.connect(filtered && this.filter ? this.filter : this.master);
 		osc.start(start);
-		osc.stop(start + dur + 0.02);
+		osc.stop(end + 0.02);
 	}
 
 	private kick(time: number) {
@@ -108,14 +120,15 @@ class Score {
 		const osc = this.ctx.createOscillator();
 		const gain = this.ctx.createGain();
 		osc.type = "sine";
-		osc.frequency.setValueAtTime(158, time);
-		osc.frequency.exponentialRampToValueAtTime(44, time + 0.08);
-		gain.gain.setValueAtTime(0.24, time);
-		gain.gain.exponentialRampToValueAtTime(0.0001, time + 0.15);
+		const start = Math.max(time, this.ctx.currentTime + 0.005);
+		osc.frequency.setValueAtTime(148, start);
+		osc.frequency.exponentialRampToValueAtTime(41, start + 0.08);
+		gain.gain.setValueAtTime(0.28, start);
+		gain.gain.exponentialRampToValueAtTime(0.0001, start + 0.18);
 		osc.connect(gain);
 		gain.connect(this.master);
-		osc.start(time);
-		osc.stop(time + 0.17);
+		osc.start(start);
+		osc.stop(start + 0.2);
 	}
 
 	private burst(time: number, level: number, dur: number, freq: number) {
@@ -126,13 +139,14 @@ class Score {
 		src.buffer = this.noise;
 		filter.type = "highpass";
 		filter.frequency.value = freq;
-		gain.gain.setValueAtTime(level, time);
-		gain.gain.exponentialRampToValueAtTime(0.0001, time + dur);
+		const start = Math.max(time, this.ctx.currentTime + 0.005);
+		gain.gain.setValueAtTime(level, start);
+		gain.gain.exponentialRampToValueAtTime(0.0001, start + dur);
 		src.connect(filter);
 		filter.connect(gain);
 		gain.connect(this.master);
-		src.start(time);
-		src.stop(time + dur + 0.02);
+		src.start(start);
+		src.stop(start + dur + 0.02);
 	}
 }
 
