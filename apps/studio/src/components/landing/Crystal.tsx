@@ -105,7 +105,14 @@ vec3 onOrbit(float time, float radius, float speed, float phase, float incline) 
   float a = time * speed + phase;
   vec3 p = vec3(cos(a), 0.0, sin(a)) * radius;
   p.yz *= rot(incline);
+  p.xy *= rot(1.2);
   return p;
+}
+
+vec3 orbitPlane(float incline) {
+  vec3 n = vec3(0.0, cos(incline), sin(incline));
+  n.xy *= rot(1.2);
+  return normalize(n);
 }
 
 void main() {
@@ -115,20 +122,20 @@ void main() {
   float fold = clamp(u_fold, 0.0, 1.0);
   float pulse = clamp(u_pulse, 0.0, 1.0);
   float yaw = u_yaw + time * 0.18;
-  float pitch = 0.42 + sin(time * 0.22) * 0.12 + u_pitch * 0.2;
+  float pitch = 0.22 + sin(time * 0.22) * 0.08 + u_pitch * 0.15;
   vec3 ro = vec3(sin(yaw) * cos(pitch), sin(pitch) * 0.72, cos(yaw) * cos(pitch)) * 2.7;
   vec3 ww = normalize(-ro);
   vec3 uu = normalize(cross(vec3(0.0, 1.0, 0.0), ww));
   vec3 vv = cross(ww, uu);
   vec3 rd = normalize(uu * uv.x * 1.05 + vv * uv.y * 1.05 + ww * 1.4);
 
-  float sc = mix(1.0, 0.56, fold);
+  float sc = mix(0.78, 0.46, fold);
   vec3 sunC = vec3(0.0);
-  vec3 p1 = onOrbit(time, 0.3, 1.15, 0.2, 0.7) * sc;
-  vec3 p2 = onOrbit(time, 0.44, 0.62, 1.8, 0.7) * sc;
-  vec3 p3 = onOrbit(time, 0.58, 0.36, 3.6, 0.7) * sc;
-  vec3 p4 = onOrbit(time, 0.72, 0.2, 5.1, 0.7) * sc;
-  vec3 moon = p3 + onOrbit(time, 0.16, 2.2, 0.0, 1.15) * sc;
+  vec3 p1 = onOrbit(time, 0.3, 1.15, 0.2, 0.42) * sc;
+  vec3 p2 = onOrbit(time, 0.44, 0.62, 1.8, 0.62) * sc;
+  vec3 p3 = onOrbit(time, 0.56, 0.36, 3.6, 0.82) * sc;
+  vec3 p4 = onOrbit(time, 0.7, 0.2, 5.1, 0.5) * sc;
+  vec3 moon = p3 + onOrbit(time, 0.16, 2.2, 0.0, 1.35) * sc;
 
   vec3 amber = mix(vec3(0.95, 0.48, 0.22), u_color, 0.12);
   vec3 cyn = vec3(0.25, 0.74, 0.8);
@@ -148,11 +155,10 @@ void main() {
   col += amber * glow * 0.7;
   alpha = glow * 0.4;
 
-  vec3 axis = normalize(vec3(0.0, cos(0.7), sin(0.7)));
-  ring(col, alpha, ro, rd, sunC, axis, 0.3 * sc, cyn * 0.7);
-  ring(col, alpha, ro, rd, sunC, axis, 0.44 * sc, mag * 0.65);
-  ring(col, alpha, ro, rd, sunC, axis, 0.58 * sc, vio * 0.6);
-  ring(col, alpha, ro, rd, sunC, axis, 0.72 * sc, sand * 0.55);
+  ring(col, alpha, ro, rd, sunC, orbitPlane(0.42), 0.3 * sc, cyn * 0.8);
+  ring(col, alpha, ro, rd, sunC, orbitPlane(0.62), 0.44 * sc, mag * 0.75);
+  ring(col, alpha, ro, rd, sunC, orbitPlane(0.82), 0.56 * sc, vio * 0.7);
+  ring(col, alpha, ro, rd, sunC, orbitPlane(0.5), 0.7 * sc, sand * 0.65);
 
   float best = 80.0;
   vec3 bc = sunC;
