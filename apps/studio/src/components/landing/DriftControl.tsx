@@ -16,6 +16,7 @@ class Score {
 	private readonly bassline = [-1, -1, 0, -1, -1, -1, 0, -1, -1, -1, 3, -1, -1, -1, -2, -1];
 	private running = false;
 	private ducked = false;
+	private sleep = 0;
 
 	async start() {
 		if (!this.ctx) {
@@ -39,12 +40,16 @@ class Score {
 			this.master = master;
 			this.filter = filter;
 		}
+		window.clearTimeout(this.sleep);
 		await this.ctx.resume();
 		if (this.ctx.state !== "running") throw new Error("audio suspended");
 		if (this.running) return;
 		this.running = true;
-		this.master!.gain.cancelScheduledValues(this.ctx.currentTime);
-		this.master!.gain.linearRampToValueAtTime(this.ducked ? 0.0001 : 0.2, this.ctx.currentTime + 0.3);
+		this.ducked = document.body.classList.contains("pulse-on");
+		const gain = this.master!.gain;
+		gain.cancelScheduledValues(this.ctx.currentTime);
+		gain.setValueAtTime(Math.max(gain.value, 0.0001), this.ctx.currentTime);
+		gain.linearRampToValueAtTime(this.ducked ? 0.0001 : 0.2, this.ctx.currentTime + 0.3);
 		this.next = this.ctx.currentTime + 0.05;
 		this.pump();
 	}
@@ -55,6 +60,11 @@ class Score {
 		window.clearTimeout(this.timer);
 		this.master.gain.cancelScheduledValues(this.ctx.currentTime);
 		this.master.gain.linearRampToValueAtTime(0.0001, this.ctx.currentTime + 0.12);
+		const ctx = this.ctx;
+		window.clearTimeout(this.sleep);
+		this.sleep = window.setTimeout(() => {
+			if (!this.running && ctx.state === "running") void ctx.suspend();
+		}, 200);
 	}
 
 	duck(on: boolean) {
@@ -152,6 +162,13 @@ class Score {
 
 const score = new Score();
 let live = false;
+let muted = (() => {
+	try {
+		return sessionStorage.getItem("imtrtd-drift-muted") === "1";
+	} catch {
+		return false;
+	}
+})();
 const listeners = new Set<(on: boolean) => void>();
 
 function setLive(on: boolean) {
@@ -159,12 +176,29 @@ function setLive(on: boolean) {
 	listeners.forEach((listener) => listener(on));
 }
 
-export async function playDrift() {
+function setMuted(on: boolean) {
+	muted = on;
+	try {
+		if (on) sessionStorage.setItem("imtrtd-drift-muted", "1");
+		else sessionStorage.removeItem("imtrtd-drift-muted");
+	} catch {
+		// storage unavailable
+	}
+}
+
+export async function playDrift(user = true) {
+	if (user) setMuted(false);
 	await score.start();
+	if (muted) {
+		score.mute();
+		setLive(false);
+		return;
+	}
 	setLive(true);
 }
 
-export function stopDrift() {
+export function stopDrift(user = true) {
+	if (user) setMuted(true);
 	score.mute();
 	setLive(false);
 }
@@ -200,8 +234,14 @@ export function DriftBed() {
 		const arm = (event: PointerEvent) => {
 			const target = event.target as HTMLElement | null;
 			if (target?.closest?.("[data-drift], .pulse-toggle")) return;
-			if (reduced || live || document.body.classList.contains("pulse-on")) return;
-			void playDrift().catch(() => setLive(false));
+			if (reduced || muted || document.body.classList.contains("pulse-on")) return;
+			if (live) {
+				window.removeEventListener("pointerdown", arm);
+				return;
+			}
+			void playDrift(false)
+				.then(() => window.removeEventListener("pointerdown", arm))
+				.catch(() => setLive(false));
 		};
 		const watch = new MutationObserver(() => {
 			score.duck(document.body.classList.contains("pulse-on"));
