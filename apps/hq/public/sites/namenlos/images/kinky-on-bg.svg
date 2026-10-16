@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="800" viewBox="0 0 1200 800" preserveAspectRatio="xMidYMid slice">
+  <defs>
+    <filter id="grain" x="-20%" y="-20%" width="140%" height="140%">
+      <feTurbulence type="fractalNoise" baseFrequency="0.85" numOctaves="2" seed="7" result="n"/>
+      <feColorMatrix in="n" type="saturate" values="0" result="g"/>
+      <feComponentTransfer in="g" result="a">
+        <feFuncA type="table" tableValues="0 0.55 0"/>
+      </feComponentTransfer>
+      <feBlend in="SourceGraphic" in2="a" mode="multiply"/>
+    </filter>
+    <linearGradient id="fadeL" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0%" stop-color="#050505" stop-opacity="1"/>
+      <stop offset="42%" stop-color="#050505" stop-opacity="0.55"/>
+      <stop offset="100%" stop-color="#050505" stop-opacity="0"/>
+    </linearGradient>
+    <pattern id="tape" width="28" height="28" patternUnits="userSpaceOnUse" patternTransform="rotate(-45)">
+      <rect width="28" height="28" fill="#050505"/>
+      <rect width="14" height="28" fill="#f5c518"/>
+    </pattern>
+  </defs>
+  <rect width="1200" height="800" fill="#070707"/>
+  <g filter="url(#grain)" opacity="0.55">
+    <rect width="1200" height="800" fill="#1a1a1a"/>
+  </g>
+  <g fill="none" stroke="#cfc8b8" stroke-width="10" opacity="0.22">
+    <path d="M780 0 v220 h90 v580"/>
+    <path d="M920 80 v140 h70 v580"/>
+    <path d="M1040 0 v320 h80"/>
+    <circle cx="870" cy="220" r="18"/>
+    <circle cx="990" cy="220" r="14"/>
+  </g>
+  <g fill="none" stroke="#9a9488" stroke-width="2.2" opacity="0.55">
+    <path d="M430 690 C 620 640, 820 760, 1200 640"/>
+    <path d="M480 740 C 700 680, 900 790, 1200 700"/>
+  </g>
+  <g fill="#9a9488" opacity="0.5">
+    <polygon points="620,668 632,652 644,670 628,676"/>
+    <polygon points="760,700 774,682 786,704 768,710"/>
+    <polygon points="910,678 924,662 936,682 918,688"/>
+    <polygon points="1050,656 1064,640 1076,660 1058,666"/>
+  </g>
+  <g fill="none" stroke="#d8d2c4" stroke-width="7" opacity="0.42">
+    <ellipse cx="980" cy="620" rx="28" ry="16" transform="rotate(-28 980 620)"/>
+    <ellipse cx="1028" cy="646" rx="28" ry="16" transform="rotate(-28 1028 646)"/>
+    <ellipse cx="1076" cy="672" rx="28" ry="16" transform="rotate(-28 1076 672)"/>
+    <ellipse cx="1124" cy="698" rx="28" ry="16" transform="rotate(-28 1124 698)"/>
+    <ellipse cx="1172" cy="724" rx="28" ry="16" transform="rotate(-28 1172 724)"/>
+  </g>
+  <g fill="#efe6d4" opacity="0.88">
+    <text x="1180" y="430" text-anchor="end" font-family="Impact, Oswald, Arial Black, sans-serif" font-size="118" letter-spacing="4">KINKY ON</text>
+  </g>
+  <g fill="#f5c518" opacity="0.9">
+    <text x="1180" y="488" text-anchor="end" font-family="Oswald, Impact, sans-serif" font-size="28" letter-spacing="8">2026 TOUR</text>
+  </g>
+  <g>
+    <polygon points="0,0 260,0 0,150" fill="url(#tape)"/>
+    <polygon points="1200,0 940,0 1200,150" fill="url(#tape)"/>
+    <polygon points="0,800 260,800 0,650" fill="url(#tape)"/>
+    <polygon points="1200,800 900,800 1200,630" fill="url(#tape)"/>
+  </g>
+  <rect width="1200" height="800" fill="url(#fadeL)"/>
+  <rect width="1200" height="800" fill="#050505" opacity="0.12"/>
+</svg>

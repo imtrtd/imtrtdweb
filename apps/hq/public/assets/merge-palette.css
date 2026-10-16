@@ -1,0 +1,93 @@
+/* Merge layer: old imtrtd.space palette on the new structure */
+html,html:root{
+  --color-ink:#0a0a0f; --color-ink-soft:#14141c; --color-paper:#f3effa;
+  --color-mute:#8b93a7; --color-fog:#c8cedb; --color-signal:#b28dff;
+  --color-signal-deep:#7b5cff; --color-hair:rgba(178,141,255,.18);
+}
+html,body{background:#0a0a0f;color:#f3effa}
+body{background:
+  radial-gradient(60rem 40rem at 85% -10%,rgba(123,92,255,.18),transparent 60%),
+  radial-gradient(50rem 35rem at -10% 110%,rgba(178,141,255,.10),transparent 60%),#0a0a0f fixed}
+::selection{color:#0a0a0f;background:var(--color-signal)}
+header.sticky{background:rgba(10,10,15,.82)!important;border-bottom-color:rgba(178,141,255,.18)!important}
+/* blend: old Space Grotesk for display type, new Arimo/Geist Mono for body/labels */
+.font-display,h1,h2,h3{font-family:"Space Grotesk",Arial,"Arimo",sans-serif!important;letter-spacing:-.01em}
+.bg-signal{background:linear-gradient(135deg,var(--color-signal),color-mix(in oklab,var(--color-signal) 60%,#3b1d99))!important;color:#0a0a0f!important}
+.bg-signal:hover{box-shadow:0 0 24px color-mix(in oklab,var(--color-signal) 45%,transparent)}
+.work-row:hover{background:#14141c}
+.text-signal{color:var(--color-signal)!important}
+.border-hair{border-color:rgba(178,141,255,.18)!important}
+
+/* accent alternatives (original options) */
+html[data-accent=lime]{--color-signal:#d8ff00}
+html[data-accent=magenta]{--color-signal:#ff2bd6}
+html[data-accent=cyan]{--color-signal:#2ee9ff}
+html[data-accent=violet]{--color-signal:#b28dff}
+html{background:#0a0a0f}
+.hero-glitch{text-shadow:-1px 0 #7b5cff,1px 0 var(--color-signal)}
+.hero-glitch:before{color:#7b5cff}.hero-glitch:after{color:var(--color-signal)}.hero-glitch:hover{color:var(--color-signal)}
+.preview-frame{opacity:0;transition:opacity .45s}.preview-frame.is-loaded{opacity:1}
+.opening-label{transition:opacity .3s}.opening-label.is-hidden{opacity:0}
+[data-sound][aria-pressed=true] .rounded-full{background:var(--color-signal);box-shadow:0 0 8px var(--color-signal)}
+/* text & label readability pass */
+.logo-mark{width:44px;height:44px;display:block;flex-shrink:0}
+@media(min-width:1024px){.logo-mark{width:52px;height:52px}}
+.label{font-size:.75rem!important;letter-spacing:.12em!important;line-height:1.5}
+.text-mute{color:#a3aac0!important}
+.text-paper\/80{color:rgba(243,239,250,.86)!important}
+.hero-title{text-shadow:0 2px 24px rgba(10,10,15,.6)}
+.pulse-copy p.label,.pulse-copy p{position:relative;z-index:2}
+@media(max-width:1023px){
+  header nav{gap:.25rem 1.1rem!important;flex-wrap:wrap;overflow:visible!important}
+  [aria-label="Site colour"] button{width:2rem!important;height:2.25rem!important}
+  .pulse-figure{opacity:.9}
+}
+@media(max-width:420px){.pulse-copy .hero-title{font-size:3rem;line-height:.95}}
+@media(min-width:1024px){[data-sound]{margin-left:1.75rem;padding-left:1.25rem;border-left:1px solid rgba(178,141,255,.2)}}
+/* ---- section dividers ---- */
+[data-div]{position:relative;border-top-color:transparent!important}
+[data-div]::before{content:"";position:absolute;left:0;right:0;top:-1px;height:1px;pointer-events:none;
+  background:linear-gradient(90deg,transparent 0,var(--color-signal) 12%,color-mix(in oklab,var(--color-signal) 30%,transparent) 55%,rgba(178,141,255,.1) 100%)}
+[data-div]::after{content:attr(data-div);position:absolute;top:-1px;right:clamp(1rem,3vw,3rem);transform:translateY(-50%);pointer-events:none;
+  font:600 10px/1 "Geist Mono",ui-monospace,monospace;letter-spacing:.16em;text-transform:uppercase;color:var(--color-signal);
+  background:#0a0a0f;padding:5px 9px;border:1px solid color-mix(in oklab,var(--color-signal) 35%,transparent);clip-path:polygon(0 0,calc(100% - 6px) 0,100% 6px,100% 100%,6px 100%,0 calc(100% - 6px))}
+.brief-panel{border-top:1px solid color-mix(in oklab,var(--color-signal) 40%,transparent);padding-top:.9rem}
+nav[aria-label=Projects]{border-bottom:1px solid color-mix(in oklab,var(--color-signal) 30%,transparent)!important}
+/* ---- volume slider ---- */
+.vol-wrap{display:inline-flex;align-items:center;height:2.75rem;margin:0 .5rem 0 .6rem}
+.vol{-webkit-appearance:none;appearance:none;width:64px;height:16px;background:transparent;cursor:pointer;touch-action:none}
+.vol::-webkit-slider-runnable-track{height:3px;background:linear-gradient(90deg,var(--color-signal) var(--v,60%),rgba(178,141,255,.22) var(--v,60%))}
+.vol::-moz-range-track{height:3px;background:rgba(178,141,255,.22)}.vol::-moz-range-progress{height:3px;background:var(--color-signal)}
+.vol::-webkit-slider-thumb{-webkit-appearance:none;width:12px;height:12px;margin-top:-4.5px;background:var(--color-paper);border:2px solid var(--color-signal);clip-path:polygon(0 0,calc(100% - 3px) 0,100% 3px,100% 100%,3px 100%,0 calc(100% - 3px))}
+.vol::-moz-range-thumb{width:10px;height:10px;background:var(--color-paper);border:2px solid var(--color-signal);border-radius:0}
+html:not(.sound-on) .vol-wrap{opacity:.55}
+@media(max-width:420px){.vol{width:48px}.vol-wrap{margin:0 .15rem}}
+@media(min-width:1024px){[data-sound]{margin-left:1.75rem}}
+/* ---- touch: let the hero figure scroll the page on phones ---- */
+.pulse-shader{touch-action:pan-y!important}
+/* ---- reduced motion: keep it alive but gentle (the original CSS killed everything) ---- */
+@media (prefers-reduced-motion:reduce){
+  .hero-glitch:before{animation:1.6s steps(2,end) infinite glitch-shift-a,4s steps(10,end) infinite glitch-slice-a!important}
+  .hero-glitch:after{animation:1.3s steps(2,end) infinite glitch-shift-b,3.6s steps(8,end) infinite glitch-slice-b!important}
+  .pulse-stage{height:220vh!important}
+  .pulse-pin{position:sticky!important;top:7.1rem;height:calc(100dvh - 7.1rem)!important}
+  .pulse-copy{max-height:calc(34rem * (1 - var(--fold)))!important;opacity:calc(1 - var(--fold) * 1.45)!important}
+  .brief-panel{max-height:calc(var(--fold) * 36rem)!important;opacity:clamp(0,(var(--fold) - .38) * 2.5,1)!important}
+  .preview-frame,.opening-label,.work-row,.bg-signal{transition-duration:.3s!important}
+}
+@media (prefers-reduced-motion:reduce) and (max-width:1023px){.pulse-pin{top:7.6rem;height:calc(100dvh - 7.6rem)!important}.pulse-copy{max-height:calc(42vh - var(--fold) * 36vh)!important}}
+/* ---- page enter + hover polish ---- */
+@keyframes page-in{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+.site-layer>*{animation:page-in .5s cubic-bezier(.2,.7,.2,1) both}
+.work-row a.bg-signal{transition:transform .2s,box-shadow .2s}
+header nav a{position:relative}header nav a::after{content:"";position:absolute;left:0;right:100%;bottom:8px;height:1px;background:var(--color-signal);transition:right .25s}
+header nav a:hover::after,header nav a.active::after{right:0}
+/* ---- mobile hero: stable solar box ABOVE the text, no vh-driven jumps ---- */
+.cosmos-field{height:100lvh!important}
+@media(max-width:1023px){
+  .pulse-stage,html .pulse-stage{height:auto!important;min-height:0}
+  .pulse-pin,html .pulse-pin{position:relative!important;top:auto!important;height:auto!important;display:flex!important;flex-direction:column;gap:1rem;padding:1rem 1rem 2.5rem!important}
+  .pulse-figure,html .pulse-figure{order:-1;position:relative;width:100%!important;max-width:32rem;height:auto!important;aspect-ratio:6/5;align-self:center;margin:0!important;transform:none!important;opacity:1!important}
+  .pulse-copy,html .pulse-copy{max-height:none!important;opacity:1!important;transform:none!important;overflow:visible}
+  .brief-panel,html .brief-panel{max-height:none!important;opacity:1!important;transform:none!important;pointer-events:auto!important;width:100%;margin-top:1rem}
+}

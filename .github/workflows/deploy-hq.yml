@@ -1,0 +1,31 @@
+name: Deploy HQ to Cloudflare
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - "apps/hq/**"
+      - ".github/workflows/deploy-hq.yml"
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    name: Deploy imtrtd.space (static)
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: read
+      deployments: write
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Deploy Worker (assets only)
+        uses: cloudflare/wrangler-action@v4
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          wranglerVersion: "4.88.0"
+          workingDirectory: apps/hq
+          command: deploy

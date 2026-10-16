@@ -1,0 +1,47 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>PULSEBOX</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&family=Geist+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>*{box-sizing:border-box}body{margin:0;min-height:100vh;background:radial-gradient(40rem 30rem at 75% 15%,rgba(123,92,255,.22),transparent 60%),#0a0a0f;color:#f3effa;font-family:"Space Grotesk",Arial,sans-serif;display:grid;place-items:center;padding:2rem}
+.wrap{display:grid;grid-template-columns:minmax(0,1fr) 19rem;gap:2.5rem;max-width:72rem;width:100%;align-items:center}
+.dev{background:#14141c;border:1px solid rgba(178,141,255,.25);border-radius:14px;padding:1.25rem}
+.top{display:flex;justify-content:space-between;align-items:center;font:600 12px "Geist Mono",monospace;letter-spacing:.14em;margin-bottom:1rem}.top em{font-style:normal;color:#b28dff}
+.screen{background:#0a0a0f;border-radius:8px;padding:.9rem;display:grid;gap:.55rem}
+.row{display:grid;grid-template-columns:7.5rem 1fr auto;gap:.75rem;align-items:center}
+.ch b{display:block;font:600 11px "Geist Mono",monospace;letter-spacing:.1em}.ch span{font:10px "Geist Mono",monospace;color:#8b93a7}
+.steps{display:grid;grid-template-columns:repeat(16,1fr);gap:4px}.steps i{cursor:pointer;aspect-ratio:1;background:#1d1d29;border-radius:2px}.steps i.bar{background:#262636}.steps i.on{background:#b28dff;box-shadow:0 0 8px rgba(178,141,255,.6)}.steps i:nth-child(5).on{background:#f3effa}
+.knobs{display:flex;gap:4px}.knobs span{font:9px "Geist Mono",monospace;color:#8b93a7;border:1px solid #2a2a3a;padding:3px 5px;border-radius:3px}
+.ctrl{display:flex;gap:.5rem;margin-top:1rem;flex-wrap:wrap;font:600 11px "Geist Mono",monospace;letter-spacing:.1em}.ctrl span{border:1px solid #2a2a3a;padding:.5rem .8rem;border-radius:6px;color:#c8cedb}.ctrl .p{background:linear-gradient(135deg,#b28dff,#7b5cff);color:#0a0a0f;border:0}
+h1{font-size:clamp(2.6rem,5vw,4.2rem);margin:.4rem 0 1rem;line-height:.95}.lab{font:11px "Geist Mono",monospace;letter-spacing:.14em;color:#b28dff}p{color:#c8cedb;line-height:1.6;font-size:15px}
+dl{display:grid;grid-template-columns:5rem 1fr;gap:.4rem 1rem;font:12px "Geist Mono",monospace;color:#8b93a7;margin-top:1.5rem}dd{margin:0;color:#f3effa}
+@media(max-width:900px){body{padding:1rem}.top{flex-direction:column;align-items:flex-start;gap:.35rem}.row{grid-template-columns:1fr!important;gap:.3rem}.ch{display:flex;gap:.6rem;align-items:baseline}.steps{gap:3px}.dev{padding:1rem}.wrap{grid-template-columns:1fr}.knobs{display:none}.row{grid-template-columns:5.5rem 1fr}}.steps i.now{outline:1px solid #f3effa}.ctrl span{cursor:pointer;user-select:none}.ctrl span.sel{border-color:#b28dff;color:#f3effa}.knobs span{cursor:pointer}.knobs span.m{color:#0a0a0f;background:#8b93a7}.row.muted .steps{opacity:.35}</style></head><body><div class="wrap">
+<div class="dev"><div class="top"><span>PULSEBOX</span><em>NIGHT MARKET · BAR 1/4 · LOOP</em></div><div class="screen"><div class="row"><div class="ch"><b>PULSE 1</b><span>Lead · duty 50%</span></div><div class="steps"><i class="on bar"></i><i class=""></i><i class=""></i><i class="on"></i><i class=" bar"></i><i class=""></i><i class="on"></i><i class=""></i><i class="on bar"></i><i class=""></i><i class=""></i><i class=""></i><i class="on bar"></i><i class=""></i><i class="on"></i><i class=""></i></div><div class="knobs"><span>DUTY</span><span>LVL</span><span>M</span></div></div><div class="row"><div class="ch"><b>PULSE 2</b><span>Harmony · duty 25%</span></div><div class="steps"><i class=" bar"></i><i class=""></i><i class="on"></i><i class=""></i><i class=" bar"></i><i class=""></i><i class="on"></i><i class=""></i><i class=" bar"></i><i class=""></i><i class="on"></i><i class=""></i><i class=" bar"></i><i class=""></i><i class="on"></i><i class=""></i></div><div class="knobs"><span>DUTY</span><span>LVL</span><span>M</span></div></div><div class="row"><div class="ch"><b>TRIANGLE</b><span>Bass</span></div><div class="steps"><i class="on bar"></i><i class=""></i><i class=""></i><i class=""></i><i class="on bar"></i><i class=""></i><i class=""></i><i class=""></i><i class="on bar"></i><i class=""></i><i class="on"></i><i class=""></i><i class="on bar"></i><i class=""></i><i class=""></i><i class=""></i></div><div class="knobs"><span>DUTY</span><span>LVL</span><span>M</span></div></div><div class="row"><div class="ch"><b>NOISE</b><span>Drums</span></div><div class="steps"><i class="on bar"></i><i class=""></i><i class="on"></i><i class=""></i><i class="on bar"></i><i class=""></i><i class="on"></i><i class=""></i><i class="on bar"></i><i class=""></i><i class="on"></i><i class=""></i><i class="on bar"></i><i class=""></i><i class="on"></i><i class="on"></i></div><div class="knobs"><span>DUTY</span><span>LVL</span><span>M</span></div></div></div>
+<div class="ctrl"><span class="p">▶ PLAY</span><span>LOOP BAR</span><span>SONG ×4</span><span>NIGHT MARKET</span><span>BOSS DOOR</span><span>RIVER</span><span>BLANK</span></div></div>
+<div><span class="lab">MUSIC APP · 2026</span><h1>PULSEBOX</h1>
+<p>An 8-bit chiptune studio in the browser, built like a handheld. Four NES-style channels: lead and harmony pulse, triangle bass, drums. Pick a note or drum, tap or drag across sixteen steps.</p>
+<p>Loop one bar or play all four as a song. Duty, level and mute shape the tone. Night Market comes loaded, with Boss Door, River and a blank page. Edits stay on the device. Space plays.</p>
+<p>The later build speaks Russian. The pixel font went, it had no Cyrillic. So did the screw frame. Flat panel, same sound.</p>
+<dl><dt>Type</dt><dd>Music app / web app</dd><dt>Year</dt><dd>2026</dd><dt>Channels</dt><dd>Pulse ×2, triangle, noise</dd></dl></div></div><script>
+(function(){var rows=[].slice.call(document.querySelectorAll('.row')),ctx=null,playing=false,step=0,timer=0,drag=null,
+notes=[[76,0,0,79,0,0,81,0,79,0,0,0,76,0,74,0],[0,0,72,0,0,0,76,0,0,0,72,0,0,0,71,0],[45,0,0,0,45,0,0,0,41,0,43,0,45,0,0,0],[1,0,2,0,1,0,2,0,1,0,2,0,1,0,2,2]],
+types=['square','square','triangle','noise'],vols=[.08,.05,.12,.09];
+var play=document.querySelector('.ctrl .p');
+function ac(){if(!ctx){var C=window.AudioContext||window.webkitAudioContext;if(C)ctx=new C()}if(ctx)ctx.resume();return ctx}
+function hit(ch,t){var c=ctx;if(!c)return;var g=c.createGain();g.connect(c.destination);var v=vols[ch]*(rows[ch].dataset.lvl==='lo'?.4:1);
+ if(types[ch]==='noise'){var b=c.createBuffer(1,c.sampleRate*.12,c.sampleRate),d=b.getChannelData(0);for(var i=0;i<d.length;i++)d[i]=Math.random()*2-1;var s=c.createBufferSource();s.buffer=b;var f=c.createBiquadFilter();f.type=notes[3][t]===1?'lowpass':'highpass';f.frequency.value=notes[3][t]===1?300:5000;s.connect(f);f.connect(g);g.gain.setValueAtTime(v*2,c.currentTime);g.gain.exponentialRampToValueAtTime(1e-4,c.currentTime+.12);s.start();return}
+ var o=c.createOscillator();o.type=types[ch];var m=notes[ch][t]||(ch===2?45:ch===1?72:76);o.frequency.value=440*Math.pow(2,(m-69)/12);o.connect(g);g.gain.setValueAtTime(v,c.currentTime);g.gain.exponentialRampToValueAtTime(1e-4,c.currentTime+.16);o.start();o.stop(c.currentTime+.18)}
+function tick(){rows.forEach(function(r,ch){var cells=r.querySelectorAll('.steps i');cells.forEach(function(c,i){c.classList.toggle('now',i===step)});if(cells[step].classList.contains('on')&&!r.classList.contains('muted'))hit(ch,step)});step=(step+1)%16}
+play.addEventListener('click',function(){playing=!playing;if(playing){ac();step=0;tick();timer=setInterval(tick,125);play.textContent='\u25A0 STOP'}else{clearInterval(timer);play.textContent='\u25B6 PLAY';document.querySelectorAll('.now').forEach(function(n){n.classList.remove('now')})}});
+rows.forEach(function(r,ch){var cells=[].slice.call(r.querySelectorAll('.steps i'));cells.forEach(function(c,i){
+ c.addEventListener('pointerdown',function(e){e.preventDefault();drag=!c.classList.contains('on');c.classList.toggle('on',drag);if(drag&&ac())hit(ch,i)});
+ c.addEventListener('pointerenter',function(){if(drag!==null)c.classList.toggle('on',drag)})});
+ var k=r.querySelectorAll('.knobs span');if(k.length){k[2].addEventListener('click',function(){r.classList.toggle('muted');k[2].classList.toggle('m')});
+ k[1].addEventListener('click',function(){r.dataset.lvl=r.dataset.lvl==='lo'?'':'lo';k[1].classList.toggle('m')});
+ k[0].addEventListener('click',function(){if(ch<2){types[ch]=types[ch]==='square'?'sawtooth':'square';k[0].classList.toggle('m')}})}});
+addEventListener('pointerup',function(){drag=null});
+addEventListener('keydown',function(e){if(e.code==='Space'){e.preventDefault();play.click()}});
+var presets=[].slice.call(document.querySelectorAll('.ctrl span')).slice(3);presets[0].classList.add('sel');
+presets.forEach(function(p,pi){p.addEventListener('click',function(){presets.forEach(function(q){q.classList.remove('sel')});p.classList.add('sel');
+ rows.forEach(function(r,ch){r.querySelectorAll('.steps i').forEach(function(c,i){var on=pi===3?false:pi===0?c.dataset.orig==='1':((i*(ch+2)+pi*3)%(pi===1?3:5)===0);c.classList.toggle('on',on)})});
+ document.querySelector('.top em').textContent=p.textContent+' \u00B7 BAR 1/4 \u00B7 LOOP'})});
+document.querySelectorAll('.steps i').forEach(function(c){c.dataset.orig=c.classList.contains('on')?'1':'0'});
+})();
+</script></body></html>

@@ -1,0 +1,28 @@
+/**
+ * HQ Worker: static studio site for imtrtd.space (assets only, no Worker code).
+ * Deployed by .github/workflows/deploy-hq.yml.
+ */
+{
+	"$schema": "https://unpkg.com/wrangler@4.88.0/config-schema.json",
+	"name": "imtrtd-hq",
+	"compatibility_date": "2026-08-10",
+	"assets": {
+		"directory": "./public",
+		"html_handling": "auto-trailing-slash",
+		"not_found_handling": "none"
+	},
+	"routes": [
+		{
+			"pattern": "imtrtd.space",
+			"custom_domain": true
+		},
+		{
+			"pattern": "www.imtrtd.space",
+			"custom_domain": true
+		}
+	],
+	"workers_dev": true,
+	"observability": {
+		"enabled": true
+	}
+}
