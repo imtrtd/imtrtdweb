@@ -11,6 +11,13 @@ const worker = {
     env: Record<string, unknown>,
     ctx: ExecutionContext,
   ): Promise<Response> {
+    const url = new URL(request.url);
+    const visitor = request.headers.get("cf-visitor") ?? "";
+    const fwd = request.headers.get("x-forwarded-proto") ?? "";
+    if (url.protocol === "http:" || fwd.startsWith("http,") || fwd === "http" || visitor.includes('"scheme":"http"')) {
+      url.protocol = "https:";
+      return Response.redirect(url.toString(), 301);
+    }
     return handler.fetch(request, env, ctx);
   },
 };
