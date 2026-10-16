@@ -14,14 +14,6 @@
 	},
 	"routes": [
 		{
-			"pattern": "imtrtd.space",
-			"custom_domain": true
-		},
-		{
-			"pattern": "www.imtrtd.space",
-			"custom_domain": true
-		},
-		{
 			"pattern": "admin.imtrtd.space",
 			"custom_domain": true
 		}
