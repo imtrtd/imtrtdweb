@@ -84,10 +84,29 @@ export class AppStore extends DurableObject {
 			.filter(Boolean)) {
 			this.ctx.storage.sql.exec(statement);
 		}
-		for (const statement of SEED.split(";")
-			.map((part) => part.trim())
-			.filter(Boolean)) {
-			this.ctx.storage.sql.exec(statement);
+		// Seed only once. Re-running INSERT OR IGNORE on every cold start
+		// resurrected seed rows that an admin had deleted.
+		const sql = this.ctx.storage.sql;
+		sql.exec(
+			"CREATE TABLE IF NOT EXISTS _meta (key TEXT PRIMARY KEY, value TEXT NOT NULL)",
+		);
+		const seeded = sql
+			.exec("SELECT 1 AS x FROM _meta WHERE key = 'seeded'")
+			.toArray().length;
+		if (!seeded) {
+			const hasCopy = Number(
+				sql.exec("SELECT COUNT(*) AS n FROM site_copy").one().n,
+			);
+			if (!hasCopy) {
+				for (const statement of SEED.split(";")
+					.map((part) => part.trim())
+					.filter(Boolean)) {
+					sql.exec(statement);
+				}
+			}
+			sql.exec(
+				"INSERT OR REPLACE INTO _meta (key, value) VALUES ('seeded', datetime('now'))",
+			);
 		}
 		this.ready = true;
 	}
