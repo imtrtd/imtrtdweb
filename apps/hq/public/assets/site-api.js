@@ -42,7 +42,7 @@ function openBrief(o){o=o||{};var last=document.activeElement,d=document.createE
  '<label><span>Name</span><input name="name" autocomplete="name" required maxlength="120"></label>'+
  '<label><span>Email / Telegram</span><input name="contact" autocomplete="email" required maxlength="200" inputmode="email"></label>'+
  '<label><span>Note</span><textarea name="message" rows="5" maxlength="3800"></textarea></label>'+
- '<div class="lx-row"><button class="lx-btn p" type="submit">Send brief</button><button class="lx-btn" type="button" data-x>Close</button></div></form>';
+ '<div class="lx-row"><button class="lx-btn p" type="submit">Send brief</button><button class="lx-btn" type="button" data-x>Close</button></div><p class="lx-privacy" style="margin-top:.75rem">Your details are only used to reply to this request. They are never shared.</p></form>';
  document.body.appendChild(d);var f=d.querySelector('form');f.elements.message.value=o.message||'';var prevOverflow=document.documentElement.style.overflow;document.documentElement.style.overflow='hidden';
  function close(){document.documentElement.style.overflow=prevOverflow;d.remove();removeEventListener('keydown',key);last&&last.focus&&last.focus()}
  function key(e){if(e.key==='Escape')close()}addEventListener('keydown',key);

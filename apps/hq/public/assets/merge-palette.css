@@ -91,3 +91,7 @@ header nav a:hover::after,header nav a.active::after{right:0}
   .pulse-copy,html .pulse-copy{max-height:none!important;opacity:1!important;transform:none!important;overflow:visible}
   .brief-panel,html .brief-panel{max-height:none!important;opacity:1!important;transform:none!important;pointer-events:auto!important;width:100%;margin-top:1rem}
 }
+/* ---- footer social links + form privacy note ---- */
+.site-social{display:flex;flex-wrap:wrap;align-items:baseline;gap:.25rem 1.25rem}
+.site-social a{display:inline-flex;align-items:center;min-height:2.75rem}
+.privacy-note,.lx-privacy{margin:0;font-size:.75rem;line-height:1.5;color:#a3aac0;letter-spacing:.01em}
