@@ -55,7 +55,7 @@ export default async function WorkPage({
   return (
     <main className="case-page" style={caseStyle}>
       <nav className="case-nav">
-        <a className="case-brand" href="/" aria-label="ImTryingToDesign — home"><img src="/favicon.svg" width={32} height={32} alt="" /></a>
+        <a className="case-brand" href="/" aria-label="ImTryingToDesign — home"><img src="/brand/logo-lockup.svg" width={122} height={36} alt="" /></a>
         <a className="case-back" href="/#work">← BACK TO WORK</a>
         <span className="mono case-nav-meta">CONCEPT CASE STUDY / {study.index}</span>
       </nav>

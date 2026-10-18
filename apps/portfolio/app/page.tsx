@@ -58,8 +58,8 @@ export default function Home() {
 
       <header className="topbar">
         <a className="brand" href="#top" aria-label="ImTryingToDesign — home">
-          <img className="brand-mark" src="/favicon.svg" width={40} height={40} alt="" />
-          <span className="brand-name">IMTRYINGTO<br />DESIGN.COM</span>
+          <img className="brand-lockup" src="/brand/logo-lockup.svg" width={157} height={46} alt="" />
+          <img className="brand-mark" src="/brand/logo-mark.svg" width={38} height={40} alt="" />
         </a>
         <div className="status mono"><i aria-hidden="true" /> Available · Q4 2026</div>
         <nav className={menuOpen ? "nav open" : "nav"} aria-label="Main navigation">
@@ -195,6 +195,7 @@ export default function Home() {
           </a>
         </div>
         <div className="footer-row label">
+          <a className="footer-brand" href="#top" aria-label="ImTryingToDesign — back to top"><img src="/brand/logo-lockup.svg" width={150} height={44} alt="" /></a>
           <span>© 2026 ImTryingToDesign</span>
           <span>Kyiv / Remote</span>
           <span className="footer-links">
