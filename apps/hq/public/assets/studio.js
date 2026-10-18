@@ -137,9 +137,7 @@ function initHero(){var st=$('.pulse-stage');if(!st)return;var raf=0;
   function q(){cancelAnimationFrame(raf);raf=requestAnimationFrame(upd)}
   addEventListener('scroll',q,{passive:true});addEventListener('resize',q);upd();
   var ex=$('[data-fx=explore]');if(ex)ex.addEventListener('click',function(ev){var w=$('#work');if(w){ev.preventDefault();w.scrollIntoView({behavior:reduce.matches?'auto':'smooth'})}});
-  var f=$('form',st);if(f)f.addEventListener('submit',function(ev){ev.preventDefault();var d=new FormData(f),nm=String(d.get('name')||'').trim(),ct=String(d.get('contact')||'').trim(),tk=String(d.get('task')||''),nt=String(d.get('note')||'').trim();
-    var body=['Name: '+nm,'Contact: '+ct,'Task: '+tk,'',nt].join('\n');location.href='mailto:'+EMAIL+'?subject='+encodeURIComponent('Brief from '+nm)+'&body='+encodeURIComponent(body);
-    var p=document.createElement('p');p.className='mt-4 max-w-[36ch] text-sm leading-relaxed text-paper/80';p.innerHTML='The mail draft is open. If it stayed closed, write to <a class="text-signal" href="mailto:'+EMAIL+'">'+EMAIL+'</a>.';f.replaceWith(p)});
+  /* brief form submit is handled by assets/site-api.js (POST to admin API, mailto fallback) */
   if(!initSolar())initFigure()}
 
 /* ---------- Hero figure: lightweight 2D take on the original pulse shader ---------- */

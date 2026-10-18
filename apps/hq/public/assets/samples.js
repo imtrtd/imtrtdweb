@@ -44,6 +44,7 @@ root.querySelector('.tz-controls').addEventListener('click',function(e){var b=e.
 bar.querySelector('[data-fx=desk]').addEventListener('click',function(){phone=false;render()});
 bar.querySelector('[data-fx=phone]').addEventListener('click',function(){phone=true;render()});
 function copied(ok){copyBtn.textContent=ok?'Copied':'Select & copy';setTimeout(function(){copyBtn.textContent='Copy brief'},1600)}
+send.addEventListener('click',function(e){if(!window.IMTRTD)return;e.preventDefault();window.IMTRTD.openBrief({title:'Send this sample.',label:'Samples · '+st.name,task:'Sample · '+st.name,message:spec(st)})});
 copyBtn.addEventListener('click',function(){var s=spec(st);
  if(navigator.clipboard&&window.isSecureContext){navigator.clipboard.writeText(s).then(function(){copied(true)},fallback)}else fallback();
  function fallback(){var t=document.createElement('textarea');t.value=s;t.setAttribute('readonly','');t.style.cssText='position:fixed;opacity:0;top:0';document.body.appendChild(t);t.select();t.setSelectionRange(0,s.length);var ok=false;try{ok=document.execCommand('copy')}catch(e){}document.body.removeChild(t);copied(ok)}});
