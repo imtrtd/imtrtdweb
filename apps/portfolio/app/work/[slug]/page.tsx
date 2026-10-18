@@ -6,7 +6,7 @@ const studies = {
     index: "01",
     name: "NAMENLOS",
     type: "TATTOO STUDIO / BOOKING",
-    accent: "#d8ff26",
+    accent: "#d8ff00",
     summary: "A concept case study for a tattoo studio whose visual language needed to remain raw while the booking journey became calm and clear.",
     system: "A high-contrast navigation system, an artist-first gallery, and a friction-light request flow.",
     interaction: "Dense type is paced by still moments, tactile hover states, and deliberate route choices.",
@@ -16,7 +16,7 @@ const studies = {
     index: "02",
     name: "NACHTWERK",
     type: "EVENT SERIES / TICKETS",
-    accent: "#8a5cff",
+    accent: "#b28dff",
     summary: "A concept case study for a nocturnal event series, designed to turn changing line-ups into a confident, time-sensitive story.",
     system: "A modular schedule, a live-status layer, and tickets treated as the visual call to action.",
     interaction: "Editorial motion language makes each announcement feel immediate without making information harder to read.",
@@ -26,7 +26,7 @@ const studies = {
     index: "03",
     name: "KIOSK 23",
     type: "CAFE / LOCAL COMMERCE",
-    accent: "#ff4d19",
+    accent: "#ff7a4d",
     summary: "A concept case study for a neighbourhood cafe: small footprint, strong point of view, and a website made for a daily rhythm.",
     system: "A warm utility system for menu changes, opening hours, and local moments worth returning for.",
     interaction: "The interface balances loud brand character with a quick path to the essential details.",
@@ -55,8 +55,9 @@ export default async function WorkPage({
   return (
     <main className="case-page" style={caseStyle}>
       <nav className="case-nav">
-        <a className="case-back" href="/#work">BACK TO WORK</a>
-        <span className="mono">CONCEPT CASE STUDY / {study.index}</span>
+        <a className="case-brand" href="/" aria-label="ImTryingToDesign — home"><img src="/favicon.svg" width={32} height={32} alt="" /></a>
+        <a className="case-back" href="/#work">← BACK TO WORK</a>
+        <span className="mono case-nav-meta">CONCEPT CASE STUDY / {study.index}</span>
       </nav>
       <section className="case-hero">
         <div>

@@ -1,16 +1,9 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="ImTryingToDesign">
-  <defs>
-    <linearGradient id="g" x1="10" y1="8" x2="54" y2="56" gradientUnits="userSpaceOnUse">
-      <stop stop-color="#B28DFF"/>
-      <stop offset=".48" stop-color="#7B5CFF"/>
-      <stop offset="1" stop-color="#4A1FB3"/>
-    </linearGradient>
-    <filter id="s" x="-30%" y="-30%" width="160%" height="160%">
-      <feDropShadow dx="0" dy="4" stdDeviation="4" flood-color="#7B5CFF" flood-opacity=".35"/>
-    </filter>
-  </defs>
-  <g fill="url(#g)" filter="url(#s)">
-    <path d="M12 49 22 17h8L20 49z"/>
-    <path d="M25 49 35 14h17L31 49zm14-28-5 17 13-17z"/>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32">
+  <path fill="#d8ff00" d="M0 0h25.2L32 6.8V32H6.8L0 25.2Z"/>
+  <g fill="#050505">
+    <path d="M5.7 11.15h2.2v9.7H5.7z"/>
+    <path d="M9.35 20.85 12.7 11.15h1.9l-3.35 9.7z"/>
+    <path d="M15.55 11.15h6.2v1.95h-2v7.75h-2.2v-7.75h-2z"/>
+    <path d="M22.55 11.15h2.25c2.2 0 3.45 1.4 3.45 4.85s-1.25 4.85-3.45 4.85h-2.25zm2.15 1.9v5.9h.2c1 0 1.35-.75 1.35-2.95s-.35-2.95-1.35-2.95z"/>
   </g>
 </svg>

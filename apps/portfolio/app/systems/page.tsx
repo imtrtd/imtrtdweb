@@ -31,8 +31,9 @@ export default function SystemsPage() {
   return (
     <main className="systems-page">
       <nav className="systems-nav">
+        <a className="case-brand" href="/" aria-label="ImTryingToDesign — home"><img src="/favicon.svg" width={32} height={32} alt="" /></a>
         <a className="case-back" href="/">← HOME</a>
-        <span className="mono">REFERENCE SYSTEMS / 2026</span>
+        <span className="mono case-nav-meta">REFERENCE SYSTEMS / 2026</span>
       </nav>
       <section className="systems-intro">
         <p className="mono">// REUSABLE DESIGN DIRECTIONS</p>
