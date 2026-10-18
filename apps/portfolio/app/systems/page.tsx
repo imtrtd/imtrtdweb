@@ -31,7 +31,7 @@ export default function SystemsPage() {
   return (
     <main className="systems-page">
       <nav className="systems-nav">
-        <a className="case-brand" href="/" aria-label="ImTryingToDesign — home"><img className="lockup" src="/brand/logo-lockup.svg" width={122} height={36} alt="" /><img className="mark" src="/brand/logo-mark.svg" width={35} height={36} alt="" /></a>
+        <a className="case-brand" href="/" aria-label="ImTryingToDesign — home"><img className="lockup" src="/brand/logo-lockup.svg" width={124} height={36} alt="" /><img className="mark" src="/brand/logo-mark.svg" width={35} height={36} alt="" /></a>
         <a className="case-back" href="/">← HOME</a>
         <span className="mono case-nav-meta">REFERENCE SYSTEMS / 2026</span>
       </nav>

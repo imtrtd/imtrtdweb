@@ -4,7 +4,7 @@
 :root {
   --ink:#0a0a0f; --ink-soft:#14141c; --ink-raise:#1a1a24;
   --paper:#f3effa; --fog:#c8cedb; --mute:#a3aac0; --dim:#7d8499;
-  --signal:#b28dff; --signal-deep:#7b5cff; --lime:#d8ff00;
+  --signal:#b28dff; --signal-deep:#7b5cff; --lime:#E0F725;
   --hair:rgba(178,141,255,.18); --hair-strong:rgba(178,141,255,.34);
   --grad:linear-gradient(135deg,#b28dff,#7b5cff);
   --pad-x:clamp(20px,5vw,72px);
@@ -58,7 +58,7 @@ h2 em, h1 em { font-style:normal; background:var(--grad); -webkit-background-cli
 @media(max-width:600px){ .brand-lockup{display:none} .brand-mark{display:block} .case-brand .lockup{display:none} .case-brand .mark{display:block} }
 .footer-brand img { height:44px; width:auto; }
 .status { font-size:11px; letter-spacing:.14em; text-transform:uppercase; color:var(--mute); display:flex; align-items:center; }
-.status i,.footer-status i { display:inline-block; width:7px; height:7px; border-radius:50%; background:var(--lime); box-shadow:0 0 12px rgba(216,255,0,.7); margin-right:10px; animation:pulse 1.8s infinite; }
+.status i,.footer-status i { display:inline-block; width:7px; height:7px; border-radius:50%; background:var(--lime); box-shadow:0 0 12px rgba(224,247,37,.7); margin-right:10px; animation:pulse 1.8s infinite; }
 .nav { justify-self:end; display:flex; align-items:center; gap:clamp(14px,1.8vw,28px); font:500 12px var(--font-mono),monospace; letter-spacing:.1em; text-transform:uppercase; }
 .nav a { position:relative; color:var(--mute); transition:color .2s; }
 .nav a:not(.nav-hub)::after { content:""; position:absolute; left:0; right:100%; bottom:-6px; height:1px; background:var(--signal); transition:right .25s; }
@@ -81,7 +81,7 @@ h2 em, h1 em { font-style:normal; background:var(--grad); -webkit-background-cli
 .orb::after { content:""; position:absolute; inset:-5%; border:1px solid rgba(178,141,255,.4); border-radius:48% 52% 61% 39%; animation:spin 14s linear infinite; }
 .orb span { position:absolute; inset:-11%; border:1px solid rgba(255,255,255,.1); border-radius:50%; transform:rotate(32deg) scaleY(.28); }
 .orb span:nth-child(2) { transform:rotate(-22deg) scaleY(.46); border-color:rgba(123,92,255,.45); }
-.orb span:nth-child(3) { inset:9%; transform:rotate(75deg) scaleY(.18); border-color:rgba(216,255,0,.28); }
+.orb span:nth-child(3) { inset:9%; transform:rotate(75deg) scaleY(.18); border-color:rgba(224,247,37,.28); }
 .hero-bottom { position:relative; z-index:2; display:flex; align-items:end; justify-content:space-between; gap:2rem; flex-wrap:wrap; }
 .hero-bottom p { max-width:44ch; margin:0; color:rgba(243,239,250,.84); font-size:clamp(16px,1.2vw,18px); line-height:1.6; }
 .hero-actions { display:flex; gap:12px; flex-wrap:wrap; }
@@ -291,12 +291,12 @@ h2 em, h1 em { font-style:normal; background:var(--grad); -webkit-background-cli
 .system-card-header span { color:var(--mute); }
 .system-swatch { flex:1; min-height:12rem; margin:2.5rem 0; border:1px solid var(--hair); display:grid; place-content:center; overflow:hidden; position:relative; }
 .system-swatch strong { position:relative; z-index:1; font-size:clamp(40px,4.5vw,72px); letter-spacing:-.05em; }
-.system-swatch.brutal { background:#d8ff00; color:var(--ink); }
+.system-swatch.brutal { background:#E0F725; color:var(--ink); }
 .system-swatch.brutal::before { content:""; position:absolute; width:140%; height:34%; background:#7b5cff; transform:rotate(-19deg); }
 .system-swatch.editorial { background:#f3effa; color:#151515; font-family:Georgia,serif; }
 .system-swatch.editorial::before { content:""; position:absolute; inset:18px; border:1px solid #151515; }
 .system-swatch.night { background:radial-gradient(circle at 50% 30%,#ff4d19,transparent 8%,#140d24 38%,#050505 75%); color:#f3effa; }
-.system-swatch.night::before { content:""; position:absolute; width:65%; aspect-ratio:1; border:1px solid #d8ff00; border-radius:50%; }
+.system-swatch.night::before { content:""; position:absolute; width:65%; aspect-ratio:1; border:1px solid #E0F725; border-radius:50%; }
 .system-card h2 { margin:0; font-size:clamp(27px,2.6vw,40px); letter-spacing:-.06em; }
 .system-card p { margin:.9rem 0 0; color:var(--mute); line-height:1.5; }
 .system-tags { display:flex; flex-wrap:wrap; gap:.4rem; margin-top:auto; padding-top:1.5rem; }

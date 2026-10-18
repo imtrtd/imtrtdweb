@@ -6,7 +6,7 @@ const studies = {
     index: "01",
     name: "NAMENLOS",
     type: "TATTOO STUDIO / BOOKING",
-    accent: "#d8ff00",
+    accent: "#E0F725",
     summary: "A concept case study for a tattoo studio whose visual language needed to remain raw while the booking journey became calm and clear.",
     system: "A high-contrast navigation system, an artist-first gallery, and a friction-light request flow.",
     interaction: "Dense type is paced by still moments, tactile hover states, and deliberate route choices.",
@@ -55,7 +55,7 @@ export default async function WorkPage({
   return (
     <main className="case-page" style={caseStyle}>
       <nav className="case-nav">
-        <a className="case-brand" href="/" aria-label="ImTryingToDesign — home"><img className="lockup" src="/brand/logo-lockup.svg" width={122} height={36} alt="" /><img className="mark" src="/brand/logo-mark.svg" width={35} height={36} alt="" /></a>
+        <a className="case-brand" href="/" aria-label="ImTryingToDesign — home"><img className="lockup" src="/brand/logo-lockup.svg" width={124} height={36} alt="" /><img className="mark" src="/brand/logo-mark.svg" width={35} height={36} alt="" /></a>
         <a className="case-back" href="/#work">← BACK TO WORK</a>
         <span className="mono case-nav-meta">CONCEPT CASE STUDY / {study.index}</span>
       </nav>
