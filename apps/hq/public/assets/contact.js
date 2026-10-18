@@ -6,8 +6,7 @@
     var p=new Intl.DateTimeFormat('en-GB',{timeZone:'Europe/Kyiv',timeZoneName:'shortOffset'}).formatToParts(d).filter(function(x){return x.type==='timeZoneName'})[0];off=p?p.value.replace('GMT','UTC'):''}catch(e){return}
    els.forEach(function(el){el.textContent=t+' Kyiv'+(off?' · '+off:'')})}
   tick();setInterval(tick,30000)}
- function copy(btn){var card=btn.closest('.ct-card'),a=card&&card.querySelector('a[href^="mailto:"]');
-  var v=(a&&a.textContent.indexOf('@')>0)?a.textContent.trim():btn.getAttribute('data-ct-copy');
+ function copy(btn){var v=(btn.getAttribute('data-ct-copy')||'').trim();
   function done(ok){var o=btn.getAttribute('data-label')||btn.textContent;btn.setAttribute('data-label',o);btn.textContent=ok?'Copied':'Select & copy';btn.dataset.state=ok?'ok':'err';
    setTimeout(function(){btn.textContent=o;delete btn.dataset.state},1800)}
   if(navigator.clipboard&&window.isSecureContext){navigator.clipboard.writeText(v).then(function(){done(true)},function(){done(fallback(v))})}else done(fallback(v))}

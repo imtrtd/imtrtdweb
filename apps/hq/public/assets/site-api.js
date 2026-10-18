@@ -62,7 +62,7 @@ if(page==='/'||page==='/contact'||page==='/selected'){
  fetch(API+'/api/content',{credentials:'omit'}).then(function(r){return r.ok?r.json():null}).then(function(c){if(!c||!c.copy||c.copy.hq_cms!=='on')return;applyContent(c)}).catch(function(){});
 }
 function applyContent(c){var cp=c.copy;
- var mail=cp.hq_contact_email||cp.contact_email;if(mail&&/^[^\s@]+@[^\s@]+$/.test(mail)){MAIL=mail;document.querySelectorAll('a[href^="mailto:"]').forEach(function(a){var q=a.getAttribute('href').split('?')[1];a.href='mailto:'+mail+(q?'?'+q:'');if(/@/.test(a.textContent))a.textContent=mail})}
+ var mail=cp.hq_contact_email||cp.contact_email;if(mail&&/^[^\s@]+@[^\s@]+$/.test(mail)){MAIL=mail;document.querySelectorAll('a[href^="mailto:"]').forEach(function(a){var q=a.getAttribute('href').split('?')[1];a.href='mailto:'+mail+(q?'?'+q:'');var t=a.querySelector('[data-mail-text]');if(t)t.textContent=mail;else if(!a.children.length&&/@/.test(a.textContent))a.textContent=mail;var cb=a.closest('.ct-card');cb=cb&&cb.querySelector('[data-ct-copy]');if(cb)cb.setAttribute('data-ct-copy',mail)})}
  if(cp.hq_hero_line){var h=document.querySelector('.pulse-copy p.text-base');if(h)h.textContent=cp.hq_hero_line}
  var tg=(cp.hq_contact_telegram||cp.contact_telegram||'').replace(/^@/,'');
  if(tg&&/^[A-Za-z0-9_]{4,32}$/.test(tg)){var foot=document.querySelector('footer a[href^="mailto:"]');if(foot&&!document.querySelector('footer [data-tg]')){var a=document.createElement('a');a.href='https://t.me/'+tg;a.className=foot.className;a.textContent='@'+tg;a.setAttribute('data-tg','');a.rel='noopener';foot.parentNode.insertBefore(a,foot)}}
