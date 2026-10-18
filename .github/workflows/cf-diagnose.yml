@@ -7,7 +7,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        pair: [default, proton]
+        pair: [default]
     steps:
       - name: Diagnose (GET only)
         env:
@@ -34,3 +34,12 @@ jobs:
             echo "== zone access apps"; api /zones/$Z/access/apps | jq -c '{success, errors, apps: [.result[]? | {name, id, aud, domain, self_hosted_domains, destinations, type}]}'
           fi
           echo "== account access apps"; api /accounts/$A/access/apps | jq -c '{success, errors, apps: [.result[]? | {name, id, aud, domain, self_hosted_domains, destinations, type, created_at}]}'
+          echo "== access orgs"; api /accounts/$A/access/organizations | jq -c '{success, errors, auth_domain: .result.auth_domain, name: .result.name}'
+          echo "== access apps raw count"; api "/accounts/$A/access/apps?per_page=100" | jq -c '{success, errors, info: .result_info, n: (.result|length)}'
+          echo "== access apps by aud"; api "/accounts/$A/access/apps?aud=36fcb1e13dcb5a0436c1b403542e53cc63d32d0800b43d4f49bd47b98c99af2d" | jq -c '{success, errors, apps: [.result[]? | {name,id,domain,type}]}'
+          echo "== custom domains raw"; api /accounts/$A/workers/domains | jq -c '.result[]? | select(.zone_name=="imtryingtodesign.com") | del(.zone_id)'
+          echo "== script subdomain"; api /accounts/$A/workers/scripts/imtryingtodesign/subdomain | jq -c '{success, errors, result}'
+          echo "== account subdomain"; SUB=$(api /accounts/$A/workers/subdomain | jq -r '.result.subdomain // empty'); echo "sub=$SUB"
+          echo "== script settings"; api /accounts/$A/workers/scripts/imtryingtodesign/settings | jq -c '{success, errors, keys: (.result|keys?)}'
+          echo "== deployments"; api /accounts/$A/workers/scripts/imtryingtodesign/deployments | jq -c '{success, errors, d: [.result.deployments[]? | {created_on, source}][0:3]}'
+          if [ -n "$SUB" ]; then echo "== workers.dev fetch"; curl -sS -o /tmp/b -w '%{http_code} %{redirect_url}\n' https://imtryingtodesign.$SUB.workers.dev/; head -c 300 /tmp/b; echo; fi
