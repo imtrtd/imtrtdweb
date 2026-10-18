@@ -77,3 +77,11 @@ describe("public CORS", () => {
 		expect(res.headers.get("Access-Control-Allow-Origin")).toBe("https://imtrtd.space");
 	});
 });
+
+describe("admin services", () => {
+	it("creates a service (owner)", async () => {
+		const res = await worker.fetch(new Request("http://x/api/admin/services", { method: "POST", headers: { Authorization: `Bearer ${env.ADMIN_TOKEN}`, "Content-Type": "application/json" }, body: JSON.stringify({ title: "Care", description: "Updates after launch.", sort_order: 4 }) }), env);
+		expect(res.status).toBe(200);
+		expect(((await res.json()) as { title: string }).title).toBe("Care");
+	});
+});

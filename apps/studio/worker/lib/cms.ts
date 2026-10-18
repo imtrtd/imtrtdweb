@@ -151,7 +151,7 @@ export async function upsertService(
 	await db
 		.prepare(
 			`INSERT INTO services (id, title, description, sort_order, published, created_at, updated_at)
-       VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+       VALUES (?, ?, ?, ?, ?, ?, ?)
        ON CONFLICT(id) DO UPDATE SET
          title = excluded.title,
          description = excluded.description,

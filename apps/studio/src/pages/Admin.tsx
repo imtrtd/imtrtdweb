@@ -532,6 +532,10 @@ function CopyPanel({
 		["contact_email", "Email"],
 		["contact_telegram", "Telegram"],
 		["cf_beacon_token", "CF Web Analytics token"],
+		["hq_cms", "imtrtd.space: брать контент из админки (on/off)"],
+		["hq_hero_line", "imtrtd.space: строка под заголовком"],
+		["hq_contact_email", "imtrtd.space: email"],
+		["hq_contact_telegram", "imtrtd.space: Telegram"],
 	] as const;
 
 	return (
@@ -539,9 +543,20 @@ function CopyPanel({
 			{fields.map(([key, label]) => (
 				<label key={key} className="block space-y-2">
 					<span className="text-sm text-mist">{label}</span>
-					{key === "subhead" || key === "headline" ? (
+					{key === "hq_cms" ? (
+						<select
+							value={draft[key] === "on" ? "on" : "off"}
+							onChange={(e) =>
+								setDraft((prev) => ({ ...prev, [key]: e.target.value }))
+							}
+							className="w-full rounded-xl border border-white/10 bg-ink-soft px-4 py-3"
+						>
+							<option value="on">on — карточки, услуги и контакты из админки</option>
+							<option value="off">off — статичный контент сайта</option>
+						</select>
+					) : key === "subhead" || key === "headline" || key === "hq_hero_line" ? (
 						<textarea
-							rows={key === "subhead" ? 3 : 2}
+							rows={key === "subhead" || key === "hq_hero_line" ? 3 : 2}
 							value={draft[key] ?? ""}
 							onChange={(e) =>
 								setDraft((prev) => ({ ...prev, [key]: e.target.value }))
