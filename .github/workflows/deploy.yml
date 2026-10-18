@@ -45,3 +45,9 @@ jobs:
           wranglerVersion: "4.88.0"
           workingDirectory: apps/studio
           command: deploy
+          secrets: |
+            ADMIN_TOKEN
+            EDITOR_TOKEN
+        env:
+          ADMIN_TOKEN: ${{ secrets.ADMIN_TOKEN }}
+          EDITOR_TOKEN: ${{ secrets.EDITOR_TOKEN }}
