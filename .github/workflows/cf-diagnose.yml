@@ -1,0 +1,36 @@
+name: TEMP Cloudflare diagnose (read-only)
+on:
+  workflow_dispatch:
+jobs:
+  diag:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        pair: [default, proton]
+    steps:
+      - name: Diagnose (GET only)
+        env:
+          TOK_DEFAULT: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          ACC_DEFAULT: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          TOK_PROTON: ${{ secrets.CLOUDFLARE_PROTON_API_TOKEN }}
+          ACC_PROTON: ${{ secrets.CLOUDFLARE_PROTON_ACCOUNT_ID }}
+          PAIR: ${{ matrix.pair }}
+        run: |
+          if [ "$PAIR" = default ]; then T="$TOK_DEFAULT"; A="$ACC_DEFAULT"; else T="$TOK_PROTON"; A="$ACC_PROTON"; fi
+          api() { curl -sS -H "Authorization: Bearer $T" "https://api.cloudflare.com/client/v4$1"; }
+          echo "== same account as default pair? $([ "$ACC_DEFAULT" = "$ACC_PROTON" ] && echo yes || echo no)"
+          echo "== token verify (user)"; api /user/tokens/verify | jq -c '{success, status: .result.status, errors}'
+          echo "== token verify (account)"; api /accounts/$A/tokens/verify | jq -c '{success, status: .result.status, errors}'
+          echo "== accounts"; api /accounts | jq -c '.result[]? | {name}'
+          echo "== zones"; api "/zones?name=imtryingtodesign.com" | jq -c '{success, errors, zones: [.result[]? | {name, id, status, account: .account.name, perms: .permissions}]}'
+          Z=$(api "/zones?name=imtryingtodesign.com" | jq -r '.result[0].id // empty')
+          echo "== zone account matches this pair's account? $(api "/zones?name=imtryingtodesign.com" | jq -r --arg a "$A" '.result[0].account.id == $a')"
+          echo "== worker scripts"; api /accounts/$A/workers/scripts | jq -c '{success, errors, scripts: [.result[]? | .id]}'
+          echo "== worker custom domains"; api /accounts/$A/workers/domains | jq -c '{success, errors, domains: [.result[]? | {hostname, service, zone_name, environment}]}'
+          if [ -n "$Z" ]; then
+            echo "== zone worker routes"; api /zones/$Z/workers/routes | jq -c '{success, errors, routes: [.result[]? | {pattern, script}]}'
+            echo "== dns records"; api "/zones/$Z/dns_records?per_page=100" | jq -c '{success, errors, recs: [.result[]? | {type, name, content, proxied}]}'
+            echo "== zone access apps"; api /zones/$Z/access/apps | jq -c '{success, errors, apps: [.result[]? | {name, id, aud, domain, self_hosted_domains, destinations, type}]}'
+          fi
+          echo "== account access apps"; api /accounts/$A/access/apps | jq -c '{success, errors, apps: [.result[]? | {name, id, aud, domain, self_hosted_domains, destinations, type, created_at}]}'
