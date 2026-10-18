@@ -48,6 +48,10 @@ jobs:
           secrets: |
             ADMIN_TOKEN
             EDITOR_TOKEN
+            TELEGRAM_BOT_TOKEN
+            TELEGRAM_CHAT_ID
         env:
           ADMIN_TOKEN: ${{ secrets.ADMIN_TOKEN }}
           EDITOR_TOKEN: ${{ secrets.EDITOR_TOKEN }}
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}

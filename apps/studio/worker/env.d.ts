@@ -3,6 +3,8 @@ declare namespace Cloudflare {
 		ADMIN_TOKEN?: string;
 		EDITOR_TOKEN?: string;
 		RESEND_API_KEY?: string;
+		TELEGRAM_BOT_TOKEN?: string;
+		TELEGRAM_CHAT_ID?: string;
 		MEDIA?: R2Bucket;
 		DB?: D1Database;
 		APP_STORE: DurableObjectNamespace<import("./lib/store-do").AppStore>;

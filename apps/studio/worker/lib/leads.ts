@@ -26,6 +26,8 @@ export type CreateLeadInput = {
 	budget?: string;
 	message?: string;
 	website?: string;
+	/** Page the lead was sent from (not stored as a column; appended to the message). */
+	source?: string;
 };
 
 export type LeadPatch = {
@@ -52,6 +54,9 @@ export function validateLead(body: CreateLeadInput): string | null {
 	}
 	if (!body.contact?.trim() || body.contact.trim().length > 200) {
 		return "Укажите контакт (Telegram или email)";
+	}
+	if (body.source !== undefined && typeof body.source !== "string") {
+		return "invalid source";
 	}
 	if ((body.message ?? "").length > 4000) {
 		return "Сообщение слишком длинное";

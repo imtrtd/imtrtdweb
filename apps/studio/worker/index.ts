@@ -30,6 +30,7 @@ import {
 	type CreateLeadInput,
 } from "./lib/leads";
 import { getMedia, uploadMedia } from "./lib/media";
+import { notifyTelegram } from "./lib/telegram";
 import { AppStore, doDatabase } from "./lib/store-do";
 
 export { AppStore };
@@ -49,8 +50,66 @@ function clientIp(request: Request): string {
 	);
 }
 
+const PUBLIC_ORIGINS = new Set([
+	"https://imtrtd.space",
+	"https://www.imtrtd.space",
+]);
+
+function corsHeaders(request: Request): Record<string, string> {
+	const origin = request.headers.get("Origin");
+	if (!origin || !PUBLIC_ORIGINS.has(origin)) {
+		return {};
+	}
+	return {
+		"Access-Control-Allow-Origin": origin,
+		"Access-Control-Allow-Methods": "GET, POST, OPTIONS",
+		"Access-Control-Allow-Headers": "Content-Type",
+		"Access-Control-Max-Age": "86400",
+		Vary: "Origin",
+	};
+}
+
+function withCors(response: Response, cors: Record<string, string>): Response {
+	if (!Object.keys(cors).length) {
+		return response;
+	}
+	const out = new Response(response.body, response);
+	for (const [k, v] of Object.entries(cors)) {
+		out.headers.set(k, v);
+	}
+	return out;
+}
+
+function cleanSource(raw: unknown): string {
+	return typeof raw === "string" ? raw.trim().slice(0, 200) : "";
+}
+
 const worker = {
-	async fetch(request: Request, env: Env): Promise<Response> {
+	async fetch(
+		request: Request,
+		env: Env,
+		ctx?: ExecutionContext,
+	): Promise<Response> {
+		const url = new URL(request.url);
+		const { pathname } = url;
+		if (pathname === "/api/content" || pathname === "/api/leads") {
+			const cors = corsHeaders(request);
+			if (request.method === "OPTIONS") {
+				return new Response(null, {
+					status: Object.keys(cors).length ? 204 : 403,
+					headers: cors,
+				});
+			}
+			return withCors(await worker.handle(request, env, ctx), cors);
+		}
+		return worker.handle(request, env, ctx);
+	},
+
+	async handle(
+		request: Request,
+		env: Env,
+		ctx?: ExecutionContext,
+	): Promise<Response> {
 		const url = new URL(request.url);
 		const { pathname } = url;
 		const database = db(env);
@@ -80,7 +139,12 @@ const worker = {
 					return json({ error: "Слишком много заявок. Попробуйте позже." }, 429);
 				}
 
-				const body = (await request.json()) as CreateLeadInput;
+				let body: CreateLeadInput;
+				try {
+					body = (await request.json()) as CreateLeadInput;
+				} catch {
+					return badRequest("invalid json");
+				}
 				const error = validateLead(body);
 				if (error === "rejected") {
 					return json({ ok: true });
@@ -89,9 +153,21 @@ const worker = {
 					return badRequest(error);
 				}
 
-				const lead = await createLead(database, body);
+				const source = cleanSource(body.source);
+				const lead = await createLead(database, {
+					...body,
+					message: source
+						? `${(body.message ?? "").trim()}\n\n— ${source}`.trim()
+						: body.message,
+				});
 				void notifyStudio(env, lead);
 				void notifyClient(env, lead);
+				const tg = notifyTelegram(env, lead, source);
+				if (ctx) {
+					ctx.waitUntil(tg);
+				} else {
+					void tg;
+				}
 				return json({ ok: true, id: lead.id }, 201);
 			}
 
