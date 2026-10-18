@@ -52,9 +52,11 @@ function openBrief(o){o=o||{};var last=document.activeElement,d=document.createE
 window.IMTRTD={sendLead:sendLead,openBrief:openBrief,wire:wire,mailto:mailto};
 /* home brief form */
 var home=document.querySelector('.brief-panel form');if(home)wire(home,{label:'Send a brief'});
+/* contact page inline brief form (same fields + endpoint as home) */
+var cform=document.querySelector('form[data-brief="contact"]');if(cform)wire(cform,{label:'Contact page'});
 /* contact page: mailto CTA gets a form option */
 var ct=document.querySelector('main[data-div*="Contact"] a[href^="mailto:"]')||(page==='/contact'&&document.querySelector('main a[href^="mailto:"]'));
-if(ct&&!document.querySelector('[data-lx-open]')){var b=document.createElement('button');b.type='button';b.className='lx-btn p';b.style.cssText='flex:none;margin-top:1.25rem;display:inline-flex;align-items:center';b.textContent='Send a brief here';b.setAttribute('data-lx-open','');b.addEventListener('click',function(){openBrief({label:'Contact'})});var w=document.createElement('div');w.appendChild(b);ct.parentNode.insertBefore(w,ct.nextSibling)}
+if(ct&&!document.querySelector('[data-lx-open]')&&!cform){var b=document.createElement('button');b.type='button';b.className='lx-btn p';b.style.cssText='flex:none;margin-top:1.25rem;display:inline-flex;align-items:center';b.textContent='Send a brief here';b.setAttribute('data-lx-open','');b.addEventListener('click',function(){openBrief({label:'Contact'})});var w=document.createElement('div');w.appendChild(b);ct.parentNode.insertBefore(w,ct.nextSibling)}
 /* CMS content: applied only when the admin sets copy key hq_cms = "on" (D1 still holds the old site's content). */
 if(page==='/'||page==='/contact'||page==='/selected'){
  fetch(API+'/api/content',{credentials:'omit'}).then(function(r){return r.ok?r.json():null}).then(function(c){if(!c||!c.copy||c.copy.hq_cms!=='on')return;applyContent(c)}).catch(function(){});

@@ -1,0 +1,20 @@
+/* imtrtd.space contact section: copy email, Kyiv clock, brief CTA. */
+(function(){
+ function clocks(){var els=document.querySelectorAll('[data-ct-clock]');if(!els.length||!window.Intl)return;
+  function tick(){var d=new Date(),t,off='';
+   try{t=new Intl.DateTimeFormat('en-GB',{timeZone:'Europe/Kyiv',hour:'2-digit',minute:'2-digit'}).format(d);
+    var p=new Intl.DateTimeFormat('en-GB',{timeZone:'Europe/Kyiv',timeZoneName:'shortOffset'}).formatToParts(d).filter(function(x){return x.type==='timeZoneName'})[0];off=p?p.value.replace('GMT','UTC'):''}catch(e){return}
+   els.forEach(function(el){el.textContent=t+' Kyiv'+(off?' · '+off:'')})}
+  tick();setInterval(tick,30000)}
+ function copy(btn){var card=btn.closest('.ct-card'),a=card&&card.querySelector('a[href^="mailto:"]');
+  var v=(a&&a.textContent.indexOf('@')>0)?a.textContent.trim():btn.getAttribute('data-ct-copy');
+  function done(ok){var o=btn.getAttribute('data-label')||btn.textContent;btn.setAttribute('data-label',o);btn.textContent=ok?'Copied':'Select & copy';btn.dataset.state=ok?'ok':'err';
+   setTimeout(function(){btn.textContent=o;delete btn.dataset.state},1800)}
+  if(navigator.clipboard&&window.isSecureContext){navigator.clipboard.writeText(v).then(function(){done(true)},function(){done(fallback(v))})}else done(fallback(v))}
+ function fallback(v){try{var t=document.createElement('textarea');t.value=v;t.setAttribute('readonly','');t.style.cssText='position:fixed;opacity:0;top:0;left:0';document.body.appendChild(t);t.select();var ok=document.execCommand('copy');t.remove();return ok}catch(e){return false}}
+ document.addEventListener('click',function(e){
+  var c=e.target.closest('[data-ct-copy]');if(c){e.preventDefault();copy(c);return}
+  var b=e.target.closest('[data-ct-brief]');if(b){e.preventDefault();if(window.IMTRTD&&IMTRTD.openBrief)IMTRTD.openBrief({label:'Contact'});else location.href='contact.html'}
+ });
+ clocks();
+})();
