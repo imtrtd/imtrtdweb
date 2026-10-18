@@ -137,3 +137,17 @@ header nav a:hover::after,header nav a.active::after{right:0}
 @media(max-width:1023px){.ct-facts{grid-template-columns:repeat(2,minmax(0,1fr))}.ct-cards{grid-template-columns:repeat(2,minmax(0,1fr))}.ct-grid{grid-template-columns:1fr}}
 @media(max-width:560px){.ct-cards{grid-template-columns:1fr}.ct-card-link{min-height:0}.ct-facts dd{font-size:.95rem}}
 @media(prefers-reduced-motion:reduce){.ct-dot{animation:none}.ct-card{transition:none}}
+/* ---- wide-screen balance: capabilities + change log (home) ---- */
+@media(min-width:1024px){
+ section[data-div$="Capabilities"] ul{max-width:44rem;column-gap:3rem}
+ section[data-div$="Build in public"]{display:grid;grid-template-columns:repeat(12,minmax(0,1fr));column-gap:1.5rem;align-items:start}
+ section[data-div$="Build in public"]>p.label{grid-column:1/span 4;grid-row:1}
+ section[data-div$="Build in public"]>h2{grid-column:5/span 8;grid-row:1;margin-top:0}
+ section[data-div$="Build in public"]>ol{grid-column:5/span 8;grid-row:2;max-width:none}
+}
+@media(min-width:1400px){
+ section[data-div$="Capabilities"] ul{grid-template-columns:repeat(4,minmax(0,1fr));max-width:none;column-gap:2.5rem}
+ section[data-div$="Build in public"]>ol>li{grid-template-columns:9rem minmax(0,1fr)}
+ section[data-div$="Build in public"]>ol>li>span:last-child{display:grid;grid-template-columns:minmax(0,18rem) minmax(0,1fr);column-gap:2.5rem;align-items:baseline}
+ section[data-div$="Build in public"]>ol>li>span:last-child>span+span{margin-top:0}
+}
