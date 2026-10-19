@@ -1,4 +1,5 @@
 import type { CSSProperties } from "react";
+import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 
 const studies = {
@@ -36,6 +37,23 @@ const studies = {
 
 type StudySlug = keyof typeof studies;
 type CaseAccentStyle = CSSProperties & { "--case-accent": string };
+
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ slug: string }>;
+}): Promise<Metadata> {
+  const { slug } = await params;
+  const study = studies[slug as StudySlug];
+  if (!study) return {};
+  const title = `${study.name}: ${study.type.toLowerCase()} concept case study`;
+  return {
+    title,
+    description: study.summary,
+    alternates: { canonical: `/work/${slug}` },
+    openGraph: { type: "website", siteName: "ImTryingToDesign", title, description: study.summary, url: `/work/${slug}` },
+  };
+}
 
 export function generateStaticParams() {
   return Object.keys(studies).map((slug) => ({ slug }));
