@@ -42,7 +42,6 @@ html{background:#0a0a0f}
   [aria-label="Site colour"] button{width:2rem!important;height:2.25rem!important}
   .pulse-figure{opacity:.9}
 }
-@media(max-width:420px){.pulse-copy .hero-title{font-size:3rem;line-height:.95}}
 @media(min-width:1024px){[data-sound]{margin-left:1.75rem;padding-left:1.25rem;border-left:1px solid rgba(178,141,255,.2)}}
 /* ---- section dividers ---- */
 [data-div]{position:relative;border-top-color:transparent!important}
@@ -69,13 +68,8 @@ html:not(.sound-on) .vol-wrap{opacity:.55}
 @media (prefers-reduced-motion:reduce){
   .hero-glitch:before{animation:1.6s steps(2,end) infinite glitch-shift-a,4s steps(10,end) infinite glitch-slice-a!important}
   .hero-glitch:after{animation:1.3s steps(2,end) infinite glitch-shift-b,3.6s steps(8,end) infinite glitch-slice-b!important}
-  .pulse-stage{height:220vh!important}
-  .pulse-pin{position:sticky!important;top:7.1rem;height:calc(100dvh - 7.1rem)!important}
-  .pulse-copy{max-height:calc(34rem * (1 - var(--fold)))!important;opacity:calc(1 - var(--fold) * 1.45)!important}
-  .brief-panel{max-height:calc(var(--fold) * 36rem)!important;opacity:clamp(0,(var(--fold) - .38) * 2.5,1)!important}
   .preview-frame,.opening-label,.work-row,.bg-signal{transition-duration:.3s!important}
 }
-@media (prefers-reduced-motion:reduce) and (max-width:1023px){.pulse-pin{top:7.6rem;height:calc(100dvh - 7.6rem)!important}.pulse-copy{max-height:calc(42vh - var(--fold) * 36vh)!important}}
 /* ---- page enter + hover polish ---- */
 @keyframes page-in{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
 .site-layer>*{animation:page-in .5s cubic-bezier(.2,.7,.2,1) both}
@@ -85,11 +79,7 @@ header nav a:hover::after,header nav a.active::after{right:0}
 /* ---- mobile hero: stable solar box ABOVE the text, no vh-driven jumps ---- */
 .cosmos-field{height:100lvh!important}
 @media(max-width:1023px){
-  .pulse-stage,html .pulse-stage{height:auto!important;min-height:0}
-  .pulse-pin,html .pulse-pin{position:relative!important;top:auto!important;height:auto!important;display:flex!important;flex-direction:column;gap:1rem;padding:1rem 1rem 2.5rem!important}
   .pulse-figure,html .pulse-figure{order:-1;position:relative;width:100%!important;max-width:32rem;height:auto!important;aspect-ratio:6/5;align-self:center;margin:0!important;transform:none!important;opacity:1!important}
-  .pulse-copy,html .pulse-copy{max-height:none!important;opacity:1!important;transform:none!important;overflow:visible}
-  .brief-panel,html .brief-panel{max-height:none!important;opacity:1!important;transform:none!important;pointer-events:auto!important;width:100%;margin-top:1rem}
 }
 /* ---- footer social links + form privacy note ---- */
 .site-social{display:flex;flex-wrap:wrap;align-items:baseline;gap:.25rem 1.25rem}
@@ -224,3 +214,27 @@ header nav a:hover::after,header nav a.active::after{right:0}
     margin-top: 1.5rem;
   }
 }
+/* ---- hero: integration of the owner layout (scroll-driven brief on desktop, single column on mobile) ---- */
+@media(min-width:1024px){
+  .pulse-stage{height:220vh}
+  .pulse-pin{position:sticky;top:0;grid-template-rows:auto minmax(0,1fr)}
+  .pulse-copy{max-width:none;max-height:calc(40rem * (1 - var(--fold)));opacity:calc(1 - var(--fold) * 1.45);transform:translateY(calc(var(--fold) * -1rem))}
+  .brief-panel{align-self:end}
+  /* fit the longest line ("WITH A PULSE.") inside the copy column from 1024 to 1920px */
+  .pulse-copy h1,.hero-title{font-size:clamp(3.2rem,6.8vw,7.2rem)}
+}
+@media(max-width:1023px){
+  .pulse-stage{height:auto}
+  .pulse-pin{grid-template-columns:minmax(0,1fr);grid-template-rows:none;height:auto;min-height:100dvh;padding:1rem 1rem 2.5rem;gap:1rem;align-items:start;align-content:start}
+  .pulse-figure,.pulse-copy,.brief-panel{grid-area:auto}
+  .pulse-figure{order:-1;justify-self:center}
+  .pulse-copy{max-width:none;max-height:none;opacity:1;transform:none;overflow:visible}
+  .brief-panel{max-height:none;opacity:1;transform:none;pointer-events:auto;width:100%;margin-top:1rem}
+}
+@media(prefers-reduced-motion:reduce) and (min-width:1024px){
+  .pulse-stage{height:auto}
+  .pulse-pin{position:relative;height:auto;min-height:100dvh}
+  .pulse-copy,.brief-panel{max-height:none;opacity:1;transform:none;pointer-events:auto}
+}
+/* keep the glitch layers' shift inside the title box now that the spans are block-level */
+.hero-title .hero-glitch{width:fit-content;max-width:100%}
