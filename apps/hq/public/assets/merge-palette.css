@@ -172,3 +172,55 @@ header nav a:hover::after,header nav a.active::after{right:0}
  .pulse-copy .hero-title{text-shadow:0 2px 24px rgba(10,10,15,.8),0 0 2px rgba(10,10,15,.55)}
  .brief-panel,html .brief-panel{position:relative;z-index:2}
 }
+/* ---- hero layout from owner (style/hero-pulse-layout) ---- */
+.pulse-stage {
+  height: auto;
+  min-height: 100dvh;
+}
+
+.pulse-pin {
+  position: relative;
+  top: auto;
+  height: 100dvh;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(18rem, 1fr);
+  align-items: center;
+  padding: 6rem 2rem 2rem;
+  gap: 2rem;
+}
+
+.pulse-copy {
+  align-self: start;
+  margin-top: 3.5rem;
+  max-width: 38rem;
+  max-height: none;
+  opacity: 1;
+  transform: none;
+}
+
+.pulse-copy h1,
+.hero-title {
+  font-size: clamp(3.2rem, 7.5vw, 7.2rem);
+  line-height: 0.8;
+  letter-spacing: -0.045em;
+  font-weight: 800;
+  margin: 0;
+  text-transform: uppercase;
+}
+
+.pulse-copy h1 span,
+.hero-title span {
+  display: block;
+}
+
+@media (max-width: 900px) {
+  .pulse-pin {
+    grid-template-columns: 1fr;
+    padding-top: 5.5rem;
+    height: auto;
+    min-height: 100dvh;
+  }
+  .pulse-copy {
+    margin-top: 1.5rem;
+  }
+}
