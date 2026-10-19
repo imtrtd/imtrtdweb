@@ -155,10 +155,11 @@ header nav a:hover::after,header nav a.active::after{right:0}
 @media(min-width:1024px){
  .pulse-pin,html .pulse-pin{--ph:calc(100dvh - 7.1rem - 2.5rem)}
  .pulse-copy{position:relative;z-index:2}
+ .pulse-stage{overflow-x:clip}
  .pulse-copy .hero-title{text-shadow:0 2px 28px rgba(10,10,15,.75),0 0 2px rgba(10,10,15,.5)}
  .brief-panel{position:relative;z-index:2}
- .pulse-figure,html .pulse-figure{--fw:min(66vw,calc(var(--ph) * 1.9));grid-area:1/1/span 2/span 2!important;align-self:start!important;justify-self:end!important;
-  width:calc(var(--fw) * (1 - var(--fold) * .3))!important;height:calc(var(--ph) * (1 - var(--fold) * .3))!important;
+ .pulse-figure,html .pulse-figure{grid-area:1/1/span 2/span 2!important;align-self:start!important;justify-self:end!important;
+  width:calc(100% + 2rem)!important;height:calc(var(--ph) * (1 - var(--fold) * .3))!important;
   margin:0 -2rem 0 0!important;opacity:1!important;z-index:1;
   transform:translateY(calc(var(--fold) * var(--ph) * .15))!important}
 }

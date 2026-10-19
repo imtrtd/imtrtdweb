@@ -84,8 +84,9 @@ var TRACKS={
       if(Math.floor(st/64)%2||bar%2===0){var len=A.lead(this,bar,s,t,q,.5,.04,0,true);if(len)A.tri(this.lead[bar][s],t,q*len*.95,.1)}
       if(s===0||s===10)A.kick(t,.22);if(s===4||s===12)A.hit(t,.03,.08,6000,'hp');if(s%2===1)A.hit(t,.02,.025,11000,'hp')}}
 };
-var FX={lime:[[0,7],60],violet:[[12,7,0],50],magenta:[[0,6],50],cyan:[[12,19],45],logo:[[0,12],50],home:[[0,12],50],work:[[7,0],60],samples:[[12,14,11],45],practice:[[5,5],70],contact:[[24,31],45],mail:[[24,31],45],explore:[[0,4,7,12],40],send:[[0,7,12,19],45]};
-document.addEventListener('pointerdown',function(e){var el=e.target.closest&&e.target.closest('[data-fx]');if(!el)return;var f=FX[el.getAttribute('data-fx')];if(f)Audio_.blip(f[0],f[1])},true);
+/* UI sounds: main buttons only (primary CTAs, brief send/open, Preview). Nav, logo, mail, colour switcher and planet clicks are silent. */
+var FX_MAIN=[['[data-fx=explore]',[[0,4,7,12],40]],['[data-fx=send],form button[type=submit],.lx-dlg button[type=submit]',[[0,7,12,19],45]],['[data-lx-open],[data-ct-brief]',[[0,7,12],45]],['a.bg-signal[href*="work/"]',[[7,12],50]]];
+document.addEventListener('pointerdown',function(e){if(!Audio_.on||!e.target.closest)return;for(var i=0;i<FX_MAIN.length;i++){if(e.target.closest(FX_MAIN[i][0])){Audio_.blip(FX_MAIN[i][1][0],FX_MAIN[i][1][1]);return}}},true);
 window.addEventListener('imtrtd-accent',function(){if(Audio_.on&&Audio_.ctx)Audio_.play(currentAccent())});
 
 function initSound(){try{var v=parseFloat(localStorage.getItem(VOLKEY));if(v>=0&&v<=1)Audio_.vol=v}catch(e){}
@@ -143,7 +144,7 @@ function initHero(){var st=$('.pulse-stage');if(!st)return;var raf=0;
 /* ---------- Hero figure: lightweight 2D take on the original pulse shader ---------- */
 function initFigure(){var cv=$('.pulse-shader');if(!cv)return;var x=cv.getContext('2d');if(!x)return;var ptr={x:.5,y:.5,e:0},pulse=0,vis=true;
   cv.addEventListener('pointermove',function(e){var r=cv.getBoundingClientRect();ptr.x=(e.clientX-r.left)/r.width;ptr.y=(e.clientY-r.top)/r.height;ptr.e=1});
-  cv.addEventListener('pointerdown',function(){pulse=1;Audio_.blip([0,12],50)});
+  cv.addEventListener('pointerdown',function(){pulse=1});
   window.addEventListener('imtrtd-accent',function(){pulse=1});
   new IntersectionObserver(function(en){vis=en[0].isIntersecting}).observe(cv);
   function draw(t){requestAnimationFrame(draw);if(!vis)return;var dpr=Math.min(devicePixelRatio||1,2),w=Math.round(cv.clientWidth*dpr),h=Math.round(cv.clientHeight*dpr);if(!w||!h)return;if(cv.width!==w||cv.height!==h){cv.width=w;cv.height=h}
@@ -237,18 +238,19 @@ function initSolar(){var cv=$('.pulse-shader');if(!cv)return false;var gl;
   window.addEventListener('imtrtd-accent',function(){acc=rgb(signal());pulse=1;if(frozen)draw(performance.now())});
   cv.addEventListener('pointermove',function(e){var r=cv.getBoundingClientRect();ptr.tx=(e.clientX-r.left)/r.width-.5;ptr.ty=(e.clientY-r.top)/r.height-.5});
   cv.addEventListener('pointerleave',function(){ptr.tx=ptr.ty=0});
-  cv.addEventListener('pointerdown',function(){pulse=1;Audio_.blip([0,12],50)});
+  cv.addEventListener('pointerdown',function(){pulse=1});
   new IntersectionObserver(function(en){vis=en[0].isIntersecting;if(vis)kick()}).observe(cv);
   document.addEventListener('visibilitychange',kick);reduce.addEventListener&&reduce.addEventListener('change',function(){frozen=false;kick()});
   var raf=0;function kick(){cancelAnimationFrame(raf);raf=requestAnimationFrame(loop)}
   function loop(t){if(!vis||document.hidden)return;draw(t);if(!frozen)raf=requestAnimationFrame(loop)}
   function draw(t){var dpr=Math.min(devicePixelRatio||1,2),cw=cv.clientWidth,ch=cv.clientHeight;if(cw*ch*dpr*dpr>2.6e6)dpr=Math.max(1,Math.sqrt(2.6e6/(cw*ch)));var w=Math.round(cw*dpr),h=Math.round(ch*dpr);if(!w||!h)return;if(cv.width!==w||cv.height!==h){cv.width=w;cv.height=h;gl.viewport(0,0,w,h)}
     var dk=desk.matches,ys=dk?1:-1,T=(t-t0)/1000*(reduce.matches?(dk?.2:.35):1);ptr.x+=(ptr.tx-ptr.x)*.06;ptr.y+=(ptr.ty-ptr.y)*.06;pulse*=.94;
-    var K=(dk?.4:.3)+ptr.y*(dk?.1:.15),uu=.5*Math.min(w,h),oa=dk?.1:0,sr=dk?.34:.28,fit=dk?Math.min((w*.5)/1.62,(h*.5)/(K*1.2+.5))/uu:Math.min((w*.5)/1.42,(h*.5)/(K*1.1+.42))/uu;
+    var K=(dk?.4:.3)+ptr.y*(dk?.1:.15),uu=.5*Math.min(w,h),oa=dk?.1:0,sr=dk?.34:.28,fit=dk?Math.min(innerWidth*.66*(1-fold.v*.3)*dpr*.5/1.62*1.36,(h*.5)/(K*1.2+.3))/uu:Math.min((w*.5)/1.42,(h*.5)/(K*1.1+.42))/uu;
     var lv=Audio_.on?Audio_.levels():{beat:0,amp:0},rm=reduce.matches?.4:1;
     beatS+=((lv.beat)-beatS)*(lv.beat>beatS?.6:.18);ampS+=(lv.amp-ampS)*(lv.amp>ampS?.25:.06);
     var B=(beatS*.75+ampS*.45)*rm+(Audio_.on?0:(.5+.5*Math.sin(T*1.1))*.12*rm);
-    var sc=fit*(1+pulse*.04),cx=ptr.x*.12,cy=-ptr.y*.06,bs=1+B*.035;
+    var ox=0;if(dk){var br=cv.getBoundingClientRect();ox=((innerWidth*(.655+fold.v*.07)-br.left)*dpr-w*.5)/uu}
+    var sc=fit*(1+pulse*.04),cx=ox+ptr.x*.12,cy=-ptr.y*.06,bs=1+B*.035;
     var S=[cx,cy,0,sr*sc*(1+pulse*.15)*bs],O=[],pos={};
     PL.forEach(function(q){var qa=q[1]+oa*(1-q[1]*.35),th=q[4]+T*q[3],x=Math.cos(th)*qa,z=Math.sin(th)*qa,persp=1-z*.18;pos[q[0]]=[cx+x*sc,cy+ys*z*K*sc,z,q[2]*sc*persp*(1+B*.02)];S.push.apply(S,pos[q[0]]);O.push(q[1]*sc,(Math.atan2(-z*K,x*1)+6.2832)%6.2832)});
     // fix orbit angle in ellipse-normalized space: angle of (x,-z) since e=d/(a,aK)
