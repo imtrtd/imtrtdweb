@@ -12,8 +12,10 @@ export const metadata: Metadata = {
     template: "%s — ImTryingToDesign",
   },
   description: "Expressive web design and development for independent studios, artists, small brands and digital products.",
+  alternates: { canonical: "/" },
   openGraph: {
     type: "website",
+    url: "/",
     siteName: "ImTryingToDesign",
     title: "ImTryingToDesign — Web Development",
     description: "Expressive web design and development for independent studios, artists, small brands and digital products.",

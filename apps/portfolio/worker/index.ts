@@ -14,6 +14,11 @@ const worker = {
     const url = new URL(request.url);
     const visitor = request.headers.get("cf-visitor") ?? "";
     const fwd = request.headers.get("x-forwarded-proto") ?? "";
+    if (url.hostname === "www.imtryingtodesign.com") {
+      url.hostname = "imtryingtodesign.com";
+      url.protocol = "https:";
+      return Response.redirect(url.toString(), 301);
+    }
     if (url.protocol === "http:" || fwd.startsWith("http,") || fwd === "http" || visitor.includes('"scheme":"http"')) {
       url.protocol = "https:";
       return Response.redirect(url.toString(), 301);

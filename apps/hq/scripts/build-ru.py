@@ -297,7 +297,7 @@ def to_ru(html, fname, page_key, en_url, ru_url):
         return v
 
     soup.html['lang'] = 'ru'
-    # hero: САЙТЫ / С ЖИВЫМ / ПУЛЬСОМ. with the glitch on ЖИВЫМ (data-text must match)
+    # hero: one block <span> per line (matches the EN markup); glitch on ЖИВЫМ stays inline inside line 2 (data-text must match)
     h1 = soup.select_one('h1.hero-title')
     if h1:
         hr = row('index', 'DIGITAL'); hr.used = True
@@ -306,7 +306,7 @@ def to_ru(html, fname, page_key, en_url, ru_url):
         g = h1.select_one('.hero-glitch')
         cls = ' '.join(g.get('class', []))
         h1.clear()
-        h1.append(BeautifulSoup('%s<br/>%s%s<span class="%s" data-text="%s">%s</span><br/>%s' % (l1, pre, NB, cls, word, word, l3), 'html.parser'))
+        h1.append(BeautifulSoup('<span>%s</span><span>%s%s<span class="%s" data-text="%s">%s</span></span><span>%s</span>' % (l1, pre, NB, cls, word, word, l3), 'html.parser'))
     # "5 live builds" -> plural
     cnt = soup.select_one('#work p.text-mute')
     if cnt and 'live builds' in cnt.get_text():
