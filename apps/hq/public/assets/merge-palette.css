@@ -163,3 +163,12 @@ header nav a:hover::after,header nav a.active::after{right:0}
   margin:0 -2rem 0 0!important;opacity:1!important;z-index:1;
   transform:translateY(calc(var(--fold) * var(--ph) * .15))!important}
 }
+/* ---- mobile/tablet hero (<1024px): larger, full-bleed solar system; headline layered over its lower orbits; clipped, no page overflow ---- */
+@media(max-width:1023px){
+ .pulse-stage{overflow-x:clip}
+ .pulse-figure,html .pulse-figure{--msc:min(45vw,15.75rem);width:100vw!important;max-width:none;aspect-ratio:auto;height:calc(var(--msc) * 2.05)!important;margin:-.75rem 0 -5.5rem!important;z-index:1}
+ .pulse-shader{touch-action:pan-y}
+ .pulse-copy,html .pulse-copy{position:relative;z-index:2}
+ .pulse-copy .hero-title{text-shadow:0 2px 24px rgba(10,10,15,.8),0 0 2px rgba(10,10,15,.55)}
+ .brief-panel,html .brief-panel{position:relative;z-index:2}
+}

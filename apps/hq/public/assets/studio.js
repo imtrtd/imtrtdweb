@@ -233,7 +233,7 @@ function initSolar(){var cv=$('.pulse-shader');if(!cv)return false;var gl;
   var PL=[[1,.4,.082,.9,0],[2,.6,.162,.42,2.1],[3,.78,.105,.3,4.2],[4,.93,.094,.22,1.0],[5,1.1,.115,.15,3.3]];var beatS=0,ampS=0;
   var ptr={x:0,y:0,tx:0,ty:0},pulse=0,vis=true,acc=rgb(signal()),t0=performance.now(),frozen=false;
   /* desktop (>=1024px): camera above the plane (far side up, planets pass behind/in front of the sun), steeper tilt, nebula glow, near orbit arcs over the sun */
-  var desk=window.matchMedia('(min-width:1024px)');if(desk.addEventListener)desk.addEventListener('change',kick);
+  var desk=window.matchMedia('(min-width:1024px)');var MOY=-.2;if(desk.addEventListener)desk.addEventListener('change',kick);
   if(window.ResizeObserver)new ResizeObserver(function(){if(frozen)draw(performance.now())}).observe(cv);
   window.addEventListener('imtrtd-accent',function(){acc=rgb(signal());pulse=1;if(frozen)draw(performance.now())});
   cv.addEventListener('pointermove',function(e){var r=cv.getBoundingClientRect();ptr.tx=(e.clientX-r.left)/r.width-.5;ptr.ty=(e.clientY-r.top)/r.height-.5});
@@ -245,12 +245,12 @@ function initSolar(){var cv=$('.pulse-shader');if(!cv)return false;var gl;
   function loop(t){if(!vis||document.hidden)return;draw(t);if(!frozen)raf=requestAnimationFrame(loop)}
   function draw(t){var dpr=Math.min(devicePixelRatio||1,2),cw=cv.clientWidth,ch=cv.clientHeight;if(cw*ch*dpr*dpr>2.6e6)dpr=Math.max(1,Math.sqrt(2.6e6/(cw*ch)));var w=Math.round(cw*dpr),h=Math.round(ch*dpr);if(!w||!h)return;if(cv.width!==w||cv.height!==h){cv.width=w;cv.height=h;gl.viewport(0,0,w,h)}
     var dk=desk.matches,ys=dk?1:-1,T=(t-t0)/1000*(reduce.matches?(dk?.2:.35):1);ptr.x+=(ptr.tx-ptr.x)*.06;ptr.y+=(ptr.ty-ptr.y)*.06;pulse*=.94;
-    var K=(dk?.4:.3)+ptr.y*(dk?.1:.15),uu=.5*Math.min(w,h),oa=dk?.1:0,sr=dk?.34:.28,fit=dk?Math.min(innerWidth*.66*(1-fold.v*.3)*dpr*.5/1.62*1.36,(h*.5)/(K*1.2+.3))/uu:Math.min((w*.5)/1.42,(h*.5)/(K*1.1+.42))/uu;
+    var K=(dk?.4:.36)+ptr.y*(dk?.1:.12),uu=.5*Math.min(w,h),oa=dk?.1:0,sr=dk?.34:.28,fit=dk?Math.min(innerWidth*.66*(1-fold.v*.3)*dpr*.5/1.62*1.36,(h*.5)/(K*1.2+.3))/uu:Math.min(Math.min(cw*.45,252)*dpr,(h*.5)/(K*1.1+.42))/uu;
     var lv=Audio_.on?Audio_.levels():{beat:0,amp:0},rm=reduce.matches?.4:1;
     beatS+=((lv.beat)-beatS)*(lv.beat>beatS?.6:.18);ampS+=(lv.amp-ampS)*(lv.amp>ampS?.25:.06);
     var B=(beatS*.75+ampS*.45)*rm+(Audio_.on?0:(.5+.5*Math.sin(T*1.1))*.12*rm);
     var ox=0;if(dk){var br=cv.getBoundingClientRect();ox=((innerWidth*(.655+fold.v*.07)-br.left)*dpr-w*.5)/uu}
-    var sc=fit*(1+pulse*.04),cx=ox+ptr.x*.12,cy=-ptr.y*.06,bs=1+B*.035;
+    var sc=fit*(1+pulse*.04),cx=ox+ptr.x*.12,cy=-ptr.y*.06+(dk?0:MOY),bs=1+B*.035;
     var S=[cx,cy,0,sr*sc*(1+pulse*.15)*bs],O=[],pos={};
     PL.forEach(function(q){var qa=q[1]+oa*(1-q[1]*.35),th=q[4]+T*q[3],x=Math.cos(th)*qa,z=Math.sin(th)*qa,persp=1-z*.18;pos[q[0]]=[cx+x*sc,cy+ys*z*K*sc,z,q[2]*sc*persp*(1+B*.02)];S.push.apply(S,pos[q[0]]);O.push(q[1]*sc,(Math.atan2(-z*K,x*1)+6.2832)%6.2832)});
     // fix orbit angle in ellipse-normalized space: angle of (x,-z) since e=d/(a,aK)
