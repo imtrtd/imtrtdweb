@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://imtryingtodesign.com/sitemap.xml

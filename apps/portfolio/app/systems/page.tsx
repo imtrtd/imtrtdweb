@@ -25,6 +25,8 @@ const systems = [
 export const metadata = {
   title: "Reference Systems",
   description: "Three visual reference systems for future ImTryingToDesign concept work.",
+  alternates: { canonical: "/systems" },
+  openGraph: { type: "website", siteName: "ImTryingToDesign", title: "Reference Systems", description: "Three visual reference systems for future ImTryingToDesign concept work.", url: "/systems" },
 };
 
 export default function SystemsPage() {
