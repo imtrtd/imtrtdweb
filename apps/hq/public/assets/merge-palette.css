@@ -163,3 +163,7 @@ header nav a:hover::after,header nav a.active::after{right:0}
   margin:0 -2rem 0 0!important;opacity:1!important;z-index:1;
   transform:translateY(calc(var(--fold) * var(--ph) * .15))!important}
 }
+/* RU pages: translated section divider label (data-div itself stays EN for selectors) */
+[data-div-label]::after{content:attr(data-div-label)}
+/* EN/RU switcher (header, next to the colour swatches) */
+.lang-switch{display:inline-flex;align-items:center;margin-left:.25rem}.lang-switch a{display:inline-grid;place-items:center;min-width:1.75rem;height:2.75rem;padding:0 .15rem;color:var(--color-mute);letter-spacing:.12em;transition:color .2s}.lang-switch a:hover,.lang-switch a:focus-visible{color:var(--color-paper)}.lang-switch a[aria-current]{color:var(--color-paper);text-decoration:underline;text-decoration-color:var(--color-signal);text-underline-offset:.35em;text-decoration-thickness:1px}.lang-switch a+a{border-left:1px solid var(--color-hair,rgba(178,141,255,.18));padding-left:.35rem}

@@ -1,0 +1,1394 @@
+{
+  "shared": [
+    {
+      "en": "ImTryingToDesign, home (logo aria-label)",
+      "ru": "ImTryingToDesign, на главную"
+    },
+    {
+      "en": "Sound",
+      "ru": "Звук"
+    },
+    {
+      "en": "Music volume (aria-label / title)",
+      "ru": "Громкость музыки"
+    },
+    {
+      "en": "Site colour (aria-label)",
+      "ru": "Цвет сайта"
+    },
+    {
+      "en": "Lime",
+      "ru": "Лайм"
+    },
+    {
+      "en": "Violet",
+      "ru": "Фиолетовый"
+    },
+    {
+      "en": "Magenta",
+      "ru": "Маджента"
+    },
+    {
+      "en": "Cyan",
+      "ru": "Циан"
+    },
+    {
+      "en": "Home",
+      "ru": "Главная"
+    },
+    {
+      "en": "Work",
+      "ru": "Работы"
+    },
+    {
+      "en": "Samples",
+      "ru": "Образцы"
+    },
+    {
+      "en": "Practice",
+      "ru": "Подход"
+    },
+    {
+      "en": "Contact",
+      "ru": "Контакты"
+    },
+    {
+      "en": "Kyiv",
+      "ru": "Киев"
+    },
+    {
+      "en": "Contact and social (aria-label)",
+      "ru": "Контакты и соцсети"
+    },
+    {
+      "en": "Instagram ↗",
+      "ru": "Instagram ↗"
+    },
+    {
+      "en": "Threads ↗",
+      "ru": "Threads ↗"
+    },
+    {
+      "en": "I/TD — imtrtd.space, web design & development (og:image:alt)",
+      "ru": "I/TD — imtrtd.space, веб-дизайн и разработка"
+    },
+    {
+      "en": "Web design & development for studios, artists and small brands. (JSON-LD description)",
+      "ru": "Веб-дизайн и разработка для студий, художников и небольших брендов."
+    },
+    {
+      "en": "Status",
+      "ru": "Статус"
+    },
+    {
+      "en": "Available · Q4 2026",
+      "ru": "Беру проекты · Q4 2026"
+    },
+    {
+      "en": "Based",
+      "ru": "Где"
+    },
+    {
+      "en": "Kyiv / Remote",
+      "ru": "Киев / удалённо"
+    },
+    {
+      "en": "Local time",
+      "ru": "Местное время"
+    },
+    {
+      "en": "Kyiv · UTC+3",
+      "ru": "Киев · UTC+3"
+    },
+    {
+      "en": "{HH:MM} Kyiv · UTC+3 (live clock, contact.js)",
+      "ru": "{HH:MM} Киев · UTC+3"
+    },
+    {
+      "en": "Reply",
+      "ru": "Ответ"
+    },
+    {
+      "en": "Within a working day",
+      "ru": "В течение рабочего дня"
+    },
+    {
+      "en": "Contact channels (aria-label)",
+      "ru": "Способы связи"
+    },
+    {
+      "en": "Email",
+      "ru": "Почта"
+    },
+    {
+      "en": "Write ↗",
+      "ru": "Написать ↗"
+    },
+    {
+      "en": "Copy",
+      "ru": "Копировать"
+    },
+    {
+      "en": "Copy email address imtrtd@pm.me (aria-label)",
+      "ru": "Скопировать адрес imtrtd@pm.me"
+    },
+    {
+      "en": "Copied",
+      "ru": "Скопировано"
+    },
+    {
+      "en": "Select & copy (copy fallback)",
+      "ru": "Выделите и скопируйте"
+    },
+    {
+      "en": "Message ↗ (Telegram)",
+      "ru": "Открыть чат ↗"
+    },
+    {
+      "en": "Follow ↗ (Instagram, Threads)",
+      "ru": "Подписаться ↗"
+    },
+    {
+      "en": "Brief",
+      "ru": "Бриф"
+    },
+    {
+      "en": "What happens next",
+      "ru": "Что дальше"
+    },
+    {
+      "en": "Sample",
+      "ru": "Образец"
+    },
+    {
+      "en": "Build",
+      "ru": "Разработка"
+    },
+    {
+      "en": "Start from what exists",
+      "ru": "Начинаю с того, что уже есть"
+    },
+    {
+      "en": "I read the brand as it is: logo, type, colours, the copy already written. Then one question: what should a visitor do on the first screen?",
+      "ru": "Смотрю на бренд таким, какой он есть: логотип, шрифты, цвета, уже написанные тексты. Потом задаю один вопрос: что посетитель должен сделать на первом экране?"
+    },
+    {
+      "en": "One working screen, not a deck",
+      "ru": "Один рабочий экран, а не презентация"
+    },
+    {
+      "en": "Before any scope, one real screen in the browser with real copy. If the direction is wrong, it costs a day, not a month.",
+      "ru": "Ещё до оценки объёма работ — один настоящий экран в браузере с настоящими текстами. Если направление не то, ошибка обойдётся в день, а не в месяц."
+    },
+    {
+      "en": "Shipped as code",
+      "ru": "Сдаю готовым кодом"
+    },
+    {
+      "en": "Design and build happen in the same hands, so nothing gets lost in a handoff.",
+      "ru": "Дизайн и разработка в одних руках, поэтому при передаче ничего не теряется."
+    },
+    {
+      "en": "Useful to include",
+      "ru": "Что полезно приложить"
+    },
+    {
+      "en": "The one thing a visitor should do",
+      "ru": "Главное, что должен сделать посетитель"
+    },
+    {
+      "en": "Brand files: logo, type, colours",
+      "ru": "Файлы бренда: логотип, шрифты, цвета"
+    },
+    {
+      "en": "Real copy, even rough",
+      "ru": "Настоящие тексты, пусть даже черновые"
+    },
+    {
+      "en": "Photos or work plates",
+      "ru": "Фото или снимки работ"
+    },
+    {
+      "en": "Languages, and which comes first",
+      "ru": "Языки — и какой из них главный"
+    },
+    {
+      "en": "A date that matters",
+      "ru": "Важная дата"
+    },
+    {
+      "en": "None of it is required.",
+      "ru": "Ничего из этого не обязательно."
+    },
+    {
+      "en": "The full checklist on Practice →",
+      "ru": "Полный чек-лист — в разделе «Подход» →"
+    },
+    {
+      "en": "Send a brief. (heading, also modal default title)",
+      "ru": "Пришлите бриф."
+    },
+    {
+      "en": "Send a brief (button)",
+      "ru": "Прислать бриф"
+    },
+    {
+      "en": "Send a brief here (button injected by site-api.js)",
+      "ru": "Прислать бриф здесь"
+    },
+    {
+      "en": "Name",
+      "ru": "Имя"
+    },
+    {
+      "en": "Email / Telegram",
+      "ru": "Почта / Telegram"
+    },
+    {
+      "en": "Type",
+      "ru": "Что нужно"
+    },
+    {
+      "en": "Website",
+      "ru": "Сайт"
+    },
+    {
+      "en": "Identity",
+      "ru": "Айдентика"
+    },
+    {
+      "en": "Interface",
+      "ru": "Интерфейс"
+    },
+    {
+      "en": "Tool",
+      "ru": "Инструмент"
+    },
+    {
+      "en": "Other",
+      "ru": "Другое"
+    },
+    {
+      "en": "Note",
+      "ru": "Комментарий"
+    },
+    {
+      "en": "Send brief (submit)",
+      "ru": "Отправить бриф"
+    },
+    {
+      "en": "Close",
+      "ru": "Закрыть"
+    },
+    {
+      "en": "Your details are only used to reply to this request. They are never shared.",
+      "ru": "Ваши данные нужны только для ответа на этот запрос. Я никому их не передаю."
+    },
+    {
+      "en": "Brief · {label} (modal kicker; labels: Contact / Practice / Samples · {name})",
+      "ru": "Бриф · {label} (Контакты / Подход / Образцы · {name})"
+    },
+    {
+      "en": "Sending…",
+      "ru": "Отправляю…"
+    },
+    {
+      "en": "<b>Name and contact, please.</b> Email or Telegram is enough.",
+      "ru": "<b>Нужны имя и контакт.</b> Хватит почты или Telegram."
+    },
+    {
+      "en": "<b>Sent.</b> I’ll answer at {contact} within a working day.",
+      "ru": "<b>Отправлено.</b> Отвечу на {contact} в течение рабочего дня."
+    },
+    {
+      "en": "<b>Couldn’t reach the server.</b> <a>Send it by email instead</a>.",
+      "ru": "<b>Сервер не отвечает.</b> <a>Отправьте письмом</a>."
+    },
+    {
+      "en": "<b>Too many tries.</b> Wait a minute, or <a>email it</a>.",
+      "ru": "<b>Слишком много попыток.</b> Подождите минуту или <a>напишите на почту</a>."
+    },
+    {
+      "en": "<b>Not sent.</b> {error} · <a>email instead</a>",
+      "ru": "<b>Не отправилось.</b> {error} · <a>лучше письмом</a>"
+    },
+    {
+      "en": "Brief · {type} (mailto subject)",
+      "ru": "Бриф · {type}"
+    },
+    {
+      "en": "Opening … / Opening {project} (work/*.html loader)",
+      "ru": "Открываю… / Открываю {project}"
+    }
+  ],
+  "index": [
+    {
+      "en": "IMTRTD — Web design & development, remote (<title>, og:title, twitter:title)",
+      "ru": "IMTRTD — веб-дизайн и разработка, удалённо"
+    },
+    {
+      "en": "Websites, interfaces and systems for studios, artists and small brands. No templates. Web design & development — Kyiv / Remote. (meta description, og:description, twitter:description)",
+      "ru": "Сайты, интерфейсы и системы для студий, художников и небольших брендов. Без шаблонов. Веб-дизайн и разработка — Киев / удалённо."
+    },
+    {
+      "en": "ImTryingToDesign",
+      "ru": "ImTryingToDesign"
+    },
+    {
+      "en": "Available · Q4 2026 · Kyiv / Remote",
+      "ru": "Беру проекты · Q4 2026 · Киев / удалённо"
+    },
+    {
+      "en": "DIGITAL / EXPERIENCES (glitch word, also data-text) / WITH A PULSE.",
+      "ru": "САЙТЫ / С ЖИВЫМ (glitch-слово, также data-text) / ПУЛЬСОМ."
+    },
+    {
+      "en": "Websites, interfaces and systems for studios, artists and small brands. No templates.",
+      "ru": "Сайты, интерфейсы и системы для студий, художников и небольших брендов. Без шаблонов."
+    },
+    {
+      "en": "Explore work",
+      "ru": "Смотреть работы"
+    },
+    {
+      "en": "What I do (section label)",
+      "ru": "Чем я занимаюсь"
+    },
+    {
+      "en": "One person. / Full system.",
+      "ru": "Один человек. / Система целиком."
+    },
+    {
+      "en": "Strategy, interface, code and motion. From first sketch to launch, one product, not three vendors.",
+      "ru": "Стратегия, интерфейс, код и анимация. От первого наброска до запуска — один продукт, а не три подрядчика."
+    },
+    {
+      "en": "Selected work",
+      "ru": "Избранные работы"
+    },
+    {
+      "en": "5 live builds",
+      "ru": "5 проектов онлайн"
+    },
+    {
+      "en": "Tattoo studio · Kyiv / Nürnberg",
+      "ru": "Тату-студия · Киев / Нюрнберг"
+    },
+    {
+      "en": "Booking, flash and lettering in the studio’s own system.",
+      "ru": "Запись, флеш и леттеринг — в собственной системе студии."
+    },
+    {
+      "en": "Preview",
+      "ru": "Посмотреть"
+    },
+    {
+      "en": "Music app · Browser",
+      "ru": "Музыкальное приложение · Браузер"
+    },
+    {
+      "en": "8-bit chiptune studio. Four channels, sixteen steps.",
+      "ru": "8-битная чиптюн-студия. Четыре канала, шестнадцать шагов."
+    },
+    {
+      "en": "Travel · Dublin",
+      "ru": "Путешествия · Дублин"
+    },
+    {
+      "en": "Day tours from Dublin. Original build.",
+      "ru": "Однодневные туры из Дублина. Сделано с нуля."
+    },
+    {
+      "en": "Product · Remote",
+      "ru": "Продукт · Удалённо"
+    },
+    {
+      "en": "A library for prompts, chats and variables.",
+      "ru": "Библиотека промптов, чатов и переменных."
+    },
+    {
+      "en": "Tool · Kyiv",
+      "ru": "Инструмент · Киев"
+    },
+    {
+      "en": "Stencil editor. Threshold, draw, export.",
+      "ru": "Редактор трафаретов. Порог, рисование, экспорт."
+    },
+    {
+      "en": "Capabilities (section label)",
+      "ru": "Услуги"
+    },
+    {
+      "en": "What I do. (heading)",
+      "ru": "Что я делаю."
+    },
+    {
+      "en": "Web design",
+      "ru": "Веб-дизайн"
+    },
+    {
+      "en": "Layouts, type and colour that work on every screen. Clickable prototypes.",
+      "ru": "Макеты, шрифты и цвет, которые работают на любом экране. Кликабельные прототипы."
+    },
+    {
+      "en": "Development",
+      "ru": "Разработка"
+    },
+    {
+      "en": "Sites that load fast. Motion only where it helps.",
+      "ru": "Сайты, которые быстро грузятся. Анимация — только там, где она помогает."
+    },
+    {
+      "en": "Identity",
+      "ru": "Айдентика"
+    },
+    {
+      "en": "Marks and rules that survive a bad brief.",
+      "ru": "Знаки и правила, которые выдержат даже плохой бриф."
+    },
+    {
+      "en": "Care",
+      "ru": "Поддержка"
+    },
+    {
+      "en": "I stay on after launch: fixes, updates, new pages.",
+      "ru": "После запуска я не исчезаю: правки, обновления, новые страницы."
+    },
+    {
+      "en": "Build in public",
+      "ru": "Работаю открыто"
+    },
+    {
+      "en": "Change log",
+      "ru": "Журнал изменений"
+    },
+    {
+      "en": "Now",
+      "ru": "Сейчас"
+    },
+    {
+      "en": "Live builds",
+      "ru": "Проекты онлайн"
+    },
+    {
+      "en": "Five projects open right here, each on its own page.",
+      "ru": "Пять проектов открываются прямо здесь, у каждого своя страница."
+    },
+    {
+      "en": "20.08.26",
+      "ru": "20.08.26"
+    },
+    {
+      "en": "Colour",
+      "ru": "Цвет"
+    },
+    {
+      "en": "Violet by default. Lime, magenta and cyan on the switch.",
+      "ru": "По умолчанию — фиолетовый. Лайм, маджента и циан — на переключателе."
+    },
+    {
+      "en": "13.08.26",
+      "ru": "13.08.26"
+    },
+    {
+      "en": "The mark and type stay. No trend recolours.",
+      "ru": "Знак и шрифт остаются. Никаких перекрасок под тренды."
+    },
+    {
+      "en": "Got a project? / Let’s talk. (outlined span)",
+      "ru": "Есть проект? / Давайте обсудим."
+    },
+    {
+      "en": "A site, system or tool that fits an existing brand.",
+      "ru": "Сайт, система или инструмент под уже сложившийся бренд."
+    },
+    {
+      "en": "Name, contact, a few lines. Enough to start.",
+      "ru": "Имя, контакт, пара строк. Этого хватит, чтобы начать."
+    },
+    {
+      "en": "Contact page →",
+      "ru": "Страница контактов →"
+    }
+  ],
+  "practice": [
+    {
+      "en": "Practice — How I work — IMTRTD (<title>, og:title, twitter:title)",
+      "ru": "Подход — как я работаю — IMTRTD"
+    },
+    {
+      "en": "It starts from your brand as it is and keeps running after launch. (meta description, og:description, twitter:description, lede)",
+      "ru": "Работа начинается с вашего бренда таким, какой он есть, и продолжается после запуска."
+    },
+    {
+      "en": "Practice (kicker)",
+      "ru": "Подход"
+    },
+    {
+      "en": "How I work",
+      "ru": "Как я работаю"
+    },
+    {
+      "en": "On this page (aria-label)",
+      "ru": "На этой странице"
+    },
+    {
+      "en": "Principles",
+      "ru": "Принципы"
+    },
+    {
+      "en": "Process",
+      "ru": "Процесс"
+    },
+    {
+      "en": "In the work",
+      "ru": "В проектах"
+    },
+    {
+      "en": "Toolkit",
+      "ru": "Инструменты"
+    },
+    {
+      "en": "Before you write",
+      "ru": "Прежде чем написать"
+    },
+    {
+      "en": "The mark stays",
+      "ru": "Знак остаётся"
+    },
+    {
+      "en": "A client’s logo, type and colours are never restyled to match this site.",
+      "ru": "Логотип, шрифты и цвета клиента я никогда не переделываю под стиль этого сайта."
+    },
+    {
+      "en": "One system",
+      "ru": "Одна система"
+    },
+    {
+      "en": "Identity, interface and build are one job. No handoff where intent gets lost.",
+      "ru": "Айдентика, интерфейс и разработка — одна работа. Никаких передач из рук в руки, на которых теряется замысел."
+    },
+    {
+      "en": "Sample before scope",
+      "ru": "Сначала образец, потом смета"
+    },
+    {
+      "en": "One working screen comes first. Decisions get made on a real page, not a mood board.",
+      "ru": "Сначала — один рабочий экран. Решения принимаются на настоящей странице, а не по мудборду."
+    },
+    {
+      "en": "Phone first",
+      "ru": "Сначала телефон"
+    },
+    {
+      "en": "Most visitors arrive on a phone. Every screen is checked there before the desktop.",
+      "ru": "Большинство заходит с телефона. Каждый экран я сначала проверяю там, а потом на десктопе."
+    },
+    {
+      "en": "Real content",
+      "ru": "Настоящий контент"
+    },
+    {
+      "en": "No placeholder text in a sample. Filler hides the layout problems real copy reveals.",
+      "ru": "В образце нет текста-заглушки. «Рыба» прячет проблемы вёрстки, которые вскрывает настоящий текст."
+    },
+    {
+      "en": "After launch",
+      "ru": "После запуска"
+    },
+    {
+      "en": "A site that stops on launch week isn’t finished.",
+      "ru": "Сайт, который замер на неделе запуска, не закончен."
+    },
+    {
+      "en": "Five steps. Tap one to see the project where it happened.",
+      "ru": "Пять шагов. Нажмите на любой, чтобы увидеть, в каком проекте это было."
+    },
+    {
+      "en": "Process steps (aria-label)",
+      "ru": "Шаги процесса"
+    },
+    {
+      "en": "Brief, sample, system, build, run. (noscript)",
+      "ru": "Бриф, образец, система, разработка, поддержка."
+    },
+    {
+      "en": "Brief (step tab)",
+      "ru": "Бриф"
+    },
+    {
+      "en": "Sample (step tab)",
+      "ru": "Образец"
+    },
+    {
+      "en": "System (step tab)",
+      "ru": "Система"
+    },
+    {
+      "en": "Build (step tab)",
+      "ru": "Разработка"
+    },
+    {
+      "en": "Run (step tab)",
+      "ru": "Поддержка"
+    },
+    {
+      "en": "STEP 0{n} / 05",
+      "ru": "ШАГ 0{n} / 05"
+    },
+    {
+      "en": "Seen in: {project}, {context}",
+      "ru": "В проекте: {project}, {context}"
+    },
+    {
+      "en": "Previous step (aria-label)",
+      "ru": "Предыдущий шаг"
+    },
+    {
+      "en": "Next: {step} →",
+      "ru": "Далее: {step} →"
+    },
+    {
+      "en": "You get",
+      "ru": "Вы получаете"
+    },
+    {
+      "en": "Start from what exists",
+      "ru": "Начинаю с того, что уже есть"
+    },
+    {
+      "en": "I read the brand as it is: logo, type, colours, the copy already written. Then one question: what should a visitor do on the first screen?",
+      "ru": "Смотрю на бренд таким, какой он есть: логотип, шрифты, цвета, уже написанные тексты. Потом задаю один вопрос: что посетитель должен сделать на первом экране?"
+    },
+    {
+      "en": "A one-page brief in plain language",
+      "ru": "Бриф на одну страницу, простым языком"
+    },
+    {
+      "en": "The first-screen job, named",
+      "ru": "Чётко названная задача первого экрана"
+    },
+    {
+      "en": "What stays untouched",
+      "ru": "Что остаётся нетронутым"
+    },
+    {
+      "en": "Samples (seen-in link)",
+      "ru": "Образцы"
+    },
+    {
+      "en": "build one in the visualizer",
+      "ru": "соберите свой в визуализаторе"
+    },
+    {
+      "en": "One working screen, not a deck",
+      "ru": "Один рабочий экран, а не презентация"
+    },
+    {
+      "en": "Before any scope, one real screen in the browser with real copy. You click it on your phone. If the direction is wrong, it costs a day, not a month.",
+      "ru": "Ещё до оценки объёма работ — один настоящий экран в браузере с настоящими текстами. Вы прокликиваете его на своём телефоне. Если направление не то, ошибка обойдётся в день, а не в месяц."
+    },
+    {
+      "en": "A live link, not a PDF",
+      "ru": "Живая ссылка, а не PDF"
+    },
+    {
+      "en": "Real copy, real photos",
+      "ru": "Настоящие тексты, настоящие фото"
+    },
+    {
+      "en": "Desk and phone, side by side",
+      "ru": "Десктоп и телефон рядом"
+    },
+    {
+      "en": "a Ukrainian-language site for Dublin tours",
+      "ru": "сайт на украинском языке для туров по Дублину"
+    },
+    {
+      "en": "Identity and interface as one",
+      "ru": "Айдентика и интерфейс как одно целое"
+    },
+    {
+      "en": "The sample becomes a system: type scale, spacing, components and states. The brand mark drives it. Nothing is restyled to look like this site.",
+      "ru": "Образец превращается в систему: шрифтовая шкала, отступы, компоненты и их состояния. Всё строится от знака бренда. Ничего не переделывается под стиль этого сайта."
+    },
+    {
+      "en": "Tokens: colour, type, spacing",
+      "ru": "Токены: цвет, шрифт, отступы"
+    },
+    {
+      "en": "Components with every state",
+      "ru": "Компоненты со всеми состояниями"
+    },
+    {
+      "en": "Rules for what not to do",
+      "ru": "Правила: чего делать нельзя"
+    },
+    {
+      "en": "a tattoo studio, Nuremberg / Kyiv",
+      "ru": "тату-студия, Нюрнберг / Киев"
+    },
+    {
+      "en": "Shipped as code",
+      "ru": "Сдаю готовым кодом"
+    },
+    {
+      "en": "Design and build happen in the same hands, so nothing gets lost in a handoff. Static where it can be, a small server only where it must be.",
+      "ru": "Дизайн и разработка в одних руках, поэтому при передаче ничего не теряется. Статика — где можно, небольшой сервер — только где без него никак."
+    },
+    {
+      "en": "A fast site on the edge",
+      "ru": "Быстрый сайт на edge-серверах"
+    },
+    {
+      "en": "Works offline where it makes sense",
+      "ru": "Работает офлайн, где это имеет смысл"
+    },
+    {
+      "en": "No dead links, no console errors",
+      "ru": "Ни битых ссылок, ни ошибок в консоли"
+    },
+    {
+      "en": "a four-channel chiptune studio in the browser",
+      "ru": "четырёхканальная чиптюн-студия в браузере"
+    },
+    {
+      "en": "Kept alive after launch",
+      "ru": "Живёт и после запуска"
+    },
+    {
+      "en": "A site that stops on launch week is not finished. Content changes, a new language, a fix after the first real users: that is part of the job.",
+      "ru": "Сайт, который замер на неделе запуска, не закончен. Новый контент, ещё один язык, правки после первых реальных пользователей — это тоже часть работы."
+    },
+    {
+      "en": "Deploys on every change",
+      "ru": "Деплой при каждом изменении"
+    },
+    {
+      "en": "Small fixes without starting over",
+      "ru": "Мелкие правки без переделки с нуля"
+    },
+    {
+      "en": "A record of what changed and why",
+      "ru": "Записи о том, что и почему изменилось"
+    },
+    {
+      "en": "a product app on its own domain",
+      "ru": "продуктовое приложение на собственном домене"
+    },
+    {
+      "en": "Tattoo studio, Nuremberg / Kyiv. Custom, fine line, lettering. Built around the studio’s own look.",
+      "ru": "Тату-студия, Нюрнберг / Киев. Кастом, файнлайн, леттеринг. Сайт построен вокруг собственного стиля студии."
+    },
+    {
+      "en": "Tattoo studio",
+      "ru": "Тату-студия"
+    },
+    {
+      "en": "An 8-bit chiptune studio in the browser. Four NES-style channels, sixteen steps, edits stay on the device.",
+      "ru": "8-битная чиптюн-студия в браузере. Четыре канала в духе NES, шестнадцать шагов, правки остаются на устройстве."
+    },
+    {
+      "en": "Music app",
+      "ru": "Музыкальное приложение"
+    },
+    {
+      "en": "Tours of Dublin and Ireland, written in Ukrainian for the people who take them.",
+      "ru": "Туры по Дублину и Ирландии — на украинском, для тех, кто в них едет."
+    },
+    {
+      "en": "Travel",
+      "ru": "Путешествия"
+    },
+    {
+      "en": "A product app with its own interface system, live on its own domain.",
+      "ru": "Продуктовое приложение со своей интерфейсной системой, работает на собственном домене."
+    },
+    {
+      "en": "Product",
+      "ru": "Продукт"
+    },
+    {
+      "en": "A stencil editor for tattoo artists: threshold, draw, export.",
+      "ru": "Редактор трафаретов для тату-мастеров: порог, рисование, экспорт."
+    },
+    {
+      "en": "Tool",
+      "ru": "Инструмент"
+    },
+    {
+      "en": "What these sites are built with. Picked per project, not by habit.",
+      "ru": "На чём собраны эти сайты. Под каждый проект выбираю заново, а не по привычке."
+    },
+    {
+      "en": "Interface (toolkit group)",
+      "ru": "Интерфейс"
+    },
+    {
+      "en": "Build (toolkit group)",
+      "ru": "Сборка"
+    },
+    {
+      "en": "Run (toolkit group)",
+      "ru": "Хостинг"
+    },
+    {
+      "en": "Sound & motion (toolkit group)",
+      "ru": "Звук и анимация"
+    },
+    {
+      "en": "Plain HTML/CSS",
+      "ru": "Чистый HTML/CSS"
+    },
+    {
+      "en": "Static assets",
+      "ru": "Статика"
+    },
+    {
+      "en": "CSS motion",
+      "ru": "CSS-анимация"
+    },
+    {
+      "en": "React, TypeScript, Tailwind CSS, Vite, App router, GitHub Actions, Cloudflare Workers, Drizzle, Web Audio, Canvas",
+      "ru": "без перевода (React, TypeScript, Tailwind CSS, Vite, App router, GitHub Actions, Cloudflare Workers, Drizzle, Web Audio, Canvas)"
+    },
+    {
+      "en": "Six things that make a first email useful. Tick what you have. The email fills itself in.",
+      "ru": "Шесть вещей, с которыми первое письмо будет по делу. Отметьте, что у вас есть, — письмо заполнится само."
+    },
+    {
+      "en": "The one thing a visitor should do (item + data-q)",
+      "ru": "Главное, что должен сделать посетитель"
+    },
+    {
+      "en": "Book, buy, read, write to you. One answer.",
+      "ru": "Записаться, купить, прочитать, написать вам. Один ответ."
+    },
+    {
+      "en": "Brand files (item)",
+      "ru": "Файлы бренда"
+    },
+    {
+      "en": "Brand files (logo, type, colours) (data-q, goes into email)",
+      "ru": "Файлы бренда (логотип, шрифты, цвета)"
+    },
+    {
+      "en": "Logo, type, colours. They stay as they are.",
+      "ru": "Логотип, шрифты, цвета. Они останутся как есть."
+    },
+    {
+      "en": "Real copy, even rough (item + data-q)",
+      "ru": "Настоящие тексты, пусть даже черновые"
+    },
+    {
+      "en": "A draft beats placeholder text every time.",
+      "ru": "Черновик всегда лучше текста-заглушки."
+    },
+    {
+      "en": "Photos or work plates (item + data-q)",
+      "ru": "Фото или снимки работ"
+    },
+    {
+      "en": "What you already have is enough to start.",
+      "ru": "Для начала хватит того, что уже есть."
+    },
+    {
+      "en": "Languages (item + data-q)",
+      "ru": "Языки"
+    },
+    {
+      "en": "Which ones, and which comes first.",
+      "ru": "Какие — и какой из них главный."
+    },
+    {
+      "en": "A date that matters (item + data-q)",
+      "ru": "Важная дата"
+    },
+    {
+      "en": "A launch, an event, a season.",
+      "ru": "Запуск, событие, сезон."
+    },
+    {
+      "en": "READY",
+      "ru": "ГОТОВО"
+    },
+    {
+      "en": "0/6 ({n}/{total})",
+      "ru": "0/6 ({n}/{total})"
+    },
+    {
+      "en": "Tick what you already know. None of it is required. (0–2 ticked)",
+      "ru": "Отметьте то, что уже знаете. Ничего из этого не обязательно."
+    },
+    {
+      "en": "Enough to start. The rest we can find together. (3–5 ticked)",
+      "ru": "Для начала достаточно. Остальное найдём вместе."
+    },
+    {
+      "en": "Ready. Send it as it is: a short email beats a long form. (6/6)",
+      "ru": "Готово. Отправляйте как есть: короткое письмо лучше длинной анкеты."
+    },
+    {
+      "en": "Send the brief",
+      "ru": "Отправить бриф"
+    },
+    {
+      "en": "Or build a sample",
+      "ru": "Или соберите образец"
+    },
+    {
+      "en": "Hi,\\n\\nWhat I already have:\\n- …\\n\\nAbout the project:\\n (mailto / modal body)",
+      "ru": "Здравствуйте!\\n\\nЧто у меня уже есть:\\n- …\\n\\nО проекте:\\n"
+    },
+    {
+      "en": "Brief (mailto subject)",
+      "ru": "Бриф"
+    },
+    {
+      "en": "Send a brief.",
+      "ru": "Пришлите бриф."
+    },
+    {
+      "en": "A site, system or tool that fits an existing brand.",
+      "ru": "Сайт, система или инструмент под уже сложившийся бренд."
+    },
+    {
+      "en": "See the work",
+      "ru": "Смотреть работы"
+    }
+  ],
+  "contact": [
+    {
+      "en": "Contact — Send a brief — IMTRTD (<title>, og:title, twitter:title)",
+      "ru": "Контакты — пришлите бриф — IMTRTD"
+    },
+    {
+      "en": "Send a brief: a site, system or tool that fits an existing brand. imtrtd@pm.me (meta description, og:description, twitter:description)",
+      "ru": "Пришлите бриф: сайт, система или инструмент под уже сложившийся бренд. imtrtd@pm.me"
+    },
+    {
+      "en": "New work (kicker)",
+      "ru": "Новые проекты"
+    },
+    {
+      "en": "Send a brief. (h1)",
+      "ru": "Пришлите бриф."
+    },
+    {
+      "en": "A site, system or tool that fits an existing brand.",
+      "ru": "Сайт, система или инструмент под уже сложившийся бренд."
+    },
+    {
+      "en": "Write it here.",
+      "ru": "Напишите здесь."
+    },
+    {
+      "en": "(status block, channel cards, form, “What happens next”, “Useful to include” — see shared)",
+      "ru": "(см. «Общее»)"
+    }
+  ],
+  "selected": [
+    {
+      "en": "Selected work — IMTRTD (<title>, og:title, twitter:title)",
+      "ru": "Избранные работы — IMTRTD"
+    },
+    {
+      "en": "Selected work: NAMENLOS, PULSEBOX, Natvik Tours, CUEBOX and Tattoo Lab — live builds by IMTRTD. (meta description, og:description, twitter:description)",
+      "ru": "Избранные работы: NAMENLOS, PULSEBOX, Natvik Tours, CUEBOX и Tattoo Lab — проекты IMTRTD, которые работают онлайн."
+    },
+    {
+      "en": "Selected (kicker)",
+      "ru": "Избранное"
+    },
+    {
+      "en": "Work (h1)",
+      "ru": "Работы"
+    },
+    {
+      "en": "Tattoo studio · 2026",
+      "ru": "Тату-студия · 2026"
+    },
+    {
+      "en": "Music app · 2026",
+      "ru": "Музыкальное приложение · 2026"
+    },
+    {
+      "en": "Travel · 2026",
+      "ru": "Путешествия · 2026"
+    },
+    {
+      "en": "Product · 2026",
+      "ru": "Продукт · 2026"
+    },
+    {
+      "en": "Tool · 2026",
+      "ru": "Инструмент · 2026"
+    },
+    {
+      "en": "Preview",
+      "ru": "Посмотреть"
+    }
+  ],
+  "archive": [
+    {
+      "en": "Samples — IMTRTD (<title>, og:title, twitter:title)",
+      "ru": "Образцы — IMTRTD"
+    },
+    {
+      "en": "Templates, then the brief. Five starting systems, then a visualizer for the sample a client needs. (meta description, og:description, twitter:description)",
+      "ru": "Сначала шаблоны, потом бриф. Пять стартовых систем и визуализатор, чтобы собрать образец под задачу клиента."
+    },
+    {
+      "en": "Samples (kicker)",
+      "ru": "Образцы"
+    },
+    {
+      "en": "Templates, then the brief.",
+      "ru": "Сначала шаблоны, потом бриф."
+    },
+    {
+      "en": "Five starting systems, then a visualizer for the sample a client needs.",
+      "ru": "Пять стартовых систем и визуализатор, чтобы собрать образец под задачу клиента."
+    },
+    {
+      "en": "Atelier / Route / Instrument / Ledger / Night (template names)",
+      "ru": "Atelier / Route / Instrument / Ledger / Night (оставить латиницей; см. заметки)"
+    },
+    {
+      "en": "A studio that books from the first screen.",
+      "ru": "Студия, куда записываются с первого экрана."
+    },
+    {
+      "en": "Tours, dates and a place, on paper.",
+      "ru": "Туры, даты и место — как на бумаге."
+    },
+    {
+      "en": "A product with one job and a tight frame.",
+      "ru": "Продукт с одной задачей в жёстких рамках."
+    },
+    {
+      "en": "An editorial index. Reading first.",
+      "ru": "Журнальный индекс. Чтение прежде всего."
+    },
+    {
+      "en": "An event page that sells the next date.",
+      "ru": "Страница события, которая продаёт следующую дату."
+    },
+    {
+      "en": "Work  Book (mock nav)",
+      "ru": "Работы  Запись"
+    },
+    {
+      "en": "Menu (mock nav)",
+      "ru": "Меню"
+    },
+    {
+      "en": "EN  UA (mock nav)",
+      "ru": "EN  UA"
+    },
+    {
+      "en": "Sample (mock kicker)",
+      "ru": "Образец"
+    },
+    {
+      "en": "Next open date (mock kicker)",
+      "ru": "Ближайшая свободная дата"
+    },
+    {
+      "en": "From / Open (offer plate)",
+      "ru": "От / по запросу"
+    },
+    {
+      "en": "Plate / 01 (portrait plate)",
+      "ru": "Лист / 01"
+    },
+    {
+      "en": "One screen. Nothing else. (no modules)",
+      "ru": "Один экран. Больше ничего."
+    },
+    {
+      "en": "Booking",
+      "ru": "Запись"
+    },
+    {
+      "en": "dated booking, not a contact dump",
+      "ru": "запись на конкретную дату, а не свалка контактов"
+    },
+    {
+      "en": "Catalog",
+      "ru": "Каталог"
+    },
+    {
+      "en": "a short catalog of offers",
+      "ru": "короткий каталог предложений"
+    },
+    {
+      "en": "Journal",
+      "ru": "Журнал"
+    },
+    {
+      "en": "a writing or news index",
+      "ru": "список статей или новостей"
+    },
+    {
+      "en": "Prices",
+      "ru": "Цены"
+    },
+    {
+      "en": "a visible rate table",
+      "ru": "таблица цен на виду"
+    },
+    {
+      "en": "Inquiry",
+      "ru": "Заявка"
+    },
+    {
+      "en": "a short inquiry form",
+      "ru": "короткая форма заявки"
+    },
+    {
+      "en": "Place",
+      "ru": "Место"
+    },
+    {
+      "en": "a place line, no embedded map widget",
+      "ru": "строка с адресом, без встроенной карты"
+    },
+    {
+      "en": "Languages",
+      "ru": "Языки"
+    },
+    {
+      "en": "EN / UA switch",
+      "ru": "переключатель EN / UA"
+    },
+    {
+      "en": "Reviews",
+      "ru": "Отзывы"
+    },
+    {
+      "en": "two short quotes",
+      "ru": "две короткие цитаты"
+    },
+    {
+      "en": "Gallery",
+      "ru": "Галерея"
+    },
+    {
+      "en": "a strip of work plates",
+      "ru": "лента снимков работ"
+    },
+    {
+      "en": "Shop",
+      "ru": "Магазин"
+    },
+    {
+      "en": "one buy row, no full storefront",
+      "ru": "одна строка с покупкой, без полноценного магазина"
+    },
+    {
+      "en": "Brief visualizer",
+      "ru": "Визуализатор брифа"
+    },
+    {
+      "en": "Name (field)",
+      "ru": "Название"
+    },
+    {
+      "en": "Line (field)",
+      "ru": "Подзаголовок"
+    },
+    {
+      "en": "Palette",
+      "ru": "Палитра"
+    },
+    {
+      "en": "void",
+      "ru": "пустота"
+    },
+    {
+      "en": "paper",
+      "ru": "бумага"
+    },
+    {
+      "en": "dusk",
+      "ru": "сумерки"
+    },
+    {
+      "en": "sea",
+      "ru": "море"
+    },
+    {
+      "en": "heat",
+      "ru": "жар"
+    },
+    {
+      "en": "Type (group)",
+      "ru": "Шрифт"
+    },
+    {
+      "en": "grotesk",
+      "ru": "гротеск"
+    },
+    {
+      "en": "serif",
+      "ru": "антиква"
+    },
+    {
+      "en": "mono",
+      "ru": "моно"
+    },
+    {
+      "en": "Layout",
+      "ru": "Раскладка"
+    },
+    {
+      "en": "split",
+      "ru": "пополам"
+    },
+    {
+      "en": "stack",
+      "ru": "стопкой"
+    },
+    {
+      "en": "editorial",
+      "ru": "журнальная"
+    },
+    {
+      "en": "grid",
+      "ru": "сетка"
+    },
+    {
+      "en": "Nav",
+      "ru": "Навигация"
+    },
+    {
+      "en": "bar",
+      "ru": "панель"
+    },
+    {
+      "en": "corner",
+      "ru": "в углу"
+    },
+    {
+      "en": "hidden",
+      "ru": "скрыта"
+    },
+    {
+      "en": "Hero",
+      "ru": "Первый экран"
+    },
+    {
+      "en": "statement",
+      "ru": "тезис"
+    },
+    {
+      "en": "offer",
+      "ru": "предложение"
+    },
+    {
+      "en": "portrait",
+      "ru": "портрет"
+    },
+    {
+      "en": "Density",
+      "ru": "Плотность"
+    },
+    {
+      "en": "air",
+      "ru": "воздух"
+    },
+    {
+      "en": "tight",
+      "ru": "плотно"
+    },
+    {
+      "en": "Motion",
+      "ru": "Анимация"
+    },
+    {
+      "en": "still",
+      "ru": "статика"
+    },
+    {
+      "en": "drift",
+      "ru": "дрейф"
+    },
+    {
+      "en": "glitch",
+      "ru": "глитч"
+    },
+    {
+      "en": "Modules",
+      "ru": "Модули"
+    },
+    {
+      "en": "Desk",
+      "ru": "Десктоп"
+    },
+    {
+      "en": "Phone",
+      "ru": "Телефон"
+    },
+    {
+      "en": "Copy brief",
+      "ru": "Скопировать бриф"
+    },
+    {
+      "en": "Copied",
+      "ru": "Скопировано"
+    },
+    {
+      "en": "Select & copy",
+      "ru": "Выделите и скопируйте"
+    },
+    {
+      "en": "Send (send-sample link)",
+      "ru": "Отправить"
+    },
+    {
+      "en": "Palette: / Type: / Layout: / Navigation: / Hero: / Density: / Motion: (copied brief keys)",
+      "ru": "Палитра: / Шрифт: / Раскладка: / Навигация: / Первый экран: / Плотность: / Анимация:"
+    },
+    {
+      "en": "Include:",
+      "ru": "Включить:"
+    },
+    {
+      "en": "Include: a single screen, no extra modules",
+      "ru": "Включить: один экран, без дополнительных модулей"
+    },
+    {
+      "en": "- {Module}: {description}",
+      "ru": "- {Модуль}: {описание}"
+    },
+    {
+      "en": "Deliver one working sample in this system. No extra pages unless a module needs one.",
+      "ru": "Нужен один рабочий образец в этой системе. Дополнительные страницы — только если без них не обойтись модулю."
+    },
+    {
+      "en": "Sample · {name} (mailto subject, modal task)",
+      "ru": "Образец · {name}"
+    },
+    {
+      "en": "Samples · {name} (modal kicker label)",
+      "ru": "Образцы · {name}"
+    },
+    {
+      "en": "Send this sample. (modal title)",
+      "ru": "Отправьте этот образец."
+    },
+    {
+      "en": "Live apps",
+      "ru": "Проекты онлайн"
+    },
+    {
+      "en": "Tattoo studio / Music app / Travel / Product / Tool",
+      "ru": "Тату-студия / Музыкальное приложение / Путешествия / Продукт / Инструмент"
+    },
+    {
+      "en": "Atelier\nA studio that books from the first screen.\n\nPalette: void\nType: grotesk\nLayout: split\nNavigation: bar\nHero: statement\nDensity: air\nMotion: drift\n\nInclude:\n- Booking: dated booking, not a contact dump\n- Prices: a visible rate table\n- Inquiry: a short inquiry form\n- Gallery: a strip of work plates\n\nDeliver one working sample in this system. No extra pages unless a module needs one.\n(default copied brief, full example)",
+      "ru": "Atelier\nСтудия, куда записываются с первого экрана.\n\nПалитра: пустота\nШрифт: гротеск\nРаскладка: пополам\nНавигация: панель\nПервый экран: тезис\nПлотность: воздух\nАнимация: дрейф\n\nВключить:\n- Запись: запись на конкретную дату, а не свалка контактов\n- Цены: таблица цен на виду\n- Заявка: короткая форма заявки\n- Галерея: лента снимков работ\n\nНужен один рабочий образец в этой системе. Дополнительные страницы — только если без них не обойтись модулю."
+    }
+  ]
+}
