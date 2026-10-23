@@ -26,7 +26,7 @@ var ck=document.getElementById('pr-checklist');if(ck){
   out.textContent=n+'/'+t;fill.style.width=(n/t*100)+'%';
   msg.textContent=n===t?'Ready. Send it as it is: a short email beats a long form.':n>=3?'Enough to start. The rest we can find together.':'Tick what you already know. None of it is required.';
   var body='Hi,\n\n'+(n?'What I already have:\n'+on.map(function(b){return '- '+b.dataset.q}).join('\n')+'\n\n':'')+'About the project:\n';
-  mail.href='mailto:imtrtd@pm.me?subject='+encodeURIComponent('Brief')+'&body='+encodeURIComponent(body);
+  mail.href='mailto:admin@imtrtd.space?subject='+encodeURIComponent('Brief')+'&body='+encodeURIComponent(body);
   try{localStorage.setItem(KEY,JSON.stringify(boxes.map(function(b,i){return b.checked?i:-1}).filter(function(i){return i>=0})))}catch(e){}}
  mail.addEventListener('click',function(e){if(!window.IMTRTD)return;e.preventDefault();var on=boxes.filter(function(b){return b.checked});window.IMTRTD.openBrief({label:'Practice',task:'Brief',message:on.length?'What I already have:\n'+on.map(function(b){return '- '+b.dataset.q}).join('\n')+'\n\nAbout the project:\n':''})});
  boxes.forEach(function(b){b.addEventListener('change',upd)});upd()}

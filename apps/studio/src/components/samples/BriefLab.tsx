@@ -322,7 +322,7 @@ export function BriefLab() {
             <button type="button" onClick={() => void copy()}>
               {copied ? "Copied" : "Copy brief"}
             </button>
-            <a href={`mailto:imtrtd@pm.me?subject=${encodeURIComponent(`Sample · ${brief.name}`)}&body=${encodeURIComponent(spec)}`}>
+            <a href={`mailto:admin@imtrtd.space?subject=${encodeURIComponent(`Sample · ${brief.name}`)}&body=${encodeURIComponent(spec)}`}>
               Send
             </a>
           </div>

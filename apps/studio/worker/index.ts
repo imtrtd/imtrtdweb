@@ -30,7 +30,8 @@ import {
 	type CreateLeadInput,
 } from "./lib/leads";
 import { getMedia, uploadMedia } from "./lib/media";
-import { notifyTelegram } from "./lib/telegram";
+import { notifyLeadEmail } from "./lib/email";
+import { sendTelegram } from "./lib/telegram";
 import { AppStore, doDatabase } from "./lib/store-do";
 
 export { AppStore };
@@ -53,6 +54,9 @@ function clientIp(request: Request): string {
 const PUBLIC_ORIGINS = new Set([
 	"https://imtrtd.space",
 	"https://www.imtrtd.space",
+	// lite site: its brief form posts to /api/leads
+	"https://imtryingtodesign.com",
+	"https://www.imtryingtodesign.com",
 ]);
 
 function corsHeaders(request: Request): Record<string, string> {
@@ -160,15 +164,25 @@ const worker = {
 						? `${(body.message ?? "").trim()}\n\n— ${source}`.trim()
 						: body.message,
 				});
-				void notifyStudio(env, lead);
-				void notifyClient(env, lead);
-				const tg = notifyTelegram(env, lead, source);
+				// Telegram and email go out in parallel from this one submission; each is fail-soft.
+				const [tg, mail] = await Promise.all([
+					sendTelegram(env, lead, source),
+					notifyLeadEmail(env, lead, source),
+				]);
+				const extras = Promise.allSettled([notifyStudio(env, lead), notifyClient(env, lead)]);
 				if (ctx) {
-					ctx.waitUntil(tg);
+					ctx.waitUntil(extras);
 				} else {
-					void tg;
+					await extras;
 				}
-				return json({ ok: true, id: lead.id }, 201);
+				return json(
+					{
+						ok: true,
+						id: lead.id,
+						notified: { telegram: tg.sent > 0, telegram_bot: tg.bot, email: mail.ok },
+					},
+					201,
+				);
 			}
 
 			if (pathname.startsWith("/api/admin/")) {

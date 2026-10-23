@@ -41,11 +41,15 @@
 			"new_sqlite_classes": ["AppStore"]
 		}
 	],
+	// Lead emails: sender must be on a zone with Email Routing (imtryingtodesign.com); recipient must be a verified destination address.
+	"send_email": [{ "name": "EMAIL", "allowed_destination_addresses": ["admin@imtrtd.space"] }],
 	"triggers": {
 		"crons": ["0 * * * *"]
 	},
 	"vars": {
-		"STUDIO_NOTIFY_EMAIL": "hello@imtryingtodesign.com"
+		"STUDIO_NOTIFY_EMAIL": "admin@imtrtd.space",
+		"LEAD_NOTIFY_EMAIL": "admin@imtrtd.space",
+		"LEAD_FROM_EMAIL": "leads@imtryingtodesign.com"
 	},
 	"upload_source_maps": true
 }

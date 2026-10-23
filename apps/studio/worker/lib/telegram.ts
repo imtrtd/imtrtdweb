@@ -38,21 +38,23 @@ export function formatLeadMessage(
 	return lines.join("\n");
 }
 
-/** Sends the lead to every configured chat. No-op when env vars are unset; never throws. */
-export async function notifyTelegram(
+export type TelegramResult = { sent: number; bot?: string };
+
+/** Sends the lead to every configured chat and reports the sending bot's public username. Never throws. */
+export async function sendTelegram(
 	env: { TELEGRAM_BOT_TOKEN?: string; TELEGRAM_CHAT_ID?: string },
 	lead: Lead,
 	source = "",
 	fetcher: typeof fetch = fetch,
-): Promise<number> {
+): Promise<TelegramResult> {
 	const token = env.TELEGRAM_BOT_TOKEN?.trim();
 	const chats = telegramChatIds(env.TELEGRAM_CHAT_ID);
 	if (!token || chats.length === 0) {
 		console.log("telegram: not configured, skipped");
-		return 0;
+		return { sent: 0 };
 	}
 	const text = formatLeadMessage(lead, source);
-	let sent = 0;
+	const out: TelegramResult = { sent: 0 };
 	await Promise.all(
 		chats.map(async (chat_id) => {
 			try {
@@ -62,12 +64,29 @@ export async function notifyTelegram(
 					body: JSON.stringify({ chat_id, text, parse_mode: "HTML", disable_web_page_preview: true }),
 				});
 				console.log(`telegram sendMessage status=${res.status}`);
-				if (res.ok) sent += 1;
-				else console.error(`telegram sendMessage failed for ${chat_id}: ${res.status}`);
+				if (res.ok) {
+					out.sent += 1;
+					try {
+						const data = (await res.json()) as { result?: { from?: { username?: string } } };
+						out.bot ??= data?.result?.from?.username;
+					} catch {
+						/* body is optional */
+					}
+				} else console.error(`telegram sendMessage failed for ${chat_id}: ${res.status}`);
 			} catch (err) {
 				console.error("telegram sendMessage error", err);
 			}
 		}),
 	);
-	return sent;
+	return out;
+}
+
+/** Same as sendTelegram, returning only the number of chats reached. */
+export async function notifyTelegram(
+	env: { TELEGRAM_BOT_TOKEN?: string; TELEGRAM_CHAT_ID?: string },
+	lead: Lead,
+	source = "",
+	fetcher: typeof fetch = fetch,
+): Promise<number> {
+	return (await sendTelegram(env, lead, source, fetcher)).sent;
 }
