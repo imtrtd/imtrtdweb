@@ -179,6 +179,7 @@ export default function Home() {
         <div className="footer-status label"><i aria-hidden="true" /> Accepting select projects · Q4 2026</div>
         <h2>Let&apos;s make<br /><span>something</span><br />unmissable.</h2>
         <LeadForm email={EMAIL} />
+        <p className="label text-mute contact-label">Or reach me directly</p>
         <div className="contact-grid">
           <a className="contact-card" href={MAILTO} onClick={celebrate}>
             <span className="label text-mute">Email</span>
@@ -198,8 +199,7 @@ export default function Home() {
         </div>
         <div className="footer-row label">
           <a className="footer-brand" href="#top" aria-label="ImTryingToDesign — back to top"><img src="/brand/logo-lockup.svg" width={151} height={44} alt="" /></a>
-          <span>© 2026 ImTryingToDesign</span>
-          <span>Kyiv / Remote</span>
+          <span>© 2026 ImTryingToDesign<br />Kyiv / Remote</span>
           <span className="footer-links">
             <a href={HUB}>imtrtd.space ↗</a>
             <a href="https://www.instagram.com/imtryingtodesign/" target="_blank" rel="noreferrer">Instagram ↗</a>

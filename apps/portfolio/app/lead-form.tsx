@@ -60,6 +60,7 @@ export default function LeadForm({ email }: { email: string }) {
         <p className="label text-signal">Brief form</p>
         <h3>Tell me what to build.</h3>
         <p>Three lines beat a forty-page PDF. I read every brief myself and answer within a working day — even the ambitious ones.</p>
+        <p className="label text-mute brief-note">Used only to reply. Never shared, never sold.</p>
       </div>
       <form className="brief-form" onSubmit={onSubmit} noValidate>
         <label>
@@ -81,7 +82,6 @@ export default function LeadForm({ email }: { email: string }) {
         <input className="brief-hp" name="website" tabIndex={-1} autoComplete="off" aria-hidden="true" />
         <div className="brief-actions">
           <button className="btn btn-primary" type="submit" disabled={busy}>{busy ? "Sending…" : "Send brief"} <span aria-hidden="true">↗</span></button>
-          <p className="label text-mute">Used only to reply. Never shared, never sold.</p>
         </div>
         <p className="brief-status" role="status" aria-live="polite" data-kind={status.kind}>
           {status.kind === "ok" && <><b>Sent.</b> I’ll answer at {status.contact} within a working day.</>}

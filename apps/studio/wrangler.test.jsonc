@@ -28,6 +28,8 @@
 		}
 	],
 	"vars": {
-		"STUDIO_NOTIFY_EMAIL": "hello@imtryingtodesign.com"
+		"STUDIO_NOTIFY_EMAIL": "admin@imtrtd.space",
+		"LEAD_NOTIFY_EMAIL": "admin@imtrtd.space",
+		"LEAD_FROM_EMAIL": "leads@imtryingtodesign.com"
 	}
 }
