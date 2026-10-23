@@ -34,7 +34,7 @@ function render(){
  setOn(bar.querySelector('[data-fx=desk]'),!phone);setOn(bar.querySelector('[data-fx=phone]'),phone);
  device.classList.toggle('is-phone',phone);device.innerHTML=frame(st,phone);
  var s=spec(st);pre.textContent=s;send.textContent='Send';
- send.href='mailto:imtrtd@pm.me?subject='+encodeURIComponent('Sample · '+st.name)+'&body='+encodeURIComponent(s)}
+ send.href='mailto:admin@imtrtd.space?subject='+encodeURIComponent('Sample · '+st.name)+'&body='+encodeURIComponent(s)}
 cards.forEach(function(c){c.setAttribute('aria-pressed','false');c.addEventListener('click',function(){var t=T[c.dataset.fx];if(t){st=clone(t,c.dataset.fx);render()}})});
 inputs[0].addEventListener('input',function(){st.name=this.value;st.id='custom';render()});
 inputs[1].addEventListener('input',function(){st.line=this.value;st.id='custom';render()});

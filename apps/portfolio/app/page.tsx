@@ -1,8 +1,9 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import LeadForm from "./lead-form";
 
-const EMAIL = "imtrtd@pm.me";
+const EMAIL = "admin@imtrtd.space";
 const MAILTO = `mailto:${EMAIL}?subject=${encodeURIComponent("Project enquiry — imtryingtodesign.com")}`;
 const TELEGRAM = "https://t.me/imtrtd";
 const HUB = "https://imtrtd.space";
@@ -87,7 +88,7 @@ export default function Home() {
         <div className="hero-bottom">
           <p>I design and build expressive websites, interfaces and digital systems for independent studios, artists and small brands that refuse to look generic.</p>
           <div className="hero-actions">
-            <a className="btn btn-primary" href={MAILTO} onClick={celebrate}>Start a project <span aria-hidden="true">↗</span></a>
+            <a className="btn btn-primary" href="#brief" onClick={celebrate}>Start a project <span aria-hidden="true">↗</span></a>
             <a className="btn btn-ghost" href="#work">Explore work <span aria-hidden="true">↓</span></a>
           </div>
         </div>
@@ -177,6 +178,7 @@ export default function Home() {
       <footer className="footer section-pad" id="contact" data-div="06 · Contact">
         <div className="footer-status label"><i aria-hidden="true" /> Accepting select projects · Q4 2026</div>
         <h2>Let&apos;s make<br /><span>something</span><br />unmissable.</h2>
+        <LeadForm email={EMAIL} />
         <div className="contact-grid">
           <a className="contact-card" href={MAILTO} onClick={celebrate}>
             <span className="label text-mute">Email</span>

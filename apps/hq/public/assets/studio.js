@@ -1,7 +1,7 @@
 /* imtrtd merged — lightweight vanilla replacement for the original React bundles */
 (function(){
 'use strict';
-var EMAIL='imtrtd@pm.me', KEY='imtrtd-accent', ACCENTS={lime:'#d8ff00',violet:'#b28dff',magenta:'#ff2bd6',cyan:'#2ee9ff'};
+var EMAIL='admin@imtrtd.space', KEY='imtrtd-accent', ACCENTS={lime:'#d8ff00',violet:'#b28dff',magenta:'#ff2bd6',cyan:'#2ee9ff'};
 var reduce=window.matchMedia('(prefers-reduced-motion: reduce)');
 function $(s,r){return (r||document).querySelector(s)}
 function $$(s,r){return Array.prototype.slice.call((r||document).querySelectorAll(s))}

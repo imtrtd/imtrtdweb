@@ -53,6 +53,14 @@ describe("public CORS", () => {
 		expect(res.headers.get("Access-Control-Allow-Origin")).toBe("https://imtrtd.space");
 	});
 
+	it("answers preflight for the lite site imtryingtodesign.com", async () => {
+		for (const origin of ["https://imtryingtodesign.com", "https://www.imtryingtodesign.com"]) {
+			const res = await worker.fetch(new Request("http://x/api/leads", { method: "OPTIONS", headers: { Origin: origin, "Access-Control-Request-Method": "POST" } }), env);
+			expect(res.status).toBe(204);
+			expect(res.headers.get("Access-Control-Allow-Origin")).toBe(origin);
+		}
+	});
+
 	it("refuses unknown origins", async () => {
 		const res = await worker.fetch(new Request("http://x/api/leads", { method: "OPTIONS", headers: { Origin: "https://evil.example" } }), env);
 		expect(res.status).toBe(403);

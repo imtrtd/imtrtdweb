@@ -53,6 +53,9 @@ function clientIp(request: Request): string {
 const PUBLIC_ORIGINS = new Set([
 	"https://imtrtd.space",
 	"https://www.imtrtd.space",
+	// lite site: its brief form posts to /api/leads
+	"https://imtryingtodesign.com",
+	"https://www.imtryingtodesign.com",
 ]);
 
 function corsHeaders(request: Request): Record<string, string> {
