@@ -38,6 +38,21 @@ export function zonedToUtc(y: number, mo: number, d: number, h: number, mi: numb
   return ts;
 }
 
+/** Parse "YYYY-MM-DD HH:MM" (or with "T") as wall-clock time in tz. Returns UTC ms or null. */
+export function parseLocalDateTime(v: unknown, tz: string): number | null {
+  const m = String(v ?? "").trim().match(/^(\d{4})-(\d{2})-(\d{2})[ T](\d{1,2}):(\d{2})/);
+  if (!m) return null;
+  const ts = zonedToUtc(+m[1], +m[2], +m[3], +m[4], +m[5], tz);
+  return Number.isFinite(ts) ? ts : null;
+}
+
+/** Format a UTC ms timestamp as "YYYY-MM-DD HH:MM" in tz. */
+export function fmtLocalIso(ts: number, tz: string): string {
+  const p = localParts(ts, tz);
+  const pad = (n: number) => String(n).padStart(2, "0");
+  return `${p.y}-${pad(p.mo)}-${pad(p.d)} ${pad(p.h)}:${pad(p.mi)}`;
+}
+
 export function fmtDate(ts: number, tz: string, withYear = false): string {
   const p = localParts(ts, tz);
   const now = localParts(Date.now(), tz);

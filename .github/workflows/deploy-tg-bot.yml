@@ -51,8 +51,10 @@ jobs:
           command: deploy
           secrets: |
             TELEGRAM_BOT_TOKEN
+            MCP_KEY
         env:
           TELEGRAM_BOT_TOKEN: ${{ secrets.NAMENLOS_TG_BOT_TOKEN }}
+          MCP_KEY: ${{ secrets.NAMENLOS_TG_MCP_KEY }}
 
       - name: Register webhook, commands and menu button
         env:

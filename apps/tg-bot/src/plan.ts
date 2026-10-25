@@ -2,7 +2,7 @@
 // saved to the task storage and echoed back as a checklist with "done" buttons.
 import { Ctx } from "./env";
 import { esc, truncate } from "./tg";
-import { localParts, zonedToUtc } from "./time";
+import { localParts, parseLocalDateTime } from "./time";
 import { createTask, taskLine } from "./tasks";
 import { Row } from "./store";
 
@@ -39,13 +39,6 @@ export async function rememberTopic(c: Ctx, chatId: number, threadId: number, na
     chatId, threadId, name.slice(0, 128), Date.now());
 }
 
-function parseLocalDue(v: unknown, tz: string): number | null {
-  const m = String(v ?? "").match(/^(\d{4})-(\d{2})-(\d{2})[ T](\d{1,2}):(\d{2})/);
-  if (!m) return null;
-  const ts = zonedToUtc(+m[1], +m[2], +m[3], +m[4], +m[5], tz);
-  return Number.isFinite(ts) ? ts : null;
-}
-
 /** Ask Workers AI to turn the message into tasks. Returns null when it is not a plan. */
 export async function aiParsePlan(c: Ctx, text: string, msgTs: number, topics: Array<{ id: number; name: string }>): Promise<Plan | null> {
   const p = localParts(msgTs, c.tz);
@@ -71,7 +64,7 @@ export async function aiParsePlan(c: Ctx, text: string, msgTs: number, topics: A
       if (!j || typeof j !== "object") continue;
       if (!j.is_plan || !Array.isArray(j.tasks)) return null;
       const tasks: PlanTask[] = j.tasks
-        .map((t: any) => ({ title: String(t?.title ?? "").trim().slice(0, 300), due: parseLocalDue(t?.due, c.tz), assignee: t?.assignee ? String(t.assignee).trim().slice(0, 64) || null : null }))
+        .map((t: any) => ({ title: String(t?.title ?? "").trim().slice(0, 300), due: parseLocalDateTime(t?.due, c.tz), assignee: t?.assignee ? String(t.assignee).trim().slice(0, 64) || null : null }))
         .filter((t: PlanTask) => t.title)
         .slice(0, 20);
       const topicId = Number(j.topic_id);

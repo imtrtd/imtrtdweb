@@ -28,6 +28,7 @@ const SCHEMA = [
   `CREATE INDEX IF NOT EXISTS tasks_due ON tasks(done, reminded, due_at)`,
   `CREATE TABLE IF NOT EXISTS cleanup(chat_id INTEGER, message_id INTEGER, delete_at INTEGER, PRIMARY KEY(chat_id, message_id))`,
   `CREATE TABLE IF NOT EXISTS topics(chat_id INTEGER, thread_id INTEGER, name TEXT, updated_at INTEGER, PRIMARY KEY(chat_id, thread_id))`,
+  `CREATE TABLE IF NOT EXISTS kv(key TEXT PRIMARY KEY, value TEXT)`,
   `CREATE TABLE IF NOT EXISTS plans_seen(chat_id INTEGER, message_id INTEGER, ts INTEGER, PRIMARY KEY(chat_id, message_id))`,
 ];
 

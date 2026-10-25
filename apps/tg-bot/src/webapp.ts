@@ -1,8 +1,9 @@
 import { Ctx, DEFAULT_WELCOME, Settings } from "./env";
 import { addItems, createList, refreshList, toggleItem } from "./lists";
-import { createTask } from "./tasks";
+import { createTask, deleteTask, setTaskDone } from "./tasks";
+import { SETTING_FIELDS, setSetting, setWelcomeText } from "./bot";
 import { userName } from "./tg";
-import { zonedToUtc } from "./time";
+import { parseLocalDateTime } from "./time";
 
 async function hmac(key: ArrayBuffer | Uint8Array, msg: string): Promise<ArrayBuffer> {
   const k = await crypto.subtle.importKey("raw", key, { name: "HMAC", hash: "SHA-256" }, false, ["sign"]);
@@ -56,7 +57,7 @@ async function requireMember(c: Ctx, chatId: number, userId: number): Promise<{ 
   return { admin: await c.isAdminUser(chatId, userId) };
 }
 
-const SETTINGS_FIELDS: Array<keyof Settings> = ["antispam", "antilink", "antiflood", "flood_limit", "newbie_hours", "welcome_enabled", "clean_service", "clean_settings", "ai_enabled", "warn_limit"];
+const SETTINGS_FIELDS = SETTING_FIELDS;
 
 export async function handleApi(c: Ctx, req: Request, action: string): Promise<Response> {
   if (req.method !== "POST") return json({ ok: false, error: "POST only" }, 405);
@@ -141,7 +142,7 @@ export async function handleApi(c: Ctx, req: Request, action: string): Promise<R
         await requireMember(c, chatId, user.id);
         const text = String(body.text ?? "").trim();
         if (!text) throw new HttpError(400, "Пустая задача");
-        const due = parseLocal(body.due_local, c.tz);
+        const due = parseLocalDateTime(body.due_local, c.tz);
         const t = await createTask(c, { chatId, threadId: 0, text, assigneeId: null, assigneeName: body.assignee ? String(body.assignee).slice(0, 64) : null, createdBy: user.id, creatorName: userName(user), due });
         return json({ ok: true, id: t.id });
       }
@@ -151,9 +152,9 @@ export async function handleApi(c: Ctx, req: Request, action: string): Promise<R
         const { admin } = await requireMember(c, Number(t.chat_id), user.id);
         const own = [Number(t.assignee_id), Number(t.created_by)].includes(user.id);
         if (!admin && !own) throw new HttpError(403, "Изменить может исполнитель, автор или админ");
-        if (body.delete) { await c.db.run("DELETE FROM tasks WHERE id = ?", t.id); return json({ ok: true }); }
-        if (typeof body.done === "boolean") await c.db.run("UPDATE tasks SET done = ?, done_at = ? WHERE id = ?", body.done ? 1 : 0, body.done ? Date.now() : null, t.id);
-        if ("due_local" in body) await c.db.run("UPDATE tasks SET due_at = ?, remind_at = NULL, reminded = 0 WHERE id = ?", parseLocal(body.due_local, c.tz), t.id);
+        if (body.delete) { await deleteTask(c, t.id); return json({ ok: true }); }
+        if (typeof body.done === "boolean") await setTaskDone(c, t.id, body.done);
+        if ("due_local" in body) await c.db.run("UPDATE tasks SET due_at = ?, remind_at = NULL, reminded = 0 WHERE id = ?", parseLocalDateTime(body.due_local, c.tz), t.id);
         if (typeof body.text === "string" && body.text.trim()) await c.db.run("UPDATE tasks SET text = ? WHERE id = ?", body.text.trim().slice(0, 500), t.id);
         return json({ ok: true });
       }
@@ -161,16 +162,12 @@ export async function handleApi(c: Ctx, req: Request, action: string): Promise<R
         const chatId = Number(body.chat_id);
         const { admin } = await requireMember(c, chatId, user.id);
         if (!admin) throw new HttpError(403, "Только для администраторов");
-        await c.settings(chatId);
-        const limits: Record<string, [number, number]> = { flood_limit: [2, 50], newbie_hours: [0, 720], warn_limit: [1, 10] };
         for (const k of SETTINGS_FIELDS) {
           if (!(k in body)) continue;
-          let v = Number(body[k]);
-          if (!Number.isFinite(v)) continue;
-          v = limits[k] ? Math.max(limits[k][0], Math.min(limits[k][1], Math.round(v))) : v ? 1 : 0;
-          await c.db.run(`UPDATE settings SET ${k} = ? WHERE chat_id = ?`, v, chatId);
+          const v = Number(body[k]);
+          if (Number.isFinite(v)) await setSetting(c, chatId, k, v);
         }
-        if (typeof body.welcome_text === "string") await c.db.run("UPDATE settings SET welcome_text = ? WHERE chat_id = ?", body.welcome_text.trim().slice(0, 1000) || null, chatId);
+        if (typeof body.welcome_text === "string") await setWelcomeText(c, chatId, body.welcome_text);
         return json({ ok: true });
       }
       default:
@@ -183,9 +180,3 @@ export async function handleApi(c: Ctx, req: Request, action: string): Promise<R
   }
 }
 
-function parseLocal(v: unknown, tz: string): number | null {
-  if (typeof v !== "string" || !v) return null;
-  const m = v.match(/^(\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2})/);
-  if (!m) return null;
-  return zonedToUtc(+m[1], +m[2], +m[3], +m[4], +m[5], tz);
-}

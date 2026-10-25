@@ -15,6 +15,8 @@ export interface Env {
   PUBLIC_URL: string;
   AI_MODEL: string;
   AI_FALLBACK_MODEL: string;
+  /** Bearer key for the /mcp endpoint (Worker secret, uploaded by the deploy workflow). */
+  MCP_KEY?: string;
 }
 
 export const ANON_ADMIN_BOT = 1087968824; // @GroupAnonymousBot
