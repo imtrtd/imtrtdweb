@@ -215,7 +215,7 @@
       <div class="h"><span>Антиспам</span></div>
       <div class="card">${sw("antispam", "🛡 Антиспам", "Главный переключатель")}${sw("antilink", "🔗 Ссылки от новичков", "Удалять ссылки и пересылки из каналов")}${num("newbie_hours", "🐣 Новичок, часов", "Сколько часов после входа")}${sw("antiflood", "🌊 Антифлуд", "Мут на 10 минут при флуде")}${num("flood_limit", "Лимит сообщений", "за 10 секунд")}</div>
       <div class="h"><span>Модерация</span></div>
-      <div class="card">${num("warn_limit", "⚠️ Предупреждений до мута", "Мут на 24 часа")}${sw("clean_service", "🧹 Удалять «вошёл/вышел»")}${sw("ai_enabled", "🤖 Ответы ИИ", "На упоминание и ответ боту")}</div>
+      <div class="card">${num("warn_limit", "⚠️ Предупреждений до мута", "Мут на 24 часа")}${sw("clean_service", "🧹 Удалять «вошёл/вышел»")}${sw("clean_settings", "🧽 Удалять сообщения о настройках", "Смена названия и фото, закрепы, темы, видеочаты, таймер, фон…")}${sw("ai_enabled", "🤖 Ответы ИИ", "На упоминание и ответ боту")}</div>
       <div class="h"><span>Приветствие</span></div>
       <div class="card">${sw("welcome_enabled", "👋 Приветствовать новичков")}<div class="form"><textarea id="welcomeText" maxlength="1000">${esc(state.data.settings.welcome_text)}</textarea><div class="note">Подстановки: {name} — имя, {chat} — название чата</div><button class="btn" id="saveWelcome">Сохранить текст</button></div></div>`;
   }

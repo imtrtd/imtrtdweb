@@ -24,7 +24,7 @@ export interface Settings {
   antispam: number; antilink: number; antiflood: number;
   flood_limit: number; newbie_hours: number;
   welcome_enabled: number; welcome_text: string | null;
-  clean_service: number; ai_enabled: number; warn_limit: number;
+  clean_service: number; clean_settings: number; ai_enabled: number; warn_limit: number;
 }
 
 export const DEFAULT_WELCOME = "Привет, {name}! 👋 Добро пожаловать в «{chat}». Напиши /help, чтобы узнать, что я умею.";

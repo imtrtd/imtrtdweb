@@ -56,7 +56,7 @@ async function requireMember(c: Ctx, chatId: number, userId: number): Promise<{ 
   return { admin: await c.isAdminUser(chatId, userId) };
 }
 
-const SETTINGS_FIELDS: Array<keyof Settings> = ["antispam", "antilink", "antiflood", "flood_limit", "newbie_hours", "welcome_enabled", "clean_service", "ai_enabled", "warn_limit"];
+const SETTINGS_FIELDS: Array<keyof Settings> = ["antispam", "antilink", "antiflood", "flood_limit", "newbie_hours", "welcome_enabled", "clean_service", "clean_settings", "ai_enabled", "warn_limit"];
 
 export async function handleApi(c: Ctx, req: Request, action: string): Promise<Response> {
   if (req.method !== "POST") return json({ ok: false, error: "POST only" }, 405);

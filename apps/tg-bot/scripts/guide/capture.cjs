@@ -30,7 +30,7 @@ const DATA = {
     { id: 3, name: "Закупка расходников", items: [{ id: 31, text: "иглы 3RL", done: 1 }, { id: 32, text: "чёрная краска", done: 0 }, { id: 33, text: "плёнка", done: 0 }, { id: 34, text: "перчатки M", done: 0 }] },
     { id: 2, name: "Идеи флешей", items: [{ id: 21, text: "ворон на ветке", done: 0 }, { id: 22, text: "мотылёк с луной", done: 1 }, { id: 23, text: "свеча с дымом", done: 0 }] },
   ],
-  settings: { antispam: 1, antilink: 1, newbie_hours: 24, antiflood: 1, flood_limit: 6, warn_limit: 3, clean_service: 1, ai_enabled: 1, welcome_enabled: 1, welcome_text: "Привет, {name}! Добро пожаловать в {chat} 👋" },
+  settings: { antispam: 1, antilink: 1, newbie_hours: 24, antiflood: 1, flood_limit: 6, warn_limit: 3, clean_service: 1, clean_settings: 1, ai_enabled: 1, welcome_enabled: 1, welcome_text: "Привет, {name}! Добро пожаловать в {chat} 👋" },
 };
 const BOOT = { ok: true, user: { id: 1, name: "Pseudo" }, chats: [{ id: -1001, title: "Главная", is_forum: true, is_admin: true }], preferred: null, tz: "Europe/Kiev" };
 
