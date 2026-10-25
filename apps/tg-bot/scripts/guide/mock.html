@@ -1,0 +1,142 @@
+<!doctype html>
+<html lang="ru"><head><meta charset="utf-8">
+<meta name="viewport" content="width=390">
+<style>
+  * { box-sizing: border-box; }
+  html, body { margin: 0; width: 390px; height: 100%; font: 15px/1.35 -apple-system, "Segoe UI", Roboto, "Noto Sans", Arial, sans-serif; overflow: hidden; }
+  .phone { position: relative; width: 390px; height: var(--h, 640px); display: flex; flex-direction: column; background: #c9dcb3; background-image: radial-gradient(circle at 20% 20%, rgba(255,255,255,.25) 0 2px, transparent 3px), radial-gradient(circle at 70% 60%, rgba(255,255,255,.2) 0 2px, transparent 3px); background-size: 46px 46px, 60px 60px; overflow: hidden; }
+  .top { background: #fff; display: flex; align-items: center; gap: 10px; padding: 10px 12px; border-bottom: 1px solid #e3e3e3; z-index: 2; }
+  .back { color: #2481cc; font-size: 22px; width: 18px; }
+  .ava { width: 38px; height: 38px; border-radius: 50%; display: grid; place-items: center; color: #fff; font-weight: 700; flex: none; font-size: 16px; }
+  .top .t b { display: block; font-size: 16px; }
+  .top .t span { color: #8e8e93; font-size: 13px; }
+  .badge { position: absolute; top: 20px; right: 12px; background: rgba(0,0,0,.55); color: #fff; font-size: 11px; font-weight: 600; padding: 3px 9px; border-radius: 10px; z-index: 3; letter-spacing: .02em; }
+  .feed { flex: 1; display: flex; flex-direction: column; justify-content: flex-end; gap: 6px; padding: 10px 10px 8px; overflow: hidden; }
+  .msg { max-width: 86%; display: flex; flex-direction: column; animation: pop .25s ease-out; }
+  .msg.in { align-self: flex-start; }
+  .msg.out { align-self: flex-end; }
+  .bub { padding: 7px 10px 6px; border-radius: 16px; background: #fff; box-shadow: 0 1px 1px rgba(0,0,0,.12); white-space: pre-wrap; word-wrap: break-word; }
+  .out .bub { background: #e1fec6; border-bottom-right-radius: 5px; }
+  .in .bub { border-bottom-left-radius: 5px; }
+  .name { font-weight: 600; font-size: 13.5px; margin-bottom: 2px; }
+  .time { float: right; margin: 6px 0 -4px 10px; font-size: 11.5px; color: #8e8e93; }
+  .out .time { color: #5cae4a; }
+  .kb { display: grid; gap: 4px; margin-top: 4px; }
+  .kb .r { display: flex; gap: 4px; }
+  .kb .b { flex: 1; background: rgba(60,90,50,.38); color: #fff; font-size: 13.5px; font-weight: 600; text-align: center; padding: 9px 6px; border-radius: 10px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; transition: .15s; }
+  .kb .b.press { background: rgba(30,60,20,.7); transform: scale(.96); }
+  .typing { align-self: flex-start; background: #fff; border-radius: 16px; padding: 8px 12px; color: #8e8e93; font-size: 13px; box-shadow: 0 1px 1px rgba(0,0,0,.12); }
+  .comp { background: #fff; display: flex; align-items: flex-end; gap: 8px; padding: 8px 10px; border-top: 1px solid #e3e3e3; z-index: 2; }
+  .comp .menu { background: #2481cc; color: #fff; font-weight: 600; font-size: 13px; border-radius: 16px; padding: 7px 11px; flex: none; transition: .15s; }
+  .comp .menu.press { transform: scale(.93); background: #1a6aa8; }
+  .comp .in { flex: 1; min-height: 34px; max-height: 190px; border: 1px solid #e3e3e3; border-radius: 18px; padding: 7px 12px; white-space: pre-wrap; color: #111; font-size: 14.5px; overflow: hidden; }
+  .comp .in.ph { color: #a0a0a5; }
+  .comp .send { width: 34px; height: 34px; border-radius: 50%; background: #2481cc; color: #fff; display: grid; place-items: center; font-size: 16px; flex: none; }
+  .caret::after { content: "|"; color: #2481cc; animation: blink 1s steps(1) infinite; }
+  s { color: #8e8e93; }
+  .toast { position: absolute; left: 50%; top: 45%; transform: translate(-50%,-50%); background: rgba(0,0,0,.75); color: #fff; padding: 10px 16px; border-radius: 12px; font-size: 14px; z-index: 5; }
+  .finger { position: absolute; width: 34px; height: 34px; border-radius: 50%; background: rgba(36,129,204,.35); border: 2px solid rgba(36,129,204,.8); z-index: 6; transform: translate(-50%,-50%); }
+  .sheet { position: absolute; left: 0; right: 0; bottom: 0; height: 88%; background: #f2f2f7; border-radius: 14px 14px 0 0; box-shadow: 0 -4px 20px rgba(0,0,0,.25); z-index: 7; overflow: hidden; transition: transform .35s ease-out; }
+  .sheet .sh { background: #fff; display: flex; align-items: center; justify-content: space-between; padding: 10px 14px; font-weight: 600; border-bottom: 1px solid #e3e3e3; }
+  .sheet img { width: 100%; display: block; }
+  .topics .row { display: flex; gap: 12px; align-items: center; background: #fff; padding: 10px 14px; border-bottom: 1px solid #eee; }
+  .topics .ic { width: 40px; height: 40px; border-radius: 50%; display: grid; place-items: center; font-size: 20px; flex: none; }
+  .topics .row b { display: block; }
+  .topics .row span { color: #8e8e93; font-size: 13px; }
+  .poll .q { font-weight: 600; margin-bottom: 2px; }
+  .poll .k { color: #8e8e93; font-size: 12.5px; margin-bottom: 6px; }
+  .poll .o { display: flex; align-items: center; gap: 8px; padding: 6px 0; }
+  .poll .o i { width: 20px; height: 20px; border-radius: 50%; border: 2px solid #b5b5ba; flex: none; }
+  .poll .vote { text-align: center; color: #2481cc; font-weight: 600; padding-top: 6px; border-top: 1px solid #eee; margin-top: 4px; }
+  @keyframes pop { from { transform: translateY(8px); opacity: .3; } to { transform: none; opacity: 1; } }
+  @keyframes blink { 50% { opacity: 0; } }
+</style></head>
+<body><div class="phone" id="ph"></div>
+<script>
+const P = new URLSearchParams(location.search);
+const scene = P.get("scene"), step = +(P.get("step") || 0), H = +(P.get("h") || 640);
+document.documentElement.style.setProperty("--h", H + "px");
+const ph = document.getElementById("ph");
+const GROUP = `<div class="ava" style="background:linear-gradient(135deg,#7b61ff,#ff6b9a)">Г</div>`;
+const topBar = (title, sub, ava) => `<div class="top"><div class="back">‹</div>${ava || GROUP}<div class="t"><b>${title}</b><span>${sub}</span></div></div><div class="badge">ПРИМЕР</div>`;
+const bub = (side, html, o = {}) => `<div class="msg ${side}">${o.name ? "" : ""}<div class="bub">${o.name ? `<div class="name" style="color:${o.color || "#7b61ff"}">${o.name}</div>` : ""}${html}<span class="time">${o.time || "18:07"}${side === "out" ? " ✓✓" : ""}</span></div>${o.kb ? `<div class="kb">${o.kb.map((r) => `<div class="r">${r.map((b) => `<div class="b${b.press ? " press" : ""}" ${b.id ? `id="${b.id}"` : ""}>${b.t}</div>`).join("")}</div>`).join("")}</div>` : ""}</div>`;
+const comp = (text, o = {}) => `<div class="comp">${o.menu ? `<div class="menu${o.menuPress ? " press" : ""}" id="menu">☰ Панель</div>` : ""}<div class="in ${text ? "" : "ph"} ${o.caret ? "caret" : ""}">${text || "Сообщение"}</div><div class="send">➤</div></div>`;
+const BOT = { name: "Главная", color: "#7b61ff" };
+
+const HALLO_IN = `19-20:00 термин на рассылку ивент Хэллоуин
+
+- подготовить ссылки инст и сайты ивентов (город+колво подписчиков)
+- текст вставить который будет рассылаться от моего имени в инст
+- тату флеши (эскизы) на тему Хэллоуина но без явной привязки к празднику
+- афиша которую прикрепить к сообщению в рассылке`;
+const T = ["Подготовить ссылки: инст и сайты ивентов (город + кол-во подписчиков)", "Текст рассылки в Инстаграм от имени владельца", "Тату-флеши (эскизы) в хэллоуинской теме без явной привязки к празднику", "Афиша для прикрепления к рассылке", "Рассылка Хэллоуин-ивента (окно 19:00–20:00)"];
+const due = (i) => (i === 4 ? "25.10 20:00" : "25.10 19:00");
+function planText(done) {
+  return `<b>🎃 Хэллоуин: рассылка сегодня 19:00–20:00</b>\n\n` + T.map((t, i) => done.includes(i) ? `${i + 1}. ✅ <s><b>#${i + 1}</b> ${t}</s> ⏰ ${due(i)}` : `${i + 1}. ▫️ <b>#${i + 1}</b> ${t} ⏰ ${due(i)}`).join("\n") + `\n\nЗадачи добавлены в /tasks и в панель (/app).`;
+}
+const short = (t) => (t.length > 17 ? t.slice(0, 17) + "…" : t);
+function planKb(done, press) {
+  const open = [0, 1, 2, 3, 4].filter((i) => !done.includes(i)); const rows = [];
+  for (let i = 0; i < open.length; i += 2) rows.push(open.slice(i, i + 2).map((k) => ({ t: `✅ #${k + 1} ${short(T[k])}`, press: press === k, id: "b" + k })));
+  return rows;
+}
+
+const S = {
+  // GIF 1: typing a plan -> bot checklist. steps 0..N
+  plan() {
+    const typed = Math.min(HALLO_IN.length, step * 14);
+    const head = topBar("Задачи", "Главная · тема");
+    if (typed < HALLO_IN.length || step === Math.ceil(HALLO_IN.length / 14)) {
+      return head + `<div class="feed"></div>` + comp(HALLO_IN.slice(0, typed), { caret: true });
+    }
+    const s2 = step - Math.ceil(HALLO_IN.length / 14);
+    let feed = bub("out", HALLO_IN, { time: "18:07" });
+    if (s2 >= 1 && s2 < 5) feed += `<div class="typing">Главная печатает…</div>`;
+    if (s2 >= 5) feed += bub("in", planText([]), { ...BOT, kb: planKb([]) });
+    return head + `<div class="feed">${feed}</div>` + comp("");
+  },
+  // GIF 2: pressing a ✅ button. steps 0..3
+  done() {
+    const d = step >= 2 ? [0] : [];
+    let h = topBar("Задачи", "Главная · тема") + `<div class="feed">${bub("in", planText(d), { ...BOT, kb: planKb(d, step === 1 ? 0 : -1) })}</div>` + comp("");
+    if (step === 1) h += `<div class="finger" id="fg"></div>`;
+    if (step === 2) h += `<div class="toast">✅ Задача выполнена</div>`;
+    return h;
+  },
+  // GIF 3: opening the panel. steps 0..3
+  panel() {
+    const ava = `<div class="ava" style="background:linear-gradient(135deg,#2481cc,#58b8ff)">G</div>`;
+    let h = topBar("Grok Assistant", "бот", ava) + `<div class="feed">${bub("out", "/start", { time: "18:10" })}${bub("in", "👋 Привет! Я <b>Grok Assistant</b> — помощник группы: модерация, списки, задачи с напоминаниями, опросы и ответы ИИ.\n\nНажмите кнопку ниже, чтобы открыть панель управления.", { time: "18:10", kb: [[{ t: "📱 Открыть панель", press: step === 1, id: "open" }], [{ t: "📖 Как пользоваться" }]] })}</div>` + comp("", { menu: true });
+    if (step === 1) h += `<div class="finger" id="fg"></div>`;
+    if (step >= 2) h += `<div class="sheet" style="transform:translateY(${step === 2 ? 45 : 0}%)"><div class="sh"><span>✕ Закрыть</span><span>Grok Assistant</span><span>⋯</span></div><img src="${P.get("img") || ""}"></div>`;
+    return h;
+  },
+  reminder() {
+    return topBar("Задачи", "Главная · тема") + `<div class="feed">${bub("in", `⏰ <u style="color:#2481cc;text-decoration:none">Pseudo</u>, напоминание о задаче <b>#2</b>:\nТекст рассылки в Инстаграм от имени владельца\nСрок: 25.10 19:00`, { ...BOT, time: "18:45", kb: [[{ t: "✅ Выполнено" }, { t: "⏰ +1 час" }, { t: "+1 день" }]] })}</div>` + comp("");
+  },
+  task() {
+    return topBar("🖋 Тату: записи", "Главная · тема") + `<div class="feed">${bub("out", "/task Сеанс Оля, эскиз розы на предплечье завтра 14:00", { time: "12:30" })}${bub("in", `📝 Задача <b>#7</b> создана:\nСеанс Оля, эскиз розы на предплечье\n⏰ 26.10.2026 14:00 (Киев)`, { ...BOT, time: "12:30", kb: [[{ t: "✅ Выполнено" }]] })}</div>` + comp("");
+  },
+  tasks() {
+    return topBar("Задачи", "Главная · тема") + `<div class="feed">${bub("out", "/tasks", { time: "18:20" })}${bub("in", `🗂 <b>Открытые задачи</b>\n\n▫️ <b>#1</b> Подготовить ссылки: инст и сайты ивентов ⏰ 25.10 19:00\n▫️ <b>#4</b> Афиша для прикрепления к рассылке ⏰ 25.10 19:00\n▫️ <b>#7</b> Сеанс Оля, эскиз розы на предплечье ⏰ 26.10 14:00`, { ...BOT, time: "18:20", kb: [[{ t: "✅ #1 Подготовить ссы…" }, { t: "✅ #4 Афиша для при…" }], [{ t: "✅ #7 Сеанс Оля, эск…" }]] })}${bub("out", "/done 4", { time: "18:21" })}${bub("in", "✅ Задача <b>#4</b> выполнена: Афиша для прикрепления к рассылке", { ...BOT, time: "18:21" })}</div>` + comp("");
+  },
+  list() {
+    return topBar("💰 Учёт и деньги", "Главная · тема") + `<div class="feed">${bub("out", "/list new Закупка расходников\nиглы 3RL\nчёрная краска\nплёнка\nперчатки M", { time: "11:02" })}${bub("in", `📋 <b>Закупка расходников</b> <i>#3</i>\n\n1. ✅ <s>иглы 3RL</s>\n2. ⬜ чёрная краска\n3. ⬜ плёнка\n4. ⬜ перчатки M\n\nГотово: 1/4`, { ...BOT, time: "11:02", kb: [[{ t: "✅ 1. иглы 3RL" }], [{ t: "⬜ 2. чёрная краска" }], [{ t: "⬜ 3. плёнка" }], [{ t: "⬜ 4. перчатки M" }], [{ t: "🔄 Обновить" }]] })}</div>` + comp("");
+  },
+  ask() {
+    return topBar("💡 Идеи", "Главная · тема") + `<div class="feed">${bub("out", "@GrokAssistant_ai придумай 3 идеи для осенних флешей без тыкв и привидений", { time: "15:40" })}${bub("in", "Вот несколько идей:\n• ворон на ветке с опадающими листьями\n• свеча с тонкой струйкой дыма\n• мотылёк с узором-луной на крыльях", { ...BOT, time: "15:40" })}</div>` + comp("");
+  },
+  poll() {
+    return topBar("💡 Идеи", "Главная · тема") + `<div class="feed"><div class="msg in"><div class="bub poll"><div class="name" style="color:#7b61ff">Главная</div><div class="q">Какой флеш рисуем первым?</div><div class="k">Анонимный опрос</div><div class="o"><i></i>Ворон</div><div class="o"><i></i>Мотылёк</div><div class="o"><i></i>Свеча</div><span class="time">16:00</span></div></div></div>` + comp("/poll Какой флеш рисуем первым? | Ворон | Мотылёк | Свеча");
+  },
+  topics() {
+    const rows = [["#e8f1ff", "✅", "Задачи", "общие дела и планы"], ["#fde8ef", "🖋", "Тату: записи", "сеансы, клиенты, эскизы"], ["#fff4d6", "💰", "Учёт и деньги", "закупки, оплаты, расходы"], ["#e9f8ee", "📁", "Проекты", "большие дела по шагам"], ["#f1ecff", "💡", "Идеи", "идеи флешей и постов"], ["#eeeeee", "#", "General (общий чат)", "всё остальное"]];
+    return `<div class="top"><div class="back">‹</div>${GROUP}<div class="t"><b>Главная</b><span>2 участника · темы</span></div></div><div class="badge">ПРИМЕР</div><div class="topics" style="flex:1;background:#fff">${rows.map(([bg, ic, n, s]) => `<div class="row"><div class="ic" style="background:${bg}">${ic}</div><div><b>${n}</b><span>${s}</span></div></div>`).join("")}</div>`;
+  },
+};
+ph.innerHTML = S[scene]();
+// place the "finger" over the pressed button
+const fg = document.getElementById("fg");
+if (fg) { const t = document.querySelector(".press"); if (t) { const r = t.getBoundingClientRect(); fg.style.left = r.left + r.width / 2 + "px"; fg.style.top = r.top + r.height / 2 + "px"; } }
+document.querySelectorAll(".msg").forEach((m) => (m.style.animation = "none"));
+</script></body></html>

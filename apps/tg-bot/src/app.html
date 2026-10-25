@@ -72,6 +72,7 @@
   .toast.on { opacity: 1; }
   .gate { padding: 60px 24px; text-align: center; color: var(--hint); }
   .gate .e { font-size: 48px; }
+  .guide-btn { display: flex; align-items: center; justify-content: center; gap: 6px; margin-top: 10px; padding: 10px 12px; border-radius: 12px; background: var(--section); color: var(--link, var(--btn)); font-weight: 600; font-size: 14px; text-decoration: none; }
   .skeleton { height: 46px; border-radius: var(--r); background: var(--section); margin-top: 12px; opacity: .6; }
 </style>
 </head>
@@ -90,6 +91,7 @@
     <button data-tab="reminders">Напоминания</button>
     <button data-tab="settings">Настройки</button>
   </nav>
+  <a class="guide-btn" id="guideBtn" href="/app/guide">📖 Как пользоваться</a>
 </header>
 <main id="main"><div class="skeleton"></div><div class="skeleton"></div><div class="skeleton"></div></main>
 <div class="toast" id="toast"></div>
@@ -269,7 +271,20 @@
   });
   $("#chatSel").addEventListener("change", (ev) => { state.chatId = +ev.target.value; load(); });
 
+  // Deep link t.me/<bot>/<app>?startapp=guide (or /app?guide) opens the illustrated guide once per session.
+  function wantsGuide() {
+    const qp = new URLSearchParams(location.search);
+    if (qp.has("from_guide")) return false;
+    const sp = tg && tg.initDataUnsafe && tg.initDataUnsafe.start_param;
+    if (qp.has("guide")) return true;
+    if (sp !== "guide") return false;
+    try { if (sessionStorage.getItem("guideShown")) return false; sessionStorage.setItem("guideShown", "1"); } catch (e) {}
+    return true;
+  }
+  $("#guideBtn").addEventListener("click", () => haptic("soft"));
+
   async function start() {
+    if (wantsGuide()) { location.replace("/app/guide"); return; }
     if (!tg || !tg.initData) return gate("📱", "Откройте эту страницу из Telegram — через кнопку «Открыть панель» у бота @GrokAssistant_ai.");
     tg.ready(); tg.expand();
     try { tg.setHeaderColor("secondary_bg_color"); tg.setBackgroundColor("secondary_bg_color"); } catch (e) {}

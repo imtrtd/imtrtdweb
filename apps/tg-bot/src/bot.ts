@@ -231,21 +231,25 @@ async function onPrivate(c: Ctx, msg: any) {
   const m = text.match(/^\/([a-zA-Z0-9_]+)(?:@\w+)?(?:\s+([\s\S]*))?$/);
   const cmd = m?.[1]?.toLowerCase();
   const arg = (m?.[2] ?? "").trim();
+  if (cmd === "guide" || (cmd === "start" && arg === "guide")) {
+    await c.send(msg.chat.id, 0, GUIDE_TEXT, { reply_markup: { inline_keyboard: [[guideWebAppButton(c)]] } }, false);
+    return;
+  }
   if (cmd === "start" || cmd === "app") {
     const chatParam = arg.match(/^app_(-?\d+)$/)?.[1];
     const url = `${c.env.PUBLIC_URL}/app${chatParam ? `?chat=${chatParam}` : ""}`;
     const intro = cmd === "start" && !chatParam
       ? "👋 Привет! Я <b>Grok Assistant</b> — помощник группы: модерация, списки, задачи с напоминаниями, опросы и ответы ИИ.\n\nНажмите кнопку ниже, чтобы открыть панель управления."
       : "📱 Панель управления группой — нажмите кнопку ниже.";
-    await c.send(msg.chat.id, 0, intro, { reply_markup: { inline_keyboard: [[{ text: "📱 Открыть панель", web_app: { url } }]] } }, false);
+    await c.send(msg.chat.id, 0, intro, { reply_markup: { inline_keyboard: [[{ text: "📱 Открыть панель", web_app: { url } }], [guideWebAppButton(c)]] } }, false);
     return;
   }
   if (cmd === "help") {
-    await c.send(msg.chat.id, 0, helpText(c, true), {}, false);
+    await c.send(msg.chat.id, 0, helpText(c, true), { reply_markup: { inline_keyboard: [[guideWebAppButton(c)]] } }, false);
     return;
   }
   if (cmd) {
-    await c.send(msg.chat.id, 0, "Эта команда работает в группе. Здесь доступны /start, /app и /help — или просто напишите вопрос.", {}, false);
+    await c.send(msg.chat.id, 0, "Эта команда работает в группе. Здесь доступны /start, /app, /guide и /help — или просто напишите вопрос.", {}, false);
     return;
   }
   if (text) {
@@ -255,6 +259,19 @@ async function onPrivate(c: Ctx, msg: any) {
 }
 
 // ---------------------------------------------------------------- help
+
+const GUIDE_TEXT = "📖 <b>Как пользоваться</b>\n\nПодробная инструкция с картинками и анимациями: темы, задачи из списка, кнопки ✅, напоминания, списки, опросы, вопросы боту и Панель. Нажмите кнопку ниже.";
+
+/** web_app buttons are only allowed in private chats. */
+function guideWebAppButton(c: Ctx) {
+  return { text: "📖 Как пользоваться", web_app: { url: `${c.env.PUBLIC_URL}/app/guide` } };
+}
+
+/** In groups: deep link into the registered Mini App; the app opens the guide for start_param=guide. */
+function guideUrlButton(c: Ctx) {
+  return { text: "📖 Как пользоваться", url: `https://t.me/${c.botUsername}/${GUIDE_APP_SHORT_NAME}?startapp=guide` };
+}
+const GUIDE_APP_SHORT_NAME = "GrokHelper";
 
 export function helpText(c: Ctx, admin: boolean): string {
   let t = `🤖 <b>Grok Assistant — команды</b>
@@ -276,7 +293,8 @@ export function helpText(c: Ctx, admin: boolean): string {
 когда: «через 2 часа», «сегодня 18:30», «в пятницу», «25.10 15:00»
 /tasks — открытые · /tasks мои · /done 5 — выполнено
 
-📱 /app — панель управления (Mini App)`;
+📱 /app — панель управления (Mini App)
+📖 /guide — подробная инструкция с картинками`;
   if (admin) t += `
 
 🛡 <b>Админам</b> (ответом на сообщение или @username/ID)
@@ -331,7 +349,11 @@ async function groupCommand(c: Ctx, msg: any, thread: number, cmd: string, args:
   switch (cmd) {
     case "start":
     case "help":
-      await reply(helpText(c, await isAdmin()));
+      await reply(helpText(c, await isAdmin()), { reply_markup: { inline_keyboard: [[guideUrlButton(c)]] } });
+      return;
+
+    case "guide":
+      await reply(GUIDE_TEXT, { reply_markup: { inline_keyboard: [[guideUrlButton(c)]] } });
       return;
 
     case "ask": {

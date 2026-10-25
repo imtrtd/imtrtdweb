@@ -10,6 +10,7 @@ const MEMBER_COMMANDS = [
   { command: "tasks", description: "Открытые задачи" },
   { command: "done", description: "Отметить задачу выполненной" },
   { command: "warns", description: "Мои предупреждения" },
+  { command: "guide", description: "Как пользоваться" },
   { command: "app", description: "Открыть панель (Mini App)" },
 ];
 
@@ -31,6 +32,7 @@ const ADMIN_COMMANDS = [
 const PRIVATE_COMMANDS = [
   { command: "start", description: "Начать" },
   { command: "app", description: "Открыть панель управления" },
+  { command: "guide", description: "Как пользоваться" },
   { command: "help", description: "Справка" },
 ];
 

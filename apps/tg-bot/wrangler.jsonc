@@ -11,6 +11,8 @@
   "workers_dev": true,
   "observability": { "enabled": true },
   "ai": { "binding": "AI" },
+  // Guide pictures/GIFs (public/guide-media). Files are served directly; everything else goes to the Worker.
+  "assets": { "directory": "./public" },
   "durable_objects": {
     "bindings": [{ "name": "STORE", "class_name": "BotStore" }]
   },

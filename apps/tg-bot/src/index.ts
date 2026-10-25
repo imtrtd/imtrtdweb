@@ -6,6 +6,7 @@ import { sendDueReminders } from "./tasks";
 import { publishPlan } from "./plan";
 import { zonedToUtc } from "./time";
 import APP_HTML from "./app.html";
+import GUIDE_HTML from "./guide.html";
 
 export { BotStore } from "./store";
 
@@ -37,6 +38,10 @@ export default {
 
     if (url.pathname === "/app" || url.pathname === "/app/") {
       return new Response(APP_HTML, { headers: { "content-type": "text/html; charset=utf-8", "cache-control": "no-cache", ...SECURITY_HEADERS } });
+    }
+
+    if (url.pathname === "/app/guide" || url.pathname === "/app/guide/" || url.pathname === "/guide") {
+      return new Response(GUIDE_HTML, { headers: { "content-type": "text/html; charset=utf-8", "cache-control": "no-cache", ...SECURITY_HEADERS } });
     }
 
     if (url.pathname.startsWith("/api/")) return handleApi(c, req, url.pathname.slice(5));
