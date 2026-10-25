@@ -38,6 +38,16 @@ export async function createTask(c: Ctx, t: { chatId: number; threadId: number; 
   return r!;
 }
 
+/** Mark a task done / reopen it. Reopening re-arms the reminder only if it is still in the future. */
+export async function setTaskDone(c: Ctx, id: number, done: boolean) {
+  if (done) await c.db.run("UPDATE tasks SET done = 1, done_at = ? WHERE id = ?", Date.now(), id);
+  else await c.db.run("UPDATE tasks SET done = 0, done_at = NULL, reminded = CASE WHEN COALESCE(remind_at, due_at) > ? THEN 0 ELSE reminded END WHERE id = ?", Date.now(), id);
+}
+
+export async function deleteTask(c: Ctx, id: number) {
+  await c.db.run("DELETE FROM tasks WHERE id = ?", id);
+}
+
 /** Cron: send due reminders. */
 export async function sendDueReminders(c: Ctx) {
   const due = await c.db.all("SELECT * FROM tasks WHERE done = 0 AND reminded = 0 AND COALESCE(remind_at, due_at) IS NOT NULL AND COALESCE(remind_at, due_at) <= ? ORDER BY COALESCE(remind_at, due_at) LIMIT 25", Date.now());

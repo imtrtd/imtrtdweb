@@ -8,6 +8,8 @@ Telegram group bot for the forum supergroup «Главная», on Cloudflare Wo
   `setWebhook`, `setMyCommands` (private / groups / admins), `setMyDescription`, `setMyShortDescription`, `setChatMenuButton`.
   The deploy workflow calls it after every deploy.
 - **Cron** (every minute): task reminders (Europe/Kiev), auto-delete of service notices, housekeeping.
+  Every 5 min it also checks `getWebhookInfo`: if another service (e.g. ManyChat) took the webhook, it logs a warning and
+  re-sets ours — **at most once per hour** (throttle stored in the `kv` table), so it never silently ping-pongs.
 - **Storage**: one SQLite-backed Durable Object (`BotStore`) — chats, settings, users, members/warns, message history (AI context),
   lists, tasks.
 - **Auto-plans** (`src/plan.ts`): a group message with ≥2 list lines (`-`, `•`, `1.`…) or a dated/timed multi-line message with
@@ -31,6 +33,23 @@ Telegram group bot for the forum supergroup «Главная», on Cloudflare Wo
   delete the whole topic). Delete failures (too old / no rights) are ignored. Only new messages are cleaned; history can't be enumerated.
 - **AI**: Workers AI binding (`@cf/meta/llama-3.3-70b-instruct-fp8-fast`, fallback `@cf/meta/llama-3.1-8b-instruct`).
 
-Deploy: `.github/workflows/deploy-tg-bot.yml` (secrets `CLOUDFLARE_API_TOKEN`, `CLOUDFLARE_ACCOUNT_ID`, `NAMENLOS_TG_BOT_TOKEN`).
+- **MCP server** (`src/mcp.ts`): remote MCP over Streamable HTTP (stateless, JSON responses) at
+  `https://namenlos-tg-bot.unitl.workers.dev/mcp`, header `Authorization: Bearer <MCP_KEY>` (anything else → 401).
+  Built on `@modelcontextprotocol/sdk` (`WebStandardStreamableHTTPServerTransport`); tools only call the shared logic in
+  `tasks.ts` / `lists.ts` / `plan.ts` / `bot.ts` / `setup.ts`. Default chat = «Главная» (`HOME_CHAT_ID`); times are Europe/Kiev
+  (`"YYYY-MM-DD HH:MM"` or Russian like `"завтра 10:00"`); topics by id or name.
+  Tools: `list_tasks`, `create_tasks` (optional `post_checklist` like auto-plans), `update_task`, `complete_task`, `reopen_task`,
+  `delete_task`, `list_lists`, `create_list`, `add_list_items`, `toggle_list_item`, `create_poll`, `list_topics`, `create_topic`,
+  `rename_topic`, `send_message`, `edit_message` / `delete_message` (bot's own messages only), `get_settings`, `set_setting`,
+  `bot_status` (webhook/health, no secrets).
+  Client config example:
+  ```json
+  { "mcpServers": { "namenlos-tg-bot": { "url": "https://namenlos-tg-bot.unitl.workers.dev/mcp",
+      "headers": { "Authorization": "Bearer ${NAMENLOS_TG_MCP_KEY}" } } } }
+  ```
+
+Deploy: `.github/workflows/deploy-tg-bot.yml` (secrets `CLOUDFLARE_API_TOKEN`, `CLOUDFLARE_ACCOUNT_ID`, `NAMENLOS_TG_BOT_TOKEN`,
+`NAMENLOS_TG_MCP_KEY` → uploaded as Worker secret `MCP_KEY` on every deploy). To rotate the MCP key: update the repo secret and
+re-run the workflow.
 
 Local check: `npm ci && npm run check && npx wrangler deploy --dry-run --outdir dist` (Node 22+).

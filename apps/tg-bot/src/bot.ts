@@ -676,11 +676,22 @@ const TOGGLES: Array<[keyof Settings, string]> = [
   ["clean_settings", "🧽 Удалять сообщения о настройках"],
 ];
 
-async function setSetting(c: Ctx, chatId: number, field: string, value: number) {
-  const allowed = ["antispam", "antilink", "antiflood", "flood_limit", "newbie_hours", "welcome_enabled", "clean_service", "clean_settings", "ai_enabled", "warn_limit"];
-  if (!allowed.includes(field)) throw new Error("bad field");
+export const SETTING_FIELDS = ["antispam", "antilink", "antiflood", "flood_limit", "newbie_hours", "welcome_enabled", "clean_service", "clean_settings", "ai_enabled", "warn_limit"] as const;
+export const SETTING_LIMITS: Record<string, [number, number]> = { flood_limit: [2, 50], newbie_hours: [0, 720], warn_limit: [1, 10] };
+
+/** Single place that validates and stores a numeric/boolean chat setting (commands, Mini App, MCP). Returns the stored value. */
+export async function setSetting(c: Ctx, chatId: number, field: string, value: number): Promise<number> {
+  if (!(SETTING_FIELDS as readonly string[]).includes(field)) throw new Error("bad field");
+  const lim = SETTING_LIMITS[field];
+  const v = lim ? Math.max(lim[0], Math.min(lim[1], Math.round(value))) : value ? 1 : 0;
   await c.settings(chatId);
-  await c.db.run(`UPDATE settings SET ${field} = ? WHERE chat_id = ?`, value, chatId);
+  await c.db.run(`UPDATE settings SET ${field} = ? WHERE chat_id = ?`, v, chatId);
+  return v;
+}
+
+export async function setWelcomeText(c: Ctx, chatId: number, text: string | null) {
+  await c.settings(chatId);
+  await c.db.run("UPDATE settings SET welcome_text = ? WHERE chat_id = ?", (text ?? "").trim().slice(0, 1000) || null, chatId);
 }
 
 function renderSettings(c: Ctx, s: Settings) {

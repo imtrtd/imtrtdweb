@@ -38,6 +38,42 @@ const PRIVATE_COMMANDS = [
 
 export const ALLOWED_UPDATES = ["message", "callback_query", "chat_member", "my_chat_member"];
 
+export const webhookUrl = (c: Ctx) => `${c.env.PUBLIC_URL}/telegram/webhook`;
+
+/** Point Telegram at our webhook (shared by /setup and the cron self-heal). */
+export async function setOurWebhook(c: Ctx, dropPending: boolean) {
+  await c.tg.call("setWebhook", {
+    url: webhookUrl(c), secret_token: (await webhookSecret(c.env)).slice(0, 64),
+    allowed_updates: ALLOWED_UPDATES, drop_pending_updates: dropPending, max_connections: 40,
+  });
+}
+
+const HEAL_KEY = "webhook_heal_at";
+
+/**
+ * Cron self-heal: if another service (e.g. ManyChat) took over the bot's webhook, log a warning and
+ * take it back — at most once per hour, so we never silently fight another integration in a loop.
+ */
+export async function healWebhook(c: Ctx): Promise<void> {
+  const info = await c.tg.try<any>("getWebhookInfo", {});
+  if (!info) return;
+  const ours = webhookUrl(c);
+  if (info.url === ours) return;
+  const last = Number((await c.db.one("SELECT value FROM kv WHERE key = ?", HEAL_KEY))?.value ?? 0);
+  if (Date.now() - last < 3600_000) {
+    console.warn("webhook is not ours; re-set throttled (once per hour)", JSON.stringify({ url: info.url || "(none)" }));
+    return;
+  }
+  console.warn("webhook is not ours; re-setting it", JSON.stringify({ url: info.url || "(none)" }));
+  await c.db.run("INSERT INTO kv(key, value) VALUES (?, ?) ON CONFLICT(key) DO UPDATE SET value = excluded.value", HEAL_KEY, String(Date.now()));
+  try { await setOurWebhook(c, false); } catch (e) { console.warn("webhook re-set failed", String((e as Error).message)); }
+}
+
+export async function lastWebhookHeal(c: Ctx): Promise<number | null> {
+  const v = Number((await c.db.one("SELECT value FROM kv WHERE key = ?", HEAL_KEY))?.value ?? 0);
+  return v || null;
+}
+
 export async function runSetup(c: Ctx): Promise<Record<string, unknown>> {
   const base = c.env.PUBLIC_URL;
   const out: Record<string, unknown> = {};
@@ -45,10 +81,7 @@ export async function runSetup(c: Ctx): Promise<Record<string, unknown>> {
     try { await c.tg.call(method, params); out[name] = "ok"; }
     catch (e) { out[name] = String((e as Error).message); }
   };
-  await step("webhook", "setWebhook", {
-    url: `${base}/telegram/webhook`, secret_token: (await webhookSecret(c.env)).slice(0, 64),
-    allowed_updates: ALLOWED_UPDATES, drop_pending_updates: true, max_connections: 40,
-  });
+  try { await setOurWebhook(c, true); out.webhook = "ok"; } catch (e) { out.webhook = String((e as Error).message); }
   await step("commands_default", "setMyCommands", { commands: PRIVATE_COMMANDS, scope: { type: "default" } });
   await step("commands_private", "setMyCommands", { commands: PRIVATE_COMMANDS, scope: { type: "all_private_chats" } });
   await step("commands_groups", "setMyCommands", { commands: MEMBER_COMMANDS, scope: { type: "all_group_chats" } });

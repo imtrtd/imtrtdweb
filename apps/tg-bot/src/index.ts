@@ -1,10 +1,11 @@
 import { Ctx, Env, setupKey, webhookSecret } from "./env";
 import { handleUpdate } from "./bot";
 import { handleApi, validateInitData } from "./webapp";
-import { runSetup } from "./setup";
+import { healWebhook, runSetup } from "./setup";
+import { handleMcp } from "./mcp";
 import { sendDueReminders } from "./tasks";
 import { publishPlan } from "./plan";
-import { zonedToUtc } from "./time";
+import { parseLocalDateTime } from "./time";
 import APP_HTML from "./app.html";
 import GUIDE_HTML from "./guide.html";
 
@@ -67,10 +68,7 @@ export default {
       }
       let b: any;
       try { b = await req.json(); } catch { return new Response("bad json", { status: 400 }); }
-      const local = (v: unknown) => {
-        const m = String(v ?? "").match(/^(\d{4})-(\d{2})-(\d{2})[ T](\d{2}):(\d{2})/);
-        return m ? zonedToUtc(+m[1], +m[2], +m[3], +m[4], +m[5], c.tz) : null;
-      };
+      const local = (v: unknown) => parseLocalDateTime(v, c.tz);
       const tasks = (Array.isArray(b.tasks) ? b.tasks : []).slice(0, 20).map((t: any) => ({
         title: String(t.title ?? "").trim(), due: local(t.due_local), remindAt: local(t.remind_local), assignee: t.assignee ? String(t.assignee) : null,
       })).filter((t: any) => t.title);
@@ -81,6 +79,17 @@ export default {
         createdBy: Number(env.OWNER_ID), creatorName: String(b.creator_name ?? "Владелец"), tasks, editMessageId: editId,
       });
       return Response.json({ ok: true, message_id: r.messageId, tasks: r.rows.map((t) => ({ id: t.id, text: t.text, due_at: t.due_at, remind_at: t.remind_at, thread_id: t.thread_id })) });
+    }
+
+    // Remote MCP server (Streamable HTTP). Auth: "Authorization: Bearer <MCP_KEY>".
+    if (url.pathname === "/mcp" || url.pathname === "/mcp/") {
+      const key = env.MCP_KEY ?? "";
+      if (!key) return Response.json({ error: "MCP is not configured" }, { status: 503 });
+      const m = (req.headers.get("authorization") ?? "").match(/^Bearer\s+(.+)$/i);
+      if (!m || !safeEqual(m[1].trim(), key)) {
+        return Response.json({ jsonrpc: "2.0", error: { code: -32001, message: "Unauthorized" }, id: null }, { status: 401, headers: { "www-authenticate": 'Bearer realm="namenlos-tg-bot-mcp"' } });
+      }
+      return handleMcp(c, req);
     }
 
     if (url.pathname === "/" || url.pathname === "/health") {
@@ -97,6 +106,10 @@ export default {
     for (const m of due) {
       await c.tg.try("deleteMessage", { chat_id: m.chat_id, message_id: m.message_id });
       await c.db.run("DELETE FROM cleanup WHERE chat_id = ? AND message_id = ?", m.chat_id, m.message_id);
+    }
+    // Webhook self-heal check every 5 minutes (the re-set itself is throttled to once per hour).
+    if (new Date(now).getUTCMinutes() % 5 === 0) {
+      try { await healWebhook(c); } catch (e) { console.warn("webhook heal check failed", String((e as Error).message)); }
     }
     // Housekeeping once an hour
     if (new Date(now).getUTCMinutes() === 0) {
