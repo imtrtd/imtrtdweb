@@ -1,0 +1,374 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="color-scheme" content="light dark">
+<title>Как пользоваться — Grok Assistant</title>
+<script src="https://telegram.org/js/telegram-web-app.js"></script>
+<style>
+  :root {
+    --bg: var(--tg-theme-secondary-bg-color, #f2f2f7);
+    --card: var(--tg-theme-section-bg-color, var(--tg-theme-bg-color, #ffffff));
+    --text: var(--tg-theme-text-color, #1c1c1e);
+    --hint: var(--tg-theme-hint-color, #8e8e93);
+    --link: var(--tg-theme-link-color, #2481cc);
+    --btn: var(--tg-theme-button-color, #2481cc);
+    --btn-text: var(--tg-theme-button-text-color, #ffffff);
+    --sep: var(--tg-theme-section-separator-color, rgba(128,128,128,.22));
+    --soft: color-mix(in srgb, var(--btn) 12%, var(--card));
+    --r: 16px;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not(.tg) { --bg: #000; --card: #1c1c1e; --text: #f2f2f7; --hint: #98989e; --link: #5eb5f7; --btn: #3e88f7; --sep: #38383a; }
+  }
+  * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+  html { scroll-behavior: smooth; }
+  body { margin: 0; background: var(--bg); color: var(--text); font: 16px/1.55 -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Noto Sans", Arial, sans-serif; }
+  .wrap { max-width: 560px; margin: 0 auto; padding: 14px 14px calc(40px + env(safe-area-inset-bottom)); }
+  .top { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-bottom: 6px; }
+  .back { color: var(--link); text-decoration: none; font-weight: 600; font-size: 15px; padding: 6px 0; }
+  .hero { background: linear-gradient(135deg, #7b61ff, #ff6b9a); color: #fff; border-radius: 20px; padding: 20px 18px; margin: 6px 0 14px; }
+  .hero h1 { margin: 0 0 6px; font-size: 24px; line-height: 1.25; }
+  .hero p { margin: 6px 0 0; opacity: .95; }
+  section, nav.toc { background: var(--card); border-radius: var(--r); padding: 16px 16px 10px; margin: 12px 0; scroll-margin-top: 10px; }
+  h2 { font-size: 20px; line-height: 1.3; margin: 0 0 8px; }
+  h3 { font-size: 16.5px; margin: 16px 0 4px; }
+  p { margin: 8px 0; }
+  ul, ol { padding-left: 22px; margin: 8px 0; }
+  li { margin: 5px 0; }
+  a { color: var(--link); }
+  .toc ol { padding-left: 0; list-style: none; counter-reset: t; margin: 0; }
+  .toc li { counter-increment: t; margin: 0; border-top: 1px solid var(--sep); }
+  .toc li:first-child { border-top: 0; }
+  .toc a { display: flex; gap: 10px; align-items: center; padding: 10px 2px; color: var(--text); text-decoration: none; }
+  .toc a::before { content: counter(t); min-width: 26px; height: 26px; border-radius: 50%; background: var(--soft); color: var(--link); display: grid; place-items: center; font-size: 13px; font-weight: 700; flex: none; }
+  code, .cmd { font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace; font-size: 14.5px; background: var(--soft); color: var(--text); padding: 1px 6px; border-radius: 6px; white-space: nowrap; }
+  pre { background: var(--soft); border-radius: 12px; padding: 12px; white-space: pre-wrap; font: 14.5px/1.5 ui-monospace, "SF Mono", Menlo, Consolas, monospace; margin: 8px 0; }
+  .tip, .warn, .ok { border-radius: 12px; padding: 10px 12px; margin: 10px 0; }
+  .tip { background: var(--soft); }
+  .warn { background: color-mix(in srgb, #ff9500 16%, var(--card)); }
+  .ok { background: color-mix(in srgb, #34c759 15%, var(--card)); }
+  .steps { counter-reset: s; list-style: none; padding: 0; }
+  .steps > li { counter-increment: s; position: relative; padding-left: 38px; margin: 12px 0; }
+  .steps > li::before { content: counter(s); position: absolute; left: 0; top: 0; width: 28px; height: 28px; border-radius: 50%; background: var(--btn); color: var(--btn-text); display: grid; place-items: center; font-weight: 700; font-size: 14px; }
+  figure { margin: 12px 0; text-align: center; }
+  figure img { width: 100%; max-width: 390px; height: auto; border-radius: 14px; border: 1px solid var(--sep); display: block; margin: 0 auto; background: #fff; }
+  figure.phone img { max-width: 300px; }
+  figcaption { color: var(--hint); font-size: 13px; margin-top: 6px; }
+  .tag { display: inline-block; background: var(--soft); color: var(--link); font-size: 11px; font-weight: 700; letter-spacing: .04em; border-radius: 8px; padding: 1px 7px; margin-right: 4px; vertical-align: 1px; }
+  table { width: 100%; border-collapse: collapse; font-size: 14.5px; margin: 8px 0; }
+  td { border-top: 1px solid var(--sep); padding: 7px 4px; vertical-align: top; }
+  tr:first-child td { border-top: 0; }
+  td:first-child { white-space: nowrap; padding-right: 10px; }
+  details { border-top: 1px solid var(--sep); padding: 10px 0; }
+  details:first-of-type { border-top: 0; }
+  summary { font-weight: 600; cursor: pointer; }
+  .up { display: block; text-align: right; font-size: 13.5px; text-decoration: none; margin-top: 6px; }
+  .gallery { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  .gallery figure { margin: 4px 0; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="top"><a class="back" id="back" href="/app?from_guide=1">‹ В панель</a></div>
+
+  <div class="hero" id="top">
+    <h1>📖 Как пользоваться ботом</h1>
+    <p>Привет! 👋 Это спокойная и подробная инструкция к нашему помощнику в группе «Главная».</p>
+    <p>Здесь нет ничего сложного и ничего нельзя «сломать». Читайте по порядку или нажмите на нужный раздел.</p>
+  </div>
+
+  <nav class="toc" aria-label="Оглавление">
+    <h2>Оглавление</h2>
+    <ol>
+      <li><a href="#what">Что умеет бот</a></li>
+      <li><a href="#words">Маленький словарик</a></li>
+      <li><a href="#topics">Темы: что куда писать</a></li>
+      <li><a href="#plan">Пишем список — бот сам делает задачи</a></li>
+      <li><a href="#done">Кнопки ✅ — отметить «готово»</a></li>
+      <li><a href="#task">Одна задача с напоминанием</a></li>
+      <li><a href="#tasks">Посмотреть все задачи</a></li>
+      <li><a href="#remind">Напоминания</a></li>
+      <li><a href="#lists">Списки с галочками</a></li>
+      <li><a href="#poll">Опросы</a></li>
+      <li><a href="#ask">Спросить бота</a></li>
+      <li><a href="#panel">Панель (приложение внутри Telegram)</a></li>
+      <li><a href="#tattoo">Советы для тату-мастера</a></li>
+      <li><a href="#faq">Если что-то не получается</a></li>
+      <li><a href="#cheat">Шпаргалка</a></li>
+    </ol>
+  </nav>
+
+  <section id="what">
+    <h2>1. Что умеет бот</h2>
+    <p>Бот — это помощник, который живёт в нашей группе. Он не человек, а программа. Он:</p>
+    <ul>
+      <li>📝 <b>превращает списки дел в задачи</b> — вы просто пишете список, а бот делает из него чек-лист;</li>
+      <li>⏰ <b>напоминает</b> о делах в нужное время (по киевскому времени);</li>
+      <li>📋 ведёт <b>списки с галочками</b> — например, что докупить;</li>
+      <li>📊 создаёт <b>опросы</b>;</li>
+      <li>💬 <b>отвечает на вопросы</b>, если его позвать;</li>
+      <li>📱 имеет <b>Панель</b> — удобное окошко, где всё видно на одном экране.</li>
+    </ul>
+    <div class="tip">💡 Сообщения бота в группе подписаны названием группы — <b>«Главная»</b>. Так и должно быть: бот работает от имени группы.</div>
+    <a class="up" href="#top">↑ наверх</a>
+  </section>
+
+  <section id="words">
+    <h2>2. Маленький словарик</h2>
+    <p>Несколько слов, которые встретятся дальше. Если слово непонятно — загляните сюда.</p>
+    <table>
+      <tr><td><b>Тема</b></td><td>Отдельная «комната» внутри группы. У каждой темы своё название и своя переписка: например, «Задачи» или «Тату: записи». Что написано в одной теме, не смешивается с другой.</td></tr>
+      <tr><td><b>Команда</b></td><td>Короткое слово для бота, которое начинается с косой черты <code>/</code>. Например, <code>/tasks</code>. Можно напечатать её самой или нажать на неё в сообщении — Telegram подставит её за вас.</td></tr>
+      <tr><td><b>Упоминание</b></td><td>Когда вы пишете имя через «собачку» <code>@</code>, например <code>@GrokAssistant_ai</code>. Так вы «зовёте» бота, и он понимает, что вопрос — ему.</td></tr>
+      <tr><td><b>Ответить</b></td><td>Нажать на сообщение (или смахнуть его влево) и выбрать «Ответить». Тогда ваше сообщение будет привязано к нему.</td></tr>
+      <tr><td><b>Кнопка</b></td><td>Серые плашки прямо под сообщением бота, например «✅ Выполнено». На них просто нажимают пальцем.</td></tr>
+      <tr><td><b>Панель</b></td><td>Маленькое приложение, которое открывается прямо внутри Telegram. В нём видны все списки, задачи и напоминания.</td></tr>
+    </table>
+    <a class="up" href="#top">↑ наверх</a>
+  </section>
+
+  <section id="topics">
+    <h2>3. Темы: что куда писать</h2>
+    <p>Наша группа «Главная» разделена на темы, как тетрадь на разделы. Откройте группу — вы увидите их список.</p>
+    <figure class="phone"><img src="/guide-media/chat-topics.png" alt="Список тем группы" loading="lazy" width="390" height="470"><figcaption><span class="tag">ПРИМЕР</span>Так выглядит список тем</figcaption></figure>
+    <table>
+      <tr><td>✅ <b>Задачи</b></td><td>Общие дела и планы. Сюда удобнее всего писать списки дел.</td></tr>
+      <tr><td>🖋 <b>Тату: записи</b></td><td>Сеансы, клиенты, эскизы, кто и когда приходит.</td></tr>
+      <tr><td>💰 <b>Учёт и деньги</b></td><td>Закупки, оплаты, расходники.</td></tr>
+      <tr><td>📁 <b>Проекты</b></td><td>Большие дела, которые делаются по шагам.</td></tr>
+      <tr><td>💡 <b>Идеи</b></td><td>Идеи для флешей, постов, ивентов.</td></tr>
+      <tr><td># <b>General</b></td><td>Общий чат для всего остального.</td></tr>
+    </table>
+    <div class="tip">💡 Бот всегда отвечает <b>в той же теме</b>, где вы написали. Задачи и напоминания тоже приходят туда, где задача была создана.</div>
+    <p>Если написать список дел в общий чат General, бот сам постарается положить чек-лист в подходящую тему (чаще всего — в «Задачи»).</p>
+    <a class="up" href="#top">↑ наверх</a>
+  </section>
+
+  <section id="plan">
+    <h2>4. Пишем список — бот сам делает задачи</h2>
+    <p>Это самое удобное. Не нужно никаких команд: вы просто пишете список дел обычным сообщением.</p>
+    <figure class="phone"><img src="/guide-media/gif-plan.gif" alt="Анимация: пишем список, бот отвечает чек-листом" loading="lazy" width="360" height="646"><figcaption><span class="tag">ПРИМЕР</span>Пишем список → бот присылает чек-лист с кнопками</figcaption></figure>
+    <h3>Как это сделать</h3>
+    <ol class="steps">
+      <li>Откройте тему <b>«Задачи»</b> (или любую другую подходящую).</li>
+      <li>В первой строке напишите, о чём это и когда. Например: <i>«19-20:00 рассылка ивент Хэллоуин»</i>.</li>
+      <li>Каждое дело — <b>с новой строки</b>, а в начале строки поставьте чёрточку <code>-</code> или номер <code>1.</code></li>
+      <li>Отправьте сообщение. Через несколько секунд бот пришлёт аккуратный чек-лист.</li>
+    </ol>
+    <h3>Настоящий пример</h3>
+    <p>Вот так выглядел наш список для Хэллоуина:</p>
+<pre>19-20:00 термин на рассылку ивент Хэллоуин
+
+- подготовить ссылки инст и сайты ивентов (город+колво подписчиков)
+- текст вставить который будет рассылаться от моего имени в инст
+- тату флеши (эскизы) на тему Хэллоуина но без явной привязки к празднику
+- афиша которую прикрепить к сообщению в рассылке</pre>
+    <p>Бот понял, что подготовка должна быть готова к 19:00, а сама рассылка — до 20:00, и сделал 5 задач:</p>
+    <figure class="phone"><img src="/guide-media/chat-plan.png" alt="Чек-лист от бота" loading="lazy" width="390" height="700"><figcaption><span class="tag">ПРИМЕР</span>Ответ бота: каждая строка — отдельная задача со своим номером</figcaption></figure>
+    <ul>
+      <li>Каждая задача получает <b>номер</b> (#1, #2…). Он пригодится, если захотите отметить задачу командой.</li>
+      <li>Значок ⏰ показывает срок по <b>киевскому времени</b>.</li>
+      <li>Все задачи сразу попадают в <code>/tasks</code> и в Панель.</li>
+    </ul>
+    <div class="warn">⚠️ Бот специально осторожный: обычную переписку он не трогает. Список он заметит, если в нём <b>хотя бы 2 строки</b> с чёрточкой или номером. Если бот промолчал — ничего страшного, создайте задачу командой <code>/task</code> (раздел 6).</div>
+    <div class="tip">💡 Если вы потом <b>исправите</b> отправленный список, задачи сами не поменяются. Лучше напишите новое сообщение или поправьте задачу в Панели.</div>
+    <a class="up" href="#top">↑ наверх</a>
+  </section>
+
+  <section id="done">
+    <h2>5. Кнопки ✅ — отметить «готово»</h2>
+    <p>Под чек-листом есть кнопки <b>«✅ #1 …»</b>, <b>«✅ #2 …»</b> и так далее — по одной на каждое дело.</p>
+    <figure class="phone"><img src="/guide-media/gif-done.gif" alt="Анимация: нажатие на кнопку ✅" loading="lazy" width="360" height="591"><figcaption><span class="tag">ПРИМЕР</span>Нажали ✅ — задача зачёркнута, кнопка исчезла</figcaption></figure>
+    <ol class="steps">
+      <li>Сделали дело — нажмите кнопку с его номером.</li>
+      <li>Наверху мелькнёт надпись <b>«✅ Задача выполнена»</b>.</li>
+      <li>В чек-листе строка станет зачёркнутой с ✅, а кнопка пропадёт. Напоминание по этой задаче больше не придёт.</li>
+    </ol>
+    <div class="tip">💡 Отметить задачу может тот, кто её создал, тот, кому её поручили, или админ группы. Если бот пишет «Это может сделать исполнитель, автор или админ» — значит, задачу создал кто-то другой; попросите его или отметьте в Панели.</div>
+    <a class="up" href="#top">↑ наверх</a>
+  </section>
+
+  <section id="task">
+    <h2>6. Одна задача с напоминанием</h2>
+    <p>Если нужно записать одно дело, используйте команду <code>/task</code>. После неё — что сделать и когда.</p>
+<pre>/task Сеанс Оля, эскиз розы на предплечье завтра 14:00</pre>
+    <figure class="phone"><img src="/guide-media/chat-task.png" alt="Бот создал задачу" loading="lazy" width="390" height="420"><figcaption><span class="tag">ПРИМЕР</span>Бот подтвердил задачу и время</figcaption></figure>
+    <h3>Как можно написать время</h3>
+    <table>
+      <tr><td><code>через 2 часа</code></td><td>через 2 часа от текущего момента (можно «через 30 минут», «через 3 дня»)</td></tr>
+      <tr><td><code>сегодня 18:30</code></td><td>сегодня в 18:30</td></tr>
+      <tr><td><code>завтра 10:00</code></td><td>завтра в 10:00 (есть и «послезавтра»)</td></tr>
+      <tr><td><code>в пятницу 12:00</code></td><td>в ближайшую пятницу</td></tr>
+      <tr><td><code>25.10 15:00</code></td><td>конкретная дата и время</td></tr>
+      <tr><td><code>18:00</code></td><td>сегодня в 18:00, а если это время уже прошло — завтра</td></tr>
+    </table>
+    <div class="tip">💡 Если написать только день без часов («завтра»), бот поставит <b>9:00 утра</b>. Если время не написать совсем — задача сохранится без напоминания.</div>
+    <p>Чтобы поручить задачу кому-то, добавьте его ник через <code>@</code>: <code>/task Купить плёнку @ник завтра 12:00</code>.</p>
+    <a class="up" href="#top">↑ наверх</a>
+  </section>
+
+  <section id="tasks">
+    <h2>7. Посмотреть все задачи</h2>
+    <ul>
+      <li><code>/tasks</code> — все открытые задачи группы, с кнопками ✅;</li>
+      <li><code>/tasks мои</code> — только те, что создали вы или поручили вам;</li>
+      <li><code>/done 4</code> — отметить задачу №4 выполненной без кнопок.</li>
+    </ul>
+    <figure class="phone"><img src="/guide-media/chat-tasks.png" alt="Список задач и /done" loading="lazy" width="390" height="640"><figcaption><span class="tag">ПРИМЕР</span>Команда /tasks и отметка /done 4</figcaption></figure>
+    <a class="up" href="#top">↑ наверх</a>
+  </section>
+
+  <section id="remind">
+    <h2>8. Напоминания</h2>
+    <p>Когда наступает время задачи, бот сам пишет сообщение <b>в ту же тему</b> и отмечает человека, чтобы пришло уведомление.</p>
+    <figure class="phone"><img src="/guide-media/chat-reminder.png" alt="Напоминание от бота" loading="lazy" width="390" height="380"><figcaption><span class="tag">ПРИМЕР</span>Напоминание с тремя кнопками</figcaption></figure>
+    <ul>
+      <li><b>✅ Выполнено</b> — дело сделано, задача закрыта;</li>
+      <li><b>⏰ +1 час</b> — напомнить ещё раз через час;</li>
+      <li><b>+1 день</b> — напомнить ещё раз через сутки.</li>
+    </ul>
+    <div class="ok">🕰 Всё время у бота — <b>киевское</b>. Напоминание приходит в течение минуты после нужного времени.</div>
+    <p>Перенести напоминание на другое время можно в Панели, во вкладке «Напоминания» (раздел 12).</p>
+    <a class="up" href="#top">↑ наверх</a>
+  </section>
+
+  <section id="lists">
+    <h2>9. Списки с галочками</h2>
+    <p>Список — это не задачи со временем, а просто перечень, где можно ставить галочки. Идеально для покупок.</p>
+    <h3>Создать список</h3>
+    <p>Напишите <code>/list new</code>, затем название, а пункты — каждый с новой строки:</p>
+<pre>/list new Закупка расходников
+иглы 3RL
+чёрная краска
+плёнка
+перчатки M</pre>
+    <figure class="phone"><img src="/guide-media/chat-list.png" alt="Список с галочками" loading="lazy" width="390" height="640"><figcaption><span class="tag">ПРИМЕР</span>Нажмите на пункт — появится ✅, нажмите ещё раз — галочка снимется</figcaption></figure>
+    <ul>
+      <li>Нажмите на кнопку с пунктом — он отметится ✅ и зачеркнётся. Ещё раз — галочка снимется.</li>
+      <li><code>/list add маркер; салфетки</code> — добавить пункты (через точку с запятой) в последний список этой темы.</li>
+      <li><code>/list done 2</code> — отметить пункт №2.</li>
+      <li><code>/lists</code> — показать все списки; <code>/list del</code> — удалить список.</li>
+      <li>«🔄 Обновить» — освежить список, если кто-то менял его в Панели.</li>
+    </ul>
+    <a class="up" href="#top">↑ наверх</a>
+  </section>
+
+  <section id="poll">
+    <h2>10. Опросы</h2>
+    <p>Нужно быстро выбрать вариант? Напишите <code>/poll</code>, потом вопрос и варианты через вертикальную черту <code>|</code>:</p>
+<pre>/poll Какой флеш рисуем первым? | Ворон | Мотылёк | Свеча</pre>
+    <figure class="phone"><img src="/guide-media/chat-poll.png" alt="Опрос" loading="lazy" width="390" height="470"><figcaption><span class="tag">ПРИМЕР</span>Бот создаёт опрос, а саму команду убирает из чата</figcaption></figure>
+    <ul>
+      <li>Нужно минимум 2 варианта, максимум 10.</li>
+      <li>Добавьте <code>-m</code> сразу после <code>/poll</code>, чтобы можно было выбрать несколько ответов: <code>/poll -m Вопрос | А | Б</code>.</li>
+      <li>Добавьте <code>-p</code>, чтобы было видно, кто как голосовал.</li>
+    </ul>
+    <div class="tip">💡 Черта <code>|</code> на телефоне: на клавиатуре нажмите «123», затем «#+=».</div>
+    <a class="up" href="#top">↑ наверх</a>
+  </section>
+
+  <section id="ask">
+    <h2>11. Спросить бота</h2>
+    <p>Бот умеет отвечать на вопросы и помогать с текстами. Позвать его можно тремя способами:</p>
+    <ol class="steps">
+      <li><b>Упомянуть:</b> начните сообщение с <code>@GrokAssistant_ai</code> и напишите вопрос.</li>
+      <li><b>Ответить на сообщение бота:</b> нажмите на его сообщение → «Ответить» → напишите вопрос.</li>
+      <li><b>Командой:</b> <code>/ask ваш вопрос</code>.</li>
+    </ol>
+    <figure class="phone"><img src="/guide-media/chat-ask.png" alt="Вопрос боту" loading="lazy" width="390" height="420"><figcaption><span class="tag">ПРИМЕР</span>Вопрос через упоминание</figcaption></figure>
+    <p>А в личном чате с ботом (не в группе) можно просто писать — он ответит на любое сообщение.</p>
+    <div class="warn">⚠️ Бот — это искусственный интеллект. Он может ошибаться, поэтому важные цифры и факты лучше перепроверить. Если ничего не позвать, бот в обычную переписку не вмешивается.</div>
+    <a class="up" href="#top">↑ наверх</a>
+  </section>
+
+  <section id="panel">
+    <h2>12. Панель (приложение внутри Telegram)</h2>
+    <p>Панель — это окошко, где на одном экране видно все списки, задачи и напоминания. Там всё можно менять пальцем.</p>
+    <h3>Как открыть</h3>
+    <ol class="steps">
+      <li>Откройте <b>личный чат</b> с ботом <a href="https://t.me/GrokAssistant_ai">@GrokAssistant_ai</a>.</li>
+      <li>Нажмите кнопку <b>«Панель»</b> слева от поля ввода — или напишите <code>/start</code> и нажмите «📱 Открыть панель».</li>
+      <li>В группе можно написать <code>/app</code> — бот пришлёт ссылку на Панель.</li>
+    </ol>
+    <figure class="phone"><img src="/guide-media/gif-panel.gif" alt="Анимация: открываем Панель" loading="lazy" width="360" height="646"><figcaption><span class="tag">ПРИМЕР</span>Нажали «Открыть панель» — она выезжает снизу</figcaption></figure>
+    <p>Наверху Панели — название группы, а под ним 4 вкладки. Ниже — настоящие экраны Панели (с примерными данными).</p>
+    <h3>📋 Списки</h3>
+    <p>Все списки группы. Нажмите на кружок — пункт отмечен. «+» — добавить пункт, «×» — удалить пункт, 🗑 — удалить весь список. Вверху можно создать новый список.</p>
+    <figure class="phone"><img src="/guide-media/app-lists.png" alt="Экран «Списки»" loading="lazy" width="390" height="844"><figcaption>Экран «Списки»</figcaption></figure>
+    <h3>🗂 Задачи</h3>
+    <p>Сверху — форма: напишите, что сделать, выберите дату и время, при желании впишите ник того, кому поручаете, и нажмите «Добавить задачу». Ниже — открытые задачи: кружок слева отмечает задачу выполненной, «×» удаляет. Красное время — срок уже прошёл. Внизу — что выполнено за неделю.</p>
+    <figure class="phone"><img src="/guide-media/app-tasks.png" alt="Экран «Задачи»" loading="lazy" width="390" height="844"><figcaption>Экран «Задачи»</figcaption></figure>
+    <h3>⏰ Напоминания</h3>
+    <p>Все задачи со временем по порядку. Чтобы перенести напоминание — нажмите на дату справа и выберите новую. Время — киевское.</p>
+    <figure class="phone"><img src="/guide-media/app-reminders.png" alt="Экран «Напоминания»" loading="lazy" width="390" height="844"><figcaption>Экран «Напоминания»</figcaption></figure>
+    <h3>⚙️ Настройки</h3>
+    <p>Эта вкладка видна только админам группы. Здесь включаются защита от спама, приветствие новичков и ответы ИИ. Обычно здесь ничего менять не нужно.</p>
+    <figure class="phone"><img src="/guide-media/app-settings.png" alt="Экран «Настройки»" loading="lazy" width="390" height="844"><figcaption>Экран «Настройки» (только для админов)</figcaption></figure>
+    <div class="tip">🌙 Если в Telegram включена тёмная тема, Панель тоже станет тёмной:</div>
+    <figure class="phone"><img src="/guide-media/app-tasks-dark.png" alt="Панель в тёмной теме" loading="lazy" width="390" height="844"><figcaption>Та же Панель в тёмной теме</figcaption></figure>
+    <p>Кнопка <b>«📖 Как пользоваться»</b> в Панели открывает эту инструкцию.</p>
+    <a class="up" href="#top">↑ наверх</a>
+  </section>
+
+  <section id="tattoo">
+    <h2>13. Советы для тату-мастера</h2>
+    <h3>🖋 Записи на сеансы</h3>
+    <p>Записывайте каждый сеанс задачей в теме «Тату: записи» — и бот напомнит в нужное время:</p>
+<pre>/task Сеанс Оля, роза на предплечье в субботу 14:00</pre>
+    <p>Хотите напоминание заранее? Создайте ещё одну задачу на вечер накануне: <code>/task Подготовить эскиз для Оли в пятницу 20:00</code>.</p>
+    <h3>✏️ Подготовка к ивенту</h3>
+    <p>Перед флеш-днём или акцией напишите обычный список с чёрточками — как в примере с Хэллоуином. Бот разложит его на задачи, а вы будете отмечать ✅ по ходу.</p>
+    <h3>🧴 Расходники</h3>
+    <p>В теме «Учёт и деньги» заведите список закупки: <code>/list new Закупка</code> и пункты с новой строки. Купили — нажали на пункт.</p>
+    <h3>💡 Идеи флешей</h3>
+    <p>В теме «Идеи» ведите список <code>/list new Идеи флешей</code>, а когда трудно выбрать — запустите опрос <code>/poll</code>. Если не хватает вдохновения, спросите бота: <i>«@GrokAssistant_ai придумай 5 идей для осенних флешей»</i>.</p>
+    <h3>💬 Тексты для клиентов</h3>
+    <p>Бот поможет сформулировать сообщение: <i>«@GrokAssistant_ai напиши вежливое сообщение клиенту, что сеанс переносится на завтра»</i>. Перед отправкой прочитайте и поправьте под себя.</p>
+    <div class="warn">⚠️ Бот не ведёт учёт денег и не считает суммы сам — это просто задачи, списки и напоминания.</div>
+    <a class="up" href="#top">↑ наверх</a>
+  </section>
+
+  <section id="faq">
+    <h2>14. Если что-то не получается</h2>
+    <details><summary>Я написала список, а бот промолчал</summary><p>Проверьте, что каждое дело с новой строки и начинается с <code>-</code> или номера, и строк хотя бы две. Если всё равно тихо — создайте задачи командой <code>/task</code> или в Панели.</p></details>
+    <details><summary>Бот не отвечает на вопрос</summary><p>В группе бот отвечает, только если его позвать: упомянуть <code>@GrokAssistant_ai</code>, ответить на его сообщение или написать <code>/ask</code>. Подождите несколько секунд — ответ ИИ иногда приходит не сразу.</p></details>
+    <details><summary>Нажимаю ✅, а бот пишет «Это может сделать исполнитель, автор или админ»</summary><p>Эту задачу создал кто-то другой и не поручил её вам. Попросите автора отметить её или поручить задачу вам.</p></details>
+    <details><summary>Напоминание пришло не в то время</summary><p>Бот считает время по Киеву. Проверьте, как была написана дата: «25.10 15:00» — это 25 октября, 15:00. Перенести напоминание можно в Панели, во вкладке «Напоминания».</p></details>
+    <details><summary>Панель пишет «Откройте эту страницу из Telegram»</summary><p>Панель работает только внутри Telegram. Откройте личный чат с @GrokAssistant_ai и нажмите кнопку «Панель».</p></details>
+    <details><summary>В Панели не видно нашей группы</summary><p>Наверху Панели есть выбор группы — нажмите на название и выберите «Главная». Если там пусто, напишите что-нибудь в группе и откройте Панель ещё раз.</p></details>
+    <details><summary>Я ошиблась в задаче</summary><p>Откройте Панель → «Задачи» и нажмите «×» у неправильной задачи, затем создайте новую. Время можно поменять во вкладке «Напоминания».</p></details>
+    <details><summary>Команда не сработала</summary><p>Проверьте, что в начале стоит косая черта <code>/</code> и нет пробела после неё: <code>/tasks</code>, а не <code>/ tasks</code>. Можно нажать на «/» справа в поле ввода — Telegram покажет все команды бота с подсказками.</p></details>
+    <a class="up" href="#top">↑ наверх</a>
+  </section>
+
+  <section id="cheat">
+    <h2>15. Шпаргалка</h2>
+    <table>
+      <tr><td><code>/task</code></td><td>одна задача: <i>/task Что сделать завтра 10:00</i></td></tr>
+      <tr><td><code>/tasks</code></td><td>все открытые задачи (<code>/tasks мои</code> — только мои)</td></tr>
+      <tr><td><code>/done 5</code></td><td>задача №5 выполнена</td></tr>
+      <tr><td><code>/list new</code></td><td>новый список с галочками</td></tr>
+      <tr><td><code>/lists</code></td><td>все списки</td></tr>
+      <tr><td><code>/poll</code></td><td>опрос: <i>/poll Вопрос | А | Б</i></td></tr>
+      <tr><td><code>/ask</code></td><td>вопрос боту</td></tr>
+      <tr><td><code>/app</code></td><td>открыть Панель</td></tr>
+      <tr><td><code>/guide</code></td><td>эта инструкция</td></tr>
+      <tr><td><code>/help</code></td><td>короткий список всех команд</td></tr>
+    </table>
+    <p>Спасибо, что дочитали! 💜 Если что-то непонятно — просто спросите бота или Pseudo.</p>
+    <a class="up" href="#top">↑ наверх</a>
+  </section>
+</div>
+<script>
+(() => {
+  const tg = window.Telegram && window.Telegram.WebApp;
+  if (!tg || !tg.platform || tg.platform === "unknown") return;
+  document.documentElement.classList.add("tg");
+  try { tg.ready(); tg.expand(); tg.setHeaderColor("secondary_bg_color"); tg.setBackgroundColor("secondary_bg_color"); } catch (e) {}
+  try { tg.BackButton.show(); tg.BackButton.onClick(() => location.replace("/app?from_guide=1")); } catch (e) {}
+})();
+</script>
+</body>
+</html>

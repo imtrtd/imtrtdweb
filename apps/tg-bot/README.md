@@ -17,6 +17,13 @@ Telegram group bot for the forum supergroup «Главная», on Cloudflare Wo
   «задача»/«todo» cue). Each source message is processed once (`plans_seen`); edits are not subscribed to, so they never re-create tasks.
 - **Maintainer API**: `GET|POST /admin/tasks` with the same `X-Setup-Key` as `/setup` — list home-group tasks / create a plan
   (`{thread_id, header, tasks:[{title, due_local, remind_local}], edit_message_id?}`). Tasks support a separate `remind_at`.
+- **Guide** («📖 Как пользоваться»): `GET /app/guide` (alias `/guide`) serves `src/guide.html` — a Russian, mobile-first how-to
+  with screenshots/GIFs from `public/guide-media/` (Workers static assets). Entry points: `/guide`, and a button under `/start` and
+  `/help` — `web_app` in private chat, `url` → `https://t.me/GrokAssistant_ai/GrokHelper?startapp=guide` in groups (the Mini App
+  redirects to the guide when `start_param=guide`; `/start guide` in private chat also works). There is a guide button on the Panel too.
+  Regenerate media (mock data only): `npm i --no-save playwright-core && node scripts/guide/capture.cjs`
+  (needs Google Chrome and ffmpeg; writes PNGs + palette GIFs to `public/guide-media/`). `mock.html` draws the Telegram-style
+  chat examples (`?scene=plan|done|panel|reminder|task|tasks|list|ask|poll|topics&step=N`).
 - **AI**: Workers AI binding (`@cf/meta/llama-3.3-70b-instruct-fp8-fast`, fallback `@cf/meta/llama-3.1-8b-instruct`).
 
 Deploy: `.github/workflows/deploy-tg-bot.yml` (secrets `CLOUDFLARE_API_TOKEN`, `CLOUDFLARE_ACCOUNT_ID`, `NAMENLOS_TG_BOT_TOKEN`).
