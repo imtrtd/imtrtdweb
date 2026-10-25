@@ -1,0 +1,28 @@
+/**
+ * Telegram group bot @GrokAssistant_ai for the "Главная" forum supergroup.
+ * Webhook + Mini App (/app) + reminders cron. Storage: Durable Object SQLite (no D1 on this account).
+ * Deployed by .github/workflows/deploy-tg-bot.yml.
+ */
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "namenlos-tg-bot",
+  "main": "src/index.ts",
+  "compatibility_date": "2026-08-10",
+  "workers_dev": true,
+  "observability": { "enabled": true },
+  "ai": { "binding": "AI" },
+  "durable_objects": {
+    "bindings": [{ "name": "STORE", "class_name": "BotStore" }]
+  },
+  "migrations": [{ "tag": "v1", "new_sqlite_classes": ["BotStore"] }],
+  "triggers": { "crons": ["* * * * *"] },
+  "vars": {
+    "BOT_ID": "8877042004",
+    "BOT_USERNAME": "GrokAssistant_ai",
+    "OWNER_ID": "8970219861",
+    "TIMEZONE": "Europe/Kiev",
+    "PUBLIC_URL": "https://namenlos-tg-bot.unitl.workers.dev",
+    "AI_MODEL": "@cf/meta/llama-3.3-70b-instruct-fp8-fast",
+    "AI_FALLBACK_MODEL": "@cf/meta/llama-3.1-8b-instruct"
+  }
+}

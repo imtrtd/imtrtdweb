@@ -1,0 +1,291 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, viewport-fit=cover">
+<title>Grok Assistant — панель</title>
+<script src="https://telegram.org/js/telegram-web-app.js"></script>
+<style>
+  :root {
+    --bg: var(--tg-theme-bg-color, #ffffff);
+    --bg2: var(--tg-theme-secondary-bg-color, #f2f2f7);
+    --section: var(--tg-theme-section-bg-color, var(--tg-theme-bg-color, #ffffff));
+    --text: var(--tg-theme-text-color, #111111);
+    --hint: var(--tg-theme-hint-color, #8e8e93);
+    --link: var(--tg-theme-link-color, #2481cc);
+    --btn: var(--tg-theme-button-color, #2481cc);
+    --btn-text: var(--tg-theme-button-text-color, #ffffff);
+    --accent: var(--tg-theme-accent-text-color, var(--tg-theme-link-color, #2481cc));
+    --sep: var(--tg-theme-section-separator-color, rgba(127,127,127,.18));
+    --danger: var(--tg-theme-destructive-text-color, #e53935);
+    --header: var(--tg-theme-section-header-text-color, var(--tg-theme-hint-color, #6d6d72));
+    --r: 14px;
+  }
+  * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+  html, body { margin: 0; background: var(--bg2); color: var(--text); font: 15px/1.4 -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif; }
+  body { padding: 0 0 calc(24px + env(safe-area-inset-bottom)); min-height: 100vh; }
+  header { position: sticky; top: 0; z-index: 5; background: var(--bg2); padding: 14px 16px 8px; }
+  .title { display: flex; align-items: center; gap: 10px; }
+  .logo { width: 36px; height: 36px; border-radius: 10px; background: linear-gradient(135deg, var(--btn), var(--accent)); color: var(--btn-text); display: grid; place-items: center; font-weight: 700; font-size: 17px; flex: none; }
+  .title h1 { font-size: 17px; margin: 0; font-weight: 650; }
+  .title select { margin-top: 2px; border: 0; background: transparent; color: var(--hint); font: inherit; font-size: 13px; padding: 0; max-width: 70vw; }
+  .tabs { display: flex; gap: 4px; background: var(--section); border-radius: 12px; padding: 4px; margin-top: 12px; }
+  .tabs button { flex: 1; border: 0; background: transparent; color: var(--hint); font: inherit; font-size: 13px; font-weight: 600; padding: 8px 4px; border-radius: 9px; cursor: pointer; }
+  .tabs button.on { background: var(--btn); color: var(--btn-text); }
+  main { padding: 6px 16px; }
+  .h { color: var(--header); font-size: 12.5px; text-transform: uppercase; letter-spacing: .04em; margin: 18px 4px 6px; display: flex; justify-content: space-between; align-items: center; }
+  .card { background: var(--section); border-radius: var(--r); overflow: hidden; }
+  .card + .card { margin-top: 12px; }
+  .row { display: flex; align-items: center; gap: 12px; padding: 11px 14px; min-height: 46px; }
+  .row + .row { border-top: 1px solid var(--sep); }
+  .row .grow { flex: 1; min-width: 0; }
+  .row .sub { color: var(--hint); font-size: 12.5px; margin-top: 1px; }
+  .done .txt { text-decoration: line-through; color: var(--hint); }
+  .chk { width: 24px; height: 24px; border-radius: 50%; border: 2px solid var(--hint); flex: none; display: grid; place-items: center; cursor: pointer; transition: .15s; }
+  .chk.on { background: var(--btn); border-color: var(--btn); }
+  .chk.on::after { content: ""; width: 10px; height: 6px; border: 2px solid var(--btn-text); border-top: 0; border-right: 0; transform: rotate(-45deg) translate(1px, -1px); }
+  .list-h { display: flex; align-items: center; justify-content: space-between; padding: 12px 14px 4px; }
+  .list-h b { font-size: 16px; }
+  .pill { font-size: 12px; color: var(--hint); background: var(--bg2); border-radius: 20px; padding: 2px 8px; }
+  .x { border: 0; background: transparent; color: var(--hint); font-size: 18px; cursor: pointer; padding: 2px 6px; }
+  .x:hover { color: var(--danger); }
+  .add { display: flex; gap: 8px; padding: 8px 10px 10px 14px; border-top: 1px solid var(--sep); }
+  input[type=text], input[type=datetime-local], input[type=number], textarea { width: 100%; border: 0; outline: 0; background: var(--bg2); color: var(--text); font: inherit; border-radius: 10px; padding: 9px 11px; }
+  textarea { resize: vertical; min-height: 80px; }
+  .btn { border: 0; background: var(--btn); color: var(--btn-text); font: inherit; font-weight: 600; border-radius: 10px; padding: 9px 14px; cursor: pointer; white-space: nowrap; }
+  .btn.ghost { background: transparent; color: var(--link); padding: 4px 6px; font-size: 13px; }
+  .btn:disabled { opacity: .5; }
+  .form { padding: 12px 14px; display: grid; gap: 8px; }
+  .empty { text-align: center; color: var(--hint); padding: 26px 16px; }
+  .empty .e { font-size: 34px; }
+  .due { font-size: 12.5px; color: var(--accent); }
+  .due.late { color: var(--danger); }
+  .switch { position: relative; width: 46px; height: 28px; flex: none; }
+  .switch input { opacity: 0; width: 0; height: 0; }
+  .switch span { position: absolute; inset: 0; background: var(--sep); border-radius: 28px; transition: .2s; cursor: pointer; }
+  .switch span::before { content: ""; position: absolute; width: 22px; height: 22px; left: 3px; top: 3px; background: #fff; border-radius: 50%; transition: .2s; box-shadow: 0 1px 3px rgba(0,0,0,.25); }
+  .switch input:checked + span { background: var(--btn); }
+  .switch input:checked + span::before { transform: translateX(18px); }
+  .num { width: 76px !important; text-align: center; }
+  .note { color: var(--hint); font-size: 12.5px; padding: 6px 4px; }
+  .toast { position: fixed; left: 50%; bottom: calc(20px + env(safe-area-inset-bottom)); transform: translateX(-50%); background: rgba(0,0,0,.78); color: #fff; padding: 9px 16px; border-radius: 20px; font-size: 14px; opacity: 0; transition: .25s; pointer-events: none; z-index: 10; }
+  .toast.on { opacity: 1; }
+  .gate { padding: 60px 24px; text-align: center; color: var(--hint); }
+  .gate .e { font-size: 48px; }
+  .skeleton { height: 46px; border-radius: var(--r); background: var(--section); margin-top: 12px; opacity: .6; }
+</style>
+</head>
+<body>
+<header>
+  <div class="title">
+    <div class="logo">G</div>
+    <div>
+      <h1>Grok Assistant</h1>
+      <select id="chatSel" aria-label="Чат"></select>
+    </div>
+  </div>
+  <nav class="tabs" id="tabs">
+    <button data-tab="lists" class="on">Списки</button>
+    <button data-tab="tasks">Задачи</button>
+    <button data-tab="reminders">Напоминания</button>
+    <button data-tab="settings">Настройки</button>
+  </nav>
+</header>
+<main id="main"><div class="skeleton"></div><div class="skeleton"></div><div class="skeleton"></div></main>
+<div class="toast" id="toast"></div>
+<script>
+(() => {
+  const tg = window.Telegram && window.Telegram.WebApp;
+  const $ = (s) => document.querySelector(s);
+  const main = $("#main");
+  const state = { tab: "lists", chats: [], chatId: null, data: null, tz: "Europe/Kiev" };
+  const esc = (s) => String(s ?? "").replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+  const haptic = (t) => { try { tg.HapticFeedback.impactOccurred(t || "light"); } catch (e) {} };
+
+  function toast(msg) {
+    const t = $("#toast"); t.textContent = msg; t.classList.add("on");
+    clearTimeout(toast._t); toast._t = setTimeout(() => t.classList.remove("on"), 1800);
+  }
+
+  async function api(action, body) {
+    const r = await fetch("/api/" + action, {
+      method: "POST",
+      headers: { "content-type": "application/json", "x-telegram-init-data": tg ? tg.initData : "" },
+      body: JSON.stringify(body || {}),
+    });
+    const j = await r.json().catch(() => ({ ok: false, error: "Ошибка сети" }));
+    if (!j.ok) throw new Error(j.error || "Ошибка");
+    return j;
+  }
+
+  const fmt = (ts) => new Date(ts).toLocaleString("ru-RU", { timeZone: state.tz, day: "2-digit", month: "short", hour: "2-digit", minute: "2-digit" });
+  function toLocalInput(ts) {
+    const p = Object.fromEntries(new Intl.DateTimeFormat("en-CA", { timeZone: state.tz, hourCycle: "h23", year: "numeric", month: "2-digit", day: "2-digit", hour: "2-digit", minute: "2-digit" }).formatToParts(new Date(ts)).map((x) => [x.type, x.value]));
+    return `${p.year}-${p.month}-${p.day}T${p.hour}:${p.minute}`;
+  }
+
+  function gate(emoji, text) {
+    main.innerHTML = `<div class="gate"><div class="e">${emoji}</div><p>${text}</p></div>`;
+    $("#tabs").style.display = "none";
+  }
+
+  async function load() {
+    if (!state.chatId) return;
+    try {
+      state.data = await api("overview", { chat_id: state.chatId });
+      render();
+    } catch (e) { gate("⚠️", esc(e.message)); }
+  }
+
+  function render() {
+    const d = state.data; if (!d) return;
+    document.querySelectorAll("#tabs button").forEach((b) => {
+      b.classList.toggle("on", b.dataset.tab === state.tab);
+      if (b.dataset.tab === "settings") b.style.display = d.is_admin ? "" : "none";
+    });
+    ({ lists: renderLists, tasks: renderTasks, reminders: renderReminders, settings: renderSettings })[state.tab]();
+  }
+
+  function renderLists() {
+    const d = state.data;
+    let h = `<div class="h"><span>Списки</span></div>
+      <div class="card"><div class="add" style="border:0"><input type="text" id="newList" placeholder="Новый список, например «Покупки»" maxlength="100"><button class="btn" id="newListBtn">Создать</button></div></div>`;
+    if (!d.lists.length) h += `<div class="empty"><div class="e">📋</div>Списков пока нет</div>`;
+    for (const l of d.lists) {
+      const done = l.items.filter((i) => i.done).length;
+      h += `<div class="h"></div><div class="card" data-list="${l.id}">
+        <div class="list-h"><b>${esc(l.name)}</b><span><span class="pill">${done}/${l.items.length}</span><button class="x" data-dellist="${l.id}" title="Удалить список">🗑</button></span></div>
+        ${l.items.map((i) => `<div class="row ${i.done ? "done" : ""}"><div class="chk ${i.done ? "on" : ""}" data-toggle="${i.id}"></div><div class="grow txt" data-toggle="${i.id}">${esc(i.text)}</div><button class="x" data-delitem="${i.id}">×</button></div>`).join("")}
+        <div class="add"><input type="text" placeholder="Добавить пункт…" data-additem="${l.id}" maxlength="300"><button class="btn" data-addbtn="${l.id}">+</button></div>
+      </div>`;
+    }
+    main.innerHTML = h;
+  }
+
+  function taskRow(t) {
+    const late = t.due_at && !t.done && t.due_at < Date.now();
+    const sub = [t.assignee_name ? "👤 " + esc(t.assignee_name) : "", t.creator_name ? "от " + esc(t.creator_name) : ""].filter(Boolean).join(" · ");
+    return `<div class="row ${t.done ? "done" : ""}">
+      <div class="chk ${t.done ? "on" : ""}" data-taskdone="${t.id}" data-state="${t.done ? 1 : 0}"></div>
+      <div class="grow"><div class="txt">#${t.id} ${esc(t.text)}</div>
+        <div class="sub">${t.due_at ? `<span class="due ${late ? "late" : ""}">⏰ ${fmt(t.due_at)}</span> ` : ""}${sub}</div></div>
+      <button class="x" data-deltask="${t.id}">×</button></div>`;
+  }
+
+  function renderTasks() {
+    const d = state.data;
+    const open = d.tasks.filter((t) => !t.done), done = d.tasks.filter((t) => t.done);
+    let h = `<div class="h"><span>Новая задача</span></div>
+      <div class="card"><div class="form">
+        <input type="text" id="taskText" placeholder="Что нужно сделать?" maxlength="500">
+        <div style="display:flex;gap:8px"><input type="datetime-local" id="taskDue"><input type="text" id="taskWho" placeholder="Кому (@ник)" style="max-width:40%"></div>
+        <button class="btn" id="taskAdd">Добавить задачу</button>
+      </div></div>
+      <div class="h"><span>Открытые · ${open.length}</span></div>`;
+    h += open.length ? `<div class="card">${open.map(taskRow).join("")}</div>` : `<div class="card"><div class="empty"><div class="e">🎉</div>Открытых задач нет</div></div>`;
+    if (done.length) h += `<div class="h"><span>Выполнено за неделю · ${done.length}</span></div><div class="card">${done.map(taskRow).join("")}</div>`;
+    main.innerHTML = h;
+  }
+
+  function renderReminders() {
+    const d = state.data;
+    const up = d.tasks.filter((t) => !t.done && t.due_at).sort((a, b) => a.due_at - b.due_at);
+    let h = `<div class="h"><span>Ближайшие напоминания</span></div>`;
+    if (!up.length) { main.innerHTML = h + `<div class="card"><div class="empty"><div class="e">⏰</div>Напоминаний нет.<br>Добавьте задачу со временем.</div></div>`; return; }
+    h += `<div class="card">${up.map((t) => {
+      const late = t.due_at < Date.now();
+      return `<div class="row"><div class="grow"><div>#${t.id} ${esc(t.text)}</div><div class="sub"><span class="due ${late ? "late" : ""}">${late ? (t.reminded ? "напомнено " : "просрочено ") : ""}${fmt(t.due_at)}</span>${t.assignee_name ? " · 👤 " + esc(t.assignee_name) : ""}</div></div>
+        <input type="datetime-local" value="${toLocalInput(t.due_at)}" data-due="${t.id}" style="max-width:46%;font-size:13px"></div>`;
+    }).join("")}</div><p class="note">Время — Киев (${esc(state.tz)}). Измените дату, чтобы перенести напоминание.</p>`;
+    main.innerHTML = h;
+  }
+
+  function sw(key, label, sub) {
+    const v = state.data.settings[key];
+    return `<div class="row"><div class="grow">${label}${sub ? `<div class="sub">${sub}</div>` : ""}</div><label class="switch"><input type="checkbox" data-set="${key}" ${v ? "checked" : ""}><span></span></label></div>`;
+  }
+  function num(key, label, sub) {
+    return `<div class="row"><div class="grow">${label}${sub ? `<div class="sub">${sub}</div>` : ""}</div><input type="number" class="num" data-num="${key}" value="${state.data.settings[key]}"></div>`;
+  }
+  function renderSettings() {
+    if (!state.data.is_admin) { main.innerHTML = `<div class="empty">Настройки доступны только администраторам.</div>`; return; }
+    main.innerHTML = `
+      <div class="h"><span>Антиспам</span></div>
+      <div class="card">${sw("antispam", "🛡 Антиспам", "Главный переключатель")}${sw("antilink", "🔗 Ссылки от новичков", "Удалять ссылки и пересылки из каналов")}${num("newbie_hours", "🐣 Новичок, часов", "Сколько часов после входа")}${sw("antiflood", "🌊 Антифлуд", "Мут на 10 минут при флуде")}${num("flood_limit", "Лимит сообщений", "за 10 секунд")}</div>
+      <div class="h"><span>Модерация</span></div>
+      <div class="card">${num("warn_limit", "⚠️ Предупреждений до мута", "Мут на 24 часа")}${sw("clean_service", "🧹 Удалять «вошёл/вышел»")}${sw("ai_enabled", "🤖 Ответы ИИ", "На упоминание и ответ боту")}</div>
+      <div class="h"><span>Приветствие</span></div>
+      <div class="card">${sw("welcome_enabled", "👋 Приветствовать новичков")}<div class="form"><textarea id="welcomeText" maxlength="1000">${esc(state.data.settings.welcome_text)}</textarea><div class="note">Подстановки: {name} — имя, {chat} — название чата</div><button class="btn" id="saveWelcome">Сохранить текст</button></div></div>`;
+  }
+
+  async function act(fn, okMsg) {
+    try { haptic(); await fn(); if (okMsg) toast(okMsg); await load(); }
+    catch (e) { toast("⚠️ " + e.message); try { tg.HapticFeedback.notificationOccurred("error"); } catch (_) {} }
+  }
+
+  main.addEventListener("click", (ev) => {
+    const el = ev.target.closest("[data-toggle],[data-delitem],[data-dellist],[data-addbtn],[data-taskdone],[data-deltask],#newListBtn,#taskAdd,#saveWelcome");
+    if (!el) return;
+    const ds = el.dataset;
+    if (ds.toggle) return act(() => api("item_toggle", { item_id: +ds.toggle }));
+    if (ds.delitem) return act(() => api("item_delete", { item_id: +ds.delitem }), "Удалено");
+    if (ds.dellist) {
+      const go = () => act(() => api("list_delete", { list_id: +ds.dellist }), "Список удалён");
+      return tg && tg.showConfirm ? tg.showConfirm("Удалить список целиком?", (ok) => ok && go()) : confirm("Удалить список?") && go();
+    }
+    if (ds.addbtn) {
+      const inp = document.querySelector(`[data-additem="${ds.addbtn}"]`);
+      if (!inp.value.trim()) return;
+      return act(() => api("item_add", { list_id: +ds.addbtn, text: inp.value }), "Добавлено");
+    }
+    if (ds.taskdone) return act(() => api("task_update", { task_id: +ds.taskdone, done: ds.state !== "1" }), ds.state !== "1" ? "✅ Выполнено" : "Возвращено");
+    if (ds.deltask) return act(() => api("task_update", { task_id: +ds.deltask, delete: true }), "Задача удалена");
+    if (el.id === "newListBtn") {
+      const v = $("#newList").value.trim(); if (!v) return;
+      return act(() => api("list_create", { chat_id: state.chatId, name: v }), "Список создан");
+    }
+    if (el.id === "taskAdd") {
+      const text = $("#taskText").value.trim(); if (!text) return toast("Опишите задачу");
+      return act(() => api("task_create", { chat_id: state.chatId, text, due_local: $("#taskDue").value || null, assignee: $("#taskWho").value.trim() || null }), "Задача добавлена");
+    }
+    if (el.id === "saveWelcome") return act(() => api("settings_save", { chat_id: state.chatId, welcome_text: $("#welcomeText").value }), "Сохранено");
+  });
+  main.addEventListener("keydown", (ev) => {
+    if (ev.key !== "Enter" || ev.target.tagName !== "INPUT") return;
+    const id = ev.target.dataset.additem;
+    if (id) document.querySelector(`[data-addbtn="${id}"]`).click();
+    if (ev.target.id === "newList") $("#newListBtn").click();
+    if (ev.target.id === "taskText") $("#taskAdd").click();
+  });
+  main.addEventListener("change", (ev) => {
+    const ds = ev.target.dataset;
+    if (ds.set) return act(() => api("settings_save", { chat_id: state.chatId, [ds.set]: ev.target.checked ? 1 : 0 }), "Сохранено");
+    if (ds.num) return act(() => api("settings_save", { chat_id: state.chatId, [ds.num]: +ev.target.value }), "Сохранено");
+    if (ds.due) return act(() => api("task_update", { task_id: +ds.due, due_local: ev.target.value || null }), "Перенесено");
+  });
+  $("#tabs").addEventListener("click", (ev) => {
+    const b = ev.target.closest("button"); if (!b) return;
+    state.tab = b.dataset.tab; haptic("soft"); render();
+  });
+  $("#chatSel").addEventListener("change", (ev) => { state.chatId = +ev.target.value; load(); });
+
+  async function start() {
+    if (!tg || !tg.initData) return gate("📱", "Откройте эту страницу из Telegram — через кнопку «Открыть панель» у бота @GrokAssistant_ai.");
+    tg.ready(); tg.expand();
+    try { tg.setHeaderColor("secondary_bg_color"); tg.setBackgroundColor("secondary_bg_color"); } catch (e) {}
+    try {
+      const b = await api("bootstrap");
+      state.chats = b.chats; state.tz = b.tz || state.tz;
+      if (!b.chats.length) return gate("🤷", "Вы пока не состоите ни в одной группе с ботом.");
+      const qp = new URLSearchParams(location.search).get("chat");
+      const want = b.preferred || (qp ? +qp : null);
+      state.chatId = (b.chats.find((c) => c.id === want) || b.chats[0]).id;
+      $("#chatSel").innerHTML = b.chats.map((c) => `<option value="${c.id}" ${c.id === state.chatId ? "selected" : ""}>${esc(c.title)}${c.is_admin ? " · админ" : ""}</option>`).join("");
+      await load();
+    } catch (e) { gate("⚠️", esc(e.message)); }
+  }
+  start();
+})();
+</script>
+</body>
+</html>
