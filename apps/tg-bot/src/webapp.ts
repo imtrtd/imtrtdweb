@@ -153,7 +153,7 @@ export async function handleApi(c: Ctx, req: Request, action: string): Promise<R
         if (!admin && !own) throw new HttpError(403, "Изменить может исполнитель, автор или админ");
         if (body.delete) { await c.db.run("DELETE FROM tasks WHERE id = ?", t.id); return json({ ok: true }); }
         if (typeof body.done === "boolean") await c.db.run("UPDATE tasks SET done = ?, done_at = ? WHERE id = ?", body.done ? 1 : 0, body.done ? Date.now() : null, t.id);
-        if ("due_local" in body) await c.db.run("UPDATE tasks SET due_at = ?, reminded = 0 WHERE id = ?", parseLocal(body.due_local, c.tz), t.id);
+        if ("due_local" in body) await c.db.run("UPDATE tasks SET due_at = ?, remind_at = NULL, reminded = 0 WHERE id = ?", parseLocal(body.due_local, c.tz), t.id);
         if (typeof body.text === "string" && body.text.trim()) await c.db.run("UPDATE tasks SET text = ? WHERE id = ?", body.text.trim().slice(0, 500), t.id);
         return json({ ok: true });
       }
