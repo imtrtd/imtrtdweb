@@ -4,6 +4,7 @@ import { aiReply, recordHistory } from "./ai";
 import { fmtDate, humanDuration, parseDuration, parseWhen } from "./time";
 import { addItems, createList, listItems, renderList, repostList, resolveList, toggleItem, getList } from "./lists";
 import { createTask, reminderMarkup, renderTasks, taskLine } from "./tasks";
+import { maybeHandlePlan, rememberTopic, rerenderPlan } from "./plan";
 
 const NO_PERMS = {
   can_send_messages: false, can_send_audios: false, can_send_documents: false, can_send_photos: false,
@@ -64,6 +65,9 @@ async function onMessage(c: Ctx, msg: any) {
     return;
   }
 
+  const topicName = msg.forum_topic_created?.name ?? msg.forum_topic_edited?.name ?? msg.reply_to_message?.forum_topic_created?.name;
+  if (topicName && msg.message_thread_id) await rememberTopic(c, chatId, msg.message_thread_id, topicName);
+
   const text: string = msg.text ?? msg.caption ?? "";
   if (!text && !msg.forward_origin && !msg.sticker && !msg.photo && !msg.video && !msg.document && !msg.animation) return; // other service messages
 
@@ -89,6 +93,16 @@ async function onMessage(c: Ctx, msg: any) {
       await c.send(chatId, thread, `⚠️ Не получилось: <code>${esc(d)}</code>`, replyTo(msg));
     }
     return;
+  }
+
+  // To-do-like messages become tasks + a checklist in the matching topic.
+  const anonAdmin = msg.sender_chat?.id === chatId; // owner posting as the group
+  if (s.ai_enabled && text && !msg.forward_origin && (anonAdmin || !msg.from?.is_bot)) {
+    try {
+      if (await maybeHandlePlan(c, msg, thread, text, anonAdmin ? c.ownerId : msg.from?.id ?? 0, name)) return;
+    } catch (e) {
+      console.warn("plan failed", String((e as Error)?.message ?? e));
+    }
   }
 
   // LLM replies on @mention or reply to one of the bot's messages
@@ -664,7 +678,9 @@ async function onCallback(c: Ctx, cq: any) {
       if (!allowed) return void (await answer("Это может сделать исполнитель, автор или админ", true));
       if (kind === "td") {
         await c.db.run("UPDATE tasks SET done = 1, done_at = ? WHERE id = ?", Date.now(), id);
-        if (extra === "l") {
+        if (extra === "p" && t.src_msg_id) {
+          await rerenderPlan(c, chatId, msg.message_id, Number(t.src_msg_id), msg.text ?? "");
+        } else if (extra === "l") {
           const r = await renderTasks(c, chatId);
           await c.tg.try("editMessageText", { chat_id: chatId, message_id: msg.message_id, text: r.text, parse_mode: "HTML", reply_markup: r.reply_markup ?? { inline_keyboard: [] } });
         } else {
@@ -674,7 +690,7 @@ async function onCallback(c: Ctx, cq: any) {
       }
       const minutes = Math.min(Number(extra) || 60, 10080);
       const due = Date.now() + minutes * 60_000;
-      await c.db.run("UPDATE tasks SET due_at = ?, reminded = 0 WHERE id = ?", due, id);
+      await c.db.run("UPDATE tasks SET due_at = ?, remind_at = NULL, reminded = 0 WHERE id = ?", due, id);
       await c.tg.try("editMessageText", { chat_id: chatId, message_id: msg.message_id, parse_mode: "HTML", text: `${taskLine(c, { ...t, due_at: due })}\n\n⏰ Отложено до ${fmtDate(due, c.tz)} — ${esc(userName(cq.from))}`, reply_markup: reminderMarkup(id) });
       return void (await answer(`Напомню ${fmtDate(due, c.tz)}`));
     }

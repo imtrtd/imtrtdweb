@@ -10,6 +10,8 @@ export interface Env {
   OWNER_ID: string;
   TIMEZONE: string;
   HOME_CHAT_ID?: string;
+  /** JSON {thread_id: name} of known forum topics in the home group (hint for routing auto-plans). */
+  FORUM_TOPICS?: string;
   PUBLIC_URL: string;
   AI_MODEL: string;
   AI_FALLBACK_MODEL: string;

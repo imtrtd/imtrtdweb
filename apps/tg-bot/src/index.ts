@@ -3,6 +3,8 @@ import { handleUpdate } from "./bot";
 import { handleApi, validateInitData } from "./webapp";
 import { runSetup } from "./setup";
 import { sendDueReminders } from "./tasks";
+import { publishPlan } from "./plan";
+import { zonedToUtc } from "./time";
 import APP_HTML from "./app.html";
 
 export { BotStore } from "./store";
@@ -48,6 +50,32 @@ export default {
     if (url.pathname === "/setup" && req.method === "POST") {
       if (!safeEqual(req.headers.get("x-setup-key") ?? "", await setupKey(env))) return new Response("forbidden", { status: 403 });
       return Response.json(await runSetup(c));
+    }
+
+    // Maintainer API (same key as /setup): GET lists tasks of the home group, POST creates a plan (tasks + checklist message).
+    if (url.pathname === "/admin/tasks" && (req.method === "GET" || req.method === "POST")) {
+      if (!safeEqual(req.headers.get("x-setup-key") ?? "", await setupKey(env))) return new Response("forbidden", { status: 403 });
+      const home = Number(env.HOME_CHAT_ID);
+      if (req.method === "GET") {
+        const rows = await c.db.all("SELECT id, thread_id, text, assignee_name, due_at, remind_at, reminded, done, src_msg_id, created_at FROM tasks WHERE chat_id = ? ORDER BY id DESC LIMIT 100", home);
+        return Response.json({ ok: true, tasks: rows });
+      }
+      let b: any;
+      try { b = await req.json(); } catch { return new Response("bad json", { status: 400 }); }
+      const local = (v: unknown) => {
+        const m = String(v ?? "").match(/^(\d{4})-(\d{2})-(\d{2})[ T](\d{2}):(\d{2})/);
+        return m ? zonedToUtc(+m[1], +m[2], +m[3], +m[4], +m[5], c.tz) : null;
+      };
+      const tasks = (Array.isArray(b.tasks) ? b.tasks : []).slice(0, 20).map((t: any) => ({
+        title: String(t.title ?? "").trim(), due: local(t.due_local), remindAt: local(t.remind_local), assignee: t.assignee ? String(t.assignee) : null,
+      })).filter((t: any) => t.title);
+      if (!tasks.length) return Response.json({ ok: false, error: "no tasks" }, { status: 400 });
+      const editId = Number(b.edit_message_id) || undefined;
+      const r = await publishPlan(c, {
+        chatId: home, threadId: Number(b.thread_id) || 0, header: String(b.header ?? "📝 План"), srcMsgId: Number(b.src_msg_id) || editId || 0,
+        createdBy: Number(env.OWNER_ID), creatorName: String(b.creator_name ?? "Владелец"), tasks, editMessageId: editId,
+      });
+      return Response.json({ ok: true, message_id: r.messageId, tasks: r.rows.map((t) => ({ id: t.id, text: t.text, due_at: t.due_at, remind_at: t.remind_at, thread_id: t.thread_id })) });
     }
 
     if (url.pathname === "/" || url.pathname === "/health") {

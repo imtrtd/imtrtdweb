@@ -27,6 +27,14 @@ const SCHEMA = [
      due_at INTEGER, reminded INTEGER DEFAULT 0, done INTEGER DEFAULT 0, done_at INTEGER, created_at INTEGER)`,
   `CREATE INDEX IF NOT EXISTS tasks_due ON tasks(done, reminded, due_at)`,
   `CREATE TABLE IF NOT EXISTS cleanup(chat_id INTEGER, message_id INTEGER, delete_at INTEGER, PRIMARY KEY(chat_id, message_id))`,
+  `CREATE TABLE IF NOT EXISTS topics(chat_id INTEGER, thread_id INTEGER, name TEXT, updated_at INTEGER, PRIMARY KEY(chat_id, thread_id))`,
+  `CREATE TABLE IF NOT EXISTS plans_seen(chat_id INTEGER, message_id INTEGER, ts INTEGER, PRIMARY KEY(chat_id, message_id))`,
+];
+
+/** Additive column migrations; "duplicate column" errors on re-run are expected and ignored. */
+const COLUMNS = [
+  `ALTER TABLE tasks ADD COLUMN remind_at INTEGER`, // reminder time if different from due_at
+  `ALTER TABLE tasks ADD COLUMN src_msg_id INTEGER`, // message the task was parsed from (auto-plans)
 ];
 
 /** Single SQLite-backed Durable Object holding all bot state. */
@@ -35,6 +43,7 @@ export class BotStore extends DurableObject {
     super(ctx, env as any);
     ctx.blockConcurrencyWhile(async () => {
       for (const stmt of SCHEMA) ctx.storage.sql.exec(stmt);
+      for (const stmt of COLUMNS) { try { ctx.storage.sql.exec(stmt); } catch { /* already applied */ } }
     });
   }
 

@@ -31,20 +31,20 @@ export function reminderMarkup(id: number) {
   ]] };
 }
 
-export async function createTask(c: Ctx, t: { chatId: number; threadId: number; text: string; assigneeId: number | null; assigneeName: string | null; createdBy: number; creatorName: string; due: number | null }) {
+export async function createTask(c: Ctx, t: { chatId: number; threadId: number; text: string; assigneeId: number | null; assigneeName: string | null; createdBy: number; creatorName: string; due: number | null; remindAt?: number | null; srcMsgId?: number | null }) {
   const r = await c.db.one(
-    "INSERT INTO tasks(chat_id, thread_id, text, assignee_id, assignee_name, created_by, creator_name, due_at, created_at) VALUES (?,?,?,?,?,?,?,?,?) RETURNING *",
-    t.chatId, t.threadId, t.text.slice(0, 500), t.assigneeId, t.assigneeName, t.createdBy, t.creatorName, t.due, Date.now());
+    "INSERT INTO tasks(chat_id, thread_id, text, assignee_id, assignee_name, created_by, creator_name, due_at, remind_at, src_msg_id, created_at) VALUES (?,?,?,?,?,?,?,?,?,?,?) RETURNING *",
+    t.chatId, t.threadId, t.text.slice(0, 500), t.assigneeId, t.assigneeName, t.createdBy, t.creatorName, t.due, t.remindAt ?? null, t.srcMsgId ?? null, Date.now());
   return r!;
 }
 
 /** Cron: send due reminders. */
 export async function sendDueReminders(c: Ctx) {
-  const due = await c.db.all("SELECT * FROM tasks WHERE done = 0 AND reminded = 0 AND due_at IS NOT NULL AND due_at <= ? ORDER BY due_at LIMIT 25", Date.now());
+  const due = await c.db.all("SELECT * FROM tasks WHERE done = 0 AND reminded = 0 AND COALESCE(remind_at, due_at) IS NOT NULL AND COALESCE(remind_at, due_at) <= ? ORDER BY COALESCE(remind_at, due_at) LIMIT 25", Date.now());
   for (const t of due) {
     await c.db.run("UPDATE tasks SET reminded = 1 WHERE id = ?", t.id);
     const who = t.assignee_id ? mentionHtml(t.assignee_id, t.assignee_name || "исполнитель") + ", " : t.assignee_name ? esc(t.assignee_name) + ", " : t.created_by ? mentionHtml(t.created_by, t.creator_name || "автор") + ", " : "";
-    const text = `⏰ ${who}напоминание о задаче <b>#${t.id}</b>:\n${esc(t.text)}`;
+    const text = `⏰ ${who}напоминание о задаче <b>#${t.id}</b>:\n${esc(t.text)}${t.due_at && t.remind_at && t.remind_at < t.due_at ? `\nСрок: ${fmtDate(t.due_at, c.tz)}` : ""}`;
     try {
       await c.send(t.chat_id, t.thread_id, text, { reply_markup: reminderMarkup(t.id) });
     } catch (e) {

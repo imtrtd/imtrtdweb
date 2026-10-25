@@ -21,6 +21,7 @@
     "BOT_USERNAME": "GrokAssistant_ai",
     "OWNER_ID": "8970219861",
     "HOME_CHAT_ID": "-1004331076673",
+    "FORUM_TOPICS": "{\"10\":\"Задачи\",\"11\":\"🖋 Тату: записи\",\"12\":\"💰 Учёт и деньги\",\"13\":\"📁 Проекты\",\"14\":\"💡 Идеи\"}",
     "TIMEZONE": "Europe/Kiev",
     "PUBLIC_URL": "https://namenlos-tg-bot.unitl.workers.dev",
     "AI_MODEL": "@cf/meta/llama-3.3-70b-instruct-fp8-fast",
