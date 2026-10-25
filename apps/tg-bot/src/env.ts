@@ -9,6 +9,7 @@ export interface Env {
   BOT_USERNAME: string;
   OWNER_ID: string;
   TIMEZONE: string;
+  HOME_CHAT_ID?: string;
   PUBLIC_URL: string;
   AI_MODEL: string;
   AI_FALLBACK_MODEL: string;

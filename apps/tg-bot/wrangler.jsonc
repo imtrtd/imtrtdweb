@@ -20,6 +20,7 @@
     "BOT_ID": "8877042004",
     "BOT_USERNAME": "GrokAssistant_ai",
     "OWNER_ID": "8970219861",
+    "HOME_CHAT_ID": "-1004331076673",
     "TIMEZONE": "Europe/Kiev",
     "PUBLIC_URL": "https://namenlos-tg-bot.unitl.workers.dev",
     "AI_MODEL": "@cf/meta/llama-3.3-70b-instruct-fp8-fast",

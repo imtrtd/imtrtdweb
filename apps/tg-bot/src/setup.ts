@@ -56,5 +56,15 @@ export async function runSetup(c: Ctx): Promise<Record<string, unknown>> {
   });
   await step("short_description", "setMyShortDescription", { short_description: "Модерация, списки, задачи, опросы и ИИ для вашей группы" });
   await step("menu_button", "setChatMenuButton", { menu_button: { type: "web_app", text: "Панель", web_app: { url: `${base}/app` } } });
+  // Register the home group so the Mini App can list it before any update arrives.
+  if (c.env.HOME_CHAT_ID) {
+    try {
+      const chat = await c.tg.call<any>("getChat", { chat_id: Number(c.env.HOME_CHAT_ID) });
+      await c.db.run(
+        "INSERT INTO chats(chat_id, title, is_forum, updated_at) VALUES (?,?,?,?) ON CONFLICT(chat_id) DO UPDATE SET title = excluded.title, is_forum = excluded.is_forum, updated_at = excluded.updated_at",
+        chat.id, chat.title ?? "", chat.is_forum ? 1 : 0, Date.now());
+      out.home_chat = "ok";
+    } catch (e) { out.home_chat = String((e as Error).message); }
+  }
   return out;
 }
