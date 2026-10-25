@@ -35,6 +35,7 @@ const SCHEMA = [
 const COLUMNS = [
   `ALTER TABLE tasks ADD COLUMN remind_at INTEGER`, // reminder time if different from due_at
   `ALTER TABLE tasks ADD COLUMN src_msg_id INTEGER`, // message the task was parsed from (auto-plans)
+  `ALTER TABLE settings ADD COLUMN clean_settings INTEGER DEFAULT 1`, // delete "group settings changed" service messages (on by default)
 ];
 
 /** Single SQLite-backed Durable Object holding all bot state. */

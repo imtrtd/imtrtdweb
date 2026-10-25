@@ -24,6 +24,11 @@ Telegram group bot for the forum supergroup «Главная», on Cloudflare Wo
   Regenerate media (mock data only): `npm i --no-save playwright-core && node scripts/guide/capture.cjs`
   (needs Google Chrome and ffmpeg; writes PNGs + palette GIFs to `public/guide-media/`). `mock.html` draws the Telegram-style
   chat examples (`?scene=plan|done|panel|reminder|task|tasks|list|ask|poll|topics&step=N`).
+- **Service-message cleanup**: `clean_service` (default on) deletes join/leave notices; `clean_settings` (default on, toggle
+  «🧽 Удалять сообщения о настройках» in `/settings` and the Panel) deletes "group settings / system" service messages —
+  see `SETTINGS_SERVICE_FIELDS` in `src/bot.ts` (title/photo, pins, topic edited/closed/reopened, General hidden/unhidden,
+  auto-delete timer, video chats, background, boosts, migrations, giveaways…). `forum_topic_created` is never deleted (that would
+  delete the whole topic). Delete failures (too old / no rights) are ignored. Only new messages are cleaned; history can't be enumerated.
 - **AI**: Workers AI binding (`@cf/meta/llama-3.3-70b-instruct-fp8-fast`, fallback `@cf/meta/llama-3.1-8b-instruct`).
 
 Deploy: `.github/workflows/deploy-tg-bot.yml` (secrets `CLOUDFLARE_API_TOKEN`, `CLOUDFLARE_ACCOUNT_ID`, `NAMENLOS_TG_BOT_TOKEN`).

@@ -40,6 +40,37 @@ function isRealReply(msg: any): boolean {
   return true;
 }
 
+// ---------------------------------------------------------------- service messages
+
+/**
+ * Bot API Message fields of "group settings / system notice" service messages that get auto-deleted
+ * (setting `clean_settings`). Join/leave notices are handled separately by `clean_service`.
+ * Deliberately NOT here: forum_topic_created (deleting it deletes the whole topic!), gifts, payments,
+ * checklist/poll changes, giveaway announcements, suggested posts, web_app_data.
+ */
+export const SETTINGS_SERVICE_FIELDS = [
+  "new_chat_title", "new_chat_photo", "delete_chat_photo",
+  "group_chat_created", "supergroup_chat_created", "channel_chat_created",
+  "migrate_to_chat_id", "migrate_from_chat_id",
+  "message_auto_delete_timer_changed", "pinned_message",
+  "chat_owner_left", "chat_owner_changed",
+  "forum_topic_edited", "forum_topic_closed", "forum_topic_reopened",
+  "general_forum_topic_hidden", "general_forum_topic_unhidden",
+  "video_chat_scheduled", "video_chat_started", "video_chat_ended", "video_chat_participants_invited",
+  "chat_background_set", "boost_added", "write_access_allowed", "proximity_alert_triggered",
+  "users_shared", "chat_shared", "managed_bot_created",
+  "community_chat_added", "community_chat_joined", "community_chat_removed",
+  "paid_message_price_changed", "direct_message_price_changed",
+  "giveaway_created", "giveaway_winners", "giveaway_completed",
+] as const;
+
+export function isSettingsServiceMessage(msg: any): boolean {
+  if (!msg || msg.forum_topic_created) return false; // NEVER: would delete the topic with all its content
+  if (msg.message_thread_id && msg.message_id === msg.message_thread_id) return false; // topic header message
+  if (msg.text || msg.caption || msg.photo || msg.video || msg.document || msg.animation || msg.sticker || msg.voice || msg.audio || msg.poll || msg.checklist) return false; // user content
+  return SETTINGS_SERVICE_FIELDS.some((f) => msg[f] !== undefined && msg[f] !== null && msg[f] !== false);
+}
+
 // ---------------------------------------------------------------- messages
 
 async function onMessage(c: Ctx, msg: any) {
@@ -67,6 +98,12 @@ async function onMessage(c: Ctx, msg: any) {
 
   const topicName = msg.forum_topic_created?.name ?? msg.forum_topic_edited?.name ?? msg.reply_to_message?.forum_topic_created?.name;
   if (topicName && msg.message_thread_id) await rememberTopic(c, chatId, msg.message_thread_id, topicName);
+
+  if (isSettingsServiceMessage(msg)) {
+    const s = await c.settings(chatId);
+    if (s.clean_settings) await c.tg.try("deleteMessage", { chat_id: chatId, message_id: msg.message_id }); // too old / no rights → ignored
+    return;
+  }
 
   const text: string = msg.text ?? msg.caption ?? "";
   if (!text && !msg.forward_origin && !msg.sticker && !msg.photo && !msg.video && !msg.document && !msg.animation) return; // other service messages
@@ -636,10 +673,11 @@ async function groupCommand(c: Ctx, msg: any, thread: number, cmd: string, args:
 const TOGGLES: Array<[keyof Settings, string]> = [
   ["antispam", "🛡 Антиспам"], ["antilink", "🔗 Ссылки от новичков"], ["antiflood", "🌊 Антифлуд"],
   ["welcome_enabled", "👋 Приветствие"], ["clean_service", "🧹 Удалять «вошёл/вышел»"], ["ai_enabled", "🤖 Ответы ИИ"],
+  ["clean_settings", "🧽 Удалять сообщения о настройках"],
 ];
 
 async function setSetting(c: Ctx, chatId: number, field: string, value: number) {
-  const allowed = ["antispam", "antilink", "antiflood", "flood_limit", "newbie_hours", "welcome_enabled", "clean_service", "ai_enabled", "warn_limit"];
+  const allowed = ["antispam", "antilink", "antiflood", "flood_limit", "newbie_hours", "welcome_enabled", "clean_service", "clean_settings", "ai_enabled", "warn_limit"];
   if (!allowed.includes(field)) throw new Error("bad field");
   await c.settings(chatId);
   await c.db.run(`UPDATE settings SET ${field} = ? WHERE chat_id = ?`, value, chatId);
