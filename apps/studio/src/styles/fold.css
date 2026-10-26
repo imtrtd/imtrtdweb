@@ -2,7 +2,18 @@
 .topbar { position: sticky; top: 0; }
 .pulse-copy h1 { margin: 0; font-size: clamp(48px, 7vw, 108px); letter-spacing: -.07em; line-height: .78; font-weight: 900; text-transform: uppercase; }
 .pulse-copy h1 span { display: block; }
-.pulse-copy p { max-width: 40ch; margin-top: 1.25rem; }
+.pulse-copy p { max-width: 40ch; margin-top: 1.25rem; margin-right: 8.5rem; }
+.pulse-disc {
+  grid-column: 1;
+  grid-row: 1;
+  justify-self: end;
+  align-self: end;
+  z-index: 3;
+  margin: 0 0 0.25rem;
+  opacity: calc(1 - var(--fold) * 1.45);
+  transition: transform .3s, color .3s, box-shadow .4s, background .3s;
+}
+.pulse-stage[data-open="1"] .pulse-disc { pointer-events: none; }
 .brief-panel h2 { margin: .35rem 0 1rem; font-size: clamp(32px, 4vw, 52px); letter-spacing: -.04em; line-height: .95; }
 .pulse-figure { min-width: 0; }
 .pulse-figure canvas { position: absolute; inset: 0; }
@@ -95,7 +106,7 @@
     top: 5.75rem;
     height: calc(100dvh - 5.75rem);
     grid-template-columns: 1fr;
-    grid-template-rows: auto auto auto;
+    grid-template-rows: auto auto auto auto;
     padding: 0.75rem 1rem 1rem;
   }
 
@@ -104,9 +115,21 @@
     overflow: hidden;
   }
 
+  .pulse-copy p {
+    margin-right: 0;
+  }
+
+  .pulse-disc {
+    grid-row: 2;
+    justify-self: start;
+    align-self: start;
+    width: 96px;
+    margin: 0.25rem 0 0.5rem;
+  }
+
   .pulse-figure {
     grid-column: 1;
-    grid-row: 2;
+    grid-row: 3;
     width: min(100%, 26rem);
     height: calc((1 - var(--fold) * 0.62) * min(42vh, 20rem));
     min-height: 0;
@@ -117,7 +140,7 @@
 
   .brief-panel {
     grid-column: 1;
-    grid-row: 3;
+    grid-row: 4;
     width: 100%;
   }
 }
@@ -135,7 +158,8 @@
 
   .pulse-copy,
   .pulse-figure,
-  .brief-panel {
+  .brief-panel,
+  .pulse-stage[data-open="1"] .pulse-disc {
     opacity: 1;
     transform: none;
     max-height: none;

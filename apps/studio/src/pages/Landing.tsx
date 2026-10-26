@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { PulseControl } from "../components/landing/PulseControl";
 import { FoldHero } from "../components/landing/FoldHero";
+import { SphereShell } from "../components/landing/SphereShell";
 
 const projects = [
 	{
@@ -191,6 +192,11 @@ export function LandingPage() {
 						</div>
 						<p className="project-note">{project.note}</p>
 						<span className="project-arrow">↗</span>
+						<span className="case-hover sphere-planet" aria-hidden="true">
+							<SphereShell count={2} />
+							<span>Open case</span>
+							<b>↗</b>
+						</span>
 					</a>
 				))}
 				<div className="work-archive section-pad">
@@ -324,20 +330,6 @@ export function LandingPage() {
 				</div>
 			</footer>
 		</main>
-	);
-}
-
-function SphereShell({ count = 3, ring = false }: { count?: number; ring?: boolean }) {
-	return (
-		<>
-			<span className="sphere-body" aria-hidden="true" />
-			<span className="sphere-orbits" aria-hidden="true">
-				{ring ? <em className="sphere-ring" /> : null}
-				{Array.from({ length: count }, (_, index) => (
-					<i key={index} />
-				))}
-			</span>
-		</>
 	);
 }
 

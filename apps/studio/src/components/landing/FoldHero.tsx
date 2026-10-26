@@ -1,6 +1,7 @@
 import { useEffect, useRef } from "react";
 import { Crystal } from "./Crystal";
 import { LeadForm } from "./LeadForm";
+import { SphereShell } from "./SphereShell";
 import "../../styles/fold.css";
 
 export function FoldHero() {
@@ -60,6 +61,19 @@ export function FoldHero() {
 						generic.
 					</p>
 				</div>
+				<a
+					className="round-link sphere-atom pulse-disc"
+					href="#work"
+					aria-label="Explore selected work"
+				>
+					<SphereShell />
+					<span>
+						EXPLORE
+						<br />
+						WORK
+					</span>
+					<b>↓</b>
+				</a>
 				<div className="pulse-figure" aria-hidden="true">
 					<Crystal foldRef={foldRef} />
 				</div>
