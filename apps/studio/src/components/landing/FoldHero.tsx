@@ -55,25 +55,26 @@ export function FoldHero() {
 						</span>
 						<span>WITH A PULSE.</span>
 					</h1>
-					<p>
-						I design and build expressive websites, interfaces and digital systems
-						for independent studios, artists and small brands that refuse to look
-						generic.
-					</p>
+					<div className="pulse-lede">
+						<p>
+							Expressive sites, interfaces and systems — for studios, artists and
+							small brands that refuse the generic.
+						</p>
+						<a
+							className="round-link sphere-atom pulse-disc"
+							href="#work"
+							aria-label="Explore selected work"
+						>
+							<SphereShell />
+							<span>
+								EXPLORE
+								<br />
+								WORK
+							</span>
+							<b>↓</b>
+						</a>
+					</div>
 				</div>
-				<a
-					className="round-link sphere-atom pulse-disc"
-					href="#work"
-					aria-label="Explore selected work"
-				>
-					<SphereShell />
-					<span>
-						EXPLORE
-						<br />
-						WORK
-					</span>
-					<b>↓</b>
-				</a>
 				<div className="pulse-figure" aria-hidden="true">
 					<Crystal foldRef={foldRef} />
 				</div>

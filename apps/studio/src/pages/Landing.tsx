@@ -10,7 +10,7 @@ const projects = [
 		type: "TATTOO STUDIO / BOOKING",
 		color: "acid",
 		href: "/work/namenlos",
-		note: "Concept case study: identity-led booking flow with a raw visual language.",
+		note: "A booking flow with a raw visual language. A concept case.",
 	},
 	{
 		n: "02",
@@ -18,7 +18,7 @@ const projects = [
 		type: "EVENT SERIES / TICKETS",
 		color: "violet",
 		href: "/work/nachtwerk",
-		note: "Concept case study: an atmospheric event page built around line-ups and conversion.",
+		note: "An event page where the line-up and the ticket share one pulse. A concept case.",
 	},
 	{
 		n: "03",
@@ -26,7 +26,7 @@ const projects = [
 		type: "CAFÉ / LOCAL COMMERCE",
 		color: "orange",
 		href: "/work/kiosk-23",
-		note: "Concept case study: a compact digital home for a small space with a loud point of view.",
+		note: "A small room with a loud point of view, given a digital home. A concept case.",
 	},
 ];
 
@@ -166,8 +166,8 @@ export function LandingPage() {
 				</h2>
 				<div className="manifesto-copy">
 					<p>
-						From first sketch to deployment: strategy, interface, code and motion
-						developed as one continuous product system.
+						From the first sketch to the live URL, strategy, interface, code and
+						motion stay one system.
 					</p>
 					<span className="mono">[ DESIGN × DEVELOPMENT × VISUALIZATION ]</span>
 				</div>
@@ -176,7 +176,7 @@ export function LandingPage() {
 			<section className="projects" id="work">
 				<div className="section-head section-pad">
 					<p className="eyebrow">// SELECTED WORK</p>
-					<span className="mono">03 CONCEPT CASES / 03 SYSTEMS</span>
+					<span className="mono">Three concept cases. Three systems.</span>
 				</div>
 				{projects.map((project) => (
 					<a
@@ -200,9 +200,7 @@ export function LandingPage() {
 					</a>
 				))}
 				<div className="work-archive section-pad">
-					<p className="mono">
-						ALL CASE STUDIES ARE CLEARLY LABELED CONCEPT / PLACEHOLDER WORK.
-					</p>
+					<p>These studies are concepts, and they say so.</p>
 					<a className="systems-link" href="/samples">
 						OPEN THE SAMPLE LAB <span>↗</span>
 					</a>
@@ -224,14 +222,26 @@ export function LandingPage() {
 				<div className="service-list">
 					{(
 						[
-							["01", "WEB DESIGN", "Visual systems, responsive interfaces and prototypes."],
-							["02", "DEVELOPMENT", "Fast, accessible builds with clean interactions."],
+							[
+								"01",
+								"WEB DESIGN",
+								"Interfaces with a point of view, carried through every breakpoint.",
+							],
+							[
+								"02",
+								"DEVELOPMENT",
+								"Builds that stay fast, readable and easy to move through.",
+							],
 							[
 								"03",
 								"VISUALIZATION",
-								"Presentations, product concepts and visual systems from text.",
+								"Product pictures and visual systems, starting from the words.",
 							],
-							["04", "CARE & EVOLUTION", "Launch support, improvements and new releases."],
+							[
+								"04",
+								"CARE & EVOLUTION",
+								"After launch: care, edits and the next version.",
+							],
 						] as const
 					).map(([n, title, desc]) => (
 						<div className="service" key={n}>
@@ -261,8 +271,7 @@ export function LandingPage() {
 						<span>LOG_</span>
 					</h2>
 					<p>
-						The site evolves with the work. This log tracks the visible product and
-						design changes.
+						The site moves with the work. This log is the visible trail.
 					</p>
 				</div>
 				<div className="release-list">
@@ -290,16 +299,18 @@ export function LandingPage() {
 
 			<footer className="footer section-pad" id="contact">
 				<div className="footer-status mono">
-					<i /> ACCEPTING SELECT PROJECTS / Q4 2026
+					<i /> A few projects, Q4 2026
 				</div>
-				<p className="eyebrow">// HAVE A PROJECT?</p>
-				<h2>
-					LET&apos;S MAKE
-					<br />
-					<span>SOMETHING</span>
-					<br />
-					UNMISSABLE.
-				</h2>
+				<div className="footer-copy">
+					<p className="eyebrow">// HAVE A PROJECT?</p>
+					<h2>
+						LET&apos;S MAKE
+						<br />
+						<span>SOMETHING</span>
+						<br />
+						UNMISSABLE.
+					</h2>
+				</div>
 				<a
 					className="contact-button sphere-planet"
 					href="mailto:info@imtryingtodesign.com"
