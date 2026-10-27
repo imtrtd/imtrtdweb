@@ -10,26 +10,41 @@ export function Cosmos() {
     if (!canvas) return;
     const ctx = canvas.getContext("2d");
     if (!ctx) return;
-    const stars: Star[] = Array.from({ length: 260 }, () => ({
+
+    const stars: Star[] = Array.from({ length: 180 }, () => ({
       x: Math.random(),
       y: Math.random(),
       z: Math.random(),
       w: 0.4 + Math.random() * 1.4,
       tint: Math.random(),
     }));
+
     const reduced = window.matchMedia("(prefers-reduced-motion: reduce)");
     let running = true;
+    let visible = true;
+    let tabActive = document.visibilityState !== "hidden";
     let raf = 0;
+    let last = 0;
+    const FRAME = 1000 / 30;
 
     const draw = (now: number) => {
       if (!running) return;
-      const dpr = Math.min(window.devicePixelRatio || 1, 2);
+      if (!visible || !tabActive) return;
+
+      if (now - last < FRAME) {
+        raf = requestAnimationFrame(draw);
+        return;
+      }
+      last = now;
+
+      const dpr = Math.min(window.devicePixelRatio || 1, 1.5);
       const width = Math.max(2, Math.round(window.innerWidth * dpr));
       const height = Math.max(2, Math.round(window.innerHeight * dpr));
       if (canvas.width !== width || canvas.height !== height) {
         canvas.width = width;
         canvas.height = height;
       }
+
       ctx.fillStyle = "#05040a";
       ctx.fillRect(0, 0, width, height);
 
@@ -72,15 +87,17 @@ export function Cosmos() {
         ctx.stroke();
       }
 
-      const speed = reduced.matches ? 0 : 0.0034;
+      const speed = reduced.matches ? 0 : 0.0024;
       const cx = width * 0.5;
       const cy = height * 0.46;
       for (const star of stars) {
-        star.z -= speed;
-        if (star.z < 0.02) {
-          star.z = 1;
-          star.x = Math.random();
-          star.y = Math.random();
+        if (!reduced.matches) {
+          star.z -= speed;
+          if (star.z < 0.02) {
+            star.z = 1;
+            star.x = Math.random();
+            star.y = Math.random();
+          }
         }
         const depth = 1 - star.z;
         const x = cx + (star.x - 0.5) * width * (0.2 + depth * 1.55);
@@ -92,7 +109,7 @@ export function Cosmos() {
           const dx = x - cx;
           const dy = y - cy;
           const mag = Math.hypot(dx, dy) || 1;
-          const len = depth * depth * 36 * dpr;
+          const len = depth * depth * 28 * dpr;
           ctx.strokeStyle = `rgba(${tint}, ${alpha})`;
           ctx.lineWidth = Math.max(1, star.w * depth * dpr);
           ctx.beginPath();
@@ -101,22 +118,63 @@ export function Cosmos() {
           ctx.stroke();
         } else {
           ctx.fillStyle = `rgba(${tint}, ${alpha})`;
-          const size = star.w * (0.5 + depth * 1.8) * dpr;
+          const size = star.w * (0.5 + depth * 1.6) * dpr;
           ctx.fillRect(x, y, size, size);
         }
       }
-      raf = requestAnimationFrame(draw);
+
+      if (visible && tabActive && !reduced.matches) {
+        raf = requestAnimationFrame(draw);
+      }
+    };
+
+    const start = () => {
+      cancelAnimationFrame(raf);
+      if (visible && tabActive) {
+        last = 0;
+        raf = requestAnimationFrame(draw);
+      }
+    };
+
+    const io = new IntersectionObserver(
+      ([entry]) => {
+        visible = entry?.isIntersecting ?? true;
+        if (visible) start();
+        else cancelAnimationFrame(raf);
+      },
+      { threshold: 0.05 }
+    );
+    io.observe(canvas);
+
+    const onVis = () => {
+      tabActive = document.visibilityState !== "hidden";
+      if (tabActive) start();
+      else cancelAnimationFrame(raf);
     };
 
     const onReduce = () => {
       cancelAnimationFrame(raf);
-      raf = requestAnimationFrame(draw);
+      if (!reduced.matches) start();
+      else {
+        last = 0;
+        draw(performance.now());
+      }
     };
+
+    document.addEventListener("visibilitychange", onVis);
     reduced.addEventListener("change", onReduce);
-    raf = requestAnimationFrame(draw);
+
+    if (reduced.matches) {
+      draw(0);
+    } else {
+      start();
+    }
+
     return () => {
       running = false;
       cancelAnimationFrame(raf);
+      io.disconnect();
+      document.removeEventListener("visibilitychange", onVis);
       reduced.removeEventListener("change", onReduce);
     };
   }, []);
