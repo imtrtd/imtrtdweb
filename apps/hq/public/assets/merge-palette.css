@@ -238,3 +238,12 @@ header nav a:hover::after,header nav a.active::after{right:0}
 }
 /* keep the glitch layers' shift inside the title box now that the spans are block-level */
 .hero-title .hero-glitch{width:fit-content;max-width:100%}
+
+/* /work/* server-rendered project intro */
+.work-intro{display:flex;gap:1rem;align-items:flex-start;padding:.75rem 1rem;border-bottom:1px solid var(--color-hair,#24242e);flex-shrink:0;max-height:38vh;overflow:auto}
+.work-intro img{width:9rem;height:auto;aspect-ratio:auto;object-fit:cover;flex-shrink:0;border:1px solid var(--color-hair,#24242e)}
+.work-intro h1{font-family:"Space Grotesk",Arial,sans-serif;font-size:clamp(1.25rem,2.4vw,1.75rem);font-weight:700;line-height:1.1;margin:0 0 .35rem}
+.work-intro .work-meta{font-size:.75rem;letter-spacing:.08em;text-transform:uppercase;opacity:.7;margin:0 0 .35rem}
+.work-intro p{margin:0 0 .35rem;max-width:68ch;font-size:.9rem;line-height:1.45}
+.work-intro a.work-live{display:inline-block;margin-top:.15rem;font-size:.8rem;letter-spacing:.06em;text-transform:uppercase;text-decoration:underline;text-underline-offset:3px}
+@media (max-width:640px){.work-intro img{display:none}.work-intro .work-p2{display:none}}
