@@ -29,8 +29,16 @@ export default {
 			(request.method === "GET" || request.method === "HEAD") &&
 			!/\.[a-z0-9]+$/i.test(url.pathname)
 		) {
-			const shell = await env.ASSETS.fetch(new Request(new URL(`/sites/${site[1]}/`, url), request));
-			if (shell.ok) response = shell;
+			// Fetch the shell unconditionally: conditional/range headers from the
+			// original request would yield 304/206 for index.html, not the deep link.
+			const shellHeaders = new Headers(request.headers);
+			shellHeaders.delete("If-None-Match");
+			shellHeaders.delete("If-Modified-Since");
+			shellHeaders.delete("Range");
+			const shell = await env.ASSETS.fetch(
+				new Request(new URL(`/sites/${site[1]}/`, url), { method: request.method, headers: shellHeaders }),
+			);
+			if (shell.ok) response = new Response(shell.body, { status: 200, headers: shell.headers });
 		}
 
 		const headers = new Headers(response.headers);
