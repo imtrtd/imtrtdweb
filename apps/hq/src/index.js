@@ -19,17 +19,20 @@ export default {
 
 		let response = await env.ASSETS.fetch(request);
 
-		// SPA fallback scoped to the namenlos demo: extensionless deep links under
-		// /sites/namenlos/ (e.g. /sites/namenlos/lettering) get the app shell.
+		// Per-site SPA fallback: extensionless deep links under /sites/<site>/
+		// (e.g. /sites/namenlos/lettering) get that site's index.html.
+		// Main hq pages and real asset misses keep their 404.
+		const site = url.pathname.match(/^\/sites\/([a-z0-9-]+)\/./i);
 		if (
 			response.status === 404 &&
+			site &&
 			(request.method === "GET" || request.method === "HEAD") &&
-			url.pathname.startsWith("/sites/namenlos/") &&
 			!/\.[a-z0-9]+$/i.test(url.pathname)
 		) {
-			const shell = await env.ASSETS.fetch(new Request(new URL("/sites/namenlos/", url), request));
+			const shell = await env.ASSETS.fetch(new Request(new URL(`/sites/${site[1]}/`, url), request));
 			if (shell.ok) response = shell;
 		}
+
 		const headers = new Headers(response.headers);
 
 		// Security headers
