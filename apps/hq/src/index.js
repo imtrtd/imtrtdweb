@@ -17,7 +17,19 @@ export default {
 			return Response.redirect(url.toString(), 301);
 		}
 
-		const response = await env.ASSETS.fetch(request);
+		let response = await env.ASSETS.fetch(request);
+
+		// SPA fallback scoped to the namenlos demo: extensionless deep links under
+		// /sites/namenlos/ (e.g. /sites/namenlos/lettering) get the app shell.
+		if (
+			response.status === 404 &&
+			(request.method === "GET" || request.method === "HEAD") &&
+			url.pathname.startsWith("/sites/namenlos/") &&
+			!/\.[a-z0-9]+$/i.test(url.pathname)
+		) {
+			const shell = await env.ASSETS.fetch(new Request(new URL("/sites/namenlos/", url), request));
+			if (shell.ok) response = shell;
+		}
 		const headers = new Headers(response.headers);
 
 		// Security headers
