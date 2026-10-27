@@ -17,7 +17,7 @@ Cuebox is a prompt library for individuals and small teams who want a clean plac
 
 ## Live
 
-Cuebox is deployed at **[https://cuebox-liart.vercel.app](https://cuebox-liart.vercel.app)**.
+A static demo of Cuebox is hosted at **[https://imtrtd.space/sites/cuebox/](https://imtrtd.space/sites/cuebox/)**.
 
 Local mode works in the browser without an account. Sign in on the live site to sync a cloud library across devices.
 
