@@ -1,4 +1,4 @@
-// Redirect plain-http requests to https, then serve static assets.
+// Redirect plain-http requests to https, then serve static assets with security headers.
 export default {
 	async fetch(request, env) {
 		const url = new URL(request.url);
@@ -16,6 +16,22 @@ export default {
 			url.protocol = "https:";
 			return Response.redirect(url.toString(), 301);
 		}
-		return env.ASSETS.fetch(request);
+
+		const response = await env.ASSETS.fetch(request);
+		const headers = new Headers(response.headers);
+
+		// Security headers
+		headers.set("Strict-Transport-Security", "max-age=31536000; includeSubDomains; preload");
+		headers.set("X-Content-Type-Options", "nosniff");
+		headers.set("Referrer-Policy", "strict-origin-when-cross-origin");
+		headers.set("X-Frame-Options", "SAMEORIGIN");
+		headers.set("Content-Security-Policy", "frame-ancestors 'self'");
+		headers.set("Permissions-Policy", "camera=(), microphone=(), geolocation=()");
+
+		return new Response(response.body, {
+			status: response.status,
+			statusText: response.statusText,
+			headers,
+		});
 	},
 };
