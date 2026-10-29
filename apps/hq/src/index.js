@@ -1,4 +1,25 @@
-// Redirect plain-http requests to https, then serve static assets with security headers.
+// Redirect plain-http requests to https, then serve static
+// assets with security headers. Cache-Control / X-Robots-Tag come from public/_headers.
+// www.imtrtd.space -> imtrtd.space is a 301 at the Cloudflare edge (not in this worker).
+
+// Report-Only: the browser reports violations to the console but blocks nothing.
+// Demo sites under /sites/* are excluded (their own bundles, inline styles, third-party embeds).
+const CSP_REPORT_ONLY = [
+	"default-src 'self'",
+	"script-src 'self' 'unsafe-inline' https://static.cloudflareinsights.com",
+	"style-src 'self' 'unsafe-inline'",
+	"font-src 'self' data:",
+	"img-src 'self' data: blob:",
+	"media-src 'self' data: blob:",
+	"connect-src 'self' https://admin.imtrtd.space https://cloudflareinsights.com https://static.cloudflareinsights.com",
+	"frame-src 'self'",
+	"frame-ancestors 'self'",
+	"worker-src 'self' blob:",
+	"manifest-src 'self'",
+	"base-uri 'self'",
+	"form-action 'self' mailto:",
+	"object-src 'none'",
+].join("; ");
 export default {
 	async fetch(request, env) {
 		const url = new URL(request.url);
@@ -49,7 +70,12 @@ export default {
 		headers.set("Referrer-Policy", "strict-origin-when-cross-origin");
 		headers.set("X-Frame-Options", "SAMEORIGIN");
 		headers.set("Content-Security-Policy", "frame-ancestors 'self'");
-		headers.set("Permissions-Policy", "camera=(), microphone=(), geolocation=()");
+		headers.set("Permissions-Policy", "camera=(), microphone=(), geolocation=(), payment=(), usb=()");
+		if (!url.pathname.startsWith("/sites/")) headers.set("Content-Security-Policy-Report-Only", CSP_REPORT_ONLY);
+
+		// 404 bodies (404.html) must not inherit the long cache of the path they were asked under
+		// (e.g. a missing /assets/x.js would otherwise get "immutable" from _headers).
+		if (response.status === 404) headers.set("Cache-Control", "public, max-age=0, must-revalidate");
 
 		return new Response(response.body, {
 			status: response.status,
