@@ -12,6 +12,7 @@ function sendLead(p){
 /* styles */
 var css='.lx-status{margin-top:.75rem;padding:.7rem .85rem;border:1px solid var(--color-hair,rgba(178,141,255,.18));font-size:.85rem;line-height:1.45;color:#f3effa;background:#14141c}'+
 '.lx-status[data-kind=ok]{border-color:#d8ff00}.lx-status[data-kind=ok] b{color:#d8ff00}.lx-status[data-kind=err]{border-color:#ff2bd6}.lx-status[data-kind=err] b{color:#ff2bd6}.lx-status a{color:var(--color-signal,#b28dff)}'+
+'.lx-ts{margin-top:.75rem;min-height:65px}'+
 '.lx-hp{position:absolute!important;left:-9999px!important;width:1px;height:1px;opacity:0}'+
 '.lx-dlg{position:fixed;inset:0;z-index:80;display:grid;place-items:end center;background:rgba(5,5,10,.72);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);padding:0}'+
 '@media(min-width:640px){.lx-dlg{place-items:center;padding:1rem}}'+
@@ -25,16 +26,30 @@ var css='.lx-status{margin-top:.75rem;padding:.7rem .85rem;border:1px solid var(
 var st=document.createElement('style');st.textContent=css;document.head.appendChild(st);
 function status(after,kind,html){var el=after.parentNode.querySelector('.lx-status');if(!el){el=document.createElement('p');el.className='lx-status';el.setAttribute('role','status');el.setAttribute('aria-live','polite');after.parentNode.insertBefore(el,after.nextSibling)}el.dataset.kind=kind;el.innerHTML=html;return el}
 function hp(form){if(form.querySelector('[name=website]'))return;var i=document.createElement('input');i.name='website';i.tabIndex=-1;i.autocomplete='off';i.className='lx-hp';i.setAttribute('aria-hidden','true');form.appendChild(i)}
+/* Turnstile (PSE-22): admin.imtrtd.space GET /api/leads returns {turnstile:{siteKey}} or {turnstile:null}.
+   Null, a failed request or a blocked script = no widget, the form works exactly as before. */
+var TSCFG=null,TSAPI=null;
+function tsConfig(){if(!TSCFG)TSCFG=fetch(API+'/api/leads',{credentials:'omit'}).then(function(r){return r.ok?r.json():null}).then(function(d){return d&&d.turnstile&&d.turnstile.siteKey?d.turnstile:null}).catch(function(){return null});return TSCFG}
+function tsScript(){if(!TSAPI)TSAPI=new Promise(function(res){if(window.turnstile)return res(window.turnstile);var s=document.createElement('script');s.src='https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit';s.async=true;s.onload=function(){res(window.turnstile||null)};s.onerror=function(){res(null)};document.head.appendChild(s)});return TSAPI}
+/* render the widget once per form, lazily (first focus/submit); resolves to widget id or null */
+function tsInit(form){if(form._ts)return form._ts;form._ts=tsConfig().then(function(c){if(!c)return null;return tsScript().then(function(ts){if(!ts||!form.isConnected)return null;
+ var box=document.createElement('div');box.className='lx-ts';var a=form.querySelector('[type=submit]');while(a&&a.parentNode!==form)a=a.parentNode;form.insertBefore(box,a||null);
+ try{return ts.render(box,{sitekey:c.siteKey,theme:'dark',size:'flexible',action:'brief'})}catch(e){box.remove();return null}})});return form._ts}
+function tsToken(form){return Promise.race([tsInit(form),new Promise(function(r){setTimeout(function(){r(null)},5000)})]).then(function(id){
+ if(id==null||!window.turnstile)return {id:null,token:''};return {id:id,token:window.turnstile.getResponse(id)||''}})}
 /* submit a form element; fields: name, contact, task|task_type, note|message */
-function wire(form,opts){hp(form);form.addEventListener('submit',function(e){e.preventDefault();
+function wire(form,opts){hp(form);form.addEventListener('focusin',function(){tsInit(form)},{once:true});form.addEventListener('submit',function(e){e.preventDefault();
  var g=function(n){var el=form.elements[n];return el?String(el.value||'').trim():''};
  var p={name:g('name'),contact:g('contact'),task_type:g('task')||g('task_type')||opts.task||'',message:(opts.prefix?opts.prefix()+'\n\n':'')+(g('note')||g('message')),website:g('website'),source:src(opts.label)};
  p.message=p.message.trim();var btn=form.querySelector('[type=submit]'),orig=btn&&btn.textContent;
  if(!p.name||!p.contact){status(btn,'err','<b>Name and contact, please.</b> Email or Telegram is enough.');return}
  if(btn){btn.disabled=true;btn.textContent='Sending…'}
- sendLead(p).then(function(){status(btn,'ok','<b>Sent.</b> I’ll answer at '+esc(p.contact)+' within a working day.');form.reset();opts.done&&opts.done()},
+ tsToken(form).then(function(t){
+ if(t.id!=null&&!t.token){status(btn,'err','<b>One more step.</b> Finish the anti-spam check above the button, then send again.');if(btn){btn.disabled=false;btn.textContent=orig}return}
+ if(t.token)p.turnstile_token=t.token;
+ return sendLead(p).then(function(){status(btn,'ok','<b>Sent.</b> I’ll answer at '+esc(p.contact)+' within a working day.');form.reset();opts.done&&opts.done()},
   function(err){var m=err.network?'<b>Couldn’t reach the server.</b> <a href="'+mailto(p)+'">Send it by email instead</a>.':err.status===429?'<b>Too many tries.</b> Wait a minute, or <a href="'+mailto(p)+'">email it</a>.':'<b>Not sent.</b> '+esc(err.message)+' · <a href="'+mailto(p)+'">email instead</a>';status(btn,'err',m)})
- .then(function(){if(btn){btn.disabled=false;btn.textContent=orig}})})}
+ .then(function(){if(btn){btn.disabled=false;btn.textContent=orig}if(t.id!=null)try{window.turnstile.reset(t.id)}catch(e){}})})})}
 function esc(s){return String(s).replace(/[&<>"]/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]})}
 /* modal brief: opts {title, message, task, label} */
 function openBrief(o){o=o||{};var last=document.activeElement,d=document.createElement('div');d.className='lx-dlg';d.setAttribute('role','dialog');d.setAttribute('aria-modal','true');d.setAttribute('aria-labelledby','lx-h');
