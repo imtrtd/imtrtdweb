@@ -2,8 +2,10 @@
 (function(){
  function clocks(){var els=document.querySelectorAll('[data-ct-clock]');if(!els.length||!window.Intl)return;
   function tick(){var d=new Date(),t,off='';
-   try{t=new Intl.DateTimeFormat('en-GB',{timeZone:'Europe/Kyiv',hour:'2-digit',minute:'2-digit'}).format(d);
-    var p=new Intl.DateTimeFormat('en-GB',{timeZone:'Europe/Kyiv',timeZoneName:'shortOffset'}).formatToParts(d).filter(function(x){return x.type==='timeZoneName'})[0];off=p?p.value.replace('GMT','UTC'):''}catch(e){return}
+   /* time and UTC offset are both computed for Europe/Kyiv (EET/EEST), so the offset follows DST;
+      the HTML fallback deliberately carries no fixed offset */
+   try{t=new Intl.DateTimeFormat('en-GB',{timeZone:'Europe/Kyiv',hour:'2-digit',minute:'2-digit'}).format(d)}catch(e){return}
+   try{var p=new Intl.DateTimeFormat('en-GB',{timeZone:'Europe/Kyiv',timeZoneName:'shortOffset'}).formatToParts(d).filter(function(x){return x.type==='timeZoneName'})[0];off=p?p.value.replace('GMT','UTC'):''}catch(e){off=''}
    els.forEach(function(el){el.textContent=t+' Kyiv'+(off?' · '+off:'')})}
   tick();setInterval(tick,30000)}
  function copy(btn){var v=(btn.getAttribute('data-ct-copy')||'').trim();
