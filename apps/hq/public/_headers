@@ -1,0 +1,60 @@
+# Static response headers for imtrtd.space (Workers Static Assets).
+# Security headers (HSTS, CSP, X-Frame-Options, ...) are set in src/index.js.
+#
+# Cache: /assets/* and /fonts/* are cached for a year as immutable.
+# Hashed files (styles-*.css) are safe by name. The rest (studio.js, site-api.js,
+# contact.js, practice.js, samples.js, merge-palette.css, practice.css, fonts/*.css)
+# is always linked with ?v=YYYYMMDD — when you change such a file, bump its ?v= in
+# every HTML that links it, or visitors keep the old copy for up to a year.
+# HTML itself stays on the default (max-age=0, must-revalidate).
+
+/assets/*
+  Cache-Control: public, max-age=31536000, immutable
+
+/fonts/*
+  Cache-Control: public, max-age=31536000, immutable
+
+/images/*
+  Cache-Control: public, max-age=604800
+
+/brand/*
+  Cache-Control: public, max-age=604800
+
+/og.png
+  Cache-Control: public, max-age=604800
+
+/logo-mark.png
+  Cache-Control: public, max-age=604800
+
+/logo.jpg
+  Cache-Control: public, max-age=604800
+
+/favicon.ico
+  Cache-Control: public, max-age=604800
+
+/favicon.svg
+  Cache-Control: public, max-age=604800
+
+/favicon-16x16.png
+  Cache-Control: public, max-age=604800
+
+/favicon-32x32.png
+  Cache-Control: public, max-age=604800
+
+/apple-touch-icon.png
+  Cache-Control: public, max-age=604800
+
+# Demo builds under /sites/* stay out of search results; each /work/<slug> page is the
+# indexed entry. /sites/namenlos/* is NOT listed: it carries a canonical to namenlos.tattoo.
+# robots.txt must keep allowing /sites/ or crawlers never see this header.
+/sites/natvik/*
+  X-Robots-Tag: noindex
+
+/sites/pulse-box/*
+  X-Robots-Tag: noindex
+
+/sites/cuebox/*
+  X-Robots-Tag: noindex
+
+/sites/lab/*
+  X-Robots-Tag: noindex
