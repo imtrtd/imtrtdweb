@@ -146,7 +146,7 @@ const worker = {
 			}
 
 			if (pathname === "/api/leads" && request.method === "POST") {
-				if (!checkRateLimit(clientIp(request))) {
+				if (!(await checkRateLimit(clientIp(request), env.LEAD_RATE_LIMITER))) {
 					return json({ error: "Слишком много заявок. Попробуйте позже." }, 429);
 				}
 

@@ -17,5 +17,7 @@ declare namespace Cloudflare {
 		TURNSTILE_SECRET_KEY?: string;
 		/** "true" = require a token from every origin, not just imtrtd.space. */
 		TURNSTILE_REQUIRE_ALL?: string;
+		/** Workers Rate Limiting binding for POST /api/leads (wrangler.jsonc "ratelimits"). Unset = per-isolate fallback. */
+		LEAD_RATE_LIMITER?: RateLimit;
 	}
 }

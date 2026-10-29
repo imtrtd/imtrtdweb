@@ -5,7 +5,8 @@ const RATE_WINDOW_MS = 60_000;
 const RATE_LIMIT = 5;
 const rateMap = new Map<string, { count: number; reset: number }>();
 
-export function checkRateLimit(ip: string): boolean {
+/** Per-isolate fallback: only used when the LEAD_RATE_LIMITER binding is missing (local tests, old config). */
+function checkRateLimitLocal(ip: string): boolean {
 	const now = Date.now();
 	const entry = rateMap.get(ip);
 	if (!entry || now > entry.reset) {
@@ -17,6 +18,23 @@ export function checkRateLimit(ip: string): boolean {
 	}
 	entry.count += 1;
 	return true;
+}
+
+/**
+ * 5 lead POSTs per IP per minute. Uses the Workers Rate Limiting binding (shared across isolates
+ * in a Cloudflare location) when bound; if the binding is missing or errors, falls back to the
+ * in-memory per-isolate map so the form never fails closed.
+ */
+export async function checkRateLimit(ip: string, limiter?: RateLimit): Promise<boolean> {
+	if (limiter) {
+		try {
+			const { success } = await limiter.limit({ key: `lead:${ip}` });
+			return success;
+		} catch {
+			// fall through to the local map
+		}
+	}
+	return checkRateLimitLocal(ip);
 }
 
 export type CreateLeadInput = {
