@@ -318,11 +318,13 @@ function initSolar(){var cv=$('.pulse-shader');if(!cv)return false;var gl,soft=f
     if(band===0&&(bw!==w||bh!==h)){bw=w;bh=h;gl.bindTexture(gl.TEXTURE_2D,tex);gl.texImage2D(gl.TEXTURE_2D,0,gl.RGBA,w,h,0,gl.RGBA,gl.UNSIGNED_BYTE,null);
       gl.bindFramebuffer(gl.FRAMEBUFFER,fb);gl.framebufferTexture2D(gl.FRAMEBUFFER,gl.COLOR_ATTACHMENT0,gl.TEXTURE_2D,tex,0)}
     gl.bindFramebuffer(gl.FRAMEBUFFER,fb);gl.useProgram(pr);gl.enable(gl.SCISSOR_TEST);gl.scissor(0,y0,w,y1-y0);gl.clearColor(0,0,0,0);gl.clear(gl.COLOR_BUFFER_BIT);gl.drawArrays(gl.TRIANGLES,0,3);gl.disable(gl.SCISSOR_TEST);
-    if(!warm){warm=true;dirty=true;gl.flush();return 300}if(band>0)gl.readPixels(0,y0,1,1,gl.RGBA,gl.UNSIGNED_BYTE,px1);
+    if(!warm){warm=true;dirty=true;gl.flush();return 300}gl.readPixels(0,y0,1,1,gl.RGBA,gl.UNSIGNED_BYTE,px1);
     band++;if(band<n)return 0;band=0;gl.bindFramebuffer(gl.FRAMEBUFFER,null);if(cv.width!==w||cv.height!==h){cv.width=w;cv.height=h}gl.viewport(0,0,w,h);gl.useProgram(bp);gl.bindTexture(gl.TEXTURE_2D,tex);gl.drawArrays(gl.TRIANGLES,0,3);return 0}
   /* 30 fps while animating; a still frame is redrawn only when something changed (banded on the software path) */
   var job={iv:1000/30,want:function(){return vis&&(dirty||band>0||!still())},run:function(t,fr){
-    if(banded()){job.iv=40;if(dirty){dirty=false;band=0;if(!prep(t,fr))return}job.last+=drawBand();return}
+    if(banded()){job.iv=40;
+      /* a pass in flight is finished and shown first; changes made meanwhile start the next pass (no restarts while scrolling) */
+      if(band===0&&dirty){dirty=false;if(!prep(t,fr))return}job.last+=drawBand();return}
     job.iv=1000/30;band=0;dirty=false;draw(t,fr)}};
   Loop.add(job);if(soft)cv.dataset.soft='1';return true}}
 
