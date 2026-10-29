@@ -2,8 +2,10 @@
 # Security headers (HSTS, CSP, X-Frame-Options, ...) are set in src/index.js.
 #
 # Cache: /assets/* and /fonts/* are cached for a year as immutable.
-# Hashed files (styles-*.css) are safe by name. The rest (studio.js, site-api.js,
-# contact.js, practice.js, samples.js, merge-palette.css, practice.css, fonts/*.css)
+# Hashed files (site-<sha256[:8]>.css = purged Tailwind + fonts.css + palette
+# overrides, in that order) are safe by name: rebuild => new hash => update HTML.
+# The rest (studio.js, site-api.js, contact.js, practice.js, samples.js,
+# practice.css, fonts/*.css)
 # is always linked with ?v=YYYYMMDD — when you change such a file, bump its ?v= in
 # every HTML that links it, or visitors keep the old copy for up to a year.
 # HTML itself stays on the default (max-age=0, must-revalidate).
