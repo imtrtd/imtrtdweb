@@ -29,7 +29,7 @@ function hp(form){if(form.querySelector('[name=website]'))return;var i=document.
 /* Turnstile (PSE-22): admin.imtrtd.space GET /api/leads returns {turnstile:{siteKey}} or {turnstile:null}.
    Null, a failed request or a blocked script = no widget, the form works exactly as before. */
 var TSCFG=null,TSAPI=null;
-function tsConfig(){if(!TSCFG)TSCFG=fetch(API+'/api/leads',{credentials:'omit',cache:'no-store'}).then(function(r){return r.ok?r.json():null}).then(function(d){return d&&d.turnstile&&d.turnstile.siteKey?d.turnstile:null}).catch(function(){return null});return TSCFG}
+function tsConfig(){if(!TSCFG)TSCFG=fetch(API+'/api/leads',{credentials:'omit'}).then(function(r){return r.ok?r.json():null}).then(function(d){return d&&d.turnstile&&d.turnstile.siteKey?d.turnstile:null}).catch(function(){return null});return TSCFG}
 function tsScript(){if(!TSAPI)TSAPI=new Promise(function(res){if(window.turnstile)return res(window.turnstile);var s=document.createElement('script');s.src='https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit';s.async=true;s.onload=function(){res(window.turnstile||null)};s.onerror=function(){res(null)};document.head.appendChild(s)});return TSAPI}
 /* render the widget once per form, lazily (first focus / submit).
    Resolves to {on:false} (feature off, or script blocked: send without a token, the server decides)
