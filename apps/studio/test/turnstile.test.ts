@@ -55,6 +55,7 @@ describe("turnstile (PSE-22)", () => {
 		expect(JSON.parse(text)).toEqual({ turnstile: { siteKey: "test-site-key" } });
 		expect(text).not.toContain("test-secret");
 		expect(res.headers.get("Access-Control-Allow-Origin")).toBe(HQ);
+		expect(res.headers.get("Cache-Control")).toBe("no-store");
 	});
 
 	it("rejects a token-less lead from imtrtd.space when on", async () => {

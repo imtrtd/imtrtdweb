@@ -141,11 +141,8 @@ const worker = {
 
 			if (pathname === "/api/leads" && request.method === "GET") {
 				// Form config for the public sites; turnstile is null while the check is off.
-				return json(
-					{ turnstile: turnstilePublicConfig(env) },
-					200,
-					{ "Cache-Control": "public, max-age=300" },
-				);
+				// no-store: a cached {turnstile:null} after the keys are enabled would make hq post without a token.
+				return json({ turnstile: turnstilePublicConfig(env) }, 200, { "Cache-Control": "no-store" });
 			}
 
 			if (pathname === "/api/leads" && request.method === "POST") {

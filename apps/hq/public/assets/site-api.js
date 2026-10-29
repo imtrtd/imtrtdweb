@@ -29,14 +29,21 @@ function hp(form){if(form.querySelector('[name=website]'))return;var i=document.
 /* Turnstile (PSE-22): admin.imtrtd.space GET /api/leads returns {turnstile:{siteKey}} or {turnstile:null}.
    Null, a failed request or a blocked script = no widget, the form works exactly as before. */
 var TSCFG=null,TSAPI=null;
-function tsConfig(){if(!TSCFG)TSCFG=fetch(API+'/api/leads',{credentials:'omit'}).then(function(r){return r.ok?r.json():null}).then(function(d){return d&&d.turnstile&&d.turnstile.siteKey?d.turnstile:null}).catch(function(){return null});return TSCFG}
+function tsConfig(){if(!TSCFG)TSCFG=fetch(API+'/api/leads',{credentials:'omit',cache:'no-store'}).then(function(r){return r.ok?r.json():null}).then(function(d){return d&&d.turnstile&&d.turnstile.siteKey?d.turnstile:null}).catch(function(){return null});return TSCFG}
 function tsScript(){if(!TSAPI)TSAPI=new Promise(function(res){if(window.turnstile)return res(window.turnstile);var s=document.createElement('script');s.src='https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit';s.async=true;s.onload=function(){res(window.turnstile||null)};s.onerror=function(){res(null)};document.head.appendChild(s)});return TSAPI}
-/* render the widget once per form, lazily (first focus/submit); resolves to widget id or null */
-function tsInit(form){if(form._ts)return form._ts;form._ts=tsConfig().then(function(c){if(!c)return null;return tsScript().then(function(ts){if(!ts||!form.isConnected)return null;
+/* render the widget once per form, lazily (first focus / submit).
+   Resolves to {on:false} (feature off, or script blocked: send without a token, the server decides)
+   or {on:true,id} with a rendered widget. Expired / errored challenges reset themselves. */
+function tsInit(form){if(form._ts)return form._ts;form._ts=tsConfig().then(function(c){if(!c)return {on:false};return tsScript().then(function(ts){if(!ts||!form.isConnected)return {on:false};
  var box=document.createElement('div');box.className='lx-ts';var a=form.querySelector('[type=submit]');while(a&&a.parentNode!==form)a=a.parentNode;form.insertBefore(box,a||null);
- try{return ts.render(box,{sitekey:c.siteKey,theme:'dark',size:'flexible',action:'brief'})}catch(e){box.remove();return null}})});return form._ts}
-function tsToken(form){return Promise.race([tsInit(form),new Promise(function(r){setTimeout(function(){r(null)},5000)})]).then(function(id){
- if(id==null||!window.turnstile)return {id:null,token:''};return {id:id,token:window.turnstile.getResponse(id)||''}})}
+ var id=null,re=function(){try{id!=null&&ts.reset(id)}catch(e){}};
+ try{id=ts.render(box,{sitekey:c.siteKey,theme:'dark',size:'flexible',action:'brief','expired-callback':re,'timeout-callback':re,'error-callback':function(){re();return true}})}catch(e){box.remove();return {on:false}}
+ return {on:true,id:id}})});return form._ts}
+/* {wait:true} while the widget is still loading or unsolved; never posts without a token once a widget exists */
+function tsToken(form){var p=tsInit(form);
+ return Promise.race([p,new Promise(function(r){setTimeout(function(){r(null)},8000)})]).then(function(w){
+  if(!w)return {wait:true};if(!w.on||!window.turnstile)return {id:null,token:''};
+  var t=window.turnstile.getResponse(w.id)||'';return t?{id:w.id,token:t}:{wait:true,id:w.id}})}
 /* submit a form element; fields: name, contact, task|task_type, note|message */
 function wire(form,opts){hp(form);form.addEventListener('focusin',function(){tsInit(form)},{once:true});form.addEventListener('submit',function(e){e.preventDefault();
  var g=function(n){var el=form.elements[n];return el?String(el.value||'').trim():''};
@@ -45,7 +52,7 @@ function wire(form,opts){hp(form);form.addEventListener('focusin',function(){tsI
  if(!p.name||!p.contact){status(btn,'err','<b>Name and contact, please.</b> Email or Telegram is enough.');return}
  if(btn){btn.disabled=true;btn.textContent='Sending…'}
  tsToken(form).then(function(t){
- if(t.id!=null&&!t.token){status(btn,'err','<b>One more step.</b> Finish the anti-spam check above the button, then send again.');if(btn){btn.disabled=false;btn.textContent=orig}return}
+ if(t.wait){status(btn,'err','<b>One more step.</b> The anti-spam check above the button is still loading or needs a click. Finish it, then send again.');if(btn){btn.disabled=false;btn.textContent=orig}return}
  if(t.token)p.turnstile_token=t.token;
  return sendLead(p).then(function(){status(btn,'ok','<b>Sent.</b> I’ll answer at '+esc(p.contact)+' within a working day.');form.reset();opts.done&&opts.done()},
   function(err){var m=err.network?'<b>Couldn’t reach the server.</b> <a href="'+mailto(p)+'">Send it by email instead</a>.':err.status===429?'<b>Too many tries.</b> Wait a minute, or <a href="'+mailto(p)+'">email it</a>.':'<b>Not sent.</b> '+esc(err.message)+' · <a href="'+mailto(p)+'">email instead</a>';status(btn,'err',m)})
