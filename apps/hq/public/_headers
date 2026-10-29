@@ -43,3 +43,18 @@
 
 /apple-touch-icon.png
   Cache-Control: public, max-age=604800
+
+# Demo builds under /sites/* stay out of search results; each /work/<slug> page is the
+# indexed entry. /sites/namenlos/* is NOT listed: it carries a canonical to namenlos.tattoo.
+# robots.txt must keep allowing /sites/ or crawlers never see this header.
+/sites/natvik/*
+  X-Robots-Tag: noindex
+
+/sites/pulse-box/*
+  X-Robots-Tag: noindex
+
+/sites/cuebox/*
+  X-Robots-Tag: noindex
+
+/sites/lab/*
+  X-Robots-Tag: noindex

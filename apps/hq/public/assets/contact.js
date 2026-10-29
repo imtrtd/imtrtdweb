@@ -13,7 +13,7 @@
  function fallback(v){try{var t=document.createElement('textarea');t.value=v;t.setAttribute('readonly','');t.style.cssText='position:fixed;opacity:0;top:0;left:0';document.body.appendChild(t);t.select();var ok=document.execCommand('copy');t.remove();return ok}catch(e){return false}}
  document.addEventListener('click',function(e){
   var c=e.target.closest('[data-ct-copy]');if(c){e.preventDefault();copy(c);return}
-  var b=e.target.closest('[data-ct-brief]');if(b){e.preventDefault();if(window.IMTRTD&&IMTRTD.openBrief)IMTRTD.openBrief({label:'Contact'});else location.href='contact.html'}
+  var b=e.target.closest('[data-ct-brief]');if(b){e.preventDefault();if(window.IMTRTD&&IMTRTD.openBrief)IMTRTD.openBrief({label:'Contact'});else location.href='/contact'}
  });
  clocks();
 })();

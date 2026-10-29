@@ -1,4 +1,4 @@
-// Redirect plain-http requests to https, then serve static
+// Redirect plain-http requests to https, 301 *.html to clean URLs, then serve static
 // assets with security headers. Cache-Control / X-Robots-Tag come from public/_headers.
 // www.imtrtd.space -> imtrtd.space is a 301 at the Cloudflare edge (not in this worker).
 
@@ -36,6 +36,21 @@ export default {
 		if (proto === "http:") {
 			url.protocol = "https:";
 			return Response.redirect(url.toString(), 301);
+		}
+
+		// Old *.html links (bookmarks, external sites, search results) -> one permanent 301 to the
+		// clean URL that the asset router serves (it would otherwise answer 307).
+		// /sites/* demo bundles are left alone.
+		if (
+			(request.method === "GET" || request.method === "HEAD") &&
+			url.pathname.endsWith(".html") &&
+			!url.pathname.startsWith("/sites/")
+		) {
+			const clean = url.pathname.replace(/(^|\/)index\.html$/, "$1").replace(/\.html$/, "");
+			if (clean !== url.pathname) {
+				url.pathname = clean || "/";
+				return Response.redirect(url.toString(), 301);
+			}
 		}
 
 		let response = await env.ASSETS.fetch(request);
