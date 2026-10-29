@@ -28,6 +28,8 @@ export type CreateLeadInput = {
 	website?: string;
 	/** Page the lead was sent from (not stored as a column; appended to the message). */
 	source?: string;
+	/** Cloudflare Turnstile token from the hq form (verified, never stored). */
+	turnstile_token?: string;
 };
 
 export type LeadPatch = {

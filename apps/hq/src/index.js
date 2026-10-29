@@ -6,13 +6,13 @@
 // Demo sites under /sites/* are excluded (their own bundles, inline styles, third-party embeds).
 const CSP_REPORT_ONLY = [
 	"default-src 'self'",
-	"script-src 'self' 'unsafe-inline' https://static.cloudflareinsights.com",
+	"script-src 'self' 'unsafe-inline' https://static.cloudflareinsights.com https://challenges.cloudflare.com",
 	"style-src 'self' 'unsafe-inline'",
 	"font-src 'self' data:",
 	"img-src 'self' data: blob:",
 	"media-src 'self' data: blob:",
 	"connect-src 'self' https://admin.imtrtd.space https://cloudflareinsights.com https://static.cloudflareinsights.com",
-	"frame-src 'self'",
+	"frame-src 'self' https://challenges.cloudflare.com",
 	"frame-ancestors 'self'",
 	"worker-src 'self' blob:",
 	"manifest-src 'self'",

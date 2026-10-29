@@ -49,7 +49,10 @@
 	"vars": {
 		"STUDIO_NOTIFY_EMAIL": "admin@imtrtd.space",
 		"LEAD_NOTIFY_EMAIL": "admin@imtrtd.space",
-		"LEAD_FROM_EMAIL": "leads@imtryingtodesign.com"
+		"LEAD_FROM_EMAIL": "leads@imtryingtodesign.com",
+		// Turnstile on the imtrtd.space brief forms (PSE-22). Public site key from the Turnstile widget goes here;
+		// the secret is set with `wrangler secret put TURNSTILE_SECRET_KEY`. Empty key or no secret = check off.
+		"TURNSTILE_SITE_KEY": ""
 	},
 	"upload_source_maps": true
 }

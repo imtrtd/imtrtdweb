@@ -33,6 +33,7 @@ import { getMedia, uploadMedia } from "./lib/media";
 import { notifyLeadEmail } from "./lib/email";
 import { sendTelegram } from "./lib/telegram";
 import { AppStore, doDatabase } from "./lib/store-do";
+import { turnstilePublicConfig, verifyTurnstile } from "./lib/turnstile";
 
 export { AppStore };
 
@@ -138,6 +139,12 @@ const worker = {
 				});
 			}
 
+			if (pathname === "/api/leads" && request.method === "GET") {
+				// Form config for the public sites; turnstile is null while the check is off.
+				// no-store: a cached {turnstile:null} after the keys are enabled would make hq post without a token.
+				return json({ turnstile: turnstilePublicConfig(env) }, 200, { "Cache-Control": "no-store" });
+			}
+
 			if (pathname === "/api/leads" && request.method === "POST") {
 				if (!checkRateLimit(clientIp(request))) {
 					return json({ error: "Слишком много заявок. Попробуйте позже." }, 429);
@@ -155,6 +162,19 @@ const worker = {
 				}
 				if (error) {
 					return badRequest(error);
+				}
+
+				const captcha = await verifyTurnstile(
+					env,
+					body.turnstile_token,
+					request.headers.get("Origin"),
+					clientIp(request),
+				);
+				if (captcha === "missing" || captcha === "invalid") {
+					return json(
+						{ error: "Anti-spam check failed. Reload the page and try again." },
+						403,
+					);
 				}
 
 				const source = cleanSource(body.source);
