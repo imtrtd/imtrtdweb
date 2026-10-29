@@ -83,17 +83,20 @@ if(ct&&!document.querySelector('[data-lx-open]')&&!cform){var b=document.createE
 if(page==='/'||page==='/contact'||page==='/selected'){
  fetch(API+'/api/content',{credentials:'omit'}).then(function(r){return r.ok?r.json():null}).then(function(c){if(!c||!c.copy||c.copy.hq_cms!=='on')return;applyContent(c)}).catch(function(){});
 }
+/* admin stores case links as "work/x.html": serve the clean absolute URL (no 301 hop, works from any page) */
+function caseHref(u){u=String(u||'').trim();if(/^work\//.test(u))u='/'+u;if(/^\/work\/[a-z0-9-]+\.html$/i.test(u))u=u.replace(/\.html$/i,'');return u}
 function applyContent(c){var cp=c.copy;
  var mail=cp.hq_contact_email||cp.contact_email;if(mail&&/^[^\s@]+@[^\s@]+$/.test(mail)&&!/@pm\.me$/i.test(mail)){/* legacy pm.me value in admin copy is ignored */MAIL=mail;document.querySelectorAll('a[href^="mailto:"]').forEach(function(a){var q=a.getAttribute('href').split('?')[1];a.href='mailto:'+mail+(q?'?'+q:'');var t=a.querySelector('[data-mail-text]');if(t)t.textContent=mail;else if(!a.children.length&&/@/.test(a.textContent))a.textContent=mail;var cb=a.closest('.ct-card');cb=cb&&cb.querySelector('[data-ct-copy]');if(cb)cb.setAttribute('data-ct-copy',mail)})}
- if(cp.hq_hero_line){var h=document.querySelector('.pulse-copy p.text-base');if(h)h.textContent=cp.hq_hero_line}
+ /* only touch the DOM when the copy really differs: re-setting identical text repaints the hero line and moves LCP behind this cross-origin fetch */
+ if(cp.hq_hero_line){var h=document.querySelector('.pulse-copy p.text-base');if(h&&h.textContent.trim()!==String(cp.hq_hero_line).trim())h.textContent=cp.hq_hero_line}
  var tg=(cp.hq_contact_telegram||cp.contact_telegram||'').replace(/^@/,'');
  if(tg&&/^[A-Za-z0-9_]{4,32}$/.test(tg)){var foot=document.querySelector('footer a[href^="mailto:"]');if(foot&&!document.querySelector('footer [data-tg]')){var a=document.createElement('a');a.href='https://t.me/'+tg;a.className=foot.className;a.textContent='@'+tg;a.setAttribute('data-tg','');a.rel='noopener';foot.parentNode.insertBefore(a,foot)}}
  var list=document.querySelector('#work ul');
- if(list&&c.cases&&c.cases.length){var tpl=list.querySelector('li');if(tpl){list.innerHTML='';c.cases.forEach(function(k,i){var li=tpl.cloneNode(true),sp=li.children[1];li.children[0].textContent=('0'+(i+1)).slice(-2);
+ if(list&&c.cases&&c.cases.length){var tpl=list.querySelector('li'),rows=list.querySelectorAll('li'),same=rows.length===c.cases.length&&c.cases.every(function(k,i){var sp=rows[i].children[1],a=rows[i].querySelector('a');return sp&&sp.children.length>2&&sp.children[0].textContent===(k.role||'')&&sp.children[1].textContent===k.title&&sp.children[2].textContent===(k.result||'')&&a&&a.getAttribute('href')===caseHref(k.image_url)});if(tpl&&!same){list.innerHTML='';c.cases.forEach(function(k,i){var li=tpl.cloneNode(true),sp=li.children[1];li.children[0].textContent=('0'+(i+1)).slice(-2);
    sp.children[0].textContent=k.role||'';sp.children[1].textContent=k.title;sp.children[2].textContent=k.result||'';
-   var a=li.querySelector('a'),href=(k.image_url||'').trim();if(a){if(/^(https:\/\/|work\/|\/)/.test(href)&&!/\.(png|jpe?g|webp|gif|svg|avif)$/i.test(href))a.href=href;else a.remove()}list.appendChild(li)});
+   var a=li.querySelector('a'),href=caseHref(k.image_url);if(a){if(/^(https:\/\/|\/(?!\/))/.test(href)&&!/\.(png|jpe?g|webp|gif|svg|avif)$/i.test(href))a.setAttribute('href',href);else a.remove()}list.appendChild(li)});
    var cnt=document.querySelector('#work p.text-mute');if(cnt)cnt.textContent=c.cases.length+' live builds'}}
  var caps=[].slice.call(document.querySelectorAll('section[data-div*="Capabilities"] ul'))[0];
- if(caps&&c.services&&c.services.length){var t2=caps.querySelector('li');if(t2){caps.innerHTML='';c.services.forEach(function(s,i){var li=t2.cloneNode(true),ps=li.querySelectorAll('p');ps[0].textContent=('0'+(i+1)).slice(-2);ps[1].textContent=s.title;ps[2].textContent=s.description||'';caps.appendChild(li)})}}
+ if(caps&&c.services&&c.services.length){var t2=caps.querySelector('li'),cur=caps.querySelectorAll('li'),same=cur.length===c.services.length&&c.services.every(function(s,i){var ps=cur[i].querySelectorAll('p');return ps.length>2&&ps[1].textContent===s.title&&ps[2].textContent===(s.description||'')});if(t2&&!same){caps.innerHTML='';c.services.forEach(function(s,i){var li=t2.cloneNode(true),ps=li.querySelectorAll('p');ps[0].textContent=('0'+(i+1)).slice(-2);ps[1].textContent=s.title;ps[2].textContent=s.description||'';caps.appendChild(li)})}}
 }
 })();
