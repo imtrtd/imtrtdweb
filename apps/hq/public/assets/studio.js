@@ -268,7 +268,7 @@ function initSolar(){var cv=$('.pulse-shader');if(!cv)return false;var gl,soft=f
   /* static frame (no animation loop) with reduced motion, or when WebGL runs on the CPU: every frame of this shader
      would then cost hundreds of ms of main-thread time. The frame is redrawn only on resize / scroll / accent changes. */
   function still(){return soft||reduce.matches}
-  var T_STILL=4.2,BAND_PX=small.matches?1.2e4:3e4,BAND_MS=8;
+  var T_STILL=4.2,BAND_PX=small.matches?1.2e4:3e4,BAND_MS=3;
   /* software path: presenting a WebGL frame makes the compositor read the canvas back and wait (ReadPixels) until the
      CPU rasteriser has finished the whole shader - that wait was the ~0.3-0.75 s main-thread task (x4 under Lighthouse's
      mobile CPU throttling = ~1.2 s). So the still frame is rendered offscreen in horizontal bands, one band (~12k px on phones, ~30k px otherwise) per 40 ms;
@@ -320,12 +320,12 @@ function initSolar(){var cv=$('.pulse-shader');if(!cv)return false;var gl,soft=f
       gl.bindFramebuffer(gl.FRAMEBUFFER,fb);gl.framebufferTexture2D(gl.FRAMEBUFFER,gl.COLOR_ATTACHMENT0,gl.TEXTURE_2D,tex,0)}
     gl.bindFramebuffer(gl.FRAMEBUFFER,fb);gl.useProgram(pr);gl.enable(gl.SCISSOR_TEST);gl.scissor(0,y0,w,y1-y0);gl.clearColor(0,0,0,0);gl.clear(gl.COLOR_BUFFER_BIT);gl.drawArrays(gl.TRIANGLES,0,3);gl.disable(gl.SCISSOR_TEST);
     if(!warm){warm=true;dirty=true;gl.flush();return 300}var b0=performance.now();gl.readPixels(0,y0,1,1,gl.RGBA,gl.UNSIGNED_BYTE,px1);
-    /* adaptive band size: aim for ~8 ms per band on this device (x4 under mobile CPU throttling still stays under the 50 ms long-task line) */
+    /* adaptive band size: aim for ~3 ms of GPU wait per band, so the whole rAF task (starfield + band) stays well under the 50 ms long-task line even at 4x CPU slowdown */
     var bt=performance.now()-b0;if(bt>.5)BAND_PX=Math.max(2e3,Math.min(6e4,BAND_PX*Math.max(.5,Math.min(1.5,BAND_MS/bt))));
     band=y1;if(band<h)return 0;band=0;gl.bindFramebuffer(gl.FRAMEBUFFER,null);if(cv.width!==w||cv.height!==h){cv.width=w;cv.height=h}gl.viewport(0,0,w,h);gl.useProgram(bp);gl.bindTexture(gl.TEXTURE_2D,tex);gl.drawArrays(gl.TRIANGLES,0,3);return 0}
   /* 30 fps while animating; a still frame is redrawn only when something changed (banded on the software path) */
   var job={iv:1000/30,want:function(){return vis&&(dirty||band>0||!still())},run:function(t,fr){
-    if(banded()){job.iv=40;
+    if(banded()){job.iv=24;
       /* a pass in flight is finished and shown first; changes made meanwhile start the next pass (no restarts while scrolling) */
       if(band===0&&dirty){dirty=false;if(!prep(t,fr))return}job.last+=drawBand();return}
     job.iv=1000/30;band=0;dirty=false;draw(t,fr)}};
