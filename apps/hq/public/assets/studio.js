@@ -159,6 +159,9 @@ function initHero(){var st=$('.pulse-stage');if(!st)return;var raf=0;
   function q(){cancelAnimationFrame(raf);raf=requestAnimationFrame(upd)}
   addEventListener('scroll',q,{passive:true});addEventListener('resize',q);upd();
   var ex=$('[data-fx=explore]');if(ex)ex.addEventListener('click',function(ev){var w=$('#work');if(w){ev.preventDefault();w.scrollIntoView({behavior:reduce.matches?'auto':'smooth'})}});
+  /* Tab into the brief panel while it is still folded away (desktop, top of page: opacity 0, no pointer events)
+     -> scroll the pinned hero to where the panel is fully shown, so keyboard users see what they type. */
+  var bp=$('.brief-panel');if(bp)bp.addEventListener('focusin',function(){if(parseFloat(getComputedStyle(bp).opacity)>=.99)return;var e=st.offsetHeight-stableVH();if(e<=0)return;scrollTo({top:st.getBoundingClientRect().top+scrollY+e*.6,behavior:'auto'});upd()});
   /* brief form submit is handled by assets/site-api.js (POST to admin API, mailto fallback) */
   whenIdle(function(){if(!initSolar())initFigure()})}
 
