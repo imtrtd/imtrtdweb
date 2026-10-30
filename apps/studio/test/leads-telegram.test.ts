@@ -38,7 +38,9 @@ describe("telegram", () => {
 			const id = JSON.parse(String(init.body)).chat_id;
 			seen.push(id);
 			if (id === "2") throw new Error("down");
-			return new Response("{}", { status: id === "3" ? 400 : 200 });
+			return id === "3"
+				? new Response(JSON.stringify({ ok: false, error_code: 400, description: "Bad Request: chat not found" }), { status: 400 })
+				: new Response(JSON.stringify({ ok: true, result: {} }), { status: 200 });
 		}) as unknown as typeof fetch;
 		const sent = await notifyTelegram({ TELEGRAM_BOT_TOKEN: "t", TELEGRAM_CHAT_ID: "1,2,3" }, lead, "", f);
 		expect(seen.sort()).toEqual(["1", "2", "3"]);

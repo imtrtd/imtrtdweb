@@ -3,6 +3,8 @@ declare namespace Cloudflare {
 		ADMIN_TOKEN?: string;
 		EDITOR_TOKEN?: string;
 		RESEND_API_KEY?: string;
+		/** Resend sender, on a Resend-verified domain. Default: IMTRTD <leads@notify.imtrtd.space>. */
+		RESEND_FROM_EMAIL?: string;
 		TELEGRAM_BOT_TOKEN?: string;
 		TELEGRAM_CHAT_ID?: string;
 		EMAIL?: SendEmail;

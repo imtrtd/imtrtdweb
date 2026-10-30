@@ -48,7 +48,7 @@ describe("lead email", () => {
 		const EMAIL = { send: async () => { throw Object.assign(new Error("sender domain not verified"), { code: "E_SENDER_DOMAIN_NOT_AVAILABLE" }); } };
 		const res = await notifyLeadEmail({ EMAIL }, lead);
 		expect(res.ok).toBe(false);
-		expect(res.error).toContain("E_SENDER_DOMAIN_NOT_AVAILABLE");
+		expect(res.error).toBe("cf_email_e_sender_domain_not_available");
 	});
 });
 
