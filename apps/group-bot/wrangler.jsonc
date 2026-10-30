@@ -1,0 +1,28 @@
+/**
+ * @imtrtd_groups_bot — group automation (welcome, rules, captcha, antispam, moderation, reminders)
+ * + Telegram Business auto-replies for the owner's personal account.
+ * Storage: Durable Object SQLite (same pattern as apps/tg-bot; no D1/KV needed).
+ * Deployed by .github/workflows/deploy-group-bot.yml.
+ */
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "imtrtd-groups-bot",
+  "main": "src/index.ts",
+  "compatibility_date": "2026-08-10",
+  "workers_dev": true,
+  "observability": { "enabled": true },
+  "durable_objects": {
+    "bindings": [{ "name": "STORE", "class_name": "GroupStore" }]
+  },
+  "migrations": [{ "tag": "v1", "new_sqlite_classes": ["GroupStore"] }],
+  "triggers": { "crons": ["* * * * *"] },
+  "vars": {
+    "BOT_ID": "9157815755",
+    "BOT_USERNAME": "imtrtd_groups_bot",
+    "OWNER_ID": "8970219861",
+    "OWNER_USERNAME": "AkakiiJ",
+    "TIMEZONE": "Europe/Kiev",
+    "PUBLIC_URL": "https://imtrtd-groups-bot.unitl.workers.dev",
+    "XAI_MODEL": "grok-3-mini"
+  }
+}

@@ -1,0 +1,82 @@
+name: Deploy group bot to Cloudflare
+
+on:
+  push:
+    branches:
+      - main
+      - feat/group-bot
+    paths:
+      - "apps/group-bot/**"
+      - ".github/workflows/deploy-group-bot.yml"
+  workflow_dispatch:
+
+concurrency:
+  group: deploy-group-bot
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    name: Deploy imtrtd-groups-bot
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    defaults:
+      run:
+        working-directory: apps/group-bot
+    permissions:
+      contents: read
+      deployments: write
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: npm
+          cache-dependency-path: apps/group-bot/package-lock.json
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Typecheck
+        run: npm run check
+
+      - name: Deploy Worker
+        uses: cloudflare/wrangler-action@v4
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          wranglerVersion: "4.88.0"
+          workingDirectory: apps/group-bot
+          command: deploy
+          secrets: |
+            TELEGRAM_BOT_TOKEN
+        env:
+          TELEGRAM_BOT_TOKEN: ${{ secrets.IMTRTD_GROUPS_BOT_TOKEN }}
+
+      - name: Optional xAI key for Business auto-replies
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          XAI_API_KEY: ${{ secrets.IMTRTD_GROUPS_XAI_API_KEY }}
+        run: |
+          if [ -n "$XAI_API_KEY" ]; then
+            printf %s "$XAI_API_KEY" | npx wrangler secret put XAI_API_KEY
+          else
+            echo "IMTRTD_GROUPS_XAI_API_KEY not set — Business replies use the template."
+          fi
+
+      - name: Register webhook and commands
+        env:
+          TELEGRAM_BOT_TOKEN: ${{ secrets.IMTRTD_GROUPS_BOT_TOKEN }}
+          BOT_URL: https://imtrtd-groups-bot.unitl.workers.dev
+        run: |
+          KEY=$(printf %s "setup:imtrtd-groups" | openssl dgst -sha256 -hmac "$TELEGRAM_BOT_TOKEN" | awk '{print $NF}')
+          echo "::add-mask::$KEY"
+          for i in 1 2 3 4 5 6; do
+            if curl -fsS "$BOT_URL/health" >/dev/null; then break; fi
+            sleep 10
+          done
+          curl -fsS -X POST -H "X-Setup-Key: $KEY" "$BOT_URL/setup"
+          echo
