@@ -1,6 +1,7 @@
 import { Ctx } from "./env";
 import { esc, truncate, userName } from "./tg";
 import { fmtLocal } from "./time";
+import { OWNER_COMMANDS } from "./setup";
 
 /**
  * Telegram Business: the owner (@AkakiiJ) connects this bot in Settings → Telegram Business → Chatbots.
@@ -59,6 +60,7 @@ export async function onBusinessConnection(c: Ctx, bc: any) {
      ON CONFLICT(id) DO UPDATE SET can_reply = excluded.can_reply, is_enabled = excluded.is_enabled, rights = excluded.rights, updated_at = excluded.updated_at, user_chat_id = excluded.user_chat_id`,
     bc.id, bc.user.id, bc.user_chat_id, canReply, bc.is_enabled ? 1 : 0, JSON.stringify(bc.rights ?? {}), Date.now());
   await c.db.setKv("owner_id", String(bc.user.id));
+  await c.tg.try("setMyCommands", { commands: OWNER_COMMANDS, scope: { type: "chat", chat_id: bc.user.id } });
   if (!bc.is_enabled) return c.send(bc.user_chat_id, "🔌 Бизнес-подключение отключено. Автоответы не отправляются.");
   const s = await state(c);
   await c.send(bc.user_chat_id, [

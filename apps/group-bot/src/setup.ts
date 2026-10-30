@@ -8,7 +8,7 @@ const PRIVATE_COMMANDS = [
   { command: "delremind", description: "Удалить напоминание по ID" },
 ];
 
-const OWNER_COMMANDS = [
+export const OWNER_COMMANDS = [
   ...PRIVATE_COMMANDS,
   { command: "business", description: "Автоответы Business: статус / on / off / ai on|off" },
   { command: "setautoreply", description: "Текст автоответа" },
