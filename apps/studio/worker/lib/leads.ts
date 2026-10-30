@@ -295,6 +295,8 @@ export async function notifyClient(env: Env, lead: Lead): Promise<NotifyResult> 
 	if (!isEmail(to)) {
 		return { ok: false, skipped: true };
 	}
+	// The From subdomain is send-only (no inbox), so client replies go to the studio inbox.
+	const studio = env.STUDIO_NOTIFY_EMAIL?.trim();
 	return sendResend(
 		env,
 		{
@@ -309,6 +311,7 @@ export async function notifyClient(env: Env, lead: Lead): Promise<NotifyResult> 
 				"",
 				"— I'm Trying To Design",
 			].join("\n"),
+			...(studio && isEmail(studio) ? { replyTo: studio } : {}),
 		},
 		"client",
 	);
@@ -342,9 +345,16 @@ export async function notifyStaleLead(env: Env, lead: Lead): Promise<NotifyResul
 export async function remindStaleLeads(env: Env): Promise<number> {
 	const cutoff = new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString();
 	const stale = await listStaleUnreminded(env.DB, cutoff);
+	let reminded = 0;
 	for (const lead of stale) {
-		await notifyStaleLead(env, lead);
-		await markReminded(env.DB, lead.id);
+		const res = await notifyStaleLead(env, lead);
+		// A failed send (Resend 4xx/5xx, timeout) stays unmarked so the next hourly run retries it.
+		// "skipped" (no RESEND_API_KEY / recipient) is marked as before, so enabling email later
+		// does not fire a burst of reminders for old leads.
+		if (res.ok || res.skipped) {
+			await markReminded(env.DB, lead.id);
+			reminded += 1;
+		}
 	}
-	return stale.length;
+	return reminded;
 }

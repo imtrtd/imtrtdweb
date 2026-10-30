@@ -2,6 +2,7 @@ import { env } from "cloudflare:test";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import worker from "../worker/index";
 import type { Lead } from "../worker/lib/http";
+import { notifyClient, remindStaleLeads } from "../worker/lib/leads";
 import { leadNotified } from "../worker/lib/notify-result";
 import { DEFAULT_RESEND_FROM, sendResend } from "../worker/lib/resend";
 import { sendTelegram } from "../worker/lib/telegram";
@@ -155,5 +156,50 @@ describe("POST /api/leads with real notification outcomes (fetch mocked)", () =>
 		const stored = await worker.fetch(new Request("http://x/api/admin/leads", { headers: { Authorization: "Bearer dev-admin-token" } }), env);
 		expect(stored.status).toBe(200);
 		expect(JSON.stringify(await stored.json())).toContain(body.id);
+	});
+});
+
+describe("stale reminders and client auto-reply (Bugbot)", () => {
+	/** Minimal D1 stand-in: one stale lead; records UPDATE (markReminded) calls. */
+	function fakeDb(marked: string[]) {
+		return {
+			prepare(sql: string) {
+				return {
+					bind(...args: unknown[]) {
+						return {
+							all: async () => ({ results: [lead] }),
+							run: async () => { if (sql.startsWith("UPDATE")) marked.push(String(args[2])); return {}; },
+						};
+					},
+				};
+			},
+		} as unknown as D1Database;
+	}
+	const mk = (marked: string[], extra: Partial<Env> = {}) => ({ ...env, DB: fakeDb(marked), ...extra }) as unknown as Env;
+
+	it("does not mark a lead reminded when the Resend send fails, so the next run retries", async () => {
+		vi.spyOn(globalThis, "fetch").mockImplementation(async () => jsonRes({ statusCode: 500, name: "internal_server_error" }, 500));
+		const marked: string[] = [];
+		const { out } = await captureLogs(() => remindStaleLeads(mk(marked, { RESEND_API_KEY: "k" })));
+		expect(out).toBe(0);
+		expect(marked).toEqual([]);
+	});
+
+	it("marks on success, and when email is not configured (skipped)", async () => {
+		vi.spyOn(globalThis, "fetch").mockImplementation(async () => jsonRes({ id: "re_s" }));
+		const ok: string[] = [];
+		expect(await remindStaleLeads(mk(ok, { RESEND_API_KEY: "k" }))).toBe(1);
+		expect(ok).toEqual(["lead_n"]);
+		const skipped: string[] = [];
+		expect(await remindStaleLeads(mk(skipped, { RESEND_API_KEY: undefined }))).toBe(1);
+		expect(skipped).toEqual(["lead_n"]);
+	});
+
+	it("client auto-reply sets reply_to to the studio inbox (From subdomain is send-only)", async () => {
+		let body: Record<string, unknown> = {};
+		vi.spyOn(globalThis, "fetch").mockImplementation(async (_u, init) => { body = JSON.parse(String(init?.body)); return jsonRes({ id: "re_c" }); });
+		expect(await notifyClient({ ...env, RESEND_API_KEY: "k" } as unknown as Env, lead)).toEqual({ ok: true });
+		expect(body.to).toEqual(["anya@example.com"]);
+		expect(body.reply_to).toBe("admin@imtrtd.space");
 	});
 });
