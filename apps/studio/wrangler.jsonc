@@ -50,7 +50,11 @@
 		"crons": ["0 * * * *"]
 	},
 	"vars": {
+		// Resend lead mail (notifyStudio / notifyClient / stale reminders). Recipient = admin@imtrtd.space, whose MX is Zoho
+		// (mx.zoho.com), so this mail lands in the Zoho mailbox, not Gmail. Sender must be on a domain verified in Resend;
+		// onboarding@resend.dev only delivers to the Resend account owner's address (403 otherwise).
 		"STUDIO_NOTIFY_EMAIL": "admin@imtrtd.space",
+		"RESEND_FROM_EMAIL": "IMTRTD <leads@notify.imtrtd.space>",
 		"LEAD_NOTIFY_EMAIL": "admin@imtrtd.space",
 		"LEAD_FROM_EMAIL": "leads@imtryingtodesign.com",
 		// Turnstile on the imtrtd.space brief forms (PSE-22). Public site key from the Turnstile widget goes here;

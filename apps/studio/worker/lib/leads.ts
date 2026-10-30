@@ -1,5 +1,7 @@
 import type { Lead, LeadStatus } from "./http";
 import { id, nowIso } from "./http";
+import type { NotifyResult } from "./notify-result";
+import { sendResend } from "./resend";
 
 const RATE_WINDOW_MS = 60_000;
 const RATE_LIMIT = 5;
@@ -252,100 +254,89 @@ export async function markReminded(db: D1Database, leadId: string) {
 }
 
 function isEmail(value: string): boolean {
-	return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value);
+	return /^[^\s@,;<>]+@[^\s@,;<>]+\.[^\s@,;<>]+$/.test(value);
 }
 
-export async function notifyStudio(env: Env, lead: Lead): Promise<void> {
-	const to = env.STUDIO_NOTIFY_EMAIL;
+/** Header-safe single line for subjects. */
+function oneLine(value: string, max = 80): string {
+	return value.replace(/[\r\n]+/g, " ").trim().slice(0, max);
+}
+
+/** Lead notification to the studio inbox (STUDIO_NOTIFY_EMAIL) via Resend. */
+export async function notifyStudio(env: Env, lead: Lead): Promise<NotifyResult> {
+	const to = env.STUDIO_NOTIFY_EMAIL?.trim();
 	if (!to) {
-		return;
+		return { ok: false, skipped: true };
 	}
-	await sendEmail(
+	return sendResend(
 		env,
-		to,
-		`Новая заявка: ${lead.name}`,
-		[
-			`Имя: ${lead.name}`,
-			`Контакт: ${lead.contact}`,
-			`Тип: ${lead.task_type || "—"}`,
-			`Бюджет: ${lead.budget || "—"}`,
-			"",
-			lead.message || "(без сообщения)",
-			"",
-			`ID: ${lead.id}`,
-		].join("\n"),
+		{
+			to,
+			subject: `Новая заявка: ${oneLine(lead.name)}`,
+			text: [
+				`Имя: ${lead.name}`,
+				`Контакт: ${lead.contact}`,
+				`Тип: ${lead.task_type || "—"}`,
+				`Бюджет: ${lead.budget || "—"}`,
+				"",
+				lead.message || "(без сообщения)",
+				"",
+				`ID: ${lead.id}`,
+			].join("\n"),
+			...(isEmail(lead.contact.trim()) ? { replyTo: lead.contact.trim() } : {}),
+		},
+		"studio",
 	);
 }
 
 /** Auto-reply to the client when contact looks like an email. */
-export async function notifyClient(env: Env, lead: Lead): Promise<void> {
-	if (!isEmail(lead.contact)) {
-		return;
+export async function notifyClient(env: Env, lead: Lead): Promise<NotifyResult> {
+	const to = lead.contact.trim();
+	if (!isEmail(to)) {
+		return { ok: false, skipped: true };
 	}
-	await sendEmail(
+	return sendResend(
 		env,
-		lead.contact,
-		"Заявка получена — I'm Trying To Design",
-		[
-			`Здравствуйте, ${lead.name}!`,
-			"",
-			"Мы получили вашу заявку и ответим в течение одного рабочего дня.",
-			"",
-			"Если срочно — напишите в Telegram: @imtrtd",
-			"",
-			"— I'm Trying To Design",
-		].join("\n"),
-	);
-}
-
-export async function notifyStaleLead(env: Env, lead: Lead): Promise<void> {
-	const to = env.STUDIO_NOTIFY_EMAIL;
-	if (!to) {
-		return;
-	}
-	await sendEmail(
-		env,
-		to,
-		`Напоминание: заявка без ответа (${lead.name})`,
-		[
-			`Заявка старше 24 часов всё ещё в статусе new.`,
-			"",
-			`Имя: ${lead.name}`,
-			`Контакт: ${lead.contact}`,
-			`Создана: ${lead.created_at}`,
-			`ID: ${lead.id}`,
-			"",
-			"Откройте /admin и ответьте или смените статус.",
-		].join("\n"),
-	);
-}
-
-async function sendEmail(
-	env: Env,
-	to: string,
-	subject: string,
-	text: string,
-): Promise<void> {
-	const apiKey = env.RESEND_API_KEY;
-	if (!apiKey) {
-		return;
-	}
-
-	await fetch("https://api.resend.com/emails", {
-		method: "POST",
-		headers: {
-			Authorization: `Bearer ${apiKey}`,
-			"Content-Type": "application/json",
+		{
+			to,
+			subject: "Заявка получена — I'm Trying To Design",
+			text: [
+				`Здравствуйте, ${lead.name}!`,
+				"",
+				"Мы получили вашу заявку и ответим в течение одного рабочего дня.",
+				"",
+				"Если срочно — напишите в Telegram: @imtrtd",
+				"",
+				"— I'm Trying To Design",
+			].join("\n"),
 		},
-		body: JSON.stringify({
-			from: "IMTRTD <onboarding@resend.dev>",
-			to: [to],
-			subject,
-			text,
-		}),
-	}).catch(() => {
-		/* non-blocking */
-	});
+		"client",
+	);
+}
+
+export async function notifyStaleLead(env: Env, lead: Lead): Promise<NotifyResult> {
+	const to = env.STUDIO_NOTIFY_EMAIL?.trim();
+	if (!to) {
+		return { ok: false, skipped: true };
+	}
+	return sendResend(
+		env,
+		{
+			to,
+			subject: `Напоминание: заявка без ответа (${oneLine(lead.name)})`,
+			text: [
+				`Заявка старше 24 часов всё ещё в статусе new.`,
+				"",
+				`Имя: ${lead.name}`,
+				`Контакт: ${lead.contact}`,
+				`Создана: ${lead.created_at}`,
+				`ID: ${lead.id}`,
+				"",
+				"Откройте /admin и ответьте или смените статус.",
+			].join("\n"),
+		},
+		"stale",
+	);
 }
 
 export async function remindStaleLeads(env: Env): Promise<number> {
