@@ -23,6 +23,6 @@
     "OWNER_USERNAME": "AkakiiJ",
     "TIMEZONE": "Europe/Kiev",
     "PUBLIC_URL": "https://imtrtd-groups-bot.unitl.workers.dev",
-    "XAI_MODEL": "grok-3-mini"
+    "XAI_MODEL": "grok-4.20-non-reasoning"
   }
 }

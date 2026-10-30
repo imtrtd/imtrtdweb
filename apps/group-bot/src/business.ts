@@ -9,23 +9,51 @@ import { OWNER_COMMANDS } from "./setup";
  */
 
 export const DEFAULT_AUTOREPLY = [
-  "Здравствуйте! Вы застали меня в редкий момент, когда я не сижу в телефоне. 🫠",
-  "Сообщение дошло, отвечу лично чуть позже. Если вопрос важный — напишите его сразу целиком, сэкономим друг другу пару жизней.",
-  "",
-  "— автоответ (он тоже вас ценит, но меньше)",
+  "Видел. Сейчас занят вещами, которые мне интереснее переписки.",
+  "Отвечу позже. Если хочешь ускорить процесс — изложи суть одним сообщением, без «привет, есть минутка?».",
 ].join("\n");
 
-const SYSTEM_PROMPT = `Ты отвечаешь в личных сообщениях Telegram от имени владельца аккаунта, пока он занят.
-Стиль: саркастично, остроумно, с сухим юмором — но по делу. Каждый ответ должен реально помогать: отвечать на вопрос, уточнять нужное или говорить, что будет дальше. Сарказм — приправа, не замена смысла. Без грубости, оскорблений и пассивной агрессии к собеседнику.
-Язык: отвечай на языке собеседника (по умолчанию русский). Коротко: 1–3 предложения, без markdown.
+const SYSTEM_PROMPT = `Ты пишешь в личных сообщениях Telegram от первого лица как владелец аккаунта. Собеседник должен воспринимать это как ответ самого владельца.
+Никогда не упоминай автоответ, бота, ассистента, ИИ, нейросеть или что ты отвечаешь «за кого-то». Не говори о себе в третьем лице. Если спрашивают «ты бот?» / «это автоответ?» — не подтверждай и не отрицай (не говори «нет»), а сухо уйди от темы, например «Вопрос интересный. Твой — какой?», и верни разговор к делу.
+Тон: холодный, отстранённый, циничный, сухой; слегка безэмоциональный, будто тебе всё равно, но ты профессионал. В каждом ответе одна короткая циничная или саркастичная фраза — сухая, ледяная, без восклицаний, и обязательно по теме вопроса (не общие рассуждения о жизни). При этом без оскорблений, унижения, угроз и мата.
+Каждый ответ должен быть полезным и по делу: ответить на вопрос, запросить недостающие детали или сказать, что будет дальше. Никакой воды.
+Язык: язык собеседника (по умолчанию русский). Коротко: 1–3 предложения. Без markdown. Никаких эмодзи и смайликов, вообще.
 
-Проекты владельца упоминай ТОЛЬКО если собеседник сам спрашивает о них или о соответствующей услуге — никогда не рекламируй их по своей инициативе:
-• Тату (запись, эскиз, сеанс, цена тату, студия): тату-студия NAMENLOS в Нюрнберге, Instagram @namenlos_tattoo (https://instagram.com/namenlos_tattoo). Для записи попроси идею, размер в см, место на теле, цвет/ч-б, референсы, удобные даты.
-• Сайты, веб-дизайн, дизайн-работа: imtrtd.space (https://imtrtd.space). Попроси: что за проект, задачи, примеры, сроки, бюджет.
+Свои проекты упоминай ТОЛЬКО если собеседник сам спрашивает о них или о соответствующей услуге — никогда по своей инициативе. Если спросил — в ответе ОБЯЗАТЕЛЬНО назови проект и вставь ссылку дословно (ссылка обязательна, без неё ответ неверный):
+• Тату (запись, эскиз, сеанс, цена, студия): моя студия NAMENLOS в Нюрнберге, работы — https://instagram.com/namenlos_tattoo. Для записи запроси: идея, размер в см, место на теле, цвет или ч/б, референсы, удобные даты.
+• Сайты, веб-дизайн, дизайн-работа: портфолио — https://imtrtd.space. Запроси: что за проект, задачи, примеры, сроки, бюджет.
 
-Никогда не выдумывай цены, свободные даты, адреса, сроки и обещания — скажи, что владелец уточнит лично.
-Не называй себя ИИ-моделью и не упоминай провайдеров; если спросят — ты автоответчик владельца, он ответит сам.
-Личные, интимные или конфликтные темы по существу не обсуждай — коротко и с юмором скажи, что владелец ответит сам.`;
+Собеседник уже пишет тебе в личку — не предлагай «написать мне»; проси детали прямо здесь.
+Не выдумывай цены, свободные даты, адреса и обещания: цену и дату называешь после деталей, пиши «посчитаю/скажу, когда увижу детали».
+Личные, интимные или конфликтные темы по существу не обсуждай — сухо скажи, что ответишь позже.
+
+Примеры тона (не копируй дословно):
+— «Сколько стоит тату?» → «Столько же, сколько стоит вопрос без деталей — ничего не значит. Идея, размер в см, место, цвет или ч/б, референсы — тогда посчитаю. Работы — https://instagram.com/namenlos_tattoo»
+— «Ты где пропал?» → «Никуда. Просто не всё в жизни требует моего немедленного присутствия. Что нужно?»
+— «Сделаешь сайт?» → «Сделаю, если это не «как у Apple, но за три копейки». Что за проект, задачи, сроки, бюджет? Портфолио — https://imtrtd.space»`;
+
+const TATTOO_RE = /тату|татуир|эскиз|сеанс|tattoo|tätowier|namenlos/i;
+const WEB_RE = /сайт|лендинг|веб|web|дизайн|website|webseite|imtrtd/i;
+const TATTOO_LINK = "https://instagram.com/namenlos_tattoo";
+const WEB_LINK = "https://imtrtd.space";
+
+/** Projects only on request: if the client asked about tattoo / web and the answer lacks the link, append it. */
+export function ensureProjectLinks(question: string, answer: string): string {
+  let out = answer;
+  if (TATTOO_RE.test(question) && !out.includes("namenlos_tattoo")) out += `\nРаботы — ${TATTOO_LINK}`;
+  if (WEB_RE.test(question) && !out.includes("imtrtd.space")) out += `\nПортфолио — ${WEB_LINK}`;
+  return out;
+}
+
+/** Strip emoji / pictographs (incl. ZWJ sequences, variation selectors, flags, keycaps). */
+export function stripEmoji(t: string): string {
+  return t
+    .replace(/[\p{Extended_Pictographic}\p{Regional_Indicator}\u{1F3FB}-\u{1F3FF}\u200D\uFE0E\uFE0F\u20E3]/gu, "")
+    .replace(/[ \t]{2,}/g, " ")
+    .replace(/ +([.,!?;:])/g, "$1")
+    .replace(/[ \t]+\n/g, "\n")
+    .trim();
+}
 
 const OWNER_TAKEOVER_MS = 30 * 60_000; // after the owner writes in a chat, stay silent there for 30 min
 const MIN_GAP_MS = 15_000; // at most one auto-reply per chat per 15 s (LLM mode)
@@ -85,11 +113,12 @@ async function llmAnswer(c: Ctx, connId: string, chatId: number, clientName: str
       const r = await fetch("https://api.x.ai/v1/chat/completions", {
         method: "POST",
         headers: { "content-type": "application/json", authorization: `Bearer ${c.env.XAI_API_KEY}` },
-        body: JSON.stringify({ model: c.env.XAI_MODEL || "grok-3-mini", messages, max_tokens: 400, temperature: 0.8 }),
+        body: JSON.stringify({ model: c.env.XAI_MODEL || "grok-4.20-non-reasoning", messages, max_tokens: 400, temperature: 0.8 }),
       });
       const j: any = await r.json();
-      const t = j?.choices?.[0]?.message?.content;
-      if (typeof t === "string" && t.trim()) return t.trim();
+      const raw = j?.choices?.[0]?.message?.content;
+      const t = typeof raw === "string" ? stripEmoji(raw) : "";
+      if (t) return t;
       console.warn("xai: empty answer", r.status);
     } catch (e) { console.warn("xai failed", String((e as Error).message)); }
   }
@@ -128,7 +157,10 @@ export async function onBusinessMessage(c: Ctx, msg: any, edited = false) {
 
   await c.db.run(`INSERT INTO biz_chats(conn_id, chat_id, last_auto) VALUES (?,?,?) ON CONFLICT(conn_id, chat_id) DO UPDATE SET last_auto = excluded.last_auto`, connId, chatId, now);
   let answer = useAi ? await llmAnswer(c, connId, chatId, userName(msg.from)) : null;
+  if (answer) answer = ensureProjectLinks(text, answer);
   if (!answer) answer = (s.text || DEFAULT_AUTOREPLY).replace(/\{name\}/g, msg.from?.first_name ?? "");
+  answer = stripEmoji(answer);
+  if (!answer) return;
   const sent = await c.tg.try<any>("sendMessage", {
     business_connection_id: connId, chat_id: chatId, text: truncate(answer, 4000), link_preview_options: { is_disabled: true },
   });
