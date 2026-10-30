@@ -26,8 +26,8 @@ Only a Business connection from `OWNER_USERNAME` / `OWNER_ID` is accepted; that 
 Incoming private messages are answered via `sendMessage` + `business_connection_id` if the connection is enabled and has the reply right.
 Never answers the owner's own messages; after the owner writes in a chat the bot stays silent there for 30 min.
 
-* No `XAI_API_KEY` secret → template auto-reply (once per chat per `/cooldown` hours, default 12).
-* With `XAI_API_KEY` (optional secret, from repo secret `IMTRTD_GROUPS_XAI_API_KEY`) → short LLM answers with the studio context (NAMENLOS, imtrtd.space).
+* No `XAI_API_KEY` secret → short witty "away" template (no project mentions), once per chat per `/cooldown` hours (default 12).
+* With `XAI_API_KEY` (optional secret, from repo secret `IMTRTD_GROUPS_XAI_API_KEY`) → AI mode is ON by default (until `/business ai off`): sarcastic but helpful answers in the sender's language; NAMENLOS / imtrtd.space are mentioned only when the person asks about tattoos or websites.
 
 Owner DM commands: `/business`, `/business on|off`, `/business ai on|off`, `/setautoreply текст`, `/pause N`, `/cooldown H`.
 
