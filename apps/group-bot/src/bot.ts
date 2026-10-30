@@ -1,7 +1,7 @@
 import { Ctx } from "./env";
 import * as G from "./group";
 import { cmdDelRemind, cmdReminders, cmdRemind } from "./reminders";
-import { onBusinessConnection, onBusinessMessage, onDeletedBusinessMessages, ownerCommand } from "./business";
+import { onBusinessConnection, onBusinessMessage, onDeletedBusinessMessages, onPrivateText, ownerCommand } from "./business";
 
 const HELP_GROUP = `🤖 <b>IMTRTD Group Automation</b>
 
@@ -49,8 +49,13 @@ function parseCommand(c: Ctx, text: string): { cmd: string; args: string } | nul
 }
 
 async function onPrivate(c: Ctx, msg: any) {
-  const p = parseCommand(c, String(msg.text ?? ""));
-  if (!p) return;
+  const raw = String(msg.text ?? "");
+  const p = parseCommand(c, raw);
+  if (!p) {
+    // Plain text / caption (not a command) → AI reply in the same persona as Business replies.
+    if (!raw.trimStart().startsWith("/")) await onPrivateText(c, msg);
+    return;
+  }
   if (await ownerCommand(c, msg, p.cmd, p.args)) return;
   const owner = await c.isOwner(msg.from?.id);
   switch (p.cmd) {

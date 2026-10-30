@@ -62,6 +62,8 @@ export function stripEmoji(t: string): string {
 
 const OWNER_TAKEOVER_MS = 30 * 60_000; // after the owner writes in a chat, stay silent there for 30 min
 const MIN_GAP_MS = 15_000; // at most one auto-reply per chat per 15 s (LLM mode)
+const DM_CONN = "dm"; // pseudo connection id: history/rate-limit of the bot's own private chats
+const DM_MIN_GAP_MS = 3_000; // bot's own DM: at most one AI reply per chat per 3 s
 // AI mode is on by default whenever XAI_API_KEY exists; only an explicit "/business ai off" (kv biz_ai = "0") disables it.
 
 interface BizState { enabled: boolean; ai: boolean; pauseUntil: number; cooldownH: number; text: string | null }
@@ -170,6 +172,33 @@ export async function onBusinessMessage(c: Ctx, msg: any, edited = false) {
     business_connection_id: connId, chat_id: chatId, text: truncate(answer, 4000), link_preview_options: { is_disabled: true },
   });
   if (sent) await remember(c, connId, chatId, sent.message_id, "assistant", answer);
+}
+
+/**
+ * Plain (non-command) text in the bot's OWN private chat: same persona & generation path as Business replies,
+ * per-chat short history, light rate limit; no owner-takeover / template-cooldown rules.
+ */
+export async function onPrivateText(c: Ctx, msg: any) {
+  const chatId = msg.chat.id;
+  const text = String(msg.text ?? msg.caption ?? "").trim();
+  if (!text || msg.from?.is_bot) return;
+  const now = Date.now();
+  const chat = await c.db.one<any>("SELECT last_auto FROM biz_chats WHERE conn_id = ? AND chat_id = ?", DM_CONN, chatId);
+  await remember(c, DM_CONN, chatId, msg.message_id, "user", text);
+  if (chat && now - chat.last_auto < DM_MIN_GAP_MS) return; // remembered for context, but no reply
+  await c.db.run(`INSERT INTO biz_chats(conn_id, chat_id, last_auto) VALUES (?,?,?) ON CONFLICT(conn_id, chat_id) DO UPDATE SET last_auto = excluded.last_auto`, DM_CONN, chatId, now);
+  const s = await state(c);
+  const useAi = s.ai && !!c.env.XAI_API_KEY;
+  if (useAi) await c.tg.try("sendChatAction", { chat_id: chatId, action: "typing" });
+  let answer = useAi ? await llmAnswer(c, DM_CONN, chatId, userName(msg.from)) : null;
+  if (answer) answer = ensureProjectLinks(text, answer);
+  if (!answer) answer = (s.text || DEFAULT_AUTOREPLY).replace(/\{name\}/g, msg.from?.first_name ?? "");
+  answer = stripEmoji(answer);
+  if (!answer) return;
+  const sent = await c.tg.try<any>("sendMessage", { chat_id: chatId, text: truncate(answer, 4000), link_preview_options: { is_disabled: true } });
+  if (sent) await remember(c, DM_CONN, chatId, sent.message_id, "assistant", answer);
+  // keep the DM history short
+  await c.db.run(`DELETE FROM biz_history WHERE conn_id = ? AND chat_id = ? AND id NOT IN (SELECT id FROM biz_history WHERE conn_id = ? AND chat_id = ? ORDER BY id DESC LIMIT 40)`, DM_CONN, chatId, DM_CONN, chatId);
 }
 
 export async function onDeletedBusinessMessages(c: Ctx, upd: any) {
