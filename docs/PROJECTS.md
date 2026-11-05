@@ -12,6 +12,7 @@
 | `imtryingtodesign.com` | `imtryingtodesign` | `apps/portfolio` |
 | `www.imtryingtodesign.com` | `imtryingtodesign` | то же |
 | `app.imtryingtodesign.com` | Vercel | `apps/cuebox` |
+| _(TBD)_ | Vercel | `apps/psihovika` — ПсихоВика, каталог методик |
 | `namenlos-tg-bot.unitl.workers.dev` | `namenlos-tg-bot` | `apps/tg-bot` |
 
 Маршруты — в `routes` каждого `wrangler.jsonc`.
