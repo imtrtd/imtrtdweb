@@ -1,6 +1,6 @@
 # I'm Trying To Design — monorepo
 
-Публичный сайт студии — **imtrtd.space** (`apps/hq`). Всё крутится на Cloudflare Workers (аккаунт Proton), кроме Cuebox и ПсихоВики (Vercel).
+Публичный сайт студии — **imtrtd.space** (`apps/hq`). Всё крутится на Cloudflare Workers (аккаунт Proton), кроме Cuebox.
 
 | App | Путь | Worker | Домен |
 | --- | --- | --- | --- |
@@ -9,7 +9,6 @@
 | **Portfolio** | `apps/portfolio` | `imtryingtodesign` | `imtryingtodesign.com`, `www.imtryingtodesign.com` |
 | **Telegram-бот** | `apps/tg-bot` | `namenlos-tg-bot` | `namenlos-tg-bot.unitl.workers.dev` |
 | **Cuebox** | `apps/cuebox` | — (Vercel) | `app.imtryingtodesign.com` |
-| **ПсихоВика** | `apps/psihovika` | — (Vercel) | TBD |
 
 ## Деплой
 
@@ -22,7 +21,7 @@
 | `.github/workflows/deploy-portfolio.yml` | `apps/portfolio/**` | `imtryingtodesign` |
 | `.github/workflows/deploy-tg-bot.yml` | `apps/tg-bot/**` | `namenlos-tg-bot` |
 
-У всех есть `workflow_dispatch` (ручной запуск из Actions). Cuebox и ПсихоВика деплоятся отдельно (Vercel).
+У всех есть `workflow_dispatch` (ручной запуск из Actions). Cuebox деплоится отдельно (Vercel).
 
 ## apps/hq — imtrtd.space
 
@@ -64,10 +63,6 @@
 npm --prefix apps/studio ci
 npm run dev:studio
 npm run test:studio
-
-npm --prefix apps/psihovika ci
-npm run dev:psihovika
-npm run build:psihovika
 ```
 
 ## Структура
@@ -79,7 +74,6 @@ apps/
   portfolio/    # imtryingtodesign.com — портфолио Next/Vinext
   tg-bot/       # namenlos-tg-bot
   cuebox/       # prompt library (Vercel)
-  psihovika/    # ПсихоВика — каталог психологических методик (Vercel)
 docs/
   PROJECTS.md   # карта доменов и воркеров
 packages/
