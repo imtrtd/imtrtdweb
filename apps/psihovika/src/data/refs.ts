@@ -187,13 +187,38 @@ function inferFidelity(test: Test): Fidelity {
   return "adapted";
 }
 
+/**
+ * Pull `Author (1990)` / `Author (1935, 1940)` from free-text sources.
+ * Rejects paren groups that are only year lists like `(1975, 1984)`, where the
+ * old parser stored the first year as `authors`.
+ */
 function parseCitationFromSource(source: string): Citation | null {
-  const match = source.match(/\(([^)]+?),\s*(\d{4}(?:\/\d{4})?)\)/);
-  if (!match) return null;
+  const yearGroup = /\(([12]\d{3})(?:\s*[,/]\s*[12]\d{3})*\)/g;
+  let last: RegExpExecArray | null = null;
+  let match: RegExpExecArray | null;
+  while ((match = yearGroup.exec(source)) !== null) last = match;
+  if (!last) return null;
+
+  const year = last[1];
+  const before = source.slice(0, last.index).trim().replace(/[,:\s]+$/u, "");
+  // Prefer the clause after the last comma ("…, Klein (1935, 1940)").
+  const chunk = (
+    before.includes(",") ? before.slice(before.lastIndexOf(",") + 1) : before
+  )
+    .trim()
+    .replace(/^(?:и|and|&)\s+/iu, "")
+    .trim();
+  if (chunk.length < 2 || /^\d{4}\b/.test(chunk)) return null;
+  // Authors are Latin names or a capitalized surname — not prose like "отчёт".
+  const looksLikeAuthor =
+    /[A-Za-z]/.test(chunk) ||
+    /(?:^|\s)[A-ZА-ЯЁ][A-Za-zА-Яа-яЁё'`.\-]+$/u.test(chunk);
+  if (!looksLikeAuthor) return null;
+
   return {
-    authors: match[1].trim(),
-    year: match[2],
-    title: source.split("(")[0]?.replace(/[,.]\s*$/, "").trim() || source,
+    authors: chunk,
+    year,
+    title: source,
     note: "Разобрано из поля источника методики.",
   };
 }
@@ -205,7 +230,6 @@ export function metaFor(test: Test): MethodMeta {
   return {
     fidelity: inferFidelity(test),
     citations: parsed ? [parsed] : [],
-    primaryNote: test.source,
   };
 }
 

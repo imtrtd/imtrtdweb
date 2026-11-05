@@ -34,9 +34,9 @@ export function SourceCard({ meta, source }: { meta: MethodMeta; source: string 
             </li>
           ))}
         </ul>
-      ) : (
+      ) : meta.primaryNote && meta.primaryNote !== source ? (
         <p className="mt-3 text-pretty">{source}</p>
-      )}
+      ) : null}
     </section>
   );
 }

@@ -168,7 +168,9 @@ export default defineConfig(({ command, isPreview }) => ({
     authPopupPlugin(),
     // Dev-only /__app-env, read by scripts/check-auth-invariant.mjs.
     appEnvPlugin(),
-    // PWA head + ?install=1 tutorial page; runs before Start/Nitro.
+    // Dev/preview Vite half of PWA chrome. Production Workers use
+    // `src/start.ts` request middleware; Nitro/Vercel still uses
+    // `server/middleware/grok-pwa.ts` below.
     grokPwaPlugin(),
     tailwindcss(),
     tanstackStart(),
@@ -179,6 +181,7 @@ export default defineConfig(({ command, isPreview }) => ({
             // Auto-registers server/middleware/* (the PWA install page +
             // manifest + head-tag middleware). Nitro v3 defaults serverDir to
             // false, so removing this silently unwires /?install=1 on deploys.
+            // Cloudflare builds skip Nitro — see `src/start.ts` instead.
             serverDir: "./server",
           }),
         ]

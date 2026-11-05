@@ -30,9 +30,29 @@ export function Shell({ children }: { children: ReactNode }) {
   const path = useRouterState({ select: (s) => s.location.pathname });
   const [burst, setBurst] = useState(0);
   const { theme, toggle } = useTheme();
+  const headerRef = useRef<HTMLElement>(null);
+
+  useEffect(() => {
+    const el = headerRef.current;
+    if (!el) return;
+    const sync = () => {
+      document.documentElement.style.setProperty("--shell-header-h", `${el.offsetHeight}px`);
+    };
+    sync();
+    const ro = new ResizeObserver(sync);
+    ro.observe(el);
+    return () => {
+      ro.disconnect();
+      document.documentElement.style.removeProperty("--shell-header-h");
+    };
+  }, []);
+
   return (
     <div className="min-h-dvh bg-transparent text-ink">
-      <header className="sticky top-0 z-30 border-b border-line/80 bg-paper/80 backdrop-blur-md">
+      <header
+        ref={headerRef}
+        className="sticky top-0 z-30 border-b border-line/80 bg-paper/80 backdrop-blur-md"
+      >
         <div className="mx-auto flex max-w-6xl flex-wrap items-center justify-between gap-x-3 gap-y-1 px-4 py-3">
           <div className="flex shrink-0 items-center gap-1">
             <Link to="/" search={DEFAULT_SEARCH} className="group flex items-baseline gap-2">

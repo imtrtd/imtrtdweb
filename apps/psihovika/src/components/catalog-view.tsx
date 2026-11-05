@@ -119,7 +119,7 @@ export function CatalogView({ search }: { search: HomeSearch }) {
         ))}
       </section>
 
-      <div className="sticky top-0 z-10 -mx-4 border-y border-line bg-paper/95 px-4 py-3 backdrop-blur">
+      <div className="sticky top-[var(--shell-header-h,3.5rem)] z-20 -mx-4 border-y border-line bg-paper/95 px-4 py-3 backdrop-blur">
         <div className="flex items-center justify-between gap-3">
           <p className="text-sm text-muted">
             Фильтры
