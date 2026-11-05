@@ -14,11 +14,11 @@ npm --prefix apps/psihovika test
 ## Важно
 
 - Ответы пользователя хранятся в браузере (`src/lib/storage.ts`), не на сервере.
-- Не переписывать `src/lib/auth/server.ts`. Email/password — только флаг в `src/lib/auth/email-password.ts`.
+- `src/lib/auth/server.ts` is pre-wired — prefer not to rewrite it. Email/password — только флаг в `src/lib/auth/email-password.ts`.
 - Данные методик: `src/data/`. Научные метаданные: `src/data/refs.ts`. Прохождение: `src/components/runner.tsx`.
 - Тема: `src/lib/theme.tsx` + `data-theme` на `<html>` (по умолчанию тёмная).
 - Команда и админка: `/team`, `/admin`, серверные функции в `src/lib/cms/`, миграция `migrations/0002_teams_cms.sql`.
-- Для продакшена с аккаунтами и командой нужен `DATABASE_URL` (Neon) и auth-секреты Better Auth.
+- Cloudflare Workers without `DATABASE_URL`: public catalog SSR works; Better Auth uses an in-memory adapter + ephemeral secret (Workers forbid `randomBytes` at module scope). Persistent accounts/team CMS need Neon `DATABASE_URL` + Better Auth secrets.
 - Админка: регистрация на `/login` → команда на `/team` → `/admin`. Без зашитых демо-паролей.
 
 ## Деплой (GitHub → Cloudflare Workers)

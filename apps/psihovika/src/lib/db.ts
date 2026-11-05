@@ -1,7 +1,9 @@
 import { pendingMigrations } from "../../scripts/migration-plan.mjs";
+import { isCloudflareWorker } from "./env.server";
 
 /** Which database backend is active. */
 export type DbSource = "neon" | "pglite";
+
 
 // An empty/whitespace DATABASE_URL (an easy misconfig in deploy UIs) must mean
 // "unset" — otherwise production would silently run on the PGLite fallback.
@@ -169,14 +171,6 @@ async function createPgliteSql(): Promise<Sql> {
 
 let sqlPromise: Promise<Sql> | null = null;
 
-function isCloudflareWorker() {
-  return (
-    typeof navigator !== "undefined" &&
-    typeof navigator.userAgent === "string" &&
-    navigator.userAgent.includes("Cloudflare-Workers")
-  );
-}
-
 async function createSql(): Promise<Sql> {
   if (typeof window !== "undefined") {
     throw new Error(
@@ -235,12 +229,18 @@ export async function getPglite(): Promise<import("@electric-sql/pglite").PGlite
  * module kick it off immediately (see bottom of file).
  */
 export function ensureDbReady(): Promise<void> {
-  if (dbSource !== "pglite") return Promise.resolve();
+  // Workers without Neon have no PGLite — treat as ready so auth/module boot
+  // does not reject via createSql()'s Worker guard.
+  if (dbSource !== "pglite" || isCloudflareWorker()) {
+    return Promise.resolve();
+  }
   return getSql().then(() => undefined);
 }
 
 // Server-only eager start: kick PGLite bootstrap as soon as this module loads in
 // Node. Client bundles never hit this path (`getSql` throws in the browser).
+// Workers skip this — crypto/I/O at global scope is disallowed, and PGLite is
+// unsupported there (use Neon via DATABASE_URL).
 const globalBoot = globalThis as typeof globalThis & {
   __pgBootstrapPromise__?: Promise<void>;
 };

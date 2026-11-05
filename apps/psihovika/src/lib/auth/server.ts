@@ -11,9 +11,14 @@
  * app only holds its own client id/secret and names the upstream it wants via
  * each provider's `idp` hint.
  *
- * Tri-mode:
- *   - Deployed: the deployer injects a per-app `GROK_AUTH_*` + `BETTER_AUTH_URL`
- *     + `DATABASE_URL`, so real federated auth is persisted in Postgres.
+ * Modes:
+ *   - Deployed + Neon: the deployer injects a per-app `GROK_AUTH_*` +
+ *     `BETTER_AUTH_URL` + `DATABASE_URL`, so real federated auth is persisted in
+ *     Postgres.
+ *   - Cloudflare Workers without `DATABASE_URL`: in-memory Better Auth adapter +
+ *     ephemeral signing secret (Workers forbid RNG at module global scope). The
+ *     public catalog SSR works; sessions do not survive isolate restarts. Set
+ *     Neon + `BETTER_AUTH_SECRET` for durable accounts.
  *   - Sandbox live preview: no injection -> falls back to the shared **preview
  *     client** (`./preview`) and derives the preview's `https://*.grok-sandbox.com`
  *     origin from the request, so real sign-in works (no demo users). Sessions
@@ -30,12 +35,14 @@
  * a verified id via `@/lib/auth/middleware`.
  */
 import { betterAuth } from "better-auth";
+import { memoryAdapter } from "better-auth/adapters/memory";
 import { bearer, genericOAuth } from "better-auth/plugins";
 import { tanstackStartCookies } from "better-auth/tanstack-start";
 import { getCookie } from "@tanstack/react-start/server";
 import { randomBytes } from "node:crypto";
 import { Pool } from "pg";
 import { ensureDbReady, getPglite } from "../db";
+import { isCloudflareWorker } from "../env.server";
 import { emailAndPasswordEnabled } from "./email-password";
 import { GATE_PROVIDER_ID, gateIdentitySessions } from "./gate-session.server";
 import { GROK_PROVIDERS } from "./providers";
@@ -47,20 +54,35 @@ import {
   PREVIEW_CLIENT_SECRET,
 } from "./preview";
 
-// Kick (and share) PGLite bootstrap as soon as the auth server module loads.
-void ensureDbReady();
-
 /**
  * Preview secret must outlive module reloads: PGLite (and its session rows) is
  * stored on `globalThis`, so an HMR re-eval of this file must NOT mint a new
  * signing secret or every existing session becomes invalid mid-dev. Process
  * restart clears both the secret and PGLite together.
+ *
+ * Cloudflare Workers forbid generating random values at module top-level
+ * (global scope). When `BETTER_AUTH_SECRET` is unset on Workers we use a fixed
+ * ephemeral string instead — set the secret via `wrangler secret` for stable
+ * sessions across isolates.
  */
 const globalAuthRef = globalThis as typeof globalThis & {
   __grokAuthPreviewSecret__?: string;
+  __grokAuthMemoryDb__?: Record<string, unknown[]>;
 };
+
+/** Fixed Workers fallback — RNG at global scope is disallowed on CF Workers. */
+const WORKER_EPHEMERAL_AUTH_SECRET =
+  "psy-worker-ephemeral-auth-secret-set-BETTER_AUTH_SECRET";
+
 function previewAuthSecret(): string {
-  globalAuthRef.__grokAuthPreviewSecret__ ??= randomBytes(32).toString("hex");
+  if (globalAuthRef.__grokAuthPreviewSecret__) {
+    return globalAuthRef.__grokAuthPreviewSecret__;
+  }
+  if (isCloudflareWorker()) {
+    globalAuthRef.__grokAuthPreviewSecret__ = WORKER_EPHEMERAL_AUTH_SECRET;
+    return globalAuthRef.__grokAuthPreviewSecret__;
+  }
+  globalAuthRef.__grokAuthPreviewSecret__ = randomBytes(32).toString("hex");
   return globalAuthRef.__grokAuthPreviewSecret__;
 }
 
@@ -126,6 +148,7 @@ const trustedOrigins: string[] = explicitBaseURL
     ];
 
 const databaseUrl = env("DATABASE_URL");
+const onCloudflareWorker = isCloudflareWorker();
 
 // Static broker OAuth endpoints (skip OIDC discovery on every sign-in / callback).
 // Discovery would cost an extra network hop to the broker before the popup can
@@ -136,14 +159,25 @@ const grokAuthorizationUrl = `${issuerBase}/api/auth/oauth2/authorize`;
 const grokTokenUrl = `${issuerBase}/api/auth/oauth2/token`;
 const grokUserInfoUrl = `${issuerBase}/api/auth/oauth2/userinfo`;
 
-// Real Postgres when `DATABASE_URL` is set (deployed apps), else the app's
-// embedded PGLite (preview) via a Kysely dialect — so Better Auth persists to the
-// SAME DB as app data, including email/password users. Both use the Better Auth
-// schema from `migrations/auth/0001_auth.sql`, copied into `migrations/` when
-// the app turns sign-in on.
+// Real Postgres when `DATABASE_URL` is set (deployed apps). On Cloudflare
+// Workers without Neon, use Better Auth's in-memory adapter so the public
+// catalog can SSR without PGLite (unsupported on Workers). Local/preview Node
+// keeps embedded PGLite via a Kysely dialect — same DB as app data.
+function workerMemoryDatabase() {
+  globalAuthRef.__grokAuthMemoryDb__ ??= {};
+  return memoryAdapter(globalAuthRef.__grokAuthMemoryDb__);
+}
+
 const database = databaseUrl
   ? new Pool({ connectionString: databaseUrl })
-  : { dialect: pgliteDialect(() => getPglite()), type: "postgres" as const };
+  : onCloudflareWorker
+    ? workerMemoryDatabase()
+    : { dialect: pgliteDialect(() => getPglite()), type: "postgres" as const };
+
+// Kick PGLite bootstrap only when auth actually uses PGLite (Node preview).
+if (!databaseUrl && !onCloudflareWorker) {
+  void ensureDbReady();
+}
 
 /** Session token cookie name — also read by the live-preview popup completion page. */
 export const SESSION_TOKEN_COOKIE = "__Host-grok-auth.session_token";
