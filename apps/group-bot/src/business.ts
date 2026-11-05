@@ -13,6 +13,26 @@ export const DEFAULT_AUTOREPLY = [
   "Отвечу, когда разгребу текущий пиздец. Хочешь быстрее — пиши суть одним сообщением, а не ебучее «привет» с последующей тишиной.",
 ].join("\n");
 
+/** Short first-person replies when the xAI quota/rate limit is hit. No mention of bots, APIs or limits. */
+const LIMIT_REPLIES = [
+  "Сейчас не до этого. Напиши, что нужно, отвечу позже.",
+  "Позже. Если срочно — суть одним сообщением.",
+  "Сейчас глухо. Вернусь, когда разгребу текущее.",
+  "Не отвечу сразу. Кинь дело, не «привет» и тишину.",
+  "Занят. Напишу, как будет время.",
+  "Сейчас никого не жду. Если есть суть — одним сообщением.",
+];
+
+function pickLimitReply(): string {
+  return LIMIT_REPLIES[Math.floor(Math.random() * LIMIT_REPLIES.length)];
+}
+
+function isXaiLimit(status: number, body: unknown): boolean {
+  if (status === 429 || status === 402) return true;
+  const blob = JSON.stringify(body ?? {}).toLowerCase();
+  return /rate.?limit|quota|resource.?exhausted|insufficient.?credits|spend.?limit|usage.?limit|token.?limit|too many requests/.test(blob);
+}
+
 const SYSTEM_PROMPT = `Ты пишешь в личных сообщениях Telegram от первого лица как владелец аккаунта. Собеседник должен воспринимать это как ответ самого владельца.
 Никогда не упоминай автоответ, бота, ассистента, ИИ, нейросеть или что ты отвечаешь «за кого-то». Не говори о себе в третьем лице. Если спрашивают «ты бот?» / «это автоответ?» / «ты живой?» — не подтверждай и не отрицай (не говори «нет», «да», «конечно бот», «я живой»), а уйди от темы язвительной иронией и верни разговор к делу.
 
@@ -109,7 +129,7 @@ async function remember(c: Ctx, connId: string, chatId: number, messageId: numbe
   await c.db.run("INSERT INTO biz_history(conn_id, chat_id, message_id, role, text, ts) VALUES (?,?,?,?,?,?)", connId, chatId, messageId, role, truncate(text, 2000), Date.now());
 }
 
-async function llmAnswer(c: Ctx, connId: string, chatId: number, clientName: string): Promise<string | null> {
+async function llmAnswer(c: Ctx, connId: string, chatId: number, clientName: string): Promise<{ text: string | null; limited?: boolean }> {
   const hist = (await c.db.all<any>("SELECT role, text FROM biz_history WHERE conn_id = ? AND chat_id = ? ORDER BY id DESC LIMIT 12", connId, chatId)).reverse();
   const messages = [
     { role: "system", content: SYSTEM_PROMPT + `\nИмя собеседника: ${clientName}.` },
@@ -122,14 +142,18 @@ async function llmAnswer(c: Ctx, connId: string, chatId: number, clientName: str
         headers: { "content-type": "application/json", authorization: `Bearer ${c.env.XAI_API_KEY}` },
         body: JSON.stringify({ model: c.env.XAI_MODEL || "grok-4.20-non-reasoning", messages, max_tokens: 400, temperature: 0.9 }),
       });
-      const j: any = await r.json();
+      const j: any = await r.json().catch(() => ({}));
+      if (isXaiLimit(r.status, j)) {
+        console.warn("xai: limit", r.status);
+        return { text: null, limited: true };
+      }
       const raw = j?.choices?.[0]?.message?.content;
       const t = typeof raw === "string" ? stripEmoji(raw) : "";
-      if (t) return t;
+      if (t) return { text: t };
       console.warn("xai: empty answer", r.status);
     } catch (e) { console.warn("xai failed", String((e as Error).message)); }
   }
-  return null;
+  return { text: null };
 }
 
 export async function onBusinessMessage(c: Ctx, msg: any, edited = false) {
@@ -163,9 +187,10 @@ export async function onBusinessMessage(c: Ctx, msg: any, edited = false) {
   else if (chat && now - chat.last_auto < s.cooldownH * 3600_000) return; // template: once per cooldown per chat
 
   await c.db.run(`INSERT INTO biz_chats(conn_id, chat_id, last_auto) VALUES (?,?,?) ON CONFLICT(conn_id, chat_id) DO UPDATE SET last_auto = excluded.last_auto`, connId, chatId, now);
-  let answer = useAi ? await llmAnswer(c, connId, chatId, userName(msg.from)) : null;
+  const gen = useAi ? await llmAnswer(c, connId, chatId, userName(msg.from)) : { text: null as string | null };
+  let answer = gen.text;
   if (answer) answer = ensureProjectLinks(text, answer);
-  if (!answer) answer = (s.text || DEFAULT_AUTOREPLY).replace(/\{name\}/g, msg.from?.first_name ?? "");
+  if (!answer) answer = gen.limited ? pickLimitReply() : (s.text || DEFAULT_AUTOREPLY).replace(/\{name\}/g, msg.from?.first_name ?? "");
   answer = stripEmoji(answer);
   if (!answer) return;
   const sent = await c.tg.try<any>("sendMessage", {
@@ -190,9 +215,10 @@ export async function onPrivateText(c: Ctx, msg: any) {
   const s = await state(c);
   const useAi = s.ai && !!c.env.XAI_API_KEY;
   if (useAi) await c.tg.try("sendChatAction", { chat_id: chatId, action: "typing" });
-  let answer = useAi ? await llmAnswer(c, DM_CONN, chatId, userName(msg.from)) : null;
+  const gen = useAi ? await llmAnswer(c, DM_CONN, chatId, userName(msg.from)) : { text: null as string | null };
+  let answer = gen.text;
   if (answer) answer = ensureProjectLinks(text, answer);
-  if (!answer) answer = (s.text || DEFAULT_AUTOREPLY).replace(/\{name\}/g, msg.from?.first_name ?? "");
+  if (!answer) answer = gen.limited ? pickLimitReply() : (s.text || DEFAULT_AUTOREPLY).replace(/\{name\}/g, msg.from?.first_name ?? "");
   answer = stripEmoji(answer);
   if (!answer) return;
   const sent = await c.tg.try<any>("sendMessage", { chat_id: chatId, text: truncate(answer, 4000), link_preview_options: { is_disabled: true } });
