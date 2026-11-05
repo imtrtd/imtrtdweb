@@ -3,6 +3,7 @@ import { Star, ChevronDown, ChevronUp } from "lucide-react";
 import { useEffect, useState, useSyncExternalStore } from "react";
 import { PATHS, TESTS, filterTests, minutesOfTest, sortTests, type HomeSearch } from "@/data/catalog";
 import { CATEGORY_ORDER, SCHOOL_ORDER } from "@/data/build";
+import { FIDELITY_LABEL, metaFor } from "@/data/refs";
 import { getServerSnapshot, getSnapshot, subscribe, toggleFav } from "@/lib/storage";
 import { cn } from "@/lib/cn";
 import { Button } from "@/components/ui/button";
@@ -83,34 +84,34 @@ export function CatalogView({ search }: { search: HomeSearch }) {
   return (
     <main className="mx-auto max-w-6xl px-4 pb-16">
       <section className="grid gap-8 border-b border-line py-10 lg:grid-cols-[1.4fr_0.6fr] lg:items-end">
-        <div>
+        <div className="rise-in">
           <p className="text-xs uppercase tracking-widest text-ox">Психоанализ · терапия · скрининг</p>
           <h1 className="mt-3 max-w-xl font-serif text-5xl leading-none text-balance sm:text-6xl">ПсихоВика</h1>
           <p className="mt-5 max-w-xl text-lg text-pretty">
-            {TESTS.length} методик на русском, от трёх минут до получаса. Сначала защиты, привязанность и кабинет.
-            Клинические шкалы, которые и правда публичны, идут с их собственным подсчётом.
+            {TESTS.length} методик на русском, от трёх минут до получаса. Публичные шкалы — с первоисточниками и официальным подсчётом;
+            учебные профили помечены отдельно.
           </p>
           <div className="mt-6 flex flex-wrap gap-3">
             <Button size="lg" onClick={surprise}>
               Случайная методика
             </Button>
-            <Button size="lg" variant="line" onClick={() => patch({ only: "focus", cat: "all" })}>
-              Только глубинная работа
+            <Button size="lg" variant="line" onClick={() => patch({ only: "gold", cat: "all" })}>
+              Только публичные шкалы
             </Button>
           </div>
         </div>
-        <div className="border border-line bg-sheet p-5">
+        <div className="rise-in border border-line bg-sheet/90 p-5" style={{ animationDelay: "0.08s" }}>
           <p className="font-serif text-5xl tabular-nums leading-none">{TESTS.length}</p>
-          <p className="mt-2 text-sm text-muted">методик в этом браузере, без аккаунта и без отправки ответов</p>
+          <p className="mt-2 text-sm text-muted">методик в этом браузере, без отправки ответов на сервер</p>
           <p className="mt-4 text-sm text-pretty">
-            Здесь нет бланков MMPI, Бека, MBTI и Маслач. Их нельзя честно выложить. Есть то, что можно пройти и понять, откуда оно.
+            Нет бланков MMPI, Бека, MBTI и Маслач — их нельзя честно выложить. Есть PHQ-9, GAD-7, PCL-5, IPIP и учебные конструкты с явной отсылкой к авторам.
           </p>
         </div>
       </section>
 
-      <section className="grid gap-3 py-8 sm:grid-cols-2">
+      <section className="stagger grid gap-3 py-8 sm:grid-cols-2">
         {PATHS.map((path) => (
-          <Link key={path.id} to="/m/$id" params={{ id: path.id }} className="border border-line bg-sheet p-4 transition-colors duration-200 hover:border-ox">
+          <Link key={path.id} to="/m/$id" params={{ id: path.id }} className="border border-line bg-sheet/90 p-4 transition-[border-color,transform] duration-300 hover:-translate-y-0.5 hover:border-ox">
             <p className="text-xs uppercase tracking-widest text-ox">{path.kicker}</p>
             <h2 className="mt-2 font-serif text-2xl text-balance">{path.title}</h2>
             <p className="mt-2 text-sm text-muted text-pretty">{path.text}</p>
@@ -220,11 +221,12 @@ export function CatalogView({ search }: { search: HomeSearch }) {
           </Button>
         </div>
       ) : (
-        <ul className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+        <ul className="stagger grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
           {shown.map((test) => {
             const fav = saved.fav.includes(test.id);
+            const meta = metaFor(test);
             return (
-              <li key={test.id} className="relative border border-line bg-sheet transition-colors duration-200 hover:border-ox">
+              <li key={test.id} className="relative border border-line bg-sheet/90 transition-[border-color,transform] duration-300 hover:-translate-y-0.5 hover:border-ox">
                 <Link to="/m/$id" params={{ id: test.id }} className="flex h-full flex-col p-4 pr-14">
                   <p className="text-xs uppercase tracking-widest text-muted">{test.school}</p>
                   <h2 className="mt-3 font-serif text-2xl leading-tight text-balance">{test.title}</h2>
@@ -234,7 +236,8 @@ export function CatalogView({ search }: { search: HomeSearch }) {
                   </p>
                   <p className="mt-1 text-xs uppercase tracking-widest text-muted">Касание · Разбор · Глубина</p>
                   <p className="mt-1 text-xs uppercase tracking-widest text-ox">
-                    {test.gold ? "Публичная шкала" : test.category}
+                    {FIDELITY_LABEL[meta.fidelity]}
+                    {!test.gold ? ` · ${test.category}` : ""}
                   </p>
                 </Link>
                 <button

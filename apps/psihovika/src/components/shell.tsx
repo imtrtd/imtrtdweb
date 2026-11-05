@@ -1,15 +1,18 @@
 import { Link, useRouterState } from "@tanstack/react-router";
-import { Heart } from "lucide-react";
+import { Heart, Moon, Sun } from "lucide-react";
 import { useEffect, useRef, useState, type ReactNode } from "react";
 import { DEFAULT_SEARCH } from "@/data/catalog";
-import { SignedOut } from "@/lib/auth/gates";
+import { SignedIn, SignedOut } from "@/lib/auth/gates";
 import { useCurrentUserState } from "@/lib/auth/use-current-user";
+import { useTheme } from "@/lib/theme";
 import { cn } from "@/lib/cn";
 
 const LINKS = [
   { to: "/", label: "Каталог" },
   { to: "/method", label: "Метод" },
   { to: "/history", label: "Кабинет" },
+  { to: "/team", label: "Команда" },
+  { to: "/admin", label: "Админка" },
 ] as const;
 
 const BURST = Array.from({ length: 28 }, (_, i) => {
@@ -26,9 +29,10 @@ const BURST = Array.from({ length: 28 }, (_, i) => {
 export function Shell({ children }: { children: ReactNode }) {
   const path = useRouterState({ select: (s) => s.location.pathname });
   const [burst, setBurst] = useState(0);
+  const { theme, toggle } = useTheme();
   return (
-    <div className="min-h-dvh bg-paper text-ink">
-      <header className="border-b border-line bg-paper">
+    <div className="min-h-dvh bg-transparent text-ink">
+      <header className="sticky top-0 z-30 border-b border-line/80 bg-paper/80 backdrop-blur-md">
         <div className="mx-auto flex max-w-6xl flex-wrap items-center justify-between gap-x-3 gap-y-1 px-4 py-3">
           <div className="flex shrink-0 items-center gap-1">
             <Link to="/" search={DEFAULT_SEARCH} className="group flex items-baseline gap-2">
@@ -39,7 +43,7 @@ export function Shell({ children }: { children: ReactNode }) {
               type="button"
               aria-label="Сердечко"
               onClick={() => setBurst((n) => n + 1)}
-              className="flex size-11 items-center justify-center text-ox"
+              className="flex size-11 items-center justify-center text-ox transition-transform duration-300 hover:scale-110"
             >
               <Heart className="size-4 fill-ox" />
             </button>
@@ -52,24 +56,33 @@ export function Shell({ children }: { children: ReactNode }) {
                   key={link.to}
                   to={link.to}
                   className={cn(
-                    "inline-flex h-11 items-center px-2 text-sm sm:px-3",
-                    active ? "text-ink" : "text-muted",
+                    "inline-flex h-11 items-center px-2 text-sm transition-colors duration-200 sm:px-3",
+                    active ? "text-ink" : "text-muted hover:text-ink",
                   )}
                 >
                   <span className={cn("border-b pb-0.5", active ? "border-ox" : "border-transparent")}>{link.label}</span>
                 </Link>
               );
             })}
+            <button
+              type="button"
+              aria-label={theme === "dark" ? "Светлая тема" : "Тёмная тема"}
+              onClick={toggle}
+              className="inline-flex size-11 items-center justify-center text-muted transition-colors hover:text-ink"
+            >
+              {theme === "dark" ? <Sun className="size-4" /> : <Moon className="size-4" />}
+            </button>
             <AccountSlot path={path} />
           </nav>
         </div>
       </header>
       {burst > 0 ? <Salute key={burst} onDone={() => setBurst(0)} /> : null}
-      {children}
+      <div className="fade-in">{children}</div>
       <footer className="border-t border-line">
         <div className="mx-auto max-w-6xl px-4 py-8 text-sm text-muted">
           <p className="max-w-2xl text-pretty">
             ПсихоВика не ставит диагноз и не заменяет врача или психотерапевта. Ответы остаются в этом браузере.
+            У публичных шкал — отсылки к первоисточникам; учебные профили помечены отдельно.
           </p>
         </div>
       </footer>
@@ -82,11 +95,18 @@ function AccountSlot({ path }: { path: string }) {
   if (isPending) return <span className="inline-flex h-11 w-16" aria-hidden />;
   if (path === "/login") return null;
   return (
-    <SignedOut>
-      <Link to="/login" className="inline-flex h-11 items-center px-2 text-sm text-ink">
-        Войти
-      </Link>
-    </SignedOut>
+    <>
+      <SignedOut>
+        <Link to="/login" className="inline-flex h-11 items-center px-2 text-sm text-ink">
+          Войти
+        </Link>
+      </SignedOut>
+      <SignedIn>
+        <Link to="/history" className="inline-flex h-11 items-center px-2 text-sm text-muted hover:text-ink">
+          Профиль
+        </Link>
+      </SignedIn>
+    </>
   );
 }
 
