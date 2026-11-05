@@ -11,7 +11,7 @@ import { useCurrentUserState } from "@/lib/auth/use-current-user";
 import { cn } from "@/lib/cn";
 
 export const Route = createFileRoute("/admin")({
-  head: () => ({ meta: [{ title: "Админка — ПсихоВика" }] }),
+  head: () => ({ meta: [{ title: "Админка — psy" }] }),
   component: AdminPage,
 });
 

@@ -1,7 +1,7 @@
 {
 	"name": "imtryingtodesign",
 	"private": true,
-	"description": "Monorepo: studio site (Cloudflare), portfolio (Cloudflare), Cuebox (Vercel), ПсихоВика (Cloudflare Workers)",
+	"description": "Monorepo: studio site (Cloudflare), portfolio (Cloudflare), Cuebox (Vercel), psy (Cloudflare Workers)",
 	"scripts": {
 		"install:all": "npm --prefix apps/studio ci && npm --prefix apps/portfolio run install:ci && npm --prefix apps/cuebox ci && npm --prefix apps/psihovika ci",
 		"dev:studio": "npm --prefix apps/studio run dev",

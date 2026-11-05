@@ -1,4 +1,4 @@
-# ПсихоВика (`apps/psihovika`)
+# psy (`apps/psihovika`)
 
 Каталог психологических методик (рус.). TanStack Start + Vite + Better Auth + PGLite/Neon.
 

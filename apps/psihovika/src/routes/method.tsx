@@ -4,7 +4,7 @@ import { Shell } from "@/components/shell";
 import { TESTS, DEFAULT_SEARCH } from "@/data/catalog";
 
 export const Route = createFileRoute("/method")({
-  head: () => ({ meta: [{ title: "Метод — ПсихоВика" }] }),
+  head: () => ({ meta: [{ title: "Метод — psy" }] }),
   component: Method,
 });
 

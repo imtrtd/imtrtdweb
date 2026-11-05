@@ -13,7 +13,7 @@ import type { TeamNote, TeamRow } from "@/lib/cms/types";
 import { useCurrentUserState } from "@/lib/auth/use-current-user";
 
 export const Route = createFileRoute("/team")({
-  head: () => ({ meta: [{ title: "Команда — ПсихоВика" }] }),
+  head: () => ({ meta: [{ title: "Команда — psy" }] }),
   component: TeamPage,
 });
 

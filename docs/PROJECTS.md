@@ -12,7 +12,7 @@
 | `imtryingtodesign.com` | `imtryingtodesign` | `apps/portfolio` |
 | `www.imtryingtodesign.com` | `imtryingtodesign` | то же |
 | `app.imtryingtodesign.com` | Vercel | `apps/cuebox` |
-| `psihovika.<account>.workers.dev` | `psihovika` | `apps/psihovika` — ПсихоВика |
+| `psy.<account>.workers.dev` | `psy` | `apps/psihovika` — psy |
 | `namenlos-tg-bot.unitl.workers.dev` | `namenlos-tg-bot` | `apps/tg-bot` |
 
 Маршруты — в `routes` каждого `wrangler.jsonc`.

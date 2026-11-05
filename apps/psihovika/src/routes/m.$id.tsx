@@ -7,7 +7,7 @@ export const Route = createFileRoute("/m/$id")({
   head: ({ params }) => {
     const test = getTest(params.id);
     return {
-      meta: [{ title: test ? `${test.title} — ПсихоВика` : "Методика — ПсихоВика" }],
+      meta: [{ title: test ? `${test.title} — psy` : "Методика — psy" }],
     };
   },
   component: MethodPage,

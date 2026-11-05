@@ -86,7 +86,7 @@ export function CatalogView({ search }: { search: HomeSearch }) {
       <section className="grid gap-8 border-b border-line py-10 lg:grid-cols-[1.4fr_0.6fr] lg:items-end">
         <div className="rise-in">
           <p className="text-xs uppercase tracking-widest text-ox">Психоанализ · терапия · скрининг</p>
-          <h1 className="mt-3 max-w-xl font-serif text-5xl leading-none text-balance sm:text-6xl">ПсихоВика</h1>
+          <h1 className="mt-3 max-w-xl font-serif text-5xl leading-none text-balance sm:text-6xl">psy</h1>
           <p className="mt-5 max-w-xl text-lg text-pretty">
             {TESTS.length} методик на русском, от трёх минут до получаса. Публичные шкалы — с первоисточниками и официальным подсчётом;
             учебные профили помечены отдельно.

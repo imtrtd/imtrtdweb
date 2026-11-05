@@ -1,6 +1,6 @@
 {
   "$schema": "node_modules/wrangler/config-schema.json",
-  "name": "psihovika",
+  "name": "psy",
   "main": "@tanstack/react-start/server-entry",
   "compatibility_date": "2026-11-05",
   "compatibility_flags": ["nodejs_compat"],

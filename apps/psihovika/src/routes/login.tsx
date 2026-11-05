@@ -8,7 +8,7 @@ import { useCurrentUserState } from "@/lib/auth/use-current-user";
 import { cn } from "@/lib/cn";
 
 export const Route = createFileRoute("/login")({
-  head: () => ({ meta: [{ title: "Вход — ПсихоВика" }] }),
+  head: () => ({ meta: [{ title: "Вход — psy" }] }),
   component: LoginPage,
 });
 

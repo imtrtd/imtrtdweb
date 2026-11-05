@@ -36,7 +36,7 @@ export function Shell({ children }: { children: ReactNode }) {
         <div className="mx-auto flex max-w-6xl flex-wrap items-center justify-between gap-x-3 gap-y-1 px-4 py-3">
           <div className="flex shrink-0 items-center gap-1">
             <Link to="/" search={DEFAULT_SEARCH} className="group flex items-baseline gap-2">
-              <span className="font-serif text-xl tracking-wide sm:text-2xl">ПсихоВика</span>
+              <span className="font-serif text-xl tracking-wide sm:text-2xl">psy</span>
               <span className="hidden text-xs uppercase tracking-widest text-muted sm:inline">кабинет</span>
             </Link>
             <button
@@ -81,7 +81,7 @@ export function Shell({ children }: { children: ReactNode }) {
       <footer className="border-t border-line">
         <div className="mx-auto max-w-6xl px-4 py-8 text-sm text-muted">
           <p className="max-w-2xl text-pretty">
-            ПсихоВика не ставит диагноз и не заменяет врача или психотерапевта. Ответы остаются в этом браузере.
+            psy не ставит диагноз и не заменяет врача или психотерапевта. Ответы остаются в этом браузере.
             У публичных шкал — отсылки к первоисточникам; учебные профили помечены отдельно.
           </p>
         </div>
