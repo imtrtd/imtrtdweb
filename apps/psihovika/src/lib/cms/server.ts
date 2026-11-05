@@ -171,18 +171,22 @@ export const listNotes = createServerFn({ method: "POST" })
 
 export const addNote = createServerFn({ method: "POST" })
   .middleware([authMiddleware])
-  .validator((data: { teamId: string; body: string; methodId?: string; authorName?: string }) => {
+  .validator((data: { teamId: string; body: string; methodId?: string }) => {
     const body = data.body?.trim() ?? "";
     if (!data.teamId || body.length < 1) throw new Error("Пустая заметка.");
-    return { ...data, body };
+    return { teamId: data.teamId, body, methodId: data.methodId };
   })
   .handler(async ({ context, data }) => {
     await requireMembership(context.userId, data.teamId, true);
     const db = await sql();
     const id = newId("note");
+    const authors = await db<{ name: string }>`
+      select name from "user" where id = ${context.userId} limit 1
+    `;
+    const authorName = authors[0]?.name ?? null;
     await db`
       insert into team_notes (id, team_id, method_id, body, author_id, author_name)
-      values (${id}, ${data.teamId}, ${data.methodId ?? null}, ${data.body}, ${context.userId}, ${data.authorName ?? null})
+      values (${id}, ${data.teamId}, ${data.methodId ?? null}, ${data.body}, ${context.userId}, ${authorName})
     `;
     return { id };
   });

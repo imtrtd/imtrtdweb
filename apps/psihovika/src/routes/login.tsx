@@ -4,7 +4,6 @@ import { Shell } from "@/components/shell";
 import { Button } from "@/components/ui/button";
 import { authClient, signIn } from "@/lib/auth/client";
 import { UserButton } from "@/lib/auth/gates";
-import { DEMO_ADMIN } from "@/lib/cms/demo-credentials";
 import { useCurrentUserState } from "@/lib/auth/use-current-user";
 import { cn } from "@/lib/cn";
 
@@ -211,21 +210,6 @@ function LoginPage() {
                 {busy ? "Секунду…" : mode === "up" ? "Создать аккаунт" : "Войти"}
               </Button>
             </form>
-
-            <p className="mt-6 border border-line bg-sheet p-4 text-sm text-muted text-pretty">
-              Демо-админ: <span className="text-ink">{DEMO_ADMIN.email}</span> /{" "}
-              <span className="text-ink">{DEMO_ADMIN.password}</span>. Команда{" "}
-              <span className="text-ink">{DEMO_ADMIN.teamName}</span>, код{" "}
-              <span className="text-ink">{DEMO_ADMIN.inviteCode}</span> — после входа откройте{" "}
-              <Link className="text-ink underline" to="/team">
-                /team
-              </Link>{" "}
-              и{" "}
-              <Link className="text-ink underline" to="/admin">
-                /admin
-              </Link>
-              .
-            </p>
           </div>
         ) : null}
       </main>

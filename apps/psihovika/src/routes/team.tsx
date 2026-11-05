@@ -104,7 +104,6 @@ function TeamPage() {
         data: {
           teamId: active.id,
           body: note,
-          authorName: user?.displayName ?? user?.primaryEmail ?? undefined,
         },
       });
       setNote("");

@@ -19,7 +19,7 @@ npm --prefix apps/psihovika test
 - Тема: `src/lib/theme.tsx` + `data-theme` на `<html>` (по умолчанию тёмная).
 - Команда и админка: `/team`, `/admin`, серверные функции в `src/lib/cms/`, миграция `migrations/0002_teams_cms.sql`.
 - Для продакшена с аккаунтами и командой нужен `DATABASE_URL` (Neon) и auth-секреты Better Auth.
-- Демо-админ (PGLite / `SEED_DEMO_ADMIN=1`): `admin@psy.app` / `psy-admin-2026`, команда `psy`, код `PSYADMIN`. После входа: `/team` → выбрать команду → `/admin`.
+- Админка: регистрация на `/login` → команда на `/team` → `/admin`. Без зашитых демо-паролей.
 
 ## Деплой (GitHub → Cloudflare Workers)
 
