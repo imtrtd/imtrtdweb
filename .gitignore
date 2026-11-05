@@ -32,3 +32,6 @@ apps/*/node_modules
 !.dev.vars.example
 .env*
 !.env.example
+
+.vercel
+apps/*/.vercel
