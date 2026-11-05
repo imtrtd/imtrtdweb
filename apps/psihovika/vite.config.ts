@@ -154,6 +154,8 @@ export default defineConfig(({ command, isPreview }) => ({
     host: "0.0.0.0",
     port: 8080,
     strictPort: true,
+    // Cloudflare quick tunnels (temporary public preview links).
+    allowedHosts: [".trycloudflare.com", "localhost", "127.0.0.1"],
   },
   preview: {
     host: "127.0.0.1",
