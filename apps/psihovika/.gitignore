@@ -1,5 +1,6 @@
 node_modules
 .vercel
+.wrangler
 screenshots
 .grok
 *.log
@@ -10,3 +11,5 @@ dist
 .env
 .env.*
 !.env.example
+.dev.vars
+.dev.vars*

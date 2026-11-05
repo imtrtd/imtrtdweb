@@ -20,6 +20,14 @@ npm --prefix apps/psihovika test
 - Команда и админка: `/team`, `/admin`, серверные функции в `src/lib/cms/`, миграция `migrations/0002_teams_cms.sql`.
 - Для продакшена с аккаунтами и командой нужен `DATABASE_URL` (Neon) и auth-секреты Better Auth.
 
-## Деплой
+## Деплой (GitHub → Cloudflare Workers)
 
-Vercel (`vercel.json`). Отдельный воркер Cloudflare пока не заведён.
+```bash
+npm --prefix apps/psihovika run deploy   # build:cloudflare + wrangler deploy
+```
+
+Локально (`npm run build` / `dev`) — Nitro/Vercel preset. Прод — `DEPLOY_TARGET=cloudflare` через `build:cloudflare`.
+
+CI: `.github/workflows/deploy-psihovika.yml` на push в `main` по `apps/psihovika/**`.
+Секреты репозитория: `CLOUDFLARE_API_TOKEN`, `CLOUDFLARE_ACCOUNT_ID`.
+Для входа/команды на проде: `wrangler secret put DATABASE_URL` (Neon) и Better Auth secrets.
