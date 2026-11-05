@@ -12,7 +12,7 @@
 | `imtryingtodesign.com` | `imtryingtodesign` | `apps/portfolio` |
 | `www.imtryingtodesign.com` | `imtryingtodesign` | то же |
 | `app.imtryingtodesign.com` | Vercel | `apps/cuebox` |
-| _(TBD)_ | Vercel | `apps/psihovika` — ПсихоВика, каталог методик |
+| `psy.<account>.workers.dev` | `psy` | `apps/psihovika` — psy |
 | `namenlos-tg-bot.unitl.workers.dev` | `namenlos-tg-bot` | `apps/tg-bot` |
 
 Маршруты — в `routes` каждого `wrangler.jsonc`.
@@ -25,7 +25,7 @@
 
 ## Деплой
 
-Только GitHub Actions по мерджу в `main`: `deploy-hq.yml` (`apps/hq/**`), `deploy.yml` (`apps/studio/**`), `deploy-portfolio.yml`, `deploy-tg-bot.yml`. Правило `?v=` / immutable-кэша для `apps/hq` — в README.
+Только GitHub Actions по мерджу в `main`: `deploy-hq.yml` (`apps/hq/**`), `deploy.yml` (`apps/studio/**`), `deploy-portfolio.yml`, `deploy-tg-bot.yml`, `deploy-psihovika.yml` (`apps/psihovika/**`). Правило `?v=` / immutable-кэша для `apps/hq` — в README.
 
 ## GitHub Actions
 

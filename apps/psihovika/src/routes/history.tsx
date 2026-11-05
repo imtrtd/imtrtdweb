@@ -9,7 +9,7 @@ import { useCurrentUser } from "@/lib/auth/use-current-user";
 import { clearHistory, getServerSnapshot, getSnapshot, removeHistory, stageView, subscribe } from "@/lib/storage";
 
 export const Route = createFileRoute("/history")({
-  head: () => ({ meta: [{ title: "Кабинет — ПсихоВика" }] }),
+  head: () => ({ meta: [{ title: "Кабинет — psy" }] }),
   component: HistoryPage,
 });
 

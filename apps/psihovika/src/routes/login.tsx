@@ -5,16 +5,17 @@ import { Button } from "@/components/ui/button";
 import { authClient, signIn } from "@/lib/auth/client";
 import { UserButton } from "@/lib/auth/gates";
 import { useCurrentUserState } from "@/lib/auth/use-current-user";
+import { cn } from "@/lib/cn";
 
 export const Route = createFileRoute("/login")({
-  head: () => ({ meta: [{ title: "Вход — ПсихоВика" }] }),
+  head: () => ({ meta: [{ title: "Вход — psy" }] }),
   component: LoginPage,
 });
 
 type Mode = "in" | "up";
 
-function isGoogleMail(value: string) {
-  return /^[^\s@]+@(gmail\.com|googlemail\.com)$/i.test(value.trim());
+function isEmail(value: string) {
+  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value.trim());
 }
 
 function explain(message: string) {
@@ -34,6 +35,7 @@ function LoginPage() {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [confirm, setConfirm] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
 
@@ -48,7 +50,7 @@ function LoginPage() {
       setError(
         message.toLowerCase().includes("pop")
           ? "Окно Google не открылось. Разрешите всплывающие окна и нажмите ещё раз."
-          : "Вход через Google не завершился. Попробуйте ещё раз.",
+          : "Вход через Google не завершился. Попробуйте ещё раз или войдите по почте.",
       );
       setBusy(false);
     }
@@ -58,17 +60,23 @@ function LoginPage() {
     event.preventDefault();
     setError(null);
     const mail = email.trim().toLowerCase();
-    if (!isGoogleMail(mail)) {
-      setError("Нужна почта Google: адрес заканчивается на @gmail.com.");
+    if (!isEmail(mail)) {
+      setError("Нужен обычный адрес почты, например name@example.com.");
       return;
     }
     if (password.length < 8) {
       setError("Пароль слишком короткий. Нужно хотя бы 8 символов.");
       return;
     }
-    if (mode === "up" && name.trim().length < 2) {
-      setError("Напишите, как к вам обращаться.");
-      return;
+    if (mode === "up") {
+      if (name.trim().length < 2) {
+        setError("Напишите, как к вам обращаться.");
+        return;
+      }
+      if (password !== confirm) {
+        setError("Пароли не совпадают.");
+        return;
+      }
     }
     setBusy(true);
     const result =
@@ -87,37 +95,43 @@ function LoginPage() {
     <Shell>
       <main className="mx-auto max-w-md px-4 py-10">
         <p className="text-xs uppercase tracking-widest text-ox">Аккаунт</p>
-        <h1 className="mt-3 font-serif text-5xl text-balance">Вход</h1>
-        <p className="mt-4 text-pretty">
-          Через Google. Если вас ещё нет, аккаунт создастся сам. Методики можно проходить и без входа: ответы по-прежнему остаются в этом браузере.
+        <h1 className="mt-3 font-serif text-5xl text-balance rise-in">{mode === "up" ? "Регистрация" : "Вход"}</h1>
+        <p className="mt-4 text-pretty text-muted">
+          Через Google или почту с паролем. Методики можно проходить и без входа: ответы остаются в этом браузере.
+          Команда и админка — после входа.
         </p>
 
-        {isPending ? <div className="mt-8 h-11 w-40 bg-line" /> : null}
+        {isPending ? <div className="mt-8 h-11 w-40 animate-pulse bg-line" /> : null}
 
         {!isPending && user ? (
-          <div className="mt-8 border border-line bg-sheet p-5">
+          <div className="mt-8 border border-line bg-sheet p-5 rise-in">
             <p>Вы уже вошли{user.primaryEmail ? `: ${user.primaryEmail}` : ""}.</p>
             <div className="mt-4">
               <UserButton />
             </div>
-            <Button className="mt-4" asChild>
-              <Link to="/history">В кабинет</Link>
-            </Button>
+            <div className="mt-4 flex flex-wrap gap-3">
+              <Button asChild>
+                <Link to="/history">В кабинет</Link>
+              </Button>
+              <Button variant="line" asChild>
+                <Link to="/team">К команде</Link>
+              </Button>
+            </div>
           </div>
         ) : null}
 
         {!isPending && !user ? (
-          <>
+          <div className="rise-in">
             <Button className="mt-8 w-full" size="lg" disabled={busy} onClick={() => void google()}>
               Войти через Google
             </Button>
 
-            <p className="mt-8 text-center text-xs uppercase tracking-widest text-muted">или гугл-почта</p>
+            <p className="mt-8 text-center text-xs uppercase tracking-widest text-muted">или почта</p>
 
             <div className="mt-4 grid grid-cols-2 border border-line">
               <button
                 type="button"
-                className={mode === "in" ? "h-11 bg-ink text-paper" : "h-11 bg-sheet text-ink"}
+                className={cn("h-11 transition-colors", mode === "in" ? "bg-ink text-paper" : "bg-sheet text-ink")}
                 onClick={() => {
                   setMode("in");
                   setError(null);
@@ -127,7 +141,7 @@ function LoginPage() {
               </button>
               <button
                 type="button"
-                className={mode === "up" ? "h-11 bg-ink text-paper" : "h-11 bg-sheet text-ink"}
+                className={cn("h-11 transition-colors", mode === "up" ? "bg-ink text-paper" : "bg-sheet text-ink")}
                 onClick={() => {
                   setMode("up");
                   setError(null);
@@ -142,6 +156,8 @@ function LoginPage() {
                 <label className="block">
                   <span className="text-sm text-muted">Как к вам обращаться</span>
                   <input
+                    id="signup-name"
+                    name="name"
                     value={name}
                     onChange={(event) => setName(event.target.value)}
                     autoComplete="name"
@@ -150,20 +166,24 @@ function LoginPage() {
                 </label>
               ) : null}
               <label className="block">
-                <span className="text-sm text-muted">Почта Google</span>
+                <span className="text-sm text-muted">Почта</span>
                 <input
+                  id="auth-email"
+                  name="email"
                   type="email"
                   inputMode="email"
                   autoComplete="email"
                   value={email}
                   onChange={(event) => setEmail(event.target.value)}
-                  placeholder="имя@gmail.com"
+                  placeholder="name@example.com"
                   className="mt-1 h-12 w-full border border-line bg-sheet px-4 text-base text-ink placeholder:text-muted focus:border-ox focus:outline-none"
                 />
               </label>
               <label className="block">
                 <span className="text-sm text-muted">Пароль</span>
                 <input
+                  id="auth-password"
+                  name="password"
                   type="password"
                   autoComplete={mode === "up" ? "new-password" : "current-password"}
                   value={password}
@@ -171,12 +191,26 @@ function LoginPage() {
                   className="mt-1 h-12 w-full border border-line bg-sheet px-4 text-base text-ink focus:border-ox focus:outline-none"
                 />
               </label>
+              {mode === "up" ? (
+                <label className="block">
+                  <span className="text-sm text-muted">Ещё раз пароль</span>
+                  <input
+                    id="signup-confirm"
+                    name="confirm"
+                    type="password"
+                    autoComplete="new-password"
+                    value={confirm}
+                    onChange={(event) => setConfirm(event.target.value)}
+                    className="mt-1 h-12 w-full border border-line bg-sheet px-4 text-base text-ink focus:border-ox focus:outline-none"
+                  />
+                </label>
+              ) : null}
               {error ? <p className="text-sm text-ox text-pretty">{error}</p> : null}
               <Button type="submit" size="lg" disabled={busy}>
                 {busy ? "Секунду…" : mode === "up" ? "Создать аккаунт" : "Войти"}
               </Button>
             </form>
-          </>
+          </div>
         ) : null}
       </main>
     </Shell>

@@ -108,7 +108,7 @@ export function filterTests(tests: Test[], s: HomeSearch, fav: string[]) {
     if (s.only === "gold" && !t.gold) return false;
     if (s.only === "saved" && !fav.includes(t.id)) return false;
     if (!q) return true;
-    const blob = `${t.title} ${t.lead} ${t.category} ${t.school} ${t.source}`.toLowerCase();
+    const blob = `${t.title} ${t.lead} ${t.category} ${t.school} ${t.source} ${t.id}`.toLowerCase();
     return blob.includes(q);
   });
 }

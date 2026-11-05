@@ -17,8 +17,10 @@ import {
   type Hist,
 } from "@/lib/storage";
 import { CrisisNote } from "@/components/crisis";
+import { SourceCard } from "@/components/source-card";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/cn";
+import { FIDELITY_LABEL, metaFor } from "@/data/refs";
 import { Star } from "lucide-react";
 
 type Phase = "intro" | "ask" | "done";
@@ -183,17 +185,20 @@ export function Runner({ test }: { test: Test }) {
         <p className="text-xs uppercase tracking-widest text-muted">
           {test.category} · {passage.title} · вопрос {step + 1} из {passage.items.length}
         </p>
-        <div
-          className="mt-3 h-1 bg-line"
+          <div
+          className="mt-3 h-1 overflow-hidden bg-line"
           role="progressbar"
           aria-valuenow={step + 1}
           aria-valuemin={1}
           aria-valuemax={passage.items.length}
         >
-          <div className="h-1 bg-ox" style={{ width: `${((step + 1) / passage.items.length) * 100}%` }} />
+          <div
+            className="progress-fill h-1 bg-ox"
+            style={{ width: `${((step + 1) / passage.items.length) * 100}%` }}
+          />
         </div>
         <p className="mt-3 text-sm tabular-nums text-muted">{mins}:{secs}</p>
-        <fieldset className="mt-8">
+        <fieldset className="mt-8 rise-in" key={step}>
           <legend className="font-serif text-3xl leading-tight text-balance sm:text-4xl">{item.text}</legend>
           <div className="mt-6 flex flex-col gap-2">
             {opts.map((opt) => {
@@ -205,8 +210,8 @@ export function Runner({ test }: { test: Test }) {
                   aria-pressed={on}
                   onClick={() => choose(opt.v)}
                   className={cn(
-                    "min-h-12 border px-4 py-3 text-left text-base",
-                    on ? "border-ox bg-ox text-oxink" : "border-line bg-sheet text-ink",
+                    "min-h-12 border px-4 py-3 text-left text-base transition-colors duration-200",
+                    on ? "border-ox bg-ox text-oxink" : "border-line bg-sheet text-ink hover:border-ox",
                   )}
                 >
                   {opt.label}
@@ -343,11 +348,14 @@ export function Runner({ test }: { test: Test }) {
           </section>
         ) : null}
 
-        <section className="mt-4 border border-line p-5">
-          <h2 className="font-serif text-2xl">Откуда методика</h2>
-          <p className="mt-2 text-pretty">{test.source}</p>
-          {test.warn ? <p className="mt-3 text-pretty">{test.warn}</p> : null}
-        </section>
+        <div className="mt-4">
+          <SourceCard meta={metaFor(test)} source={test.source} />
+        </div>
+        {test.warn ? (
+          <section className="mt-4 border border-line p-5">
+            <p className="text-pretty">{test.warn}</p>
+          </section>
+        ) : null}
 
         <div className="mt-4">
           <CrisisNote hot={score.crisis} />
@@ -390,10 +398,14 @@ export function Runner({ test }: { test: Test }) {
     );
   }
 
+  const meta = metaFor(test);
+
   return (
     <main className="mx-auto max-w-3xl px-4 py-8">
-      <p className="text-xs uppercase tracking-widest text-ox">{test.school}</p>
-      <div className="mt-2 flex items-start justify-between gap-3">
+      <p className="text-xs uppercase tracking-widest text-ox">
+        {test.school} · {FIDELITY_LABEL[meta.fidelity]}
+      </p>
+      <div className="mt-2 flex items-start justify-between gap-3 rise-in">
         <h1 className="font-serif text-4xl text-balance sm:text-5xl">{test.title}</h1>
         <button
           type="button"
@@ -407,14 +419,15 @@ export function Runner({ test }: { test: Test }) {
       </div>
       <p className="mt-4 text-lg text-pretty">{test.lead}</p>
       <p className="mt-4 text-sm tabular-nums text-muted">
-        {test.items.length} вопросов · около {minutesOfTest(test)} мин · {test.gold ? "публичная шкала" : "учебная реконструкция"}
+        {test.items.length} вопросов · около {minutesOfTest(test)} мин
+        {meta.instrument ? ` · ${meta.instrument}` : ""}
       </p>
       <p className="mt-6 text-pretty">{test.frame}</p>
       {test.warn ? <p className="mt-4 border border-line bg-sheet p-4 text-pretty">{test.warn}</p> : null}
       <p className="mt-4 text-sm text-muted text-pretty">
         Ответы не уходят на сервер. Выберите глубину: итог, рисунок и промпт для ИИ сохранятся в кабинете этого браузера. Это не диагноз.
       </p>
-      <div className="mt-6 flex flex-col gap-3">
+      <div className="stagger mt-6 flex flex-col gap-3">
         {DEPTHS.map((item) => {
           const run = passageOf(test, item.id);
           return (
@@ -422,7 +435,7 @@ export function Runner({ test }: { test: Test }) {
               key={item.id}
               type="button"
               onClick={() => begin(item.id, false)}
-              className="border border-line bg-sheet p-4 text-left hover:border-ox"
+              className="border border-line bg-sheet p-4 text-left transition-[border-color,transform] duration-300 hover:-translate-y-0.5 hover:border-ox"
             >
               <span className="flex items-baseline justify-between gap-3">
                 <span className="font-serif text-2xl">{item.title}</span>
@@ -447,10 +460,9 @@ export function Runner({ test }: { test: Test }) {
           </Button>
         ) : null}
       </div>
-      <section className="mt-8 border-t border-line pt-6">
-        <h2 className="font-serif text-2xl">Источник</h2>
-        <p className="mt-2 text-pretty">{test.source}</p>
-      </section>
+      <div className="mt-8">
+        <SourceCard meta={meta} source={test.source} />
+      </div>
       <div className="mt-4">
         <CrisisNote />
       </div>

@@ -10,15 +10,22 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as AdminRouteImport } from './routes/admin'
 import { Route as HistoryRouteImport } from './routes/history'
 import { Route as LoginRouteImport } from './routes/login'
 import { Route as MethodRouteImport } from './routes/method'
+import { Route as TeamRouteImport } from './routes/team'
 import { Route as MIdRouteImport } from './routes/m.$id'
 import { Route as ApiAuthSplatRouteImport } from './routes/api/auth/$'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AdminRoute = AdminRouteImport.update({
+  id: '/admin',
+  path: '/admin',
   getParentRoute: () => rootRouteImport,
 } as any)
 const HistoryRoute = HistoryRouteImport.update({
@@ -36,6 +43,11 @@ const MethodRoute = MethodRouteImport.update({
   path: '/method',
   getParentRoute: () => rootRouteImport,
 } as any)
+const TeamRoute = TeamRouteImport.update({
+  id: '/team',
+  path: '/team',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const MIdRoute = MIdRouteImport.update({
   id: '/m/$id',
   path: '/m/$id',
@@ -49,49 +61,75 @@ const ApiAuthSplatRoute = ApiAuthSplatRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/admin': typeof AdminRoute
   '/history': typeof HistoryRoute
   '/login': typeof LoginRoute
   '/method': typeof MethodRoute
+  '/team': typeof TeamRoute
   '/m/$id': typeof MIdRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/admin': typeof AdminRoute
   '/history': typeof HistoryRoute
   '/login': typeof LoginRoute
   '/method': typeof MethodRoute
+  '/team': typeof TeamRoute
   '/m/$id': typeof MIdRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/admin': typeof AdminRoute
   '/history': typeof HistoryRoute
   '/login': typeof LoginRoute
   '/method': typeof MethodRoute
+  '/team': typeof TeamRoute
   '/m/$id': typeof MIdRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/history' | '/login' | '/method' | '/m/$id' | '/api/auth/$'
-  fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/history' | '/login' | '/method' | '/m/$id' | '/api/auth/$'
-  id:
-    | '__root__'
+  fullPaths:
     | '/'
+    | '/admin'
     | '/history'
     | '/login'
     | '/method'
+    | '/team'
+    | '/m/$id'
+    | '/api/auth/$'
+  fileRoutesByTo: FileRoutesByTo
+  to:
+    | '/'
+    | '/admin'
+    | '/history'
+    | '/login'
+    | '/method'
+    | '/team'
+    | '/m/$id'
+    | '/api/auth/$'
+  id:
+    | '__root__'
+    | '/'
+    | '/admin'
+    | '/history'
+    | '/login'
+    | '/method'
+    | '/team'
     | '/m/$id'
     | '/api/auth/$'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  AdminRoute: typeof AdminRoute
   HistoryRoute: typeof HistoryRoute
   LoginRoute: typeof LoginRoute
   MethodRoute: typeof MethodRoute
+  TeamRoute: typeof TeamRoute
   MIdRoute: typeof MIdRoute
   ApiAuthSplatRoute: typeof ApiAuthSplatRoute
 }
@@ -103,6 +141,13 @@ declare module '@tanstack/react-router' {
       path: '/'
       fullPath: '/'
       preLoaderRoute: typeof IndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/admin': {
+      id: '/admin'
+      path: '/admin'
+      fullPath: '/admin'
+      preLoaderRoute: typeof AdminRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/history': {
@@ -126,6 +171,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof MethodRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/team': {
+      id: '/team'
+      path: '/team'
+      fullPath: '/team'
+      preLoaderRoute: typeof TeamRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/m/$id': {
       id: '/m/$id'
       path: '/m/$id'
@@ -145,9 +197,11 @@ declare module '@tanstack/react-router' {
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  AdminRoute: AdminRoute,
   HistoryRoute: HistoryRoute,
   LoginRoute: LoginRoute,
   MethodRoute: MethodRoute,
+  TeamRoute: TeamRoute,
   MIdRoute: MIdRoute,
   ApiAuthSplatRoute: ApiAuthSplatRoute,
 }

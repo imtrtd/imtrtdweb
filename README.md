@@ -1,6 +1,6 @@
 # I'm Trying To Design — monorepo
 
-Публичный сайт студии — **imtrtd.space** (`apps/hq`). Всё крутится на Cloudflare Workers (аккаунт Proton), кроме Cuebox и ПсихоВики (Vercel).
+Публичный сайт студии — **imtrtd.space** (`apps/hq`). Всё крутится на Cloudflare Workers (аккаунт Proton), кроме Cuebox (Vercel).
 
 | App | Путь | Worker | Домен |
 | --- | --- | --- | --- |
@@ -9,7 +9,7 @@
 | **Portfolio** | `apps/portfolio` | `imtryingtodesign` | `imtryingtodesign.com`, `www.imtryingtodesign.com` |
 | **Telegram-бот** | `apps/tg-bot` | `namenlos-tg-bot` | `namenlos-tg-bot.unitl.workers.dev` |
 | **Cuebox** | `apps/cuebox` | — (Vercel) | `app.imtryingtodesign.com` |
-| **ПсихоВика** | `apps/psihovika` | — (Vercel) | TBD |
+| **psy** | `apps/psihovika` | `psy` | `*.workers.dev` (GitHub Actions) |
 
 ## Деплой
 
@@ -21,8 +21,9 @@
 | `.github/workflows/deploy.yml` | `apps/studio/**` | `imtrtdweb` (admin.imtrtd.space, API, CMS) |
 | `.github/workflows/deploy-portfolio.yml` | `apps/portfolio/**` | `imtryingtodesign` |
 | `.github/workflows/deploy-tg-bot.yml` | `apps/tg-bot/**` | `namenlos-tg-bot` |
+| `.github/workflows/deploy-psihovika.yml` | `apps/psihovika/**` | `psy` |
 
-У всех есть `workflow_dispatch` (ручной запуск из Actions). Cuebox и ПсихоВика деплоятся отдельно (Vercel).
+У всех есть `workflow_dispatch` (ручной запуск из Actions). Cuebox деплоится отдельно (Vercel); psy — через `deploy-psihovika.yml`.
 
 ## apps/hq — imtrtd.space
 
@@ -79,7 +80,7 @@ apps/
   portfolio/    # imtryingtodesign.com — портфолио Next/Vinext
   tg-bot/       # namenlos-tg-bot
   cuebox/       # prompt library (Vercel)
-  psihovika/    # ПсихоВика — каталог психологических методик (Vercel)
+  psihovika/    # psy — каталог психологических методик (Cloudflare Workers)
 docs/
   PROJECTS.md   # карта доменов и воркеров
 packages/

@@ -4,7 +4,7 @@ import { Shell } from "@/components/shell";
 import { TESTS, DEFAULT_SEARCH } from "@/data/catalog";
 
 export const Route = createFileRoute("/method")({
-  head: () => ({ meta: [{ title: "Метод — ПсихоВика" }] }),
+  head: () => ({ meta: [{ title: "Метод — psy" }] }),
   component: Method,
 });
 
@@ -15,10 +15,26 @@ function Method() {
     <Shell>
       <main className="mx-auto max-w-3xl px-4 py-10">
         <p className="text-xs uppercase tracking-widest text-ox">Как это собрано</p>
-        <h1 className="mt-3 font-serif text-5xl text-balance">Не витрина интернет-тестов</h1>
+        <h1 className="mt-3 font-serif text-5xl text-balance rise-in">Не витрина интернет-тестов</h1>
         <p className="mt-5 text-lg text-pretty">
-          В кабинете {TESTS.length} методик. {depth} из них про психоанализ, юнгианский анализ и разговорную терапию. {gold} — публичные клинические шкалы с их собственным подсчётом.
+          В кабинете {TESTS.length} методик. {depth} из них про психоанализ, юнгианский анализ и разговорную терапию. {gold} — публичные клинические шкалы с их собственным подсчётом и ссылками на первоисточники.
         </p>
+
+        <h2 className="mt-10 font-serif text-3xl">Четыре уровня близости к науке</h2>
+        <ul className="mt-3 list-disc space-y-2 pl-5 text-pretty">
+          <li>
+            <span className="text-ox">Публичная шкала</span> — бланк и ключ как у авторов (PHQ-9, GAD-7, PCL-5…).
+          </li>
+          <li>
+            <span className="text-ox">По конструкту</span> — идея и измерения из литературы, формулировки учебные.
+          </li>
+          <li>
+            <span className="text-ox">Адаптированная формулировка</span> — близко к известной шкале, но не лицензированный бланк.
+          </li>
+          <li>
+            <span className="text-ox">Учебный профиль</span> — для размышления и супервизии, не для клиники.
+          </li>
+        </ul>
 
         <h2 className="mt-10 font-serif text-3xl">Два сорта пунктов</h2>
         <p className="mt-3 text-pretty">
