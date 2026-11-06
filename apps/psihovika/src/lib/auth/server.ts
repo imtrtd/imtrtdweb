@@ -61,26 +61,20 @@ import {
  * restart clears both the secret and PGLite together.
  *
  * Cloudflare Workers forbid generating random values at module top-level
- * (global scope). When `BETTER_AUTH_SECRET` is unset on Workers we use a fixed
- * ephemeral string instead — set the secret via `wrangler secret` for stable
- * sessions across isolates.
+ * (global scope), so on Workers `BETTER_AUTH_SECRET` is mandatory (set it via
+ * `wrangler secret`); there is no fixed fallback.
  */
 const globalAuthRef = globalThis as typeof globalThis & {
   __grokAuthPreviewSecret__?: string;
   __grokAuthMemoryDb__?: Record<string, unknown[]>;
 };
 
-/** Fixed Workers fallback — RNG at global scope is disallowed on CF Workers. */
-const WORKER_EPHEMERAL_AUTH_SECRET =
-  "psy-worker-ephemeral-auth-secret-set-BETTER_AUTH_SECRET";
-
 function previewAuthSecret(): string {
   if (globalAuthRef.__grokAuthPreviewSecret__) {
     return globalAuthRef.__grokAuthPreviewSecret__;
   }
   if (isCloudflareWorker()) {
-    globalAuthRef.__grokAuthPreviewSecret__ = WORKER_EPHEMERAL_AUTH_SECRET;
-    return globalAuthRef.__grokAuthPreviewSecret__;
+    throw new Error("BETTER_AUTH_SECRET is required on Cloudflare Workers.");
   }
   globalAuthRef.__grokAuthPreviewSecret__ = randomBytes(32).toString("hex");
   return globalAuthRef.__grokAuthPreviewSecret__;

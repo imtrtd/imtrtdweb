@@ -39,6 +39,7 @@ jobs:
           DATABASE_URL: ${{ secrets.PSY_DATABASE_URL || secrets.DATABASE_URL }}
           BETTER_AUTH_SECRET: ${{ secrets.BETTER_AUTH_SECRET }}
           BETTER_AUTH_URL: ${{ secrets.BETTER_AUTH_URL }}
+          EDITOR_EMAILS: ${{ secrets.EDITOR_EMAILS }}
         run: |
           set -euo pipefail
           if [ -z "${DATABASE_URL}" ]; then
@@ -56,15 +57,16 @@ jobs:
             echo "PSY_DATABASE_URL=${DATABASE_URL}"
             echo "BETTER_AUTH_SECRET=${BETTER_AUTH_SECRET}"
             echo "BETTER_AUTH_URL=${BETTER_AUTH_URL:-https://psy.unitl.workers.dev}"
+            echo "EDITOR_EMAILS=${EDITOR_EMAILS}"
           } >> "$GITHUB_ENV"
-
-      - name: Apply Postgres migrations
-        run: npm run db:migrate
 
       - name: Build for Cloudflare
         run: npm run build:cloudflare
         env:
           DEPLOY_TARGET: cloudflare
+
+      - name: Apply Postgres migrations
+        run: npm run db:migrate
 
       - name: Deploy Worker
         uses: cloudflare/wrangler-action@v4
@@ -78,3 +80,4 @@ jobs:
             DATABASE_URL
             BETTER_AUTH_SECRET
             BETTER_AUTH_URL
+            EDITOR_EMAILS

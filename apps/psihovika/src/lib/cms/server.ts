@@ -24,6 +24,23 @@ async function sql() {
   return getSql();
 }
 
+/** Site-wide content is public, so only emails in EDITOR_EMAILS (comma-separated) may edit it. */
+async function requireSiteEditor(userId: string) {
+  const allowed = (process.env.EDITOR_EMAILS ?? "")
+    .split(",")
+    .map((e) => e.trim().toLowerCase())
+    .filter(Boolean);
+  if (allowed.length === 0) throw new Error("Редактор отключён: не задан EDITOR_EMAILS.");
+  const db = await sql();
+  const rows = await db<{ email: string; emailVerified: boolean }>`
+    select "email", "emailVerified" from "user" where "id" = ${userId} limit 1
+  `;
+  const u = rows[0];
+  if (!u || !u.emailVerified || !allowed.includes(u.email.toLowerCase())) {
+    throw new Error("Нет прав на правку каталога.");
+  }
+}
+
 async function requireMembership(userId: string, teamId: string, write = false) {
   const db = await sql();
   const rows = await db<TeamRow>`
@@ -199,6 +216,7 @@ export const addNote = createServerFn({ method: "POST" })
 export const ensureEditorWorkspace = createServerFn({ method: "POST" })
   .middleware([authMiddleware])
   .handler(async ({ context }) => {
+    await requireSiteEditor(context.userId);
     const db = await sql();
     const existing = await db<TeamRow>`
       select t.id, t.name, t.invite_code, m.role
@@ -225,7 +243,8 @@ export const ensureEditorWorkspace = createServerFn({ method: "POST" })
 
 export const listSiteContent = createServerFn({ method: "GET" })
   .middleware([authMiddleware])
-  .handler(async () => {
+  .handler(async ({ context }) => {
+    await requireSiteEditor(context.userId);
     const db = await sql();
     return db<ContentOverride>`
       select
@@ -251,6 +270,7 @@ export const saveSiteContent = createServerFn({ method: "POST" })
     return data;
   })
   .handler(async ({ context, data }) => {
+    await requireSiteEditor(context.userId);
     const db = await sql();
     const p = data.patch;
     await db`
