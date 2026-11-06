@@ -70,7 +70,7 @@ export function Shell({ children }: { children: ReactNode }) {
               <Heart className="size-4 fill-ox" />
             </button>
           </div>
-          <nav className="flex shrink-0 items-center gap-0.5">
+          <nav className="-mx-1 flex w-full items-center gap-0.5 overflow-x-auto px-1 [scrollbar-width:none] sm:mx-0 sm:w-auto sm:overflow-visible sm:px-0 [&::-webkit-scrollbar]:hidden">
             {LINKS.map((link) => {
               const active = link.to === "/" ? path === "/" : path.startsWith(link.to);
               return (
@@ -78,7 +78,7 @@ export function Shell({ children }: { children: ReactNode }) {
                   key={link.to}
                   to={link.to}
                   className={cn(
-                    "inline-flex h-11 items-center px-2 text-sm transition-colors duration-200 sm:px-3",
+                    "inline-flex h-11 shrink-0 items-center px-2.5 text-sm transition-colors duration-200 sm:px-3",
                     active ? "text-ink" : "text-muted hover:text-ink",
                   )}
                 >
@@ -101,7 +101,7 @@ export function Shell({ children }: { children: ReactNode }) {
       {burst > 0 ? <Salute key={burst} onDone={() => setBurst(0)} /> : null}
       <div className="fade-in">{children}</div>
       <footer className="border-t border-line">
-        <div className="mx-auto max-w-6xl px-4 py-8 text-sm text-muted">
+        <div className="mx-auto max-w-6xl px-4 py-8 pb-[max(2rem,env(safe-area-inset-bottom))] text-sm text-muted">
           <p className="max-w-2xl text-pretty">
             {BRAND} не ставит диагноз и не заменяет врача или психотерапевта. Ответы остаются в этом
             браузере. У публичных шкал — отсылки к первоисточникам; учебные профили помечены отдельно.
