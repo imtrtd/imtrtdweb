@@ -34,7 +34,7 @@ jobs:
       - name: Verify Neon project and production branch
         env:
           NEON_API_KEY: ${{ secrets.NEON_API_KEY }}
-          EDITOR_EMAILS: ${{ secrets.EDITOR_EMAILS }}
+          EDITOR_EMAILS: ${{ secrets.EDITOR_EMAILS || secrets.EDITOR_EMAIL }}
         run: |
           set -euo pipefail
           if [ -z "$NEON_API_KEY" ]; then
@@ -57,7 +57,7 @@ jobs:
           if [ -n "$EDITOR_EMAILS" ]; then
             echo "EDITOR_EMAILS is configured."
           else
-            echo "::warning::EDITOR_EMAILS is not configured; site editing will remain disabled."
+            echo "::warning::EDITOR_EMAILS / EDITOR_EMAIL is not configured; site editing will remain disabled."
           fi
 
   provision-neon:
@@ -155,7 +155,7 @@ jobs:
           DATABASE_URL: ${{ secrets.PSY_DATABASE_URL || secrets.DATABASE_URL }}
           BETTER_AUTH_SECRET: ${{ secrets.BETTER_AUTH_SECRET }}
           BETTER_AUTH_URL: ${{ secrets.BETTER_AUTH_URL }}
-          EDITOR_EMAILS: ${{ secrets.EDITOR_EMAILS }}
+          EDITOR_EMAILS: ${{ secrets.EDITOR_EMAILS || secrets.EDITOR_EMAIL }}
         run: |
           set -euo pipefail
           if [ -z "${DATABASE_URL}" ]; then

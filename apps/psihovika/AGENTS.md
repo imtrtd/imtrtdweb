@@ -32,4 +32,4 @@ npm --prefix apps/psihovika run deploy   # build:cloudflare + wrangler deploy
 CI: `.github/workflows/deploy-psihovika.yml` на push в `main` по `apps/psihovika/**`.
 Секреты репозитория: `CLOUDFLARE_API_TOKEN`, `CLOUDFLARE_ACCOUNT_ID`.
 Секреты для CMS/auth: `PSY_DATABASE_URL` или `DATABASE_URL` (Neon), `BETTER_AUTH_SECRET`, `BETTER_AUTH_URL` (деплой синхронизирует их на Worker).
-`EDITOR_EMAILS` — список email (через запятую) с правом правки каталога в `/editor`; без него редактор отключён.
+`EDITOR_EMAILS` — список email (через запятую) с правом правки каталога в `/editor`; для одного адреса GitHub Actions также принимает секрет `EDITOR_EMAIL`. Без них редактор отключён.
