@@ -19,5 +19,9 @@
 		"deploy:portfolio": "npm --prefix apps/portfolio run deploy",
 		"deploy:psihovika": "npm --prefix apps/psihovika run deploy",
 		"publish:studio": "npm --prefix apps/studio run publish:cloudflare"
+	},
+	"dependencies": {
+		"@neon/config": "^1.11.3",
+		"@neon/env": "^1.6.15"
 	}
 }

@@ -35,3 +35,4 @@ apps/*/node_modules
 
 .vercel
 apps/*/.vercel
+.neon
