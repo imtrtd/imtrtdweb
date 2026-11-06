@@ -191,6 +191,8 @@ jobs:
           done
           curl -fsS -o /dev/null http://localhost:8080/
           test_email="ci-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}@example.invalid"
+          curl -fsS http://localhost:8080/api/auth/get-session > "$RUNNER_TEMP/anonymous.json"
+          jq -e '. == null' "$RUNNER_TEMP/anonymous.json" > /dev/null
           signup_body="$(jq -n --arg email "$test_email" '{name:"Test User", email:$email, password:"ci-test-password-2026"}')"
           curl -fsS -c "$RUNNER_TEMP/psy-cookies" \
             -H 'Content-Type: application/json' -H 'Origin: http://localhost:8080' \
@@ -199,7 +201,18 @@ jobs:
           curl -fsS -b "$RUNNER_TEMP/psy-cookies" \
             http://localhost:8080/api/auth/get-session > "$RUNNER_TEMP/session.json"
           jq -e --arg email "$test_email" '.user.email == $email' "$RUNNER_TEMP/session.json" > /dev/null
-          echo "App build, Postgres migrations, local signup and session succeeded."
+          curl -fsS -b "$RUNNER_TEMP/psy-cookies" -c "$RUNNER_TEMP/psy-cookies" \
+            -H 'Content-Type: application/json' -H 'Origin: http://localhost:8080' \
+            --data '{}' http://localhost:8080/api/auth/sign-out > /dev/null
+          curl -fsS -b "$RUNNER_TEMP/psy-cookies" http://localhost:8080/api/auth/get-session > "$RUNNER_TEMP/signed-out.json"
+          jq -e '. == null' "$RUNNER_TEMP/signed-out.json" > /dev/null
+          signin_body="$(jq -n --arg email "$test_email" '{email:$email, password:"ci-test-password-2026"}')"
+          curl -fsS -c "$RUNNER_TEMP/psy-cookies" \
+            -H 'Content-Type: application/json' -H 'Origin: http://localhost:8080' \
+            --data "$signin_body" http://localhost:8080/api/auth/sign-in/email > /dev/null
+          curl -fsS -b "$RUNNER_TEMP/psy-cookies" http://localhost:8080/api/auth/get-session > "$RUNNER_TEMP/signed-in.json"
+          jq -e --arg email "$test_email" '.user.email == $email' "$RUNNER_TEMP/signed-in.json" > /dev/null
+          echo "App build, Postgres migrations, local signup, session, sign-out and sign-in succeeded."
       - name: Delete temporary database branch
         if: always() && steps.branch.outputs.created == 'true'
         run: |
