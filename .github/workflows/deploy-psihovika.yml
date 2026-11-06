@@ -88,6 +88,35 @@ jobs:
             exit 1
           fi
           echo "Neon configuration applied and environment file retrieved."
+      - name: Install application dependencies
+        working-directory: apps/psihovika
+        run: npm ci
+      - name: Check Postgres and Auth endpoints
+        working-directory: apps/psihovika
+        run: |
+          set -euo pipefail
+          env_file="$GITHUB_WORKSPACE/.env.local"
+          if [ ! -f "$env_file" ]; then env_file="$GITHUB_WORKSPACE/.env"; fi
+          node --env-file="$env_file" --input-type=module <<'NODE'
+          import pg from "pg";
+          if (!process.env.DATABASE_URL || !process.env.NEON_AUTH_BASE_URL) {
+            throw new Error("Neon did not provide the required service variables");
+          }
+          const pool = new pg.Pool({ connectionString: process.env.DATABASE_URL, max: 1 });
+          try {
+            const result = await pool.query("SELECT 1 AS ok");
+            if (result.rows[0]?.ok !== 1) throw new Error("Unexpected database result");
+            console.log("Postgres: SELECT 1 succeeded");
+          } finally {
+            await pool.end();
+          }
+          const base = process.env.NEON_AUTH_BASE_URL.replace(/\/+$/, "");
+          const response = await fetch(`${base}/get-session`);
+          if (response.status !== 200 && response.status !== 401) {
+            throw new Error(`Neon Auth session endpoint returned HTTP ${response.status}`);
+          }
+          console.log(`Neon Auth: session endpoint returned HTTP ${response.status}`);
+          NODE
 
   deploy:
     name: Deploy psy (Workers)
