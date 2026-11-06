@@ -2,8 +2,10 @@
 (function(){
  function clocks(){var els=document.querySelectorAll('[data-ct-clock]');if(!els.length||!window.Intl)return;
   function tick(){var d=new Date(),t,off='';
-   try{t=new Intl.DateTimeFormat('en-GB',{timeZone:'Europe/Kyiv',hour:'2-digit',minute:'2-digit'}).format(d);
-    var p=new Intl.DateTimeFormat('en-GB',{timeZone:'Europe/Kyiv',timeZoneName:'shortOffset'}).formatToParts(d).filter(function(x){return x.type==='timeZoneName'})[0];off=p?p.value.replace('GMT','UTC'):''}catch(e){return}
+   /* time and UTC offset are both computed for Europe/Kyiv (EET/EEST), so the offset follows DST;
+      the HTML fallback deliberately carries no fixed offset */
+   try{t=new Intl.DateTimeFormat('en-GB',{timeZone:'Europe/Kyiv',hour:'2-digit',minute:'2-digit'}).format(d)}catch(e){return}
+   try{var p=new Intl.DateTimeFormat('en-GB',{timeZone:'Europe/Kyiv',timeZoneName:'shortOffset'}).formatToParts(d).filter(function(x){return x.type==='timeZoneName'})[0];off=p?p.value.replace('GMT','UTC'):''}catch(e){off=''}
    els.forEach(function(el){el.textContent=t+' Kyiv'+(off?' · '+off:'')})}
   tick();setInterval(tick,30000)}
  function copy(btn){var v=(btn.getAttribute('data-ct-copy')||'').trim();
@@ -13,7 +15,7 @@
  function fallback(v){try{var t=document.createElement('textarea');t.value=v;t.setAttribute('readonly','');t.style.cssText='position:fixed;opacity:0;top:0;left:0';document.body.appendChild(t);t.select();var ok=document.execCommand('copy');t.remove();return ok}catch(e){return false}}
  document.addEventListener('click',function(e){
   var c=e.target.closest('[data-ct-copy]');if(c){e.preventDefault();copy(c);return}
-  var b=e.target.closest('[data-ct-brief]');if(b){e.preventDefault();if(window.IMTRTD&&IMTRTD.openBrief)IMTRTD.openBrief({label:'Contact'});else location.href='contact.html'}
+  var b=e.target.closest('[data-ct-brief]');if(b){e.preventDefault();if(window.IMTRTD&&IMTRTD.openBrief)IMTRTD.openBrief({label:'Contact'});else location.href='/contact'}
  });
  clocks();
 })();

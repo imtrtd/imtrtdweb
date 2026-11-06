@@ -42,6 +42,9 @@
 		}
 	],
 	// Lead emails: sender must be on a zone with Email Routing (imtryingtodesign.com); recipient must be a verified destination address.
+	// Lead form rate limit (5 POST /api/leads per IP per minute), shared across isolates. No dashboard setup:
+	// namespace_id is any account-unique number we pick. Period must be 10 or 60 s.
+	"ratelimits": [{ "name": "LEAD_RATE_LIMITER", "namespace_id": "1001", "simple": { "limit": 5, "period": 60 } }],
 	"send_email": [{ "name": "EMAIL", "allowed_destination_addresses": ["admin@imtrtd.space"] }],
 	"triggers": {
 		"crons": ["0 * * * *"]
@@ -49,7 +52,10 @@
 	"vars": {
 		"STUDIO_NOTIFY_EMAIL": "admin@imtrtd.space",
 		"LEAD_NOTIFY_EMAIL": "admin@imtrtd.space",
-		"LEAD_FROM_EMAIL": "leads@imtryingtodesign.com"
+		"LEAD_FROM_EMAIL": "leads@imtryingtodesign.com",
+		// Turnstile on the imtrtd.space brief forms (PSE-22). Public site key from the Turnstile widget goes here;
+		// the secret is set with `wrangler secret put TURNSTILE_SECRET_KEY`. Empty key or no secret = check off.
+		"TURNSTILE_SITE_KEY": ""
 	},
 	"upload_source_maps": true
 }

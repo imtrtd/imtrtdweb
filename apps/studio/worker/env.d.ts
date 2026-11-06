@@ -12,5 +12,12 @@ declare namespace Cloudflare {
 		DB?: D1Database;
 		APP_STORE: DurableObjectNamespace<import("./lib/store-do").AppStore>;
 		STUDIO_NOTIFY_EMAIL?: string;
+		/** Turnstile (PSE-22): public site key (var) + secret (wrangler secret). Both unset = check off. */
+		TURNSTILE_SITE_KEY?: string;
+		TURNSTILE_SECRET_KEY?: string;
+		/** "true" = require a token from every origin, not just imtrtd.space. */
+		TURNSTILE_REQUIRE_ALL?: string;
+		/** Workers Rate Limiting binding for POST /api/leads (wrangler.jsonc "ratelimits"). Unset = per-isolate fallback. */
+		LEAD_RATE_LIMITER?: RateLimit;
 	}
 }

@@ -1,5 +1,6 @@
 /**
- * HQ Worker: static studio site for imtrtd.space (http->https redirect + static assets).
+ * HQ Worker: static studio site for imtrtd.space (http->https, *.html->clean 301, static assets).
+ * Unknown paths get public/404.html with status 404 (not_found_handling: 404-page).
  * Deployed by .github/workflows/deploy-hq.yml.
  */
 {
@@ -12,7 +13,7 @@
 		"binding": "ASSETS",
 		"run_worker_first": true,
 		"html_handling": "auto-trailing-slash",
-		"not_found_handling": "none"
+		"not_found_handling": "404-page"
 	},
 	"routes": [
 		{
