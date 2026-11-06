@@ -34,7 +34,8 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-      - name: Validate secrets
+      - name: Resolve secrets
+        id: secrets
         env:
           DATABASE_URL: ${{ secrets.PSY_DATABASE_URL || secrets.DATABASE_URL }}
           BETTER_AUTH_SECRET: ${{ secrets.BETTER_AUTH_SECRET }}
@@ -43,15 +44,17 @@ jobs:
         run: |
           set -euo pipefail
           if [ -z "${DATABASE_URL}" ]; then
-            echo "::error::Set repo secret PSY_DATABASE_URL (or DATABASE_URL) — a persistent Postgres is required."
-            exit 1
+            echo "::warning::No PSY_DATABASE_URL / DATABASE_URL — deploying public catalog only (no accounts, no /editor)."
+            echo "has_db=false" >> "$GITHUB_OUTPUT"
+            exit 0
           fi
           if [ -z "${BETTER_AUTH_SECRET}" ]; then
-            echo "::error::Set repo secret BETTER_AUTH_SECRET (e.g. openssl rand -base64 32)."
+            echo "::error::Set repo secret BETTER_AUTH_SECRET (e.g. openssl rand -base64 32) when a database is configured."
             exit 1
           fi
           echo "::add-mask::${DATABASE_URL}"
           echo "::add-mask::${BETTER_AUTH_SECRET}"
+          echo "has_db=true" >> "$GITHUB_OUTPUT"
           {
             echo "DATABASE_URL=${DATABASE_URL}"
             echo "PSY_DATABASE_URL=${DATABASE_URL}"
@@ -66,9 +69,11 @@ jobs:
           DEPLOY_TARGET: cloudflare
 
       - name: Apply Postgres migrations
+        if: steps.secrets.outputs.has_db == 'true'
         run: npm run db:migrate
 
-      - name: Deploy Worker
+      - name: Deploy Worker (with database)
+        if: steps.secrets.outputs.has_db == 'true'
         uses: cloudflare/wrangler-action@v4
         with:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
@@ -81,3 +86,13 @@ jobs:
             BETTER_AUTH_SECRET
             BETTER_AUTH_URL
             EDITOR_EMAILS
+
+      - name: Deploy Worker (public catalog only)
+        if: steps.secrets.outputs.has_db != 'true'
+        uses: cloudflare/wrangler-action@v4
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          wranglerVersion: "4.88.0"
+          workingDirectory: apps/psihovika
+          command: deploy
