@@ -61,20 +61,26 @@ import {
  * restart clears both the secret and PGLite together.
  *
  * Cloudflare Workers forbid generating random values at module top-level
- * (global scope), so on Workers `BETTER_AUTH_SECRET` is mandatory (set it via
- * `wrangler secret`); there is no fixed fallback.
+ * (global scope). When `BETTER_AUTH_SECRET` is unset on Workers we use a fixed
+ * ephemeral string instead — set the secret via `wrangler secret` for stable
+ * sessions across isolates.
  */
 const globalAuthRef = globalThis as typeof globalThis & {
   __grokAuthPreviewSecret__?: string;
   __grokAuthMemoryDb__?: Record<string, unknown[]>;
 };
 
+/** Fixed Workers fallback — RNG at global scope is disallowed on CF Workers. */
+const WORKER_EPHEMERAL_AUTH_SECRET =
+  "psy-worker-ephemeral-auth-secret-set-BETTER_AUTH_SECRET";
+
 function previewAuthSecret(): string {
   if (globalAuthRef.__grokAuthPreviewSecret__) {
     return globalAuthRef.__grokAuthPreviewSecret__;
   }
   if (isCloudflareWorker()) {
-    throw new Error("BETTER_AUTH_SECRET is required on Cloudflare Workers.");
+    globalAuthRef.__grokAuthPreviewSecret__ = WORKER_EPHEMERAL_AUTH_SECRET;
+    return globalAuthRef.__grokAuthPreviewSecret__;
   }
   globalAuthRef.__grokAuthPreviewSecret__ = randomBytes(32).toString("hex");
   return globalAuthRef.__grokAuthPreviewSecret__;
@@ -200,11 +206,21 @@ const grokOAuthPlugin = authConfigured
     })
   : null;
 
+function authSecret(): string {
+  const secret = env("BETTER_AUTH_SECRET");
+  if (secret) return secret;
+  // A persistent DB with a guessable signing secret would let sessions be forged.
+  if (databaseUrl && onCloudflareWorker) {
+    throw new Error("BETTER_AUTH_SECRET is required when DATABASE_URL is set.");
+  }
+  return previewAuthSecret();
+}
+
 export const auth = betterAuth({
   baseURL,
   // Deployed apps inject BETTER_AUTH_SECRET. Preview: process-stable secret on
   // globalThis so HMR doesn't invalidate PGLite-backed sessions (see above).
-  secret: env("BETTER_AUTH_SECRET") ?? previewAuthSecret(),
+  secret: authSecret(),
   database,
 
   // CSRF / origin check for credentialed auth POSTs (email sign-up/sign-in, …).
