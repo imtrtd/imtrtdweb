@@ -15,6 +15,7 @@ on:
         options:
           - deploy
           - check-neon
+          - provision-neon
         default: deploy
 
 jobs:
@@ -53,9 +54,44 @@ jobs:
           fi
           echo "Neon project and production branch are accessible."
 
+  provision-neon:
+    name: Provision Neon services
+    if: github.event_name == 'workflow_dispatch' && inputs.operation == 'provision-neon'
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    permissions:
+      contents: read
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - name: Install Neon config dependencies
+        run: npm ci
+      - name: Apply Neon configuration
+        env:
+          NEON_API_KEY: ${{ secrets.NEON_API_KEY }}
+        run: |
+          set -euo pipefail
+          if [ -z "$NEON_API_KEY" ]; then
+            echo "::error::NEON_API_KEY is unavailable to this workflow."
+            exit 1
+          fi
+          if ! npx --yes neon@latest deploy --project-id withered-mountain-10644368 --branch production > "$RUNNER_TEMP/neon-deploy.log" 2>&1; then
+            echo "::error::Neon configuration could not be applied. Check project access, branch protection and Neon service eligibility."
+            exit 1
+          fi
+          if [ ! -f .env.local ] && [ ! -f .env ]; then
+            echo "::error::Neon did not write the environment file."
+            exit 1
+          fi
+          echo "Neon configuration applied and environment file retrieved."
+
   deploy:
     name: Deploy psy (Workers)
-    if: github.event_name != 'workflow_dispatch' || inputs.operation != 'check-neon'
+    if: github.event_name != 'workflow_dispatch' || inputs.operation == 'deploy'
     runs-on: ubuntu-latest
     timeout-minutes: 20
     defaults:
