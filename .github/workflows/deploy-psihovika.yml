@@ -8,10 +8,54 @@ on:
       - "apps/psihovika/**"
       - ".github/workflows/deploy-psihovika.yml"
   workflow_dispatch:
+    inputs:
+      operation:
+        description: "Deploy the Worker or check Neon access"
+        type: choice
+        options:
+          - deploy
+          - check-neon
+        default: deploy
 
 jobs:
+  check-neon:
+    name: Check Neon access
+    if: github.event_name == 'workflow_dispatch' && inputs.operation == 'check-neon'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: read
+    steps:
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - name: Verify Neon project and production branch
+        env:
+          NEON_API_KEY: ${{ secrets.NEON_API_KEY }}
+        run: |
+          set -euo pipefail
+          if [ -z "$NEON_API_KEY" ]; then
+            echo "::error::NEON_API_KEY is unavailable to this workflow."
+            exit 1
+          fi
+          if ! npx --yes neon@latest projects get withered-mountain-10644368 > "$RUNNER_TEMP/neon-project.json" 2> "$RUNNER_TEMP/neon-error.log"; then
+            echo "::error::Could not access the requested Neon project."
+            exit 1
+          fi
+          if ! npx --yes neon@latest branches list --project-id withered-mountain-10644368 -o json > "$RUNNER_TEMP/neon-branches.json" 2> "$RUNNER_TEMP/neon-error.log"; then
+            echo "::error::Could not list Neon branches."
+            exit 1
+          fi
+          if ! jq -e 'any(.[]; .name == "production")' "$RUNNER_TEMP/neon-branches.json" > /dev/null; then
+            echo "::error::The production branch was not found."
+            exit 1
+          fi
+          echo "Neon project and production branch are accessible."
+
   deploy:
     name: Deploy psy (Workers)
+    if: github.event_name != 'workflow_dispatch' || inputs.operation != 'check-neon'
     runs-on: ubuntu-latest
     timeout-minutes: 20
     defaults:
