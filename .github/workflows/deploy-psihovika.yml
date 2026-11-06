@@ -34,49 +34,28 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-      - name: Resolve Postgres + auth secrets
-        id: secrets
-        working-directory: ${{ github.workspace }}
+      - name: Validate secrets
         env:
-          EXISTING_DB: ${{ secrets.PSY_DATABASE_URL || secrets.DATABASE_URL }}
-          EXISTING_AUTH: ${{ secrets.BETTER_AUTH_SECRET }}
-          EXISTING_AUTH_URL: ${{ secrets.BETTER_AUTH_URL }}
+          DATABASE_URL: ${{ secrets.PSY_DATABASE_URL || secrets.DATABASE_URL }}
+          BETTER_AUTH_SECRET: ${{ secrets.BETTER_AUTH_SECRET }}
+          BETTER_AUTH_URL: ${{ secrets.BETTER_AUTH_URL }}
         run: |
           set -euo pipefail
-          mkdir -p "$RUNNER_TEMP/psy-secrets"
-          if [ -n "${EXISTING_DB}" ]; then
-            printf '%s' "$EXISTING_DB" > "$RUNNER_TEMP/psy-secrets/database_url"
-            echo "db_source=repo_secret" >> "$GITHUB_OUTPUT"
-          else
-            echo "No PSY_DATABASE_URL / DATABASE_URL — provisioning claimable Neon (72h unless claimed)"
-            RESP=$(curl -sS -X POST "https://neon.new/api/v1/database" \
-              -H "Content-Type: application/json" \
-              -d '{"ref":"psy-imtrtd-workers"}')
-            echo "$RESP" | jq -r '.connection_string' > "$RUNNER_TEMP/psy-secrets/database_url"
-            CLAIM=$(echo "$RESP" | jq -r '.claim_url')
-            echo "db_source=neon_new" >> "$GITHUB_OUTPUT"
-            echo "claim_url=$CLAIM" >> "$GITHUB_OUTPUT"
-            {
-              echo "### Neon database"
-              echo ""
-              echo "Provisioned a claimable Postgres for psy. Claim it (keeps the DB beyond 72h):"
-              echo ""
-              echo "$CLAIM"
-            } >> "$GITHUB_STEP_SUMMARY"
+          if [ -z "${DATABASE_URL}" ]; then
+            echo "::error::Set repo secret PSY_DATABASE_URL (or DATABASE_URL) — a persistent Postgres is required."
+            exit 1
           fi
-          if [ -n "${EXISTING_AUTH}" ]; then
-            printf '%s' "$EXISTING_AUTH" > "$RUNNER_TEMP/psy-secrets/better_auth_secret"
-          else
-            # Stable fallback so redeploys without a repo secret do not rotate sessions.
-            printf '%s' "psy-workers-better-auth-set-BETTER_AUTH_SECRET" > "$RUNNER_TEMP/psy-secrets/better_auth_secret"
-            echo "::warning::BETTER_AUTH_SECRET repo secret missing — using a fixed Worker placeholder. Set the secret for production."
+          if [ -z "${BETTER_AUTH_SECRET}" ]; then
+            echo "::error::Set repo secret BETTER_AUTH_SECRET (e.g. openssl rand -base64 32)."
+            exit 1
           fi
-          printf '%s' "${EXISTING_AUTH_URL:-https://psy.unitl.workers.dev}" > "$RUNNER_TEMP/psy-secrets/better_auth_url"
+          echo "::add-mask::${DATABASE_URL}"
+          echo "::add-mask::${BETTER_AUTH_SECRET}"
           {
-            echo "DATABASE_URL=$(cat "$RUNNER_TEMP/psy-secrets/database_url")"
-            echo "PSY_DATABASE_URL=$(cat "$RUNNER_TEMP/psy-secrets/database_url")"
-            echo "BETTER_AUTH_SECRET=$(cat "$RUNNER_TEMP/psy-secrets/better_auth_secret")"
-            echo "BETTER_AUTH_URL=$(cat "$RUNNER_TEMP/psy-secrets/better_auth_url")"
+            echo "DATABASE_URL=${DATABASE_URL}"
+            echo "PSY_DATABASE_URL=${DATABASE_URL}"
+            echo "BETTER_AUTH_SECRET=${BETTER_AUTH_SECRET}"
+            echo "BETTER_AUTH_URL=${BETTER_AUTH_URL:-https://psy.unitl.workers.dev}"
           } >> "$GITHUB_ENV"
 
       - name: Apply Postgres migrations
