@@ -30,6 +30,19 @@ export function isMigrationFile(path) {
 }
 
 /**
+ * @param {Record<string, string | undefined>} env
+ * @returns {string | undefined}
+ */
+export function migrationDatabaseUrl(env) {
+  return (
+    env.DATABASE_URL_UNPOOLED?.trim() ||
+    env.DATABASE_URL?.trim() ||
+    env.PSY_DATABASE_URL?.trim() ||
+    undefined
+  );
+}
+
+/**
  * Migrations in `paths` that are not yet in `applied`, in apply order.
  * Non-`.sql` entries (a `readdir` also yields `migrations/auth/`) are dropped.
  * @param {Iterable<string>} paths
