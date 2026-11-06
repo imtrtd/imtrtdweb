@@ -34,6 +34,7 @@ jobs:
       - name: Verify Neon project and production branch
         env:
           NEON_API_KEY: ${{ secrets.NEON_API_KEY }}
+          EDITOR_EMAILS: ${{ secrets.EDITOR_EMAILS }}
         run: |
           set -euo pipefail
           if [ -z "$NEON_API_KEY" ]; then
@@ -53,6 +54,11 @@ jobs:
             exit 1
           fi
           echo "Neon project and production branch are accessible."
+          if [ -n "$EDITOR_EMAILS" ]; then
+            echo "EDITOR_EMAILS is configured."
+          else
+            echo "::warning::EDITOR_EMAILS is not configured; site editing will remain disabled."
+          fi
 
   provision-neon:
     name: Provision Neon services
