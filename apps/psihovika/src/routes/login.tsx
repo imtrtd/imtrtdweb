@@ -5,10 +5,11 @@ import { Button } from "@/components/ui/button";
 import { authClient, signIn } from "@/lib/auth/client";
 import { UserButton } from "@/lib/auth/gates";
 import { useCurrentUserState } from "@/lib/auth/use-current-user";
+import { BRAND } from "@/lib/brand";
 import { cn } from "@/lib/cn";
 
 export const Route = createFileRoute("/login")({
-  head: () => ({ meta: [{ title: "Вход — psy" }] }),
+  head: () => ({ meta: [{ title: `Вход — ${BRAND}` }] }),
   component: LoginPage,
 });
 

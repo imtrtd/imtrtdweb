@@ -11,10 +11,11 @@ import {
 } from "@/lib/cms/server";
 import type { ContentOverride, TeamRow } from "@/lib/cms/types";
 import { useCurrentUserState } from "@/lib/auth/use-current-user";
+import { BRAND } from "@/lib/brand";
 import { cn } from "@/lib/cn";
 
 export const Route = createFileRoute("/editor")({
-  head: () => ({ meta: [{ title: "Редактор — psy" }] }),
+  head: () => ({ meta: [{ title: `Редактор — ${BRAND}` }] }),
   component: EditorPage,
 });
 

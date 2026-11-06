@@ -1,4 +1,5 @@
 import type { Test } from "@/data/build";
+import { BRAND } from "@/lib/brand";
 import type { Piece, Score } from "@/lib/scoring";
 
 function numberOf(piece: Piece) {
@@ -17,7 +18,7 @@ export function resultPrompt(
   }).format(at);
 
   const blocks: string[] = [
-    "Ты внимательный собеседник. Ниже мой самоотчёт из приложения «psy». Это не диагноз, не назначение и не замена живого специалиста. Не ставь диагноз, не выдумывай баллы и не противоречь тексту интерпретации: он уже посчитан методикой.",
+    `Ты внимательный собеседник. Ниже мой самоотчёт из приложения «${BRAND}». Это не диагноз, не назначение и не замена живого специалиста. Не ставь диагноз, не выдумывай баллы и не противоречь тексту интерпретации: он уже посчитан методикой.`,
     [
       `Методика: ${test.title}`,
       `Школа: ${test.school}`,
@@ -79,5 +80,5 @@ export function resultPrompt(
 
 export function resultFileName(id: string) {
   const safe = id.replace(/[^a-z0-9-]+/gi, "-").replace(/^-|-$/g, "") || "itog";
-  return `psy-${safe}.txt`;
+  return `${BRAND}-${safe}.txt`;
 }

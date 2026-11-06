@@ -2,6 +2,7 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { Runner } from "@/components/runner";
 import { Shell } from "@/components/shell";
 import { getTest, DEFAULT_SEARCH } from "@/data/catalog";
+import { BRAND } from "@/lib/brand";
 import { getPublicMethod } from "@/lib/cms/server";
 
 export const Route = createFileRoute("/m/$id")({
@@ -12,7 +13,7 @@ export const Route = createFileRoute("/m/$id")({
   head: ({ params, loaderData }) => {
     const test = loaderData?.test ?? getTest(params.id);
     return {
-      meta: [{ title: test ? `${test.title} — psy` : "Методика — psy" }],
+      meta: [{ title: test ? `${test.title} — ${BRAND}` : `Методика — ${BRAND}` }],
     };
   },
   component: MethodPage,

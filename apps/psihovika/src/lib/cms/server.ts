@@ -4,6 +4,7 @@ import { applyContentOverride } from "@/lib/cms/content";
 import type { ContentOverride, MethodPatch, TeamNote, TeamRow } from "@/lib/cms/types";
 import { TESTS, getTest } from "@/data/catalog";
 import type { Test } from "@/data/build";
+import { BRAND } from "@/lib/brand";
 
 function newId(prefix: string) {
   return `${prefix}_${crypto.randomUUID().replace(/-/g, "").slice(0, 16)}`;
@@ -210,7 +211,7 @@ export const ensureEditorWorkspace = createServerFn({ method: "POST" })
     if (existing[0]) return existing[0];
     const id = newId("team");
     const code = inviteCode();
-    const name = "psy";
+    const name = BRAND;
     await db`
       insert into teams (id, name, invite_code, created_by)
       values (${id}, ${name}, ${code}, ${context.userId})

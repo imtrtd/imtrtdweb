@@ -8,10 +8,11 @@ import { listOverrides, saveOverride } from "@/lib/cms/server";
 import { readActiveTeam, subscribeActiveTeam } from "@/lib/cms/active-team";
 import type { ContentOverride } from "@/lib/cms/types";
 import { useCurrentUserState } from "@/lib/auth/use-current-user";
+import { BRAND } from "@/lib/brand";
 import { cn } from "@/lib/cn";
 
 export const Route = createFileRoute("/admin")({
-  head: () => ({ meta: [{ title: "Админка — psy" }] }),
+  head: () => ({ meta: [{ title: `Админка — ${BRAND}` }] }),
   component: AdminPage,
 });
 

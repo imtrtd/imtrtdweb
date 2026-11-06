@@ -4,6 +4,7 @@ import { useEffect, useState, useSyncExternalStore } from "react";
 import { PATHS, TESTS, filterTests, minutesOfTest, sortTests, type HomeSearch } from "@/data/catalog";
 import { CATEGORY_ORDER, SCHOOL_ORDER, type Test } from "@/data/build";
 import { FIDELITY_LABEL, metaFor } from "@/data/refs";
+import { BRAND } from "@/lib/brand";
 import { getServerSnapshot, getSnapshot, subscribe, toggleFav } from "@/lib/storage";
 import { cn } from "@/lib/cn";
 import { Button } from "@/components/ui/button";
@@ -93,7 +94,9 @@ export function CatalogView({
       <section className="grid gap-8 border-b border-line py-10 lg:grid-cols-[1.4fr_0.6fr] lg:items-end">
         <div className="rise-in">
           <p className="text-xs uppercase tracking-widest text-ox">Психоанализ · терапия · скрининг</p>
-          <h1 className="mt-3 max-w-xl font-serif text-5xl leading-none text-balance sm:text-6xl">psy</h1>
+          <h1 className="mt-3 max-w-2xl font-serif text-4xl leading-none text-balance sm:text-5xl lg:text-6xl">
+            {BRAND}
+          </h1>
           <p className="mt-5 max-w-xl text-lg text-pretty">
             {tests.length} методик на русском, от трёх минут до получаса. Публичные шкалы — с первоисточниками и официальным подсчётом;
             учебные профили помечены отдельно.

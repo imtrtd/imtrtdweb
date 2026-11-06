@@ -6,10 +6,11 @@ import { getTest, TESTS } from "@/data/catalog";
 import { DEPTHS, passageOf, scorePassage } from "@/lib/depth";
 import { UserButton } from "@/lib/auth/gates";
 import { useCurrentUser } from "@/lib/auth/use-current-user";
+import { BRAND } from "@/lib/brand";
 import { clearHistory, getServerSnapshot, getSnapshot, removeHistory, stageView, subscribe } from "@/lib/storage";
 
 export const Route = createFileRoute("/history")({
-  head: () => ({ meta: [{ title: "Кабинет — psy" }] }),
+  head: () => ({ meta: [{ title: `Кабинет — ${BRAND}` }] }),
   component: HistoryPage,
 });
 
