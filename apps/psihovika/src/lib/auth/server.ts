@@ -147,7 +147,7 @@ const trustedOrigins: string[] = explicitBaseURL
       ...LOCAL_DEV_ORIGINS,
     ];
 
-const databaseUrl = env("DATABASE_URL");
+const databaseUrl = env("DATABASE_URL") ?? env("PSY_DATABASE_URL");
 const onCloudflareWorker = isCloudflareWorker();
 
 // Static broker OAuth endpoints (skip OIDC discovery on every sign-in / callback).

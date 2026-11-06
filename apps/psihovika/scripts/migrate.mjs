@@ -18,10 +18,11 @@ import { dirname, join } from "node:path";
 import pg from "pg";
 import { pendingMigrations } from "./migration-plan.mjs";
 
-const databaseUrl = process.env.DATABASE_URL;
+const databaseUrl =
+  process.env.DATABASE_URL?.trim() || process.env.PSY_DATABASE_URL?.trim();
 if (!databaseUrl) {
   console.log(
-    "[migrate] DATABASE_URL not set — skipping (the PGLite fallback migrates itself).",
+    "[migrate] DATABASE_URL / PSY_DATABASE_URL not set — skipping (the PGLite fallback migrates itself).",
   );
   process.exit(0);
 }

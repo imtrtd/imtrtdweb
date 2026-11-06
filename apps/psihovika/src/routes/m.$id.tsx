@@ -2,10 +2,15 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { Runner } from "@/components/runner";
 import { Shell } from "@/components/shell";
 import { getTest, DEFAULT_SEARCH } from "@/data/catalog";
+import { getPublicMethod } from "@/lib/cms/server";
 
 export const Route = createFileRoute("/m/$id")({
-  head: ({ params }) => {
-    const test = getTest(params.id);
+  loader: async ({ params }) => {
+    const test = await getPublicMethod({ data: { id: params.id } });
+    return { test };
+  },
+  head: ({ params, loaderData }) => {
+    const test = loaderData?.test ?? getTest(params.id);
     return {
       meta: [{ title: test ? `${test.title} — psy` : "Методика — psy" }],
     };
@@ -14,8 +19,7 @@ export const Route = createFileRoute("/m/$id")({
 });
 
 function MethodPage() {
-  const { id } = Route.useParams();
-  const test = getTest(id);
+  const { test } = Route.useLoaderData();
   if (!test) {
     return (
       <Shell>

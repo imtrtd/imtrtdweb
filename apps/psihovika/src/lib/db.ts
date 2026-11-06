@@ -7,10 +7,17 @@ export type DbSource = "neon" | "pglite";
 
 // An empty/whitespace DATABASE_URL (an easy misconfig in deploy UIs) must mean
 // "unset" — otherwise production would silently run on the PGLite fallback.
-const rawDatabaseUrl =
-  typeof process !== "undefined" ? process.env.DATABASE_URL : undefined;
-const databaseUrl =
-  rawDatabaseUrl && rawDatabaseUrl.trim() ? rawDatabaseUrl : undefined;
+// `PSY_DATABASE_URL` is an alias for Workers/GitHub secrets when the generic
+// name is reserved by another host.
+function readDatabaseUrl(): string | undefined {
+  if (typeof process === "undefined") return undefined;
+  for (const key of ["DATABASE_URL", "PSY_DATABASE_URL"] as const) {
+    const raw = process.env[key];
+    if (raw && raw.trim()) return raw.trim();
+  }
+  return undefined;
+}
+const databaseUrl = readDatabaseUrl();
 
 /**
  * Active backend: real **Neon** when `DATABASE_URL` is set (deployed / configured
@@ -96,6 +103,35 @@ function createNeonSql(): Promise<Sql> {
     types.setTypeParser(OID_DATE, identity);
     types.setTypeParser(OID_INTERVAL, identity);
     const pool = new Pool({ connectionString: databaseUrl });
+    await pool.query(
+      "create table if not exists _migrations (name text primary key, applied_at timestamptz not null default now())",
+    );
+    const migrations = import.meta.glob("/migrations/*.sql", {
+      query: "?raw",
+      import: "default",
+      eager: true,
+    }) as Record<string, string>;
+    const applied = (
+      await pool.query<{ name: string }>("select name from _migrations")
+    ).rows.map((r) => r.name);
+    for (const { name, path } of pendingMigrations(Object.keys(migrations), applied)) {
+      const client = await pool.connect();
+      try {
+        await client.query("begin");
+        await client.query(migrations[path]);
+        await client.query("insert into _migrations (name) values ($1)", [name]);
+        await client.query("commit");
+      } catch (err) {
+        try {
+          await client.query("rollback");
+        } catch {
+          // keep original
+        }
+        throw err;
+      } finally {
+        client.release();
+      }
+    }
     return toSql(async <T>(text: string, params: unknown[]) => {
       const res = await pool.query(text, params);
       return res.rows as T[];

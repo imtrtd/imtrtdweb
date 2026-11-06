@@ -2,7 +2,7 @@ import { Link, useNavigate } from "@tanstack/react-router";
 import { Star, ChevronDown, ChevronUp } from "lucide-react";
 import { useEffect, useState, useSyncExternalStore } from "react";
 import { PATHS, TESTS, filterTests, minutesOfTest, sortTests, type HomeSearch } from "@/data/catalog";
-import { CATEGORY_ORDER, SCHOOL_ORDER } from "@/data/build";
+import { CATEGORY_ORDER, SCHOOL_ORDER, type Test } from "@/data/build";
 import { FIDELITY_LABEL, metaFor } from "@/data/refs";
 import { getServerSnapshot, getSnapshot, subscribe, toggleFav } from "@/lib/storage";
 import { cn } from "@/lib/cn";
@@ -53,10 +53,17 @@ function Chip({
   );
 }
 
-export function CatalogView({ search }: { search: HomeSearch }) {
+export function CatalogView({
+  search,
+  tests = TESTS,
+}: {
+  search: HomeSearch;
+  /** Catalog with site_content overlays when DB is available. */
+  tests?: Test[];
+}) {
   const navigate = useNavigate();
   const saved = useSyncExternalStore(subscribe, getSnapshot, getServerSnapshot);
-  const shown = sortTests(filterTests(TESTS, search, saved.fav), search.sort);
+  const shown = sortTests(filterTests(tests, search, saved.fav), search.sort);
   const [filtersOpen, setFiltersOpen] = useState(true);
 
   useEffect(() => {
@@ -76,7 +83,7 @@ export function CatalogView({ search }: { search: HomeSearch }) {
   }
 
   function surprise() {
-    const pool = shown.length ? shown : TESTS;
+    const pool = shown.length ? shown : tests;
     const pick = pool[Math.floor(Math.random() * pool.length)];
     navigate({ to: "/m/$id", params: { id: pick.id } });
   }
@@ -88,7 +95,7 @@ export function CatalogView({ search }: { search: HomeSearch }) {
           <p className="text-xs uppercase tracking-widest text-ox">Психоанализ · терапия · скрининг</p>
           <h1 className="mt-3 max-w-xl font-serif text-5xl leading-none text-balance sm:text-6xl">psy</h1>
           <p className="mt-5 max-w-xl text-lg text-pretty">
-            {TESTS.length} методик на русском, от трёх минут до получаса. Публичные шкалы — с первоисточниками и официальным подсчётом;
+            {tests.length} методик на русском, от трёх минут до получаса. Публичные шкалы — с первоисточниками и официальным подсчётом;
             учебные профили помечены отдельно.
           </p>
           <div className="mt-6 flex flex-wrap gap-3">
@@ -101,7 +108,7 @@ export function CatalogView({ search }: { search: HomeSearch }) {
           </div>
         </div>
         <div className="rise-in border border-line bg-sheet/90 p-5" style={{ animationDelay: "0.08s" }}>
-          <p className="font-serif text-5xl tabular-nums leading-none">{TESTS.length}</p>
+          <p className="font-serif text-5xl tabular-nums leading-none">{tests.length}</p>
           <p className="mt-2 text-sm text-muted">методик в этом браузере, без отправки ответов на сервер</p>
           <p className="mt-4 text-sm text-pretty">
             Нет бланков MMPI, Бека, MBTI и Маслач — их нельзя честно выложить. Есть PHQ-9, GAD-7, PCL-5, IPIP и учебные конструкты с явной отсылкой к авторам.
@@ -209,7 +216,7 @@ export function CatalogView({ search }: { search: HomeSearch }) {
       </div>
 
       <p className="py-4 text-sm text-muted tabular-nums">
-        Показано {shown.length} из {TESTS.length}
+        Показано {shown.length} из {tests.length}
       </p>
 
       {shown.length === 0 ? (

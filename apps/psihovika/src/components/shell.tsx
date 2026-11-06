@@ -11,6 +11,7 @@ const LINKS = [
   { to: "/", label: "Каталог" },
   { to: "/method", label: "Метод" },
   { to: "/history", label: "Кабинет" },
+  { to: "/editor", label: "Редактор" },
   { to: "/team", label: "Команда" },
   { to: "/admin", label: "Админка" },
 ] as const;

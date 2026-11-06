@@ -1,7 +1,8 @@
 import { createFileRoute, stripSearchParams } from "@tanstack/react-router";
 import { CatalogView } from "@/components/catalog-view";
 import { Shell } from "@/components/shell";
-import { DEFAULT_SEARCH, type HomeSearch } from "@/data/catalog";
+import { DEFAULT_SEARCH, TESTS, type HomeSearch } from "@/data/catalog";
+import { listPublicCatalog } from "@/lib/cms/server";
 
 export const Route = createFileRoute("/")({
   validateSearch: (search: Record<string, unknown>): HomeSearch => ({
@@ -15,14 +16,23 @@ export const Route = createFileRoute("/")({
   search: {
     middlewares: [stripSearchParams(DEFAULT_SEARCH)],
   },
+  loader: async () => {
+    try {
+      const tests = await listPublicCatalog();
+      return { tests };
+    } catch {
+      return { tests: TESTS };
+    }
+  },
   component: Home,
 });
 
 function Home() {
   const search = Route.useSearch();
+  const { tests } = Route.useLoaderData();
   return (
     <Shell>
-      <CatalogView search={search} />
+      <CatalogView search={search} tests={tests} />
     </Shell>
   );
 }

@@ -17,9 +17,9 @@ npm --prefix apps/psihovika test
 - `src/lib/auth/server.ts` is pre-wired — prefer not to rewrite it. Email/password — только флаг в `src/lib/auth/email-password.ts`.
 - Данные методик: `src/data/`. Научные метаданные: `src/data/refs.ts`. Прохождение: `src/components/runner.tsx`.
 - Тема: `src/lib/theme.tsx` + `data-theme` на `<html>` (по умолчанию тёмная).
-- Команда и админка: `/team`, `/admin`, серверные функции в `src/lib/cms/`, миграция `migrations/0002_teams_cms.sql`.
-- Cloudflare Workers without `DATABASE_URL`: public catalog SSR works; Better Auth uses an in-memory adapter + ephemeral secret (Workers forbid `randomBytes` at module scope). Persistent accounts/team CMS need Neon `DATABASE_URL` + Better Auth secrets.
-- Админка: регистрация на `/login` → команда на `/team` → `/admin`. Без зашитых демо-паролей.
+- Команда и админка: `/team`, `/admin`; публичный редактор сайта: `/editor` (`site_content`). CMS: `src/lib/cms/`, миграции `0002_teams_cms.sql`, `0003_site_content.sql`.
+- Cloudflare Workers without `DATABASE_URL`/`PSY_DATABASE_URL`: public catalog SSR works; Better Auth uses an in-memory adapter + ephemeral secret. Persistent accounts/CMS need Neon + Better Auth secrets.
+- Наполнение сайта: `/login` → `/editor` (правки в `site_content` сразу на каталоге и `/m/$id`). Командная админка: `/team` → `/admin`.
 
 ## Деплой (GitHub → Cloudflare Workers)
 
@@ -31,4 +31,4 @@ npm --prefix apps/psihovika run deploy   # build:cloudflare + wrangler deploy
 
 CI: `.github/workflows/deploy-psihovika.yml` на push в `main` по `apps/psihovika/**`.
 Секреты репозитория: `CLOUDFLARE_API_TOKEN`, `CLOUDFLARE_ACCOUNT_ID`.
-Для входа/команды на проде: `wrangler secret put DATABASE_URL` (Neon) и Better Auth secrets.
+Секреты для CMS/auth: `PSY_DATABASE_URL` или `DATABASE_URL` (Neon), `BETTER_AUTH_SECRET`, `BETTER_AUTH_URL` (деплой синхронизирует их на Worker).
