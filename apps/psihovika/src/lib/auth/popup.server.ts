@@ -16,7 +16,7 @@
  * React route here paints the full app shell in the popup. The opener lives in
  * `client.ts` (`signIn` → `openSignInPopup`).
  */
-import { auth, SESSION_TOKEN_COOKIE } from "./server";
+import { getAuth, SESSION_TOKEN_COOKIE } from "./server";
 
 /** Message shape the popup posts to the opener (must match `client.ts`). */
 type PopupMessage = {
@@ -62,7 +62,7 @@ export async function handleAuthPopupRequest(request: Request): Promise<Response
   // Stay first-party for the callback so the session cookie lands in THIS popup.
   const back = `${url.origin}/auth/popup?done=1`;
   try {
-    const apiRes = await auth.api.signInWithOAuth2({
+    const apiRes = await getAuth().api.signInWithOAuth2({
       body: {
         providerId,
         callbackURL: back,

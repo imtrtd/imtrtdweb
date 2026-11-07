@@ -4,7 +4,6 @@ import { isCloudflareWorker } from "./env.server";
 /** Which database backend is active. */
 export type DbSource = "neon" | "pglite";
 
-
 // An empty/whitespace DATABASE_URL (an easy misconfig in deploy UIs) must mean
 // "unset" — otherwise production would silently run on the PGLite fallback.
 // `PSY_DATABASE_URL` is an alias for Workers/GitHub secrets when the generic

@@ -14,11 +14,11 @@ npm --prefix apps/psihovika test
 ## Важно
 
 - Ответы пользователя хранятся в браузере (`src/lib/storage.ts`), не на сервере.
-- `src/lib/auth/server.ts` is pre-wired — prefer not to rewrite it. Email/password — только флаг в `src/lib/auth/email-password.ts`.
+- `src/lib/auth/server.ts` заранее настроен — без нужды не переписывать. Инстанс Better Auth берётся через `getAuth()` (ленивая инициализация, только внутри запроса). Email/password — только флаг в `src/lib/auth/email-password.ts`.
 - Данные методик: `src/data/`. Научные метаданные: `src/data/refs.ts`. Прохождение: `src/components/runner.tsx`.
 - Тема: `src/lib/theme.tsx` + `data-theme` на `<html>` (по умолчанию тёмная).
 - Команда и админка: `/team`, `/admin`; публичный редактор сайта: `/editor` (`site_content`). CMS: `src/lib/cms/`, миграции `0002_teams_cms.sql`, `0003_site_content.sql`.
-- Cloudflare Workers without `DATABASE_URL`/`PSY_DATABASE_URL`: public catalog SSR works; Better Auth uses an in-memory adapter + ephemeral secret. Persistent accounts/CMS need Neon + Better Auth secrets.
+- Cloudflare Workers без `DATABASE_URL`/`PSY_DATABASE_URL`: публичный каталог SSR работает; Better Auth — in-memory адаптер и случайный секрет на изолят (сессии не переживают рестарт). С Neon обязателен `BETTER_AUTH_SECRET`, иначе auth падает намеренно. `*.trycloudflare.com` доверяется только в локальном dev, не на Worker.
 - Наполнение сайта: `/login` → `/editor` (правки в `site_content` сразу на каталоге и `/m/$id`). Командная админка: `/team` → `/admin`.
 
 ## Деплой (GitHub → Cloudflare Workers)
