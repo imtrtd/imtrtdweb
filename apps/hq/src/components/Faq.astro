@@ -1,0 +1,18 @@
+---
+import { faq } from "../data/offer";
+// FAQPage JSON-LD comes from faqJsonLd() in src/data/offer.ts (pages pass it to the layout).
+---
+
+<div class="border-t border-hair">
+  {
+    faq.map((f, i) => (
+      <details class="faq group border-b border-hair" name="faq" data-reveal={i % 3}>
+        <summary class="flex cursor-pointer list-none items-center justify-between gap-6 py-5 text-lg font-medium transition-colors hover:text-signal lg:py-6 lg:text-xl [&::-webkit-details-marker]:hidden">
+          <span>{f.q}</span>
+          <span class="grid size-8 shrink-0 place-items-center border border-hair-strong text-signal transition-transform duration-300 group-open:rotate-45" aria-hidden="true">+</span>
+        </summary>
+        <p class="max-w-[64ch] pb-6 leading-relaxed text-fog">{f.a}</p>
+      </details>
+    ))
+  }
+</div>

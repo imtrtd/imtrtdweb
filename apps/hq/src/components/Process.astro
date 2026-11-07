@@ -1,0 +1,19 @@
+---
+import { process } from "../data/offer";
+---
+
+<ol class="relative grid gap-px overflow-hidden border border-hair bg-hair sm:grid-cols-2 lg:grid-cols-4">
+  {
+    process.map((s, i) => (
+      <li class="group relative flex flex-col gap-3 bg-ink/90 p-6 transition-colors duration-300 hover:bg-ink-soft lg:p-7" data-reveal={i}>
+        <div class="flex items-center justify-between">
+          <span class="label text-signal">{String(i + 1).padStart(2, "0")}</span>
+          <span class="label text-mute">{s.k}</span>
+        </div>
+        <span class="block h-px w-full origin-left scale-x-25 bg-signal transition-transform duration-500 group-hover:scale-x-100" aria-hidden="true" />
+        <h3 class="mt-2 text-xl font-semibold tracking-tight lg:text-2xl">{s.h}</h3>
+        <p class="text-sm leading-relaxed text-mute">{s.p}</p>
+      </li>
+    ))
+  }
+</ol>

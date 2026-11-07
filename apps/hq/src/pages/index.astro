@@ -1,0 +1,152 @@
+---
+import Base from "../layouts/Base.astro";
+import Hero from "../components/Hero.astro";
+import SectionHead from "../components/SectionHead.astro";
+import CaseCard from "../components/CaseCard.astro";
+import Process from "../components/Process.astro";
+import Packages from "../components/Packages.astro";
+import Faq from "../components/Faq.astro";
+import BriefSteps from "../components/BriefSteps.astro";
+import { getCases, getServices, getSite } from "../lib/cms";
+import { changelog, faqJsonLd, testimonials } from "../data/offer";
+
+const s = await getSite();
+const cases = await getCases();
+const services = await getServices();
+---
+
+<Base jsonLd={[faqJsonLd()]}>
+  <Hero heroLine={s.heroLine} languages={s.languages} />
+
+  <!-- 02 · Work -->
+  <section id="work" class="sec" aria-labelledby="h-work">
+    <div class="wrap">
+      <SectionHead index="02" kicker="Selected work" id="h-work" title="Live builds, not mockups." lead="Every project below opens as the real site. Click through, try it on your phone.">
+        <a href="/selected" class="btn btn-ghost mt-7">All work <span class="arrow" aria-hidden="true">→</span></a>
+      </SectionHead>
+      <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+        {cases.map((c, i) => <CaseCard c={c} index={i} featured={i === 0} />)}
+      </div>
+    </div>
+  </section>
+
+  <!-- 03 · Approach + services -->
+  <section class="sec" aria-labelledby="h-what">
+    <div class="wrap">
+      <SectionHead index="03" kicker="What I do" id="h-what" title="One person.<br />Full system." lead="Strategy, interface, code and motion. From first sketch to launch, one product, not three vendors." />
+      <ul class="grid gap-px overflow-hidden border border-hair bg-hair sm:grid-cols-2 lg:grid-cols-4">
+        {
+          services.map((sv, i) => (
+            <li class="flex flex-col bg-ink/90 p-6 lg:p-7" data-reveal={i}>
+              <span class="label text-signal">{sv.n}</span>
+              <h3 class="mt-6 text-2xl font-semibold tracking-tight">{sv.title}</h3>
+              <p class="mt-3 text-sm leading-relaxed text-mute">{sv.text}</p>
+              <ul class="mt-6 grid gap-2 border-t border-hair pt-5 text-sm text-fog">
+                {sv.deliverables.map((d) => (
+                  <li class="flex gap-2.5">
+                    <span class="text-signal" aria-hidden="true">
+                      ›
+                    </span>
+                    {d}
+                  </li>
+                ))}
+              </ul>
+            </li>
+          ))
+        }
+      </ul>
+    </div>
+  </section>
+
+  <!-- 04 · Process -->
+  <section class="sec" aria-labelledby="h-process">
+    <div class="wrap">
+      <SectionHead index="04" kicker="How it runs" id="h-process" title="Sample before scope." lead="Decisions get made on a real page, not a mood board.">
+        <a href="/practice" class="btn btn-ghost mt-7">The full practice <span class="arrow" aria-hidden="true">→</span></a>
+      </SectionHead>
+      <Process />
+    </div>
+  </section>
+
+  <!-- 05 · Packages -->
+  <section id="packages" class="sec" aria-labelledby="h-packages">
+    <div class="wrap">
+      <SectionHead index="05" kicker="Ways to start" id="h-packages" title="Pick a starting point." lead="Every project begins with a brief and one working screen. The scope follows the sample, not the other way round." />
+      <Packages />
+    </div>
+  </section>
+
+  {
+    testimonials.length > 0 && (
+      <section class="sec" aria-labelledby="h-words">
+        <div class="wrap">
+          <SectionHead index="06" kicker="In their words" id="h-words" title="From the people who use it." />
+          <ul class="grid gap-4 md:grid-cols-2">
+            {testimonials.map((t, i) => (
+              <li class="card p-7" data-reveal={i}>
+                <blockquote class="text-xl leading-relaxed">“{t.quote}”</blockquote>
+                <p class="label mt-6 text-mute">
+                  {t.name} · {t.role}
+                  {t.case && (
+                    <>
+                      {" · "}
+                      <a class="text-signal" href={`/work/${t.case}`}>
+                        Case →
+                      </a>
+                    </>
+                  )}
+                </p>
+              </li>
+            ))}
+          </ul>
+        </div>
+      </section>
+    )
+  }
+
+  <!-- FAQ + changelog -->
+  <section class="sec" aria-labelledby="h-faq">
+    <div class="wrap grid gap-14 lg:grid-cols-12">
+      <div class="lg:col-span-7">
+        <p class="sec-index label">06 · Questions</p>
+        <h2 id="h-faq" class="display-md mt-4 mb-8">Before you write.</h2>
+        <Faq />
+      </div>
+      <div class="lg:col-span-5">
+        <p class="sec-index label">07 · Build in public</p>
+        <h2 class="display-md mt-4 mb-8">Change log</h2>
+        <ol class="border-t border-hair">
+          {
+            changelog.map((e) => (
+              <li class="grid gap-2 border-b border-hair py-5 sm:grid-cols-[6.5rem_1fr]" data-reveal>
+                <span class="label pt-1 text-signal">{e.date}</span>
+                <span>
+                  <span class="block font-display text-xl font-semibold">{e.title}</span>
+                  <span class="mt-1.5 block text-sm leading-relaxed text-mute">{e.text}</span>
+                </span>
+              </li>
+            ))
+          }
+        </ol>
+      </div>
+    </div>
+  </section>
+
+  <!-- 08 · Brief -->
+  <section id="brief" class="sec" aria-labelledby="h-brief">
+    <div class="wrap grid gap-10 lg:grid-cols-12">
+      <div class="lg:col-span-4">
+        <p class="sec-index label">08 · Brief</p>
+        <h2 id="h-brief" class="display-lg mt-4">Got a project? <span class="text-signal">Let’s talk.</span></h2>
+        <p class="lead mt-6 text-fog">Four short steps. None of it is required except a way to reply.</p>
+        <p class="mt-8 text-sm text-mute">
+          Prefer email? <a class="text-signal underline" href={`mailto:${s.email}`}><span data-mail-text>{s.email}</span></a><br />
+          Or Telegram: <a class="text-signal underline" href={`https://t.me/${s.telegram}`} rel="noopener" target="_blank">@{s.telegram}</a>
+        </p>
+      </div>
+      <div class="lg:col-span-8">
+        <BriefSteps email={s.email} label="Home" />
+      </div>
+    </div>
+  </section>
+</Base>

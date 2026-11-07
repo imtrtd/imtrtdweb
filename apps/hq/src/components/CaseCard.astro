@@ -1,0 +1,52 @@
+---
+import type { Case } from "../data/cases";
+
+interface Props {
+  c: Case;
+  index: number;
+  featured?: boolean;
+  /** Eager-load the first image above the fold. */
+  eager?: boolean;
+}
+const { c, index, featured = false, eager = false } = Astro.props;
+const n = String(index + 1).padStart(2, "0");
+const img = `/images/previews/${c.preview}`;
+const sizes = featured ? "(min-width: 1024px) 66vw, 100vw" : "(min-width: 1024px) 33vw, (min-width: 640px) 50vw, 100vw";
+---
+
+<a
+  href={`/work/${c.slug}`}
+  class:list={["case-card card group flex flex-col overflow-hidden transition-[border-color,transform] duration-300 hover:-translate-y-1 hover:border-signal", featured && "sm:col-span-2"]}
+  data-reveal={index % 3}
+>
+  <div class="relative aspect-[16/10] overflow-hidden bg-ink-soft">
+    <picture>
+      <source type="image/webp" srcset={`${img}-n.webp 900w, ${img}-w.webp 1520w`} sizes={sizes} />
+      <img
+        src={`${img}-n.jpg`}
+        srcset={`${img}-n.jpg 900w, ${img}-w.jpg 1520w`}
+        sizes={sizes}
+        width="1520"
+        height="950"
+        alt={`${c.title} — ${c.kind.toLowerCase()} website preview`}
+        loading={eager ? "eager" : "lazy"}
+        fetchpriority={eager ? "high" : "auto"}
+        decoding="async"
+        class="h-full w-full object-cover object-top transition-transform duration-700 ease-out group-hover:scale-[1.03]"
+      />
+    </picture>
+    <div class="pointer-events-none absolute inset-0 bg-gradient-to-t from-ink/80 via-transparent to-transparent"></div>
+    <span class="label absolute top-3 left-3 bg-ink/80 px-2 py-1 text-signal">{n}</span>
+  </div>
+  <div class="flex flex-1 flex-col gap-3 p-5 lg:p-6">
+    <p class="label text-mute">{c.kind} · {c.place} · {c.year}</p>
+    <h3 class:list={["font-display font-semibold tracking-tight", featured ? "text-3xl lg:text-5xl" : "text-2xl lg:text-3xl"]}>{c.title}</h3>
+    <p class="max-w-[56ch] text-sm leading-relaxed text-fog">{c.summary}</p>
+    <div class="mt-auto flex flex-wrap items-center justify-between gap-3 pt-3">
+      <ul class="flex flex-wrap gap-1.5" aria-label="Scope">
+        {c.scope.map((s) => <li class="chip">{s}</li>)}
+      </ul>
+      <span class="label inline-flex items-center gap-2 text-signal">Case <span class="arrow" aria-hidden="true">→</span></span>
+    </div>
+  </div>
+</a>

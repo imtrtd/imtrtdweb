@@ -1,0 +1,217 @@
+---
+import Base from "../../layouts/Base.astro";
+import { cases as localCases } from "../../data/cases";
+import { getCases, getSite } from "../../lib/cms";
+
+export function getStaticPaths() {
+  return localCases.map((c) => ({ params: { slug: c.slug } }));
+}
+
+const { slug } = Astro.params;
+const s = await getSite();
+const cases = await getCases();
+const i = cases.findIndex((c) => c.slug === slug);
+const c = cases[i]!;
+const next = cases[(i + 1) % cases.length]!;
+const prev = cases[(i - 1 + cases.length) % cases.length]!;
+const img = `/images/previews/${c.preview}`;
+const url = `${s.url}/work/${c.slug}`;
+const taskFor: Record<string, string> = { Product: "Interface", Tool: "Tool", "Music app": "Interface" };
+
+const ld = {
+  "@type": "CreativeWork",
+  "@id": `${url}#work`,
+  name: c.title,
+  headline: `${c.title} — ${c.kind}`,
+  description: c.summary,
+  url,
+  image: `${s.url}/images/og/${c.slug}.jpg`,
+  dateCreated: String(c.year),
+  creator: { "@id": `${s.url}/#studio` },
+  keywords: [...c.scope, ...c.stack].join(", "),
+  ...(c.live ? { sameAs: c.live.href } : {}),
+};
+const crumbs = {
+  "@type": "BreadcrumbList",
+  itemListElement: [
+    { "@type": "ListItem", position: 1, name: "Work", item: `${s.url}/selected` },
+    { "@type": "ListItem", position: 2, name: c.title, item: url },
+  ],
+};
+---
+
+<Base
+  title={`${c.title} — ${c.kind.toLowerCase()} case study — IMTRTD`}
+  description={`${c.summary} ${c.brief}`.slice(0, 300)}
+  path={`/work/${c.slug}`}
+  image={`${s.url}/images/og/${c.slug}.jpg`}
+  imageAlt={`${c.title} — ${c.kind}`}
+  jsonLd={[ld, crumbs]}
+>
+  <article>
+    <header class="wrap pt-10 pb-12 lg:pt-16 lg:pb-16">
+      <nav aria-label="Breadcrumb" class="label text-mute">
+        <a href="/selected" class="hover:text-signal">Work</a> <span aria-hidden="true">/</span> <span class="text-fog">{c.title}</span>
+      </nav>
+      <div class="mt-8 grid gap-8 lg:grid-cols-12 lg:items-end">
+        <div class="lg:col-span-8">
+          <p class="label text-signal">{c.kind} · {c.place} · {c.year}</p>
+          <h1 class="display-xl mt-4 break-words">{c.title}</h1>
+          <p class="lead mt-6 max-w-[48ch]">{c.summary}</p>
+        </div>
+        <div class="flex flex-wrap gap-3 lg:col-span-4 lg:justify-end">
+          <a href={c.demo} class="btn btn-primary" target="_blank" rel="noopener">Open the live build ↗</a>
+          {c.live && <a href={c.live.href} class="btn btn-ghost" target="_blank" rel="noopener">{c.live.label} ↗</a>}
+        </div>
+      </div>
+    </header>
+
+    <!-- live preview: desk / phone -->
+    <section class="wrap" aria-label={`${c.title} live preview`}>
+      <div class="card overflow-hidden" data-device="desk">
+        <div class="flex items-center justify-between gap-3 border-b border-hair px-4 py-2.5">
+          <div class="flex items-center gap-1.5" aria-hidden="true">
+            <span class="size-2.5 rounded-full bg-hair-strong"></span><span class="size-2.5 rounded-full bg-hair-strong"></span><span class="size-2.5 rounded-full bg-hair-strong"></span>
+          </div>
+          <p class="label truncate text-mute">imtrtd.space{c.demo}</p>
+          <div class="flex gap-1" role="group" aria-label="Preview size">
+            <button type="button" class="label px-2.5 py-1.5 text-mute aria-pressed:bg-signal aria-pressed:text-ink" aria-pressed="true" data-device-btn="desk">Desk</button>
+            <button type="button" class="label px-2.5 py-1.5 text-mute aria-pressed:bg-signal aria-pressed:text-ink" aria-pressed="false" data-device-btn="phone">Phone</button>
+          </div>
+        </div>
+        <div class="device-stage relative bg-ink">
+          <div class="device-screen relative mx-auto aspect-[16/10] w-full overflow-hidden transition-[max-width] duration-500">
+            <picture>
+              <source type="image/webp" srcset={`${img}-n.webp 900w, ${img}-w.webp 1520w`} sizes="100vw" />
+              <img src={`${img}-w.jpg`} width="1520" height="950" alt="" class="absolute inset-0 h-full w-full object-cover object-top" fetchpriority="high" />
+            </picture>
+            <iframe
+              class="preview-frame absolute inset-0 h-full w-full border-0 bg-ink"
+              src={c.demo}
+              title={`${c.title} — live build`}
+              loading="lazy"
+              referrerpolicy="no-referrer"></iframe>
+            <p class="opening-label label pointer-events-none absolute bottom-3 left-3 bg-ink/85 px-2 py-1 text-signal">Opening {c.title}…</p>
+          </div>
+        </div>
+      </div>
+      <p class="mt-3 text-sm text-mute">This is the real build, running inside the page. Scroll it, click it — or <a class="text-signal underline" href={c.demo} target="_blank" rel="noopener">open it full screen</a>.</p>
+    </section>
+
+    <div class="wrap grid gap-14 py-16 lg:grid-cols-12 lg:py-24">
+      <div class="lg:col-span-8">
+        <section aria-labelledby="h-brief">
+          <p class="sec-index label">01 · The brief</p>
+          <h2 id="h-brief" class="sr-only">The brief</h2>
+          <p class="mt-6 text-2xl leading-snug font-medium tracking-tight lg:text-3xl" data-reveal>{c.brief}</p>
+        </section>
+
+        <section class="mt-16" aria-labelledby="h-shipped">
+          <p class="sec-index label">02 · What shipped</p>
+          <h2 id="h-shipped" class="display-md mt-4">What shipped</h2>
+          <ul class="mt-8 grid gap-px overflow-hidden border border-hair bg-hair sm:grid-cols-2">
+            {
+              c.features.map((f, k) => (
+                <li class="bg-ink/90 p-6" data-reveal={k % 2}>
+                  <span class="label text-signal">{String(k + 1).padStart(2, "0")}</span>
+                  <h3 class="mt-4 text-xl font-semibold tracking-tight">{f.title}</h3>
+                  <p class="mt-2 text-sm leading-relaxed text-mute">{f.text}</p>
+                </li>
+              ))
+            }
+          </ul>
+        </section>
+
+        {
+          c.note && (
+            <section class="mt-16" aria-labelledby="h-note">
+              <p class="sec-index label">03 · A detail</p>
+              <figure class="mt-6 border-l-2 border-signal pl-6" data-reveal>
+                <h2 id="h-note" class="display-md">{c.note.title}</h2>
+                <p class="lead mt-4 max-w-[54ch] text-fog">{c.note.text}</p>
+              </figure>
+            </section>
+          )
+        }
+      </div>
+
+      <aside class="lg:col-span-4" aria-label="Project facts">
+        <dl class="card grid gap-0 lg:sticky lg:top-24">
+          <div class="border-b border-hair p-5">
+            <dt class="label text-mute">Scope</dt>
+            <dd class="mt-2 flex flex-wrap gap-1.5">{c.scope.map((x) => <span class="chip">{x}</span>)}</dd>
+          </div>
+          {
+            c.facts.map((f) => (
+              <div class="border-b border-hair p-5">
+                <dt class="label text-mute">{f.label}</dt>
+                <dd class="mt-1.5">{f.value}</dd>
+              </div>
+            ))
+          }
+          <div class="border-b border-hair p-5">
+            <dt class="label text-mute">Built with</dt>
+            <dd class="mt-1.5 text-fog">{c.stack.join(" · ")}</dd>
+          </div>
+          <div class="p-5">
+            <dt class="label text-mute">Year</dt>
+            <dd class="mt-1.5">{c.year}</dd>
+          </div>
+        </dl>
+      </aside>
+    </div>
+
+    <!-- CTA -->
+    <section class="sec" aria-labelledby="h-cta">
+      <div class="wrap grid gap-8 lg:grid-cols-12 lg:items-end">
+        <h2 id="h-cta" class="display-lg lg:col-span-8">Need something like {c.title}? <span class="text-signal">Send a brief.</span></h2>
+        <div class="flex flex-wrap gap-3 lg:col-span-4 lg:justify-end">
+          <a href={`/contact?type=${encodeURIComponent(taskFor[c.kind] ?? "Website")}#brief`} class="btn btn-primary btn-lg" data-fx="send">Start a project <span class="arrow" aria-hidden="true">→</span></a>
+        </div>
+      </div>
+    </section>
+
+    <nav class="wrap grid border-t border-hair sm:grid-cols-2" aria-label="More work">
+      <a href={`/work/${prev.slug}`} class="group py-8 sm:pr-6">
+        <span class="label text-mute">← Previous</span>
+        <span class="mt-2 block font-display text-2xl font-semibold transition-colors group-hover:text-signal lg:text-4xl">{prev.title}</span>
+      </a>
+      <a href={`/work/${next.slug}`} class="group border-t border-hair py-8 sm:border-t-0 sm:border-l sm:pl-6 sm:text-right">
+        <span class="label text-mute">Next →</span>
+        <span class="mt-2 block font-display text-2xl font-semibold transition-colors group-hover:text-signal lg:text-4xl">{next.title}</span>
+      </a>
+    </nav>
+  </article>
+</Base>
+
+<style>
+  [data-device="phone"] .device-stage {
+    padding-block: 1.5rem;
+    background: radial-gradient(circle at 50% 40%, color-mix(in oklab, var(--color-signal) 14%, transparent), transparent 60%);
+  }
+  [data-device="phone"] .device-screen {
+    max-width: 390px;
+    aspect-ratio: 390 / 760;
+    border: 1px solid var(--color-hair-strong);
+    border-radius: 1.6rem;
+  }
+  [data-device="phone"] .device-screen picture {
+    display: none;
+  }
+  @media (width < 40rem) {
+    .device-screen {
+      aspect-ratio: 9 / 15;
+    }
+  }
+</style>
+
+<script>
+  document.querySelectorAll<HTMLElement>("[data-device]").forEach((box) => {
+    box.querySelectorAll<HTMLButtonElement>("[data-device-btn]").forEach((b) =>
+      b.addEventListener("click", () => {
+        box.dataset.device = b.dataset.deviceBtn;
+        box.querySelectorAll("[data-device-btn]").forEach((x) => x.setAttribute("aria-pressed", String(x === b)));
+      }),
+    );
+  });
+</script>

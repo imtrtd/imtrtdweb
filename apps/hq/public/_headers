@@ -1,14 +1,9 @@
-# Static response headers for imtrtd.space (Workers Static Assets).
-# Security headers (HSTS, CSP, X-Frame-Options, ...) are set in src/index.js.
+# Static response headers for imtrtd.space (Workers Static Assets, copied into dist/ by the build).
+# Security headers (HSTS, CSP, X-Frame-Options, ...) are set in worker/index.js.
 #
-# Cache: /assets/* and /fonts/* are cached for a year as immutable.
-# Hashed files (site-<sha256[:8]>.css = purged Tailwind + fonts.css + palette
-# overrides, in that order) are safe by name: rebuild => new hash => update HTML.
-# The rest (studio.js, site-api.js, contact.js, practice.js, samples.js,
-# practice.css, fonts/*.css)
-# is always linked with ?v=YYYYMMDD — when you change such a file, bump its ?v= in
-# every HTML that links it, or visitors keep the old copy for up to a year.
-# HTML itself stays on the default (max-age=0, must-revalidate).
+# Cache: /assets/* holds the Astro build output (CSS/JS with a content hash in the file name),
+# so it is safe to cache for a year as immutable — a change produces a new name. No ?v= bumps.
+# /fonts/* never change in place. HTML stays on the default (max-age=0, must-revalidate).
 
 /assets/*
   Cache-Control: public, max-age=31536000, immutable

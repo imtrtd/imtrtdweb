@@ -1,0 +1,90 @@
+---
+import Base from "../layouts/Base.astro";
+import BriefSteps from "../components/BriefSteps.astro";
+import Process from "../components/Process.astro";
+import Faq from "../components/Faq.astro";
+import { getSite } from "../lib/cms";
+import { availability, socials } from "../data/site";
+import { faqJsonLd } from "../data/offer";
+
+const s = await getSite();
+const avail = availability();
+const facts = [
+  { k: "Status", v: avail.short, live: true },
+  { k: "Based", v: s.based },
+  { k: "Local time", v: "Kyiv", clock: true },
+  { k: "Reply", v: s.reply },
+];
+const channels = [
+  { id: "telegram", label: "Telegram", handle: `@${s.telegram}`, href: `https://t.me/${s.telegram}`, action: "Message" },
+  ...socials.filter((x) => x.id !== "telegram"),
+];
+---
+
+<Base title="Contact — send a brief — IMTRTD" description="Send a brief in four short steps, or write by email or Telegram. A site, system or tool that fits an existing brand. Reply within a working day." path="/contact" jsonLd={[faqJsonLd(), { "@type": "ContactPage", name: "Contact — IMTRTD", url: `${s.url}/contact` }]}>
+  <header class="wrap pt-12 pb-10 lg:pt-20">
+    <p class="sec-index label">01 · New work</p>
+    <h1 class="display-xl mt-5">Got a project?<br /><span class="text-signal">Let’s talk.</span></h1>
+    <p class="lead mt-6 max-w-[46ch] text-fog">A site, system or tool that fits an existing brand.</p>
+    <dl class="mt-10 grid grid-cols-2 border-y border-hair lg:grid-cols-4">
+      {
+        facts.map((f, i) => (
+          <div class:list={["py-4", i % 2 === 1 && "border-l border-hair pl-4", i > 1 && "max-lg:border-t max-lg:border-hair", i === 2 && "lg:border-l lg:border-hair lg:pl-4"]}>
+            <dt class="label text-mute">{f.k}</dt>
+            <dd class="mt-1.5 flex items-center gap-2">
+              {f.live && <i class="dot-live" aria-hidden="true" />}
+              {f.clock ? <span data-ct-clock>{f.v}</span> : f.v}
+            </dd>
+          </div>
+        ))
+      }
+    </dl>
+  </header>
+
+  <section id="brief" class="wrap grid gap-10 pb-20 lg:grid-cols-12" aria-label="Brief">
+    <div class="lg:col-span-8">
+      <BriefSteps email={s.email} label="Contact page" />
+    </div>
+    <aside class="grid content-start gap-3 lg:col-span-4" aria-label="Contact channels">
+      <div class="card flex items-center justify-between gap-3 p-5" data-channel="email">
+        <a href={`mailto:${s.email}`} class="min-w-0">
+          <span class="label text-mute">Email</span>
+          <span class="mt-1 block truncate font-display text-lg font-semibold" data-mail-text>{s.email}</span>
+        </a>
+        <button type="button" class="label border border-hair-strong px-3 py-2 hover:border-signal hover:text-signal" data-ct-copy={s.email} aria-label={`Copy email address ${s.email}`}>Copy</button>
+      </div>
+      {
+        channels.map((ch) => (
+          <a href={ch.href} rel="me noopener" target="_blank" class="card group flex items-center justify-between gap-3 p-5 transition-colors hover:border-signal" data-channel={ch.id}>
+            <span>
+              <span class="label text-mute">{ch.label}</span>
+              <span class="mt-1 block font-display text-lg font-semibold">{ch.handle}</span>
+            </span>
+            <span class="label text-signal">
+              {ch.action} <span aria-hidden="true">↗</span>
+            </span>
+          </a>
+        ))
+      }
+    </aside>
+  </section>
+
+  <section class="sec" aria-labelledby="h-next">
+    <div class="wrap">
+      <p class="sec-index label">02 · What happens next</p>
+      <h2 id="h-next" class="display-lg mt-4 mb-10 max-w-[18ch]">From brief to a working screen.</h2>
+      <Process />
+    </div>
+  </section>
+
+  <section class="sec" aria-labelledby="h-faq">
+    <div class="wrap grid gap-10 lg:grid-cols-12">
+      <div class="lg:col-span-4">
+        <p class="sec-index label">03 · Questions</p>
+        <h2 id="h-faq" class="display-md mt-4">Asked before.</h2>
+        <p class="mt-5 text-fog">The full checklist lives on <a class="text-signal underline" href="/practice#brief">Practice</a>.</p>
+      </div>
+      <div class="lg:col-span-8"><Faq /></div>
+    </div>
+  </section>
+</Base>

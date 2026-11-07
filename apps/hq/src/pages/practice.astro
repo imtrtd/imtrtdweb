@@ -1,0 +1,18 @@
+---
+import Base from "../layouts/Base.astro";
+import markup from "../legacy/practice.html?raw";
+import "../styles/practice.css";
+---
+
+<Base
+  title="Practice — How I work — IMTRTD"
+  description="Identity, interface and build as one job, done by the same hands. It starts from your brand as it is and keeps running after launch."
+  path="/practice"
+>
+  <!-- Ported as-is from the pre-Astro site: practice.js drives the process panel and the checklist. -->
+  <div class="pr px-4 py-8 sm:px-6 sm:py-12 lg:px-8 lg:py-16 xl:px-12" set:html={markup} />
+</Base>
+
+<script>
+  import "../scripts/practice.js";
+</script>
