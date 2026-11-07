@@ -26,7 +26,7 @@ export type Case = {
   stack: string[];
   /** A detail worth telling: a decision, a trade-off. */
   note?: { title: string; text: string };
-  /** Demo build served from this site. */
+  /** Live build shown in the case frame: a demo under /sites/<slug>/ or the product's own URL. */
   demo: string;
   /** The production site, when it lives elsewhere. */
   live?: { href: string; label: string };
@@ -146,29 +146,33 @@ export const cases: Case[] = [
     preview: "cuebox",
   },
   {
-    slug: "lab",
-    title: "Tattoo Lab",
-    kind: "Tool",
-    place: "Kyiv",
+    slug: "truesightpsy",
+    title: "TrueSightPsy",
+    kind: "Psychology",
+    place: "Remote",
     year: 2026,
-    summary: "Inkform: a stencil editor for tattoo artists. Threshold, draw, export.",
+    summary: "A catalogue of 115 psychological methods in Russian, from three-minute check-ins to half-hour deep dives.",
     brief:
-      "Artists turn reference photos into stencils by hand, every day. The tool had to do the boring part well — clean lines from a photo — and leave the drawing to the artist.",
+      "People looking for self-assessment land on copied, unsourced quizzes. The catalogue had to be honest about what each method is — public scales with their sources and official scoring, teaching profiles marked as such — and keep every answer in the visitor's own browser.",
     features: [
-      { title: "Four stencil engines", text: "Line art, threshold, posterize and grayscale, each tuned for a different kind of reference." },
-      { title: "Fine control", text: "Brightness, contrast, edge strength, threshold and tonal bands, with an invert switch." },
-      { title: "Draw on top", text: "A brush on its own layer to fix and add lines without touching the source." },
-      { title: "Clean export", text: "PNG with a transparent background, ready for the printer." },
+      { title: "Three depths for every method", text: "Касание, Разбор, Глубина: a short check-in, the full set, or the full set plus four questions about where the theme lives outside the form." },
+      { title: "Sources in the open", text: "Public scales such as PHQ-9, GAD-7, PCL-5 and IPIP come with references and official scoring; teaching profiles are labelled as teaching profiles." },
+      { title: "Private by default", text: "Answers, results and history stay in the browser. The cabinet keeps a summary, charts and a ready prompt for an AI conversation." },
+      { title: "Filters people actually use", text: "By theme — defences, object relations, Jung, mood, anxiety, trauma — by school and by length, plus search by plain words like “shame” or “sleep”." },
     ],
     facts: [
-      { label: "Input", value: "PNG or JPG photo" },
-      { label: "Output", value: "Transparent PNG stencil" },
-      { label: "Runs", value: "In the browser, on the device" },
+      { label: "Methods", value: "115" },
+      { label: "Language", value: "Russian" },
+      { label: "Answers", value: "Stay in the browser" },
     ],
-    scope: ["Product", "Interface", "Build"],
-    stack: ["Next.js", "React", "Canvas"],
-    demo: "/sites/lab/",
-    preview: "lab",
+    scope: ["Product", "Interface", "Content system"],
+    stack: ["TanStack Start", "React", "Cloudflare Workers", "Neon Postgres", "Better Auth"],
+    note: {
+      title: "What is not there",
+      text: "No MMPI, Beck, MBTI or Lüscher forms: they cannot be published honestly. The first screen says so, instead of quietly faking them.",
+    },
+    demo: "https://psy.unitl.workers.dev/",
+    preview: "truesightpsy",
   },
 ];
 

@@ -53,5 +53,3 @@
 /sites/cuebox/*
   X-Robots-Tag: noindex
 
-/sites/lab/*
-  X-Robots-Tag: noindex

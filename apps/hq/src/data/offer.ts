@@ -142,6 +142,11 @@ export const testimonials: Testimonial[] = [];
 export const changelog = [
   {
     date: "07.11.26",
+    title: "TrueSightPsy",
+    text: "A catalogue of 115 psychological methods takes the fifth slot in the work, in place of Tattoo Lab.",
+  },
+  {
+    date: "07.11.26",
     title: "Rebuilt from source",
     text: "The site now builds from components: case studies, a brief in steps, packages and FAQ.",
   },

@@ -73,7 +73,7 @@ const crumbs = {
           <div class="flex items-center gap-1.5" aria-hidden="true">
             <span class="size-2.5 rounded-full bg-hair-strong"></span><span class="size-2.5 rounded-full bg-hair-strong"></span><span class="size-2.5 rounded-full bg-hair-strong"></span>
           </div>
-          <p class="label truncate text-mute">imtrtd.space{c.demo}</p>
+          <p class="label truncate text-mute">{c.demo.startsWith("http") ? c.demo.replace(/^https?:\/\//, "").replace(/\/$/, "") : `imtrtd.space${c.demo}`}</p>
           <div class="flex gap-1" role="group" aria-label="Preview size">
             <button type="button" class="label px-2.5 py-1.5 text-mute aria-pressed:bg-signal aria-pressed:text-ink" aria-pressed="true" data-device-btn="desk">Desk</button>
             <button type="button" class="label px-2.5 py-1.5 text-mute aria-pressed:bg-signal aria-pressed:text-ink" aria-pressed="false" data-device-btn="phone">Phone</button>
