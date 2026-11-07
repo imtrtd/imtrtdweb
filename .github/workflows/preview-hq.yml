@@ -1,0 +1,84 @@
+name: Preview HQ (pull request)
+
+# Builds imtrtd.space for a pull request and uploads it as a Worker *version* (not deployed:
+# production keeps serving the current version). Cloudflare gives every PR a stable preview URL
+# (pr-<number>-imtrtd-hq.<account>.workers.dev) that opens on any device; the link is posted on the PR.
+
+on:
+  pull_request:
+    paths:
+      - "apps/hq/**"
+      - ".github/workflows/preview-hq.yml"
+      - ".github/workflows/deploy-hq.yml"
+
+concurrency:
+  group: preview-hq-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
+jobs:
+  preview:
+    name: Build and upload preview
+    # secrets are not available to PRs from forks
+    if: github.event.pull_request.head.repo.full_name == github.repository
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    permissions:
+      contents: read
+      pull-requests: write
+    defaults:
+      run:
+        working-directory: apps/hq
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: npm
+          cache-dependency-path: apps/hq/package-lock.json
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Type check
+        run: npm run check
+
+      - name: Build (Astro + dist check)
+        run: npm run build
+
+      - name: Upload preview version
+        id: upload
+        uses: cloudflare/wrangler-action@v4
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          wranglerVersion: "4.88.0"
+          workingDirectory: apps/hq
+          command: versions upload --preview-alias pr-${{ github.event.pull_request.number }} --message "PR #${{ github.event.pull_request.number }} ${{ github.event.pull_request.head.sha }}"
+
+      - name: Comment preview link
+        uses: actions/github-script@v7
+        env:
+          OUTPUT: ${{ steps.upload.outputs.command-output }}
+        with:
+          script: |
+            const out = process.env.OUTPUT || "";
+            const urls = [...out.matchAll(/https:\/\/[^\s)]+\.workers\.dev\S*/g)].map((m) => m[0]);
+            const alias = urls.find((u) => u.includes(`pr-${context.issue.number}-`));
+            const version = urls.find((u) => u !== alias);
+            const marker = "<!-- hq-preview -->";
+            const body = [
+              marker,
+              "### imtrtd.space preview",
+              alias ? `**Stable link for this PR:** ${alias}` : "",
+              version ? `This commit (${context.payload.pull_request.head.sha.slice(0, 7)}): ${version}` : "",
+              !alias && !version ? "Preview uploaded, but no URL was found in the Wrangler output — check the job log (preview URLs need workers.dev enabled for imtrtd-hq)." : "",
+              "",
+              "Not deployed: imtrtd.space keeps serving production until this PR is merged.",
+            ].filter(Boolean).join("\n");
+            const { data: comments } = await github.rest.issues.listComments({ ...context.repo, issue_number: context.issue.number, per_page: 100 });
+            const mine = comments.find((c) => c.body && c.body.startsWith(marker));
+            if (mine) await github.rest.issues.updateComment({ ...context.repo, comment_id: mine.id, body });
+            else await github.rest.issues.createComment({ ...context.repo, issue_number: context.issue.number, body });

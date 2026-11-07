@@ -5,7 +5,10 @@
   "description": "imtrtd.space: Astro static build served by the imtrtd-hq Worker",
   "scripts": {
     "dev": "astro dev --port 4321",
+    "dev:phone": "astro dev --port 4321 --host",
     "build": "astro build && node scripts/check-dist.mjs",
+    "serve": "node scripts/serve.mjs",
+    "phone": "npm run build && node scripts/serve.mjs",
     "preview": "npm run build && wrangler dev",
     "check": "astro check",
     "deploy": "npm run build && wrangler deploy"

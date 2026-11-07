@@ -1,4 +1,5 @@
 // Local static server for dist/ with the Worker's URL rules (clean URLs, /sites/<x>/ SPA fallback, 404 page).
+// Listens on all interfaces, so a phone on the same Wi-Fi can open it (the Worker's http->https redirect is not applied).
 import { createServer } from "node:http";
 import { readFile, stat } from "node:fs/promises";
 import { join, extname } from "node:path";
@@ -14,4 +15,10 @@ createServer(async (req, res) => {
   if (!file) { res.writeHead(404, { "content-type": types[".html"] }); return res.end(await readFile(join(root, "404.html"))); }
   res.writeHead(200, { "content-type": types[extname(file)] || "application/octet-stream" });
   res.end(await readFile(file));
-}).listen(Number(process.env.PORT || 4400), () => console.log("dist on http://127.0.0.1:" + (process.env.PORT || 4400)));
+}).listen(Number(process.env.PORT || 4400), async () => {
+  const port = process.env.PORT || 4400;
+  const { networkInterfaces } = await import("node:os");
+  const lan = Object.values(networkInterfaces()).flat().filter((i) => i && i.family === "IPv4" && !i.internal).map((i) => i.address);
+  console.log(`dist on http://localhost:${port}`);
+  for (const ip of lan) console.log(`  same Wi-Fi (phone): http://${ip}:${port}`);
+});

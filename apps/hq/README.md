@@ -34,5 +34,17 @@ node scripts/serve.mjs   # dist/ with the Worker's URL rules, no wrangler
 
 `HQ_CMS=off npm run build` skips the CMS request.
 
+## Preview on a phone
+
+- **Pull request preview (any network):** every PR touching `apps/hq` gets a comment with a stable link
+  `https://pr-<number>-imtrtd-hq.<account>.workers.dev` (`.github/workflows/preview-hq.yml`). It is a Worker
+  version that is uploaded but not deployed — production stays as is.
+- **Same Wi-Fi as the computer:** `npm run phone` (build + `scripts/serve.mjs`) prints `http://<computer-ip>:4400`;
+  open it in Safari. For live editing use `npm run dev:phone` → `http://<computer-ip>:4321` (hot reload).
+  macOS may ask to allow incoming connections for `node` — allow it.
+- **Outside the home network:** `npm run phone`, then in a second terminal
+  `npx cloudflared tunnel --url http://localhost:4400` — it prints a temporary `https://….trycloudflare.com` link.
+- The WebGL hero needs a real GPU: on a phone it renders at once; headless/CI browsers draw it in software, slowly.
+
 Deploy: push to `main` touching `apps/hq/**`, the daily schedule, or “Deploy HQ to Cloudflare” → Run workflow.
 Backup of the pre-Astro site: branch `backup/hq-2026-11-07`.
