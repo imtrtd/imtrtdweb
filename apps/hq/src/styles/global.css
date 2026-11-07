@@ -132,7 +132,8 @@ html[data-accent="cyan"] { --color-signal: #2ee9ff; }
   .btn:hover .arrow, a:hover > .arrow { transform: translateX(3px); }
 
   /* section heading: index + title */
-  .sec { border-top: 1px solid var(--color-hair); padding-block: 4.5rem; }
+  /* off-screen sections skip layout/paint until they come near (sizes are remembered once rendered) */
+  .sec { border-top: 1px solid var(--color-hair); padding-block: 4.5rem; content-visibility: auto; contain-intrinsic-size: auto 900px; }
   @media (width >= 64rem) { .sec { padding-block: 7rem; } }
   .sec-head { display: grid; gap: 1rem; margin-bottom: 2.5rem; }
   @media (width >= 64rem) {
@@ -152,16 +153,23 @@ html[data-accent="cyan"] { --color-signal: #2ee9ff; }
   @keyframes live { 70% { box-shadow: 0 0 0 0.5rem #3dff9e00; } 100% { box-shadow: 0 0 0 0 #3dff9e00; } }
 
   /* surface card */
+  /* no backdrop-filter: blurring the animated starfield under every card each frame was the main scroll cost */
   .card {
     position: relative;
-    background: linear-gradient(180deg, rgb(28 28 39 / 0.7), rgb(20 20 28 / 0.7));
+    background: linear-gradient(180deg, rgb(28 28 39 / 0.9), rgb(20 20 28 / 0.9));
     border: 1px solid var(--color-hair);
-    backdrop-filter: blur(6px);
   }
 
   /* reveal on scroll (fx: data-reveal gets .in) — content is visible without JS */
-  .js [data-reveal] { opacity: 0; transform: translateY(18px); transition: opacity 0.8s var(--ease-out-expo), transform 0.8s var(--ease-out-expo); }
+  /* GPU-only properties (opacity, transform); will-change is dropped once the block has arrived */
+  .js [data-reveal] {
+    opacity: 0;
+    transform: translate3d(0, 28px, 0);
+    transition: opacity 0.9s cubic-bezier(0.22, 1, 0.36, 1), transform 1.15s cubic-bezier(0.22, 1, 0.36, 1);
+    will-change: opacity, transform;
+  }
   .js [data-reveal].in { opacity: 1; transform: none; }
+  .js [data-reveal].done { will-change: auto; transition-delay: 0s !important; }
 
   /* forms */
   .field {

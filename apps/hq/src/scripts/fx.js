@@ -172,7 +172,10 @@ function initCosmos(){var t=$('.cosmos-field');if(!t)return;var n=t.getContext('
       if(!reduce.matches&&k>.62){var dx=r-b,dy=a-x,len=Math.hypot(dx,dy)||1,dd=k*k*36*c;n.strokeStyle='rgba('+col+','+al+')';n.lineWidth=Math.max(1,s.w*k*c);n.beginPath();n.moveTo(r,a);n.lineTo(r-dx/len*dd,a-dy/len*dd);n.stroke()}
       else{n.fillStyle='rgba('+col+','+al+')';var sz=s.w*(.5+k*1.8)*c;n.fillRect(r,a,sz,sz)}})}
   frame(performance.now(),0);dirty=false;
-  Loop.add({iv:1000/30,want:function(){return !reduce.matches||dirty},run:function(e,fr){dirty=false;frame(e,fr)}})}
+  /* while the page scrolls, the starfield drops to 15 fps: the main thread goes to scrolling and the reveal transitions */
+  var job={iv:1000/30,want:function(){return !reduce.matches||dirty},run:function(e,fr){dirty=false;frame(e,fr)}},idle=0;
+  addEventListener('scroll',function(){job.iv=1000/15;clearTimeout(idle);idle=setTimeout(function(){job.iv=1000/30},180)},{passive:true});
+  Loop.add(job)}
 
 /* ---------- Scroll-pinned hero (same maths as original: fold = progress/.68, open > .62) ---------- */
 var fold={v:0,on:null};
