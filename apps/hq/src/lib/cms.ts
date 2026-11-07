@@ -62,10 +62,14 @@ export async function getCases(): Promise<Case[]> {
   return localCases.map((k) => {
     const o = bySlug.get(k.slug);
     if (!o) return k;
+    // the admin stores the role as "Kind · Place" (e.g. "Tattoo studio · Kyiv / Nürnberg"): split it, so the
+    // card's "kind · place · year" line does not repeat the place
+    const [kind, place] = clean(o.role, 80).split(/\s*·\s*/);
     return {
       ...k,
       title: clean(o.title, 60) || k.title,
-      kind: clean(o.role, 60) || k.kind,
+      kind: kind || k.kind,
+      place: place || k.place,
       summary: clean(o.result, 240) || k.summary,
     };
   });

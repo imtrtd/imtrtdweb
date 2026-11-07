@@ -12,7 +12,7 @@ const CSP_REPORT_ONLY = [
 	"img-src 'self' data: blob:",
 	"media-src 'self' data: blob:",
 	"connect-src 'self' https://admin.imtrtd.space https://cloudflareinsights.com https://static.cloudflareinsights.com",
-	"frame-src 'self' https://challenges.cloudflare.com",
+	"frame-src 'self' https://challenges.cloudflare.com https://psy.unitl.workers.dev",
 	"frame-ancestors 'self'",
 	"worker-src 'self' blob:",
 	"manifest-src 'self'",
@@ -51,6 +51,13 @@ export default {
 				url.pathname = clean || "/";
 				return Response.redirect(url.toString(), 301);
 			}
+		}
+
+		// Tattoo Lab was replaced by TrueSightPsy (Nov 2026): old case and demo links land on the new case.
+		if (url.pathname === "/work/lab" || url.pathname === "/work/lab.html" || url.pathname.startsWith("/sites/lab")) {
+			url.pathname = "/work/truesightpsy";
+			url.search = "";
+			return Response.redirect(url.toString(), 301);
 		}
 
 		// /archive was renamed to /palette (Nov 2026): keep old links and search results working.
