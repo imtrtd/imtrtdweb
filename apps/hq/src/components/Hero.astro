@@ -26,10 +26,11 @@ const facts = [
   <div class="wrap relative grid min-h-0 lg:min-h-[calc(100svh-4.5rem)] lg:grid-cols-12 lg:items-center">
     <div class="pb-10 lg:col-span-7 lg:py-24">
       <p class="chip hero-rise"><i class="dot-live" aria-hidden="true"></i>{avail.long}</p>
-      <h1 id="hero-title" class="display-xl hero-rise mt-6 uppercase [animation-delay:80ms]">
-        <span class="block">Digital</span>
-        <span class="glitch block" data-text="Experiences">Experiences</span>
-        <span class="block">with a pulse.</span>
+      <!-- aria-label: screen readers get the line once, not the glitch layers' copies -->
+      <h1 id="hero-title" class="hero-title hero-rise mt-6 [animation-delay:80ms]" aria-label="Digital experiences with a pulse.">
+        <span aria-hidden="true">Digital</span>
+        <span aria-hidden="true" class="hero-glitch" data-text="Experiences">Experiences</span>
+        <span aria-hidden="true">with a pulse.</span>
       </h1>
       <p class="lead hero-rise mt-7 max-w-[40ch] [animation-delay:160ms]">{heroLine}</p>
       <div class="hero-rise mt-9 flex flex-wrap gap-3 [animation-delay:240ms]">
@@ -52,6 +53,90 @@ const facts = [
 </section>
 
 <style>
+  /* Title: the original imtrtd.space look — Arimo, heavy, tight. */
+  .hero-title {
+    font-family: var(--font-sans);
+    font-size: clamp(3.2rem, 7.5vw, 7.2rem);
+    font-weight: 800;
+    line-height: 0.8;
+    letter-spacing: -0.045em;
+    text-transform: uppercase;
+    text-shadow: 0 2px 24px rgb(10 10 15 / 0.8), 0 0 2px rgb(10 10 15 / 0.55);
+  }
+  .hero-title > span {
+    display: block;
+  }
+  @media (width >= 64rem) {
+    .hero-title {
+      font-size: clamp(3.2rem, 6.8vw, 7.2rem);
+    }
+  }
+
+  /* EXPERIENCES: the original glitch — outlined word, two colour layers (violet + lime, as on the
+     live site) that jitter and slice; hover fills the word. */
+  .hero-glitch {
+    position: relative;
+    display: inline-block !important;
+    width: fit-content;
+    max-width: 100%;
+    color: transparent;
+    -webkit-text-stroke: 1.5px var(--color-paper);
+    text-shadow: -1px 0 #8a5cff, 1px 0 #d8ff26;
+    transition: color 0.2s;
+  }
+  .hero-glitch::before,
+  .hero-glitch::after {
+    content: attr(data-text);
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    -webkit-text-stroke: 0;
+    text-shadow: none;
+    mix-blend-mode: screen;
+  }
+  .hero-glitch::before {
+    color: #8a5cff;
+    animation: glitch-shift-a 0.42s steps(2, end) infinite, glitch-slice-a 1.1s steps(10, end) infinite;
+  }
+  .hero-glitch::after {
+    color: #d8ff26;
+    animation: glitch-shift-b 0.32s steps(2, end) infinite, glitch-slice-b 0.9s steps(8, end) infinite;
+  }
+  .hero-glitch:hover {
+    color: #d8ff26;
+    -webkit-text-stroke: 0;
+  }
+  /* off-screen: stop the loop (battery); fx-free pages never get here */
+  .pulse-stage[data-offscreen] .hero-glitch::before,
+  .pulse-stage[data-offscreen] .hero-glitch::after {
+    animation-play-state: paused;
+  }
+  @keyframes glitch-shift-a {
+    50% { transform: translate(-2px, 1px); }
+  }
+  @keyframes glitch-shift-b {
+    50% { transform: translate(2px, -1px); }
+  }
+  @keyframes glitch-slice-a {
+    10% { clip-path: inset(12% 0 68%); }
+    40% { clip-path: inset(62% 0 8%); }
+    to { clip-path: inset(0); }
+  }
+  @keyframes glitch-slice-b {
+    20% { clip-path: inset(48% 0 22%); }
+    60% { clip-path: inset(6% 0 71%); }
+    to { clip-path: inset(0); }
+  }
+  /* reduced motion: still alive, but slow (the global rule would freeze it) */
+  @media (prefers-reduced-motion: reduce) {
+    .hero-glitch::before {
+      animation: glitch-shift-a 1.6s steps(2, end) infinite, glitch-slice-a 4s steps(10, end) infinite !important;
+    }
+    .hero-glitch::after {
+      animation: glitch-shift-b 1.3s steps(2, end) infinite, glitch-slice-b 3.6s steps(8, end) infinite !important;
+    }
+  }
+
   .hero-rise {
     animation: hero-rise 0.9s var(--ease-out-expo) both;
   }
@@ -71,3 +156,11 @@ const facts = [
     }
   }
 </style>
+
+<script>
+  // pause the glitch loop while the hero is scrolled away
+  const stage = document.querySelector<HTMLElement>(".pulse-stage");
+  if (stage && "IntersectionObserver" in window) {
+    new IntersectionObserver(([e]) => stage.toggleAttribute("data-offscreen", !e!.isIntersecting)).observe(stage);
+  }
+</script>
