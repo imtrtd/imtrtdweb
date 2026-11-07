@@ -30,7 +30,6 @@
 html[data-accent="lime"] { --color-signal: #d8ff00; }
 html[data-accent="magenta"] { --color-signal: #ff2bd6; }
 html[data-accent="cyan"] { --color-signal: #2ee9ff; }
-html { transition: --color-signal 0.4s ease; }
 
 @layer base {
   html {
