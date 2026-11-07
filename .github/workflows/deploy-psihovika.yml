@@ -75,9 +75,11 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: "22"
-      - name: Install Neon config dependencies
+      - name: Install dependencies (incl. Neon config)
+        working-directory: apps/psihovika
         run: npm ci
       - name: Apply Neon configuration
+        working-directory: apps/psihovika
         env:
           NEON_API_KEY: ${{ secrets.NEON_API_KEY }}
         run: |
@@ -95,15 +97,12 @@ jobs:
             exit 1
           fi
           echo "Neon configuration applied and environment file retrieved."
-      - name: Install application dependencies
-        working-directory: apps/psihovika
-        run: npm ci
       - name: Check Postgres and Auth endpoints
         working-directory: apps/psihovika
         run: |
           set -euo pipefail
-          env_file="$GITHUB_WORKSPACE/.env.local"
-          if [ ! -f "$env_file" ]; then env_file="$GITHUB_WORKSPACE/.env"; fi
+          env_file=".env.local"
+          if [ ! -f "$env_file" ]; then env_file=".env"; fi
           node --env-file="$env_file" --input-type=module <<'NODE'
           import pg from "pg";
           if (!process.env.DATABASE_URL || !process.env.NEON_AUTH_BASE_URL) {
@@ -143,7 +142,7 @@ jobs:
         with:
           node-version: "22"
       - name: Install dependencies
-        run: npm ci && npm --prefix apps/psihovika ci
+        run: npm --prefix apps/psihovika ci
       - name: Create temporary database branch
         id: branch
         run: |
