@@ -1,0 +1,168 @@
+---
+import { availability } from "../data/site";
+import { cases } from "../data/cases";
+
+interface Props {
+  heroLine: string;
+  languages: readonly string[];
+}
+const { heroLine, languages } = Astro.props;
+const avail = availability();
+const facts = [
+  { k: "Live builds", v: `${cases.length} projects` },
+  { k: "Team", v: "Design + code, one person" },
+  { k: "Reply", v: "Within a working day" },
+  { k: "Languages", v: languages.join(" · ") },
+];
+---
+
+<!-- .pulse-stage / .pulse-shader are the hooks fx.js uses for the WebGL solar system -->
+<section class="pulse-stage relative isolate overflow-hidden" aria-labelledby="hero-title">
+  <!-- desktop: the scene fades out under the copy on the left so the headline stays readable -->
+  <div aria-hidden="true" class="pulse-figure relative h-[46svh] min-h-[18rem] lg:absolute lg:inset-0 lg:h-auto lg:[mask-image:linear-gradient(90deg,transparent_20%,rgb(0_0_0/0.28)_42%,#000_57%)]">
+    <canvas class="pulse-shader absolute inset-0 h-full w-full touch-none"></canvas>
+  </div>
+
+  <div class="wrap relative grid min-h-0 lg:min-h-[calc(100svh-4.5rem)] lg:grid-cols-12 lg:items-center">
+    <div class="pb-10 lg:col-span-7 lg:py-24">
+      <p class="label hero-rise text-signal">ImTryingToDesign</p>
+      <p class="chip hero-rise mt-3"><i class="dot-live" aria-hidden="true"></i>{avail.long}</p>
+      <!-- aria-label: screen readers get the line once, not the glitch layers' copies -->
+      <h1 id="hero-title" class="hero-title hero-rise mt-6 [animation-delay:80ms]" aria-label="Digital experiences with a pulse.">
+        <span aria-hidden="true">Digital</span>
+        <span aria-hidden="true" class="hero-glitch" data-text="Experiences">Experiences</span>
+        <span aria-hidden="true">with a pulse.</span>
+      </h1>
+      <p class="lead hero-rise mt-7 max-w-[40ch] [animation-delay:160ms]">{heroLine}</p>
+      <div class="hero-rise mt-9 flex flex-wrap gap-3 [animation-delay:240ms]">
+        <a href="/contact#brief" class="btn btn-primary btn-lg" data-fx="send">Start a project <span class="arrow" aria-hidden="true">→</span></a>
+        <a href="#work" class="btn btn-ghost btn-lg" data-fx="explore">See the work <span aria-hidden="true">↓</span></a>
+      </div>
+    </div>
+  </div>
+
+  <dl class="wrap relative grid grid-cols-2 border-t border-hair lg:absolute lg:inset-x-0 lg:bottom-0 lg:grid-cols-4">
+    {
+      facts.map((f, i) => (
+        <div class:list={["py-4 pr-4 lg:py-5", i % 2 === 1 && "max-lg:border-l max-lg:border-hair max-lg:pl-4", i > 0 && "lg:border-l lg:border-hair lg:pl-5", i > 1 && "max-lg:border-t max-lg:border-hair"]}>
+          <dt class="label text-mute">{f.k}</dt>
+          <dd class="mt-1.5 text-sm text-paper lg:text-base">{f.v}</dd>
+        </div>
+      ))
+    }
+  </dl>
+</section>
+
+<style>
+  /* Title: the original imtrtd.space look — Arimo, heavy, tight. */
+  .hero-title {
+    font-family: var(--font-sans);
+    font-size: clamp(3.2rem, 7.5vw, 7.2rem);
+    font-weight: 800;
+    line-height: 0.8;
+    letter-spacing: -0.045em;
+    text-transform: uppercase;
+    text-shadow: 0 2px 24px rgb(10 10 15 / 0.8), 0 0 2px rgb(10 10 15 / 0.55);
+  }
+  .hero-title > span {
+    display: block;
+  }
+  @media (width >= 64rem) {
+    .hero-title {
+      font-size: clamp(3.2rem, 6.8vw, 7.2rem);
+    }
+  }
+
+  /* EXPERIENCES: the original glitch — outlined word, two colour layers that jitter and slice.
+     As on the live site: a violet layer + a layer in the current accent (header switch); hover fills
+     the word with the accent. */
+  .hero-glitch {
+    position: relative;
+    display: inline-block !important;
+    width: fit-content;
+    max-width: 100%;
+    color: transparent;
+    -webkit-text-stroke: 1.5px var(--color-paper);
+    text-shadow: -1px 0 #7b5cff, 1px 0 var(--color-signal);
+    transition: color 0.2s;
+  }
+  .hero-glitch::before,
+  .hero-glitch::after {
+    content: attr(data-text);
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    -webkit-text-stroke: 0;
+    text-shadow: none;
+    mix-blend-mode: screen;
+  }
+  .hero-glitch::before {
+    color: #7b5cff;
+    animation: glitch-shift-a 0.42s steps(2, end) infinite, glitch-slice-a 1.1s steps(10, end) infinite;
+  }
+  .hero-glitch::after {
+    color: var(--color-signal);
+    animation: glitch-shift-b 0.32s steps(2, end) infinite, glitch-slice-b 0.9s steps(8, end) infinite;
+  }
+  .hero-glitch:hover {
+    color: var(--color-signal);
+    -webkit-text-stroke: 0;
+  }
+  /* off-screen: stop the loop (battery); fx-free pages never get here */
+  .pulse-stage[data-offscreen] .hero-glitch::before,
+  .pulse-stage[data-offscreen] .hero-glitch::after {
+    animation-play-state: paused;
+  }
+  @keyframes glitch-shift-a {
+    50% { transform: translate(-2px, 1px); }
+  }
+  @keyframes glitch-shift-b {
+    50% { transform: translate(2px, -1px); }
+  }
+  @keyframes glitch-slice-a {
+    10% { clip-path: inset(12% 0 68%); }
+    40% { clip-path: inset(62% 0 8%); }
+    to { clip-path: inset(0); }
+  }
+  @keyframes glitch-slice-b {
+    20% { clip-path: inset(48% 0 22%); }
+    60% { clip-path: inset(6% 0 71%); }
+    to { clip-path: inset(0); }
+  }
+  /* reduced motion: still alive, but slow (the global rule would freeze it) */
+  @media (prefers-reduced-motion: reduce) {
+    .hero-glitch::before {
+      animation: glitch-shift-a 1.6s steps(2, end) infinite, glitch-slice-a 4s steps(10, end) infinite !important;
+    }
+    .hero-glitch::after {
+      animation: glitch-shift-b 1.3s steps(2, end) infinite, glitch-slice-b 3.6s steps(8, end) infinite !important;
+    }
+  }
+
+  .hero-rise {
+    animation: hero-rise 0.9s var(--ease-out-expo) both;
+  }
+  @keyframes hero-rise {
+    from {
+      opacity: 0;
+      transform: translateY(14px);
+    }
+  }
+  /* fallback when WebGL is unavailable (fx.js sets data-fallback) */
+  .pulse-shader[data-fallback="1"] {
+    background: radial-gradient(circle at 65% 48%, color-mix(in oklab, var(--color-signal) 75%, white), color-mix(in oklab, var(--color-signal) 30%, #111) 14%, transparent 34%);
+  }
+  @media (width < 64rem) {
+    .pulse-shader[data-fallback="1"] {
+      background: radial-gradient(circle at 50% 50%, color-mix(in oklab, var(--color-signal) 75%, white), color-mix(in oklab, var(--color-signal) 30%, #111) 18%, transparent 42%);
+    }
+  }
+</style>
+
+<script>
+  // pause the glitch loop while the hero is scrolled away
+  const stage = document.querySelector<HTMLElement>(".pulse-stage");
+  if (stage && "IntersectionObserver" in window) {
+    new IntersectionObserver(([e]) => stage.toggleAttribute("data-offscreen", !e!.isIntersecting)).observe(stage);
+  }
+</script>

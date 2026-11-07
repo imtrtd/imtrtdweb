@@ -1,0 +1,119 @@
+---
+import "../styles/global.css";
+import Header from "../components/Header.astro";
+import Footer from "../components/Footer.astro";
+import { getSite } from "../lib/cms";
+
+interface Props {
+  title?: string;
+  description?: string;
+  /** Path for canonical/og:url, e.g. "/work/natvik". Defaults to the current URL. */
+  path?: string;
+  image?: string;
+  imageAlt?: string;
+  /** Extra JSON-LD nodes merged into the @graph. */
+  jsonLd?: Record<string, unknown>[];
+  noindex?: boolean;
+  /** Draw the full-screen starfield behind the page. */
+  cosmos?: boolean;
+}
+
+const s = await getSite();
+const {
+  title = s.title,
+  description = s.description,
+  path = Astro.url.pathname.replace(/\.html$/, "").replace(/\/index$/, "/"),
+  image = `${s.url}/og.png`,
+  imageAlt = "I/TD — imtrtd.space, web design & development",
+  jsonLd = [],
+  noindex = false,
+  cosmos = true,
+} = Astro.props;
+
+const canonical = new URL(path || "/", s.url).href;
+const graph = {
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "ProfessionalService",
+      "@id": `${s.url}/#studio`,
+      name: s.name,
+      alternateName: s.brand,
+      url: `${s.url}/`,
+      email: s.email,
+      image: `${s.url}/og.png`,
+      logo: `${s.url}/brand/logo-mark.svg`,
+      description: "Web design & development for studios, artists and small brands.",
+      address: { "@type": "PostalAddress", addressLocality: "Kyiv", addressCountry: "UA" },
+      areaServed: "Worldwide",
+      sameAs: [`https://www.instagram.com/${s.instagram}/`, `https://www.threads.net/@${s.threads}`, `https://t.me/${s.telegram}`],
+    },
+    { "@type": "WebSite", "@id": `${s.url}/#website`, name: "imtrtd.space", url: `${s.url}/`, publisher: { "@id": `${s.url}/#studio` } },
+    ...jsonLd,
+  ],
+};
+---
+
+<!doctype html>
+<html lang="en" class="antialiased">
+  <head>
+    <script is:inline>
+      document.documentElement.classList.add("js");
+      try {
+        var a = localStorage.getItem("imtrtd-accent");
+        if (a === "lime" || a === "magenta" || a === "cyan") document.documentElement.dataset.accent = a;
+      } catch (e) {}
+    </script>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    <link rel="canonical" href={canonical} />
+    {noindex && <meta name="robots" content="noindex" />}
+    <link rel="preload" href="/fonts/space-grotesk-latin.woff2" as="font" type="font/woff2" crossorigin="anonymous" />
+    <link rel="preload" href="/fonts/arimo-latin.woff2" as="font" type="font/woff2" crossorigin="anonymous" />
+    <link rel="preload" href="/fonts/geist-mono-latin.woff2" as="font" type="font/woff2" crossorigin="anonymous" />
+    <link rel="preconnect" href={s.api} crossorigin="anonymous" />
+
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="imtrtd.space" />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={canonical} />
+    <meta property="og:locale" content="en_US" />
+    <meta property="og:image" content={image} />
+    <meta property="og:image:alt" content={imageAlt} />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={title} />
+    <meta name="twitter:description" content={description} />
+    <meta name="twitter:image" content={image} />
+
+    <meta name="theme-color" content="#0a0a0f" />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="icon" href="/favicon-32x32.png" sizes="32x32" type="image/png" />
+    <link rel="icon" href="/favicon.ico" sizes="any" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+    <link rel="manifest" href="/site.webmanifest" />
+    <meta name="apple-mobile-web-app-title" content="imtrtd.space" />
+    <script type="application/ld+json" set:html={JSON.stringify(graph)} />
+    <slot name="head" />
+  </head>
+  <body class="text-paper">
+    {cosmos && <canvas class="cosmos-field" aria-hidden="true"></canvas>}
+    <a href="#main" class="btn btn-primary sr-only focus:not-sr-only focus:fixed focus:top-3 focus:left-3 focus:z-50">Skip to content</a>
+    <div class="site-layer">
+      <Header />
+      <main id="main">
+        <slot />
+      </main>
+      <Footer email={s.email} telegram={s.telegram} />
+    </div>
+    <script>
+      import "../scripts/site-api.js";
+      import "../scripts/fx.js";
+      import "../scripts/contact.js";
+      import "../scripts/reveal.js";
+    </script>
+    <slot name="scripts" />
+  </body>
+</html>

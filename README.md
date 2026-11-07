@@ -27,21 +27,23 @@
 
 ## apps/hq — imtrtd.space
 
-- Сборки нет: `apps/hq/public/` — готовые HTML/CSS/JS, демо-сборки кейсов лежат в `public/sites/<slug>/`.
-- Worker `src/index.js`: http→https, `*.html` → 301 на чистые URL, security-заголовки (CSP, HSTS…), остальное — Static Assets. Неизвестный путь → `public/404.html` со статусом 404.
-- Контент (кейсы, тексты) подтягивается в браузере из CMS: `https://admin.imtrtd.space/api/content` (`assets/site-api.js`); статичный HTML — рабочий фолбэк.
-- Форма брифа шлёт `POST https://admin.imtrtd.space/api/leads` (studio).
-- Локально: `cd apps/hq && npx wrangler@4.88.0 dev` (на `http://127.0.0.1` worker редиректит на https — для проверок передавайте заголовок `x-forwarded-proto: https`).
+Сайт собирается из исходников (Astro 7, статичная сборка) — подробности в `apps/hq/README.md`.
 
-### Кэш и `?v=` — обязательное правило
+- Исходники: `src/pages` (страницы), `src/components`, `src/data` (кейсы, услуги, пакеты, FAQ — **тексты правятся здесь**), `src/scripts` (эффекты, форма брифа), `src/styles`.
+- `public/` — то, что копируется как есть: шрифты, картинки, `_headers`, демо-сборки кейсов `public/sites/<slug>/`.
+- Сборка: `cd apps/hq && npm ci && npm run build` → `dist/` (+ проверка битых ссылок `scripts/check-dist.mjs`).
+- Worker `worker/index.js`: http→https, `*.html` → 301 на чистые URL, security-заголовки (CSP, HSTS…), остальное — Static Assets из `dist/`. Неизвестный путь → `dist/404.html` со статусом 404.
+- CMS (`https://admin.imtrtd.space/api/content`) применяется **при сборке** (`src/lib/cms.ts`), только если в админке `hq_cms = on`; иначе — локальные данные. Деплой пересобирает сайт ежедневно, чтобы правки из админки доезжали без коммита.
+- Бриф (4 шага) шлёт `POST https://admin.imtrtd.space/api/leads` (studio), оттуда уходят уведомления в Telegram и на почту.
+- Локально: `npm run dev` (Astro, http://localhost:4321) или `npm run preview` (сборка + `wrangler dev`; worker редиректит http→https — передавайте заголовок `x-forwarded-proto: https`).
+
+### Кэш
 
 Из `apps/hq/public/_headers`:
 
-- `/assets/*` и `/fonts/*` — `max-age=31536000, immutable` (год, без перепроверки).
-  - CSS собран в **один хэшированный файл** `assets/site-<sha256[:8]>.css`. Поменяли CSS → новое имя файла → обновить ссылку во всех HTML.
-  - Нехэшированные файлы (`studio.js`, `site-api.js`, `contact.js`, `practice.js`, `samples.js`, `practice.css`, `fonts/*.css`) подключаются с `?v=…`. **Изменили такой файл — поднимите его `?v=` во всех HTML, которые его подключают**, иначе посетители до года видят старую копию.
+- `/assets/*` (CSS/JS сборки, имя содержит хэш) и `/fonts/*` — `max-age=31536000, immutable`. Ручные `?v=` больше не нужны: изменился файл — изменилось имя.
 - `/images/*`, `/brand/*`, `/og.png`, favicon — неделя.
-- HTML — без кэша (`max-age=0`), поэтому новые `?v=` подхватываются сразу после деплоя.
+- HTML — без кэша (`max-age=0`).
 
 ## apps/studio — admin.imtrtd.space
 

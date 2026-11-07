@@ -1,0 +1,36 @@
+---
+import Base from "../layouts/Base.astro";
+import CaseCard from "../components/CaseCard.astro";
+import { getCases, getSite } from "../lib/cms";
+
+const s = await getSite();
+const cases = await getCases();
+const ld = {
+  "@type": "CollectionPage",
+  name: "Selected work — IMTRTD",
+  url: `${s.url}/selected`,
+  hasPart: cases.map((c) => ({ "@type": "CreativeWork", name: c.title, url: `${s.url}/work/${c.slug}` })),
+};
+---
+
+<Base title="Selected work — IMTRTD" description="Live builds for studios, artists and small brands: tattoo studio, music app, travel, product and tools. Each opens as the real site." path="/selected" jsonLd={[ld]}>
+  <header class="wrap pt-12 pb-10 lg:pt-20 lg:pb-14">
+    <p class="sec-index label">01 · Work</p>
+    <h1 class="display-xl mt-5">Selected work</h1>
+    <p class="lead mt-6 max-w-[50ch] text-fog">{cases.length} live builds. Each case opens the real site inside the page, on desk or phone.</p>
+  </header>
+  <section class="wrap pb-20" aria-label="Projects">
+    <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+      {cases.map((c, i) => <CaseCard c={c} index={i} featured={i === 0} eager={i < 2} />)}
+    </div>
+  </section>
+  <section class="sec">
+    <div class="wrap flex flex-wrap items-end justify-between gap-6">
+      <h2 class="display-lg max-w-[16ch]">Yours could be <span class="text-signal">next.</span></h2>
+      <div class="flex flex-wrap gap-3">
+        <a href="/contact#brief" class="btn btn-primary btn-lg" data-fx="send">Send a brief <span class="arrow" aria-hidden="true">→</span></a>
+        <a href="/palette" class="btn btn-ghost btn-lg">Pick a palette</a>
+      </div>
+    </div>
+  </section>
+</Base>

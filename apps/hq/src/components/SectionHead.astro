@@ -1,0 +1,19 @@
+---
+interface Props {
+  index: string;
+  kicker: string;
+  title: string;
+  id?: string;
+  lead?: string;
+}
+const { index, kicker, title, id, lead } = Astro.props;
+---
+
+<div class="sec-head" data-reveal>
+  <p class="sec-index label">{index} · {kicker}</p>
+  <div>
+    <h2 id={id} class="display-lg max-w-[18ch]" set:html={title} />
+    {lead && <p class="lead mt-5 max-w-[52ch] text-fog">{lead}</p>}
+    <slot />
+  </div>
+</div>

@@ -7,21 +7,48 @@ on:
     paths:
       - "apps/hq/**"
       - ".github/workflows/deploy-hq.yml"
+  # Daily rebuild: picks up admin CMS copy (applied at build time, see apps/hq/src/lib/cms.ts)
+  # and keeps the build-dated availability line and sitemap lastmod current.
+  schedule:
+    - cron: "17 3 * * *"
   workflow_dispatch:
+
+concurrency:
+  group: deploy-hq
+  cancel-in-progress: false
 
 jobs:
   deploy:
-    name: Deploy imtrtd.space (static)
+    name: Build and deploy imtrtd.space
     runs-on: ubuntu-latest
-    timeout-minutes: 10
+    timeout-minutes: 15
     permissions:
       contents: read
       deployments: write
+    defaults:
+      run:
+        working-directory: apps/hq
     steps:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Deploy Worker (assets only)
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: npm
+          cache-dependency-path: apps/hq/package-lock.json
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Type check
+        run: npm run check
+
+      - name: Build (Astro + dist check)
+        run: npm run build
+
+      - name: Deploy Worker
         uses: cloudflare/wrangler-action@v4
         with:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
