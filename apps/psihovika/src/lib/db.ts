@@ -93,43 +93,84 @@ function toSql(run: Run): Sql {
   return sql;
 }
 
+/**
+ * Neon via node-postgres (`pg`).
+ *
+ * - Node (local dev, tests): one Pool per process, reused across requests.
+ * - Cloudflare Workers: a socket belongs to the request that opened it. A pooled connection reused by the
+ *   next request hangs until the runtime cancels that request ("Worker threw exception" on every other
+ *   request). So on Workers each query opens and closes its own short-lived Client. Migrations still run
+ *   once per isolate.
+ */
+type PgModule = typeof import("pg");
+
+async function loadPg(): Promise<PgModule> {
+  const pg = await import("pg");
+  pg.types.setTypeParser(OID_INT8, Number);
+  pg.types.setTypeParser(OID_DATE, identity);
+  pg.types.setTypeParser(OID_INTERVAL, identity);
+  return pg;
+}
+
+type PgQueryable = {
+  query<T>(text: string, params?: unknown[]): Promise<{ rows: T[] }>;
+};
+
+async function applyMigrations(conn: PgQueryable): Promise<void> {
+  await conn.query(
+    "create table if not exists _migrations (name text primary key, applied_at timestamptz not null default now())",
+  );
+  const migrations = import.meta.glob("/migrations/*.sql", {
+    query: "?raw",
+    import: "default",
+    eager: true,
+  }) as Record<string, string>;
+  const applied = (await conn.query<{ name: string }>("select name from _migrations")).rows.map(
+    (r) => r.name,
+  );
+  for (const { name, path } of pendingMigrations(Object.keys(migrations), applied)) {
+    try {
+      await conn.query("begin");
+      await conn.query(migrations[path]);
+      await conn.query("insert into _migrations (name) values ($1)", [name]);
+      await conn.query("commit");
+    } catch (err) {
+      try {
+        await conn.query("rollback");
+      } catch {
+        // keep the original error
+      }
+      throw err;
+    }
+  }
+}
+
 function createNeonSql(): Promise<Sql> {
   globalRef.__pgSqlPromise__ ??= (async () => {
-    // Regular Postgres driver: node-postgres (`pg`) — works directly with Neon's
-    // pooled endpoint. One pool per process; warm serverless instances reuse it.
-    const { Pool, types } = await import("pg");
-    types.setTypeParser(OID_INT8, Number);
-    types.setTypeParser(OID_DATE, identity);
-    types.setTypeParser(OID_INTERVAL, identity);
-    const pool = new Pool({ connectionString: databaseUrl });
-    await pool.query(
-      "create table if not exists _migrations (name text primary key, applied_at timestamptz not null default now())",
-    );
-    const migrations = import.meta.glob("/migrations/*.sql", {
-      query: "?raw",
-      import: "default",
-      eager: true,
-    }) as Record<string, string>;
-    const applied = (
-      await pool.query<{ name: string }>("select name from _migrations")
-    ).rows.map((r) => r.name);
-    for (const { name, path } of pendingMigrations(Object.keys(migrations), applied)) {
-      const client = await pool.connect();
-      try {
-        await client.query("begin");
-        await client.query(migrations[path]);
-        await client.query("insert into _migrations (name) values ($1)", [name]);
-        await client.query("commit");
-      } catch (err) {
+    const pg = await loadPg();
+
+    if (isCloudflareWorker()) {
+      const withClient = async <R>(fn: (c: InstanceType<PgModule["Client"]>) => Promise<R>): Promise<R> => {
+        const client = new pg.Client({ connectionString: databaseUrl });
+        await client.connect();
         try {
-          await client.query("rollback");
-        } catch {
-          // keep original
+          return await fn(client);
+        } finally {
+          await client.end().catch(() => {});
         }
-        throw err;
-      } finally {
-        client.release();
-      }
+      };
+      await withClient((c) => applyMigrations(c as unknown as PgQueryable));
+      return toSql(async <T>(text: string, params: unknown[]) =>
+        withClient(async (c) => (await c.query(text, params)).rows as T[]),
+      );
+    }
+
+    const pool = new pg.Pool({ connectionString: databaseUrl });
+    const client = await pool.connect();
+    try {
+      await applyMigrations(client as unknown as PgQueryable);
+    } finally {
+      client.release();
     }
     return toSql(async <T>(text: string, params: unknown[]) => {
       const res = await pool.query(text, params);
