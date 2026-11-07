@@ -18,7 +18,8 @@ const facts = [
 
 <!-- .pulse-stage / .pulse-shader are the hooks fx.js uses for the WebGL solar system -->
 <section class="pulse-stage relative isolate overflow-hidden" aria-labelledby="hero-title">
-  <div aria-hidden="true" class="pulse-figure relative h-[46svh] min-h-[18rem] lg:absolute lg:inset-0 lg:h-auto">
+  <!-- desktop: the scene fades out under the copy on the left so the headline stays readable -->
+  <div aria-hidden="true" class="pulse-figure relative h-[46svh] min-h-[18rem] lg:absolute lg:inset-0 lg:h-auto lg:[mask-image:linear-gradient(90deg,transparent_20%,rgb(0_0_0/0.28)_42%,#000_57%)]">
     <canvas class="pulse-shader absolute inset-0 h-full w-full touch-none"></canvas>
   </div>
 
