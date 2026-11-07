@@ -8,7 +8,7 @@ const pages: [string, string][] = [
   ["/", "1.0"],
   ["/selected", "0.8"],
   ["/contact", "0.7"],
-  ["/archive", "0.6"],
+  ["/palette", "0.6"],
   ["/practice", "0.6"],
   ...cases.map((c): [string, string] => [`/work/${c.slug}`, "0.6"]),
 ];

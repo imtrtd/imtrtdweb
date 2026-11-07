@@ -4,12 +4,12 @@ Astro 7 static build, served by the assets Worker `imtrtd-hq` (custom domains `i
 
 ```
 src/
-  pages/        index, selected, work/[slug], contact, archive (Samples), practice, 404, sitemap.xml
+  pages/        index, selected, work/[slug], contact, palette, practice, 404, sitemap.xml
   components/   Header, Footer, Hero, CaseCard, BriefSteps, Packages, Process, Faq, SectionHead
   data/         site.ts (contacts, nav), cases.ts (case studies), offer.ts (services, packages, FAQ, testimonials, changelog)
   lib/cms.ts    build-time overrides from admin.imtrtd.space/api/content (only when hq_cms = "on")
   scripts/      fx.js (sound, accent, starfield, WebGL hero), site-api.js (lead POST + Turnstile), brief.js, …
-  legacy/       Samples / Practice markup carried over from the pre-Astro site (driven by samples.js / practice.js)
+  legacy/       Palette / Practice markup carried over from the pre-Astro site (driven by palette.js / practice.js)
 public/         copied as is: fonts, images, brand, _headers, robots.txt, demo builds in sites/<slug>/
 worker/index.js http→https, *.html → 301 clean URL, security headers, /sites/<x>/ SPA fallback
 ```

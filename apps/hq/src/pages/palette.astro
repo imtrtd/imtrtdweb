@@ -1,0 +1,47 @@
+---
+import Base from "../layouts/Base.astro";
+import markup from "../legacy/palette.html?raw";
+import "../styles/palette.css";
+
+const steps = [
+  { k: "01", h: "Start from a mix", p: "Five combinations to begin with. Or ignore them and start blank." },
+  { k: "02", h: "Change anything", p: "Colours, type, layout, navigation, density, motion and the parts your site needs." },
+  { k: "03", h: "Send your picks", p: "They arrive as a brief. The first working screen starts from them." },
+];
+---
+
+<Base
+  title="Palette — pick colours, type and structure before we start — IMTRTD"
+  description="Not templates: every site is built from scratch. Pick colours, type, layout and the parts you want on your site, and send the picks as a brief before the first conversation."
+  path="/palette"
+>
+  <header class="wrap pt-12 pb-10 lg:pt-20 lg:pb-14">
+    <p class="sec-index label">01 · Palette</p>
+    <h1 class="display-xl mt-5 max-w-[14ch]">Show me what you like.</h1>
+    <p class="lead mt-6 max-w-[54ch] text-fog">
+      No templates here — every site is built from scratch around your brand. This is a place to pick colours, type, structure and the parts you want to see, before we
+      start. It saves a round of guessing.
+    </p>
+    <ol class="mt-10 grid gap-px overflow-hidden border border-hair bg-hair sm:grid-cols-3">
+      {
+        steps.map((s) => (
+          <li class="bg-ink/90 p-5">
+            <span class="label text-signal">{s.k}</span>
+            <h2 class="mt-3 text-lg font-semibold tracking-tight">{s.h}</h2>
+            <p class="mt-1.5 text-sm leading-relaxed text-mute">{s.p}</p>
+          </li>
+        ))
+      }
+    </ol>
+  </header>
+
+  <!-- Carried over from the pre-Astro site: palette.js drives #brief-lab inside this markup. -->
+  <section class="wrap pb-16" aria-label="Palette picker">
+    <p class="label mb-4 text-mute">Starting mixes — not templates, just a first set of choices</p>
+    <div set:html={markup} />
+  </section>
+</Base>
+
+<script>
+  import "../scripts/palette.js";
+</script>

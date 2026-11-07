@@ -1,4 +1,4 @@
-/* Samples page (/archive): brief visualizer + template cards. Carried over from the pre-Astro site CSS. */
+/* Palette page (/palette): starting mixes + the picker. Carried over from the pre-Astro site CSS. */
 @keyframes tz-drift {
   50% {
     transform: translate(0.4rem);

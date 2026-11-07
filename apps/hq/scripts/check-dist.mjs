@@ -6,7 +6,7 @@ import { join, relative } from "node:path";
 
 const dist = new URL("../dist/", import.meta.url).pathname;
 const must = [
-  "index.html", "selected.html", "archive.html", "practice.html", "contact.html", "404.html",
+  "index.html", "selected.html", "palette.html", "practice.html", "contact.html", "404.html",
   "sitemap.xml", "robots.txt", "_headers", "og.png", "brand/logo-mark.svg",
   "sites/namenlos/index.html", "sites/pulse-box/index.html", "sites/natvik/index.html", "sites/cuebox/index.html", "sites/lab/index.html",
   "work/namenlos.html", "work/pulse-box.html", "work/natvik.html", "work/cuebox.html", "work/lab.html",

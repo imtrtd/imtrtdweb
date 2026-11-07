@@ -53,6 +53,12 @@ export default {
 			}
 		}
 
+		// /archive was renamed to /palette (Nov 2026): keep old links and search results working.
+		if (url.pathname === "/archive" || url.pathname === "/archive/") {
+			url.pathname = "/palette";
+			return Response.redirect(url.toString(), 301);
+		}
+
 		let response = await env.ASSETS.fetch(request);
 
 		// Per-site SPA fallback: extensionless deep links under /sites/<site>/
