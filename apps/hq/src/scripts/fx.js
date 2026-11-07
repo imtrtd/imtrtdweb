@@ -221,6 +221,14 @@ var SOLAR_FS=[
 ' if(id==5){vec3 q=rotY(n,t*.1);float st=fbm(q*vec3(1.,4.,1.),1.5,px);vec3 c=mix(vec3(.58,.54,.64),mix(A,vec3(.8),.3),st);return c*(.06+lam)+rim*A*.5*lam;}', /* ringed */
 ' vec3 q=rotY(n,t*.3);float cr=fbm(q,3.,px);float pits=smoothstep(.55,.65,n3(q*7.))*clamp(px/25.,0.,1.);vec3 c=vec3(.62,.62,.68)*(.65+cr*.5)-pits*.18;return c*(.03+lam)+rim*A*.2;', /* moon */
 '}',
+/* day / night: the side facing away from the sun goes dark; a warm twilight band sits on the terminator;
+   two planets show city lights (accent) on their night side, turning with the planet */
+'vec3 dn(int id,vec3 c,vec3 n,vec3 L,float px,float t){float nl=dot(n,L);float day=smoothstep(-.06,.24,nl);',
+' float lights=0.;if(id==1||id==4){vec3 q=rotY(n,t*(id==1?.35:.2));float g=n3(q*13.)*.65+n3(q*31.)*.35;lights=smoothstep(.6,.72,g)*clamp(px/16.,0.,1.)*(1.-day);}',
+' vec3 night=c*.1+mix(A,vec3(1.,.85,.6),.35)*lights*1.1;float tw=exp(-nl*nl/.0045)*.5;',
+/* back-lit atmosphere: a planet between us and the sun keeps a lit crescent on the sun side of its rim */
+' float rim=pow(1.-n.z,1.7)*smoothstep(-.75,.1,nl)*(1.-day*.6);',
+' return mix(night,c,day)+mix(A,vec3(1.,.55,.35),.55)*tw*.32+mix(A,vec3(1.),.35)*rim*1.35;}',
 'void main(){vec2 fc=gl_FragCoord.xy;float u=.5*min(R.x,R.y);vec2 p=(fc-.5*R)/u;float pxu=1./u;float t=mod(T,600.);',
 ' vec3 col=vec3(0.);float a=0.;float zbest=1e9;vec3 hot=hotc();vec3 of=vec3(0.);float ofa=0.;int ib=-1;',
 ' if(D>.5){vec2 q=p-C0;float neb=exp(-dot(q,q)*1.9)*.085+exp(-dot(q*vec2(.95,2.2),q*vec2(.95,2.2))*1.4)*.045;col+=mix(A,vec3(.48,.36,1.),.35)*neb;}',
@@ -236,7 +244,7 @@ var SOLAR_FS=[
 '   col+=hot*cg*(.85+P);a=max(a,min(cg,1.)*.9);}',
 '  else if(r>1.&&r<1.35&&s.z<zbest+.0){float lit=clamp(dot(normalize(vec3(d,0.)),Ld)*.5+.5,0.,1.);float halo=exp(-(r-1.)*(14.-B*4.))*(.35+B*.3)*lit;col+=mix(A,vec3(1.),.3)*halo;a=max(a,halo);}',
 '  if(r<1.+aa&&s.z<zbest){float dd=min(dot(d,d),1.);vec3 n=vec3(d,sqrt(1.-dd));',
-'   float edge=1.-smoothstep(1.-aa,1.+aa,r);vec3 c=shade(i,n,Ld,px,t);col=mix(col,c,edge);a=max(a,edge);if(edge>.5){zbest=s.z;ib=i;}}',
+'   float edge=1.-smoothstep(1.-aa,1.+aa,r);vec3 c=shade(i,n,Ld,px,t);if(i>0)c=dn(i,c,n,Ld,px,t);col=mix(col,c,edge);a=max(a,edge);if(edge>.5){zbest=s.z;ib=i;}}',
 ' }',
 ' for(int i=0;i<6;i++){vec2 o=O[i];if(o.x<=0.)continue;vec2 d=p-C0;vec2 e=d/vec2(o.x,o.x*K);float r=length(e);',
 '  float dist=abs(r-1.)*o.x*K;if(dist>pxu*12.)continue;float ang=atan(e.y,e.x);float lag=mod(o.y-ang,6.2832);float trail=exp(-lag*1.3);',
@@ -266,7 +274,9 @@ function initSolar(){var cv=$('.pulse-shader');if(!cv)return false;var gl,soft=f
   gl.disable(gl.BLEND);
   var U={};['R','T','P','F','A','M','S','O','C0','K','B','D','Y','SC'].forEach(function(k){U[k]=gl.getUniformLocation(pr,k)});
   // planets: id, orbit a, radius, speed, phase  (id5 ringed, id6 moon of gas giant id2)
-  var PL=[[1,.4,.082,.9,0],[2,.6,.162,.42,2.1],[3,.78,.105,.3,4.2],[4,.93,.094,.22,1.0],[5,1.1,.115,.15,3.3]];var beatS=0,ampS=0;
+  var PL=[[1,.4,.082,0,0],[2,.6,.162,0,2.1],[3,.78,.105,0,4.2],[4,.93,.094,0,1.0],[5,1.1,.115,0,3.3]];
+  /* orbital speed by Kepler's third law (period ~ a^1.5): inner planets visibly overtake outer ones; ORBIT sets the overall pace */
+  var ORBIT=.5;PL.forEach(function(q){q[3]=ORBIT*Math.pow(PL[0][1]/q[1],1.5)});var beatS=0,ampS=0;
   var ptr={x:0,y:0,tx:0,ty:0},pulse=0,vis=true,dirty=true,acc=rgb(signal()),t0=performance.now();
   /* static frame (no animation loop) with reduced motion, or when WebGL runs on the CPU: every frame of this shader
      would then cost hundreds of ms of main-thread time. The frame is redrawn only on resize / scroll / accent changes. */
@@ -300,9 +310,9 @@ function initSolar(){var cv=$('.pulse-shader');if(!cv)return false;var gl,soft=f
     if(cw*ch*dpr*dpr>bud)dpr=Math.max(Math.min(1,dpr),Math.sqrt(bud/(cw*ch)));
     var w=Math.round(cw*dpr),h=Math.round(ch*dpr);if(!w||!h)return false;tw=w;th=h;if(!banded()&&(cv.width!==w||cv.height!==h)){cv.width=w;cv.height=h}gl.viewport(0,0,w,h);
     /* easing is scaled by elapsed frames (fr), so the 30 fps cap keeps the same speed as the old 60 fps loop */
-    var dk=desk.matches,ys=dk?1:-1,T=st?T_STILL:(t-t0)/1000;
+    var dk=desk.matches,ys=1,T=st?T_STILL:(t-t0)/1000;
     if(st){ptr.x=ptr.y=0;pulse=0}else{ptr.x+=(ptr.tx-ptr.x)*(1-Math.pow(.94,fr));ptr.y+=(ptr.ty-ptr.y)*(1-Math.pow(.94,fr));pulse*=Math.pow(.94,fr)}
-    var K=(dk?.4:.36)+ptr.y*(dk?.1:.12),uu=.5*Math.min(w,h),oa=dk?.1:0,sr=dk?.34:.28,fit=dk?Math.min(innerWidth*.66*(1-fold.v*.3)*dpr*.5/1.62*1.36,(h*.5)/(K*1.2+.3))/uu:Math.min(Math.min(cw*.45,252)*dpr,(h*.5)/(K*1.1+.42))/uu;
+    var K=(dk?.5:.47)+ptr.y*(dk?.08:.1),uu=.5*Math.min(w,h),oa=dk?.1:0,sr=dk?.34:.28,fit=dk?Math.min(innerWidth*.66*(1-fold.v*.3)*dpr*.5/1.62*1.36,(h*.5)/(K*1.2+.3))/uu:Math.min(Math.min(cw*.45,252)*dpr,(h*.5)/(K*1.1+.42))/uu;
     var lv=Audio_.on&&!st?Audio_.levels():{beat:0,amp:0},rm=reduce.matches?.4:1;
     beatS+=((lv.beat)-beatS)*(1-Math.pow(1-(lv.beat>beatS?.6:.18),fr));ampS+=(lv.amp-ampS)*(1-Math.pow(1-(lv.amp>ampS?.25:.06),fr));
     var B=(beatS*.75+ampS*.45)*rm+(Audio_.on?0:(.5+.5*Math.sin(T*1.1))*.12*rm);
@@ -311,9 +321,9 @@ function initSolar(){var cv=$('.pulse-shader');if(!cv)return false;var gl,soft=f
     var S=[cx,cy,0,sr*sc*(1+pulse*.15)*bs],O=[],pos={};
     // orbit angle in ellipse-normalized space: angle of (x,-z) since e=d/(a,aK)
     PL.forEach(function(q){var qa=q[1]+oa*(1-q[1]*.35),th=q[4]+T*q[3],x=Math.cos(th)*qa,z=Math.sin(th)*qa,persp=1-z*.18;pos[q[0]]=[cx+x*sc,cy+ys*z*K*sc,z,q[2]*sc*persp*(1+B*.02)];S.push.apply(S,pos[q[0]]);O.push(qa*sc,Math.atan2(ys*Math.sin(th),Math.cos(th)))});O.push(0,0);
-    var g=pos[2],mt=T*1.6,m=[g[0]+Math.cos(mt)*g[3]*1.9,g[1]+ys*Math.sin(mt)*g[3]*1.9*K,g[2]+Math.sin(mt)*.05,.04*sc];S.push.apply(S,m);
+    var g=pos[2],mt=T*1.1,m=[g[0]+Math.cos(mt)*g[3]*1.9,g[1]+ys*Math.sin(mt)*g[3]*1.9*K,g[2]+Math.sin(mt)*.05,.04*sc];S.push.apply(S,m);
     gl.useProgram(pr);
-    gl.uniform2f(U.R,w,h);gl.uniform1f(U.T,T);gl.uniform1f(U.P,pulse);gl.uniform1f(U.F,fold.v);gl.uniform3f(U.A,acc[0]/255,acc[1]/255,acc[2]/255);gl.uniform2f(U.M,ptr.x,ptr.y);
+    gl.uniform2f(U.R,w,h);gl.uniform1f(U.T,T*.75);gl.uniform1f(U.P,pulse);gl.uniform1f(U.F,fold.v);gl.uniform3f(U.A,acc[0]/255,acc[1]/255,acc[2]/255);gl.uniform2f(U.M,ptr.x,ptr.y);
     gl.uniform4fv(U.S,S);gl.uniform2fv(U.O,O);gl.uniform2f(U.C0,cx,cy);gl.uniform1f(U.K,K);gl.uniform1f(U.B,B);gl.uniform1f(U.D,dk?1:0);gl.uniform1f(U.Y,ys);gl.uniform1f(U.SC,sc);return true}
   function draw(t,fr){if(!prep(t,fr))return;gl.clearColor(0,0,0,0);gl.clear(gl.COLOR_BUFFER_BIT);gl.drawArrays(gl.TRIANGLES,0,3)}
   /* band = next row to render (0 = no pass in flight); rows per band follow BAND_PX, which adapts to the measured band time */
