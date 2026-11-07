@@ -51,7 +51,7 @@ export CLOUDFLARE_API_TOKEN=...
 export CLOUDFLARE_ACCOUNT_ID=...
 export ADMIN_TOKEN=...          # обязательно
 export EDITOR_TOKEN=...         # рекомендуется
-export RESEND_API_KEY=...       # опционально
+export RESEND_API_KEY=...       # опционально; отправитель — var RESEND_FROM_EMAIL (домен должен быть verified в Resend)
 npm run publish:cloudflare
 ```
 

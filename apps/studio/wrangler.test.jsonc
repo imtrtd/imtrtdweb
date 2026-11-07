@@ -29,6 +29,7 @@
 	],
 	"vars": {
 		"STUDIO_NOTIFY_EMAIL": "admin@imtrtd.space",
+		"RESEND_FROM_EMAIL": "IMTRTD <leads@notify.imtrtd.space>",
 		"LEAD_NOTIFY_EMAIL": "admin@imtrtd.space",
 		"LEAD_FROM_EMAIL": "leads@imtryingtodesign.com"
 	}

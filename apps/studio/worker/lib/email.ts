@@ -1,4 +1,5 @@
 import type { Lead } from "./http";
+import { codeSlug, type NotifyResult } from "./notify-result";
 
 export const DEFAULT_LEAD_TO = "admin@imtrtd.space";
 // Must be an address on a zone that has Cloudflare Email Routing enabled (imtryingtodesign.com) or an onboarded Email Service domain.
@@ -18,7 +19,8 @@ export type LeadEmailEnv = {
 	LEAD_FROM_EMAIL?: string;
 };
 
-export type EmailResult = { ok: boolean; skipped?: boolean; error?: string };
+/** `error` is a short public-safe code, e.g. "cf_email_e_sender_domain_not_available". */
+export type EmailResult = NotifyResult;
 
 function isEmail(value: string): boolean {
 	return /^[^\s@,;<>]+@[^\s@,;<>]+\.[^\s@,;<>]+$/.test(value);
@@ -75,9 +77,11 @@ export async function notifyLeadEmail(env: LeadEmailEnv, lead: Lead, source = ""
 		console.log(`lead email sent id=${(res && res.messageId) || "?"}`);
 		return { ok: true };
 	} catch (err) {
-		const e = err as { code?: string; message?: string };
-		const error = `${e?.code ?? "error"}: ${(e?.message ?? String(err)).slice(0, 200)}`;
-		console.error("lead email failed", error);
+		const e = err as { code?: string; message?: string } | null;
+		const error = `cf_email_${codeSlug(e?.code)}`;
+		// Addresses redacted: the message can echo sender/recipient, and logs must not carry lead data.
+		const detail = String(e?.message ?? err).replace(/[^\s@<>"']+@[^\s@<>"']+/g, "<email>").slice(0, 200);
+		console.error(`lead email failed: ${error} ${detail}`);
 		return { ok: false, error };
 	}
 }
