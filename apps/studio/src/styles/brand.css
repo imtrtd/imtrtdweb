@@ -104,11 +104,11 @@ body::selection {
   background: radial-gradient(circle at 72% 42%, rgba(123, 92, 255, .24), transparent 30%), #0a0a0f;
 }
 
-.contact-button {
+.contact-button:not(.sphere-planet) {
   box-shadow: none;
 }
 
-.contact-button:hover {
+.contact-button:not(.sphere-planet):hover {
   box-shadow: 0 0 72px rgba(216, 255, 55, .28);
 }
 

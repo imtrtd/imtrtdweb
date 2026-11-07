@@ -1,8 +1,34 @@
 
 .topbar { position: sticky; top: 0; }
-.pulse-copy h1 { margin: 0; font-size: clamp(48px, 7vw, 108px); letter-spacing: -.07em; line-height: .78; font-weight: 900; text-transform: uppercase; }
+.pulse-copy h1 { margin: 0; font-size: clamp(48px, 6.4vw, 104px); letter-spacing: -.04em; line-height: .9; font-weight: 600; text-transform: uppercase; }
 .pulse-copy h1 span { display: block; }
-.pulse-copy p { max-width: 40ch; margin-top: 1.25rem; }
+.pulse-lede {
+  display: flex;
+  align-items: flex-end;
+  gap: clamp(1.25rem, 3vw, 2.75rem);
+  margin-top: 1.75rem;
+}
+.pulse-lede p {
+  flex: 1 1 auto;
+  max-width: 34ch;
+  margin: 0;
+  color: #d5d0dc;
+  font-size: clamp(1.05rem, 1.35vw, 1.25rem);
+  font-weight: 400;
+  line-height: 1.6;
+  letter-spacing: -.011em;
+}
+.pulse-disc {
+  position: relative;
+  flex: none;
+  width: clamp(11.5rem, 20vw, 17rem);
+  z-index: 3;
+  margin: 0;
+  opacity: calc(1 - var(--fold) * 1.45);
+  transition: transform .35s, color .3s, box-shadow .4s, background .3s;
+}
+.pulse-disc .sphere-orbits { inset: -12%; }
+.pulse-stage[data-open="1"] .pulse-disc { pointer-events: none; }
 .brief-panel h2 { margin: .35rem 0 1rem; font-size: clamp(32px, 4vw, 52px); letter-spacing: -.04em; line-height: .95; }
 .pulse-figure { min-width: 0; }
 .pulse-figure canvas { position: absolute; inset: 0; }
@@ -31,7 +57,7 @@
 .pulse-copy {
   grid-column: 1;
   grid-row: 1;
-  max-height: calc(34rem * (1 - var(--fold)));
+  max-height: calc(48rem * (1 - var(--fold)));
   overflow: hidden;
   opacity: calc(1 - var(--fold) * 1.45);
   transform: translateY(calc(var(--fold) * -1rem));
@@ -93,15 +119,31 @@
 @media (max-width: 1023px) {
   .pulse-pin {
     top: 5.75rem;
-    height: calc(100dvh - 5.75rem);
+    height: auto;
+    min-height: 0;
     grid-template-columns: 1fr;
     grid-template-rows: auto auto auto;
-    padding: 0.75rem 1rem 1rem;
+    padding: 0.75rem 1rem 1.5rem;
   }
 
   .pulse-copy {
-    max-height: calc(42vh - var(--fold) * 36vh);
-    overflow: hidden;
+    max-height: none;
+    overflow: visible;
+  }
+
+  .pulse-lede {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1.25rem;
+  }
+
+  .pulse-lede p {
+    flex: none;
+    width: 100%;
+  }
+
+  .pulse-disc {
+    width: clamp(12.5rem, 62vw, 16rem);
   }
 
   .pulse-figure {
@@ -135,7 +177,8 @@
 
   .pulse-copy,
   .pulse-figure,
-  .brief-panel {
+  .brief-panel,
+  .pulse-stage[data-open="1"] .pulse-disc {
     opacity: 1;
     transform: none;
     max-height: none;
