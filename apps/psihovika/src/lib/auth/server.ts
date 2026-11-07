@@ -162,11 +162,14 @@ function workerMemoryDatabase() {
   return memoryAdapter(globalAuthRef.__grokAuthMemoryDb__);
 }
 
-const database = databaseUrl
-  ? new Pool({ connectionString: databaseUrl })
-  : onCloudflareWorker
-    ? workerMemoryDatabase()
-    : { dialect: pgliteDialect(() => getPglite()), type: "postgres" as const };
+// On Workers a pg socket belongs to the request that opened it, so with Neon each auth instance
+// (built per call there, see getAuth) gets its own Pool.
+const makeDatabase = () =>
+  databaseUrl
+    ? new Pool({ connectionString: databaseUrl })
+    : onCloudflareWorker
+      ? workerMemoryDatabase()
+      : { dialect: pgliteDialect(() => getPglite()), type: "postgres" as const };
 
 // Kick PGLite bootstrap only when auth actually uses PGLite (Node preview).
 if (!databaseUrl && !onCloudflareWorker) {
@@ -219,7 +222,7 @@ function createAuth() {
     // Deployed apps inject BETTER_AUTH_SECRET. Preview / Worker in-memory mode:
     // process-stable random secret on globalThis (see above).
     secret: authSecret(),
-    database,
+    database: makeDatabase(),
 
     // CSRF / origin check for credentialed auth POSTs (email sign-up/sign-in, …).
     // See `trustedOrigins` construction above — must cover live preview hosts AND
@@ -299,6 +302,8 @@ let authInstance: ReturnType<typeof createAuth> | undefined;
  * functions only — never at module scope (Workers forbid RNG there).
  */
 export function getAuth(): ReturnType<typeof createAuth> {
+  // Workers + Neon: never share pg sockets between requests (they hang in the next request).
+  if (onCloudflareWorker && databaseUrl) return createAuth();
   authInstance ??= createAuth();
   return authInstance;
 }
