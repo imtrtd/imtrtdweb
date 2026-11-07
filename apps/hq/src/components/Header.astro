@@ -1,0 +1,54 @@
+---
+import { nav } from "../data/site";
+
+const here = Astro.url.pathname.replace(/\.html$/, "").replace(/\/index$/, "/") || "/";
+const isActive = (href: string) => (href === "/" ? here === "/" : here === href || here.startsWith(href + "/") || (href === "/selected" && here.startsWith("/work/")));
+
+const accents = [
+  { id: "lime", label: "Lime", color: "#d8ff00" },
+  { id: "violet", label: "Violet", color: "#b28dff" },
+  { id: "magenta", label: "Magenta", color: "#ff2bd6" },
+  { id: "cyan", label: "Cyan", color: "#2ee9ff" },
+];
+const swatch = "polygon(0 0, calc(100% - 4px) 0, 100% 4px, 100% 100%, 4px 100%, 0 calc(100% - 4px))";
+---
+
+<header class="sticky top-0 z-40 border-b border-hair bg-ink/75 backdrop-blur-md">
+  <div class="wrap grid grid-cols-[auto_1fr_auto] items-center gap-x-3 py-2 lg:py-3">
+    <a href="/" aria-label="ImTryingToDesign, home" data-fx="logo" class="inline-flex items-center gap-3 py-1">
+      <img src="/brand/logo-mark.svg" alt="I/TD" width="44" height="44" class="size-10 lg:size-11" />
+      <span class="label hidden text-mute xl:inline">imtrtd.space</span>
+    </a>
+
+    <nav aria-label="Main" class="col-span-3 row-start-2 -mx-4 flex gap-x-5 overflow-x-auto px-4 [scrollbar-width:none] lg:col-span-1 lg:col-start-2 lg:row-start-1 lg:mx-0 lg:justify-center lg:gap-x-7 lg:px-0">
+      {
+        nav.map((item) => (
+          <a
+            href={item.href}
+            data-fx={item.fx}
+            aria-current={isActive(item.href) ? "page" : undefined}
+            class:list={["nav-link label inline-flex h-11 shrink-0 items-center transition-colors duration-200 hover:text-paper", isActive(item.href) ? "text-paper" : "text-mute"]}
+          >
+            {item.label}
+          </a>
+        ))
+      }
+    </nav>
+
+    <div class="col-start-3 flex items-center justify-end gap-1">
+      <button type="button" data-sound="true" aria-pressed="false" class="label inline-flex h-11 items-center gap-2 px-1 text-mute transition-colors hover:text-paper">
+        <span class="snd-dot size-1.5 rounded-full bg-mute"></span><span class="max-sm:sr-only">Sound</span>
+      </button>
+      <div role="radiogroup" aria-label="Site colour" class="flex items-center">
+        {
+          accents.map((a) => (
+            <button type="button" role="radio" aria-checked={a.id === "violet" ? "true" : "false"} aria-label={a.label} data-fx={a.id} class="grid size-8 place-items-center sm:size-9">
+              <span class={a.id === "violet" ? "size-3.5 ring-2 ring-paper ring-offset-2 ring-offset-ink" : "size-3.5 opacity-80"} style={`background:${a.color};clip-path:${swatch}`} />
+            </button>
+          ))
+        }
+      </div>
+      <a href="/contact#brief" class="btn btn-primary ml-2 hidden lg:inline-flex" data-fx="send">Start a project</a>
+    </div>
+  </div>
+</header>

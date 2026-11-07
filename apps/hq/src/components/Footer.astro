@@ -1,0 +1,61 @@
+---
+import { nav, site, socials, availability } from "../data/site";
+import { cases } from "../data/cases";
+
+interface Props {
+  email: string;
+  telegram: string;
+}
+const { email, telegram } = Astro.props;
+const avail = availability();
+const year = new Date().getFullYear();
+---
+
+<footer class="border-t border-hair bg-ink/60 backdrop-blur-sm">
+  <div class="wrap grid gap-12 py-14 lg:grid-cols-12 lg:py-20">
+    <div class="lg:col-span-5">
+      <p class="chip"><i class="dot-live" aria-hidden="true"></i>{avail.short}</p>
+      <p class="display-md mt-6 max-w-[16ch]">Got a project? <span class="text-signal">Let’s talk.</span></p>
+      <div class="mt-8 flex flex-wrap gap-3">
+        <a href="/contact#brief" class="btn btn-primary" data-fx="send">Send a brief <span class="arrow" aria-hidden="true">→</span></a>
+        <a href={`mailto:${email}`} class="btn btn-ghost" data-fx="mail" data-social="email"><span data-mail-text>{email}</span></a>
+      </div>
+    </div>
+
+    <nav aria-label="Site" class="grid grid-cols-2 gap-8 sm:grid-cols-3 lg:col-span-7">
+      <div>
+        <p class="label text-mute">Pages</p>
+        <ul class="mt-4 grid gap-2.5">
+          {nav.map((n) => <li><a class="text-fog transition-colors hover:text-signal" href={n.href}>{n.label}</a></li>)}
+        </ul>
+      </div>
+      <div>
+        <p class="label text-mute">Work</p>
+        <ul class="mt-4 grid gap-2.5">
+          {cases.map((c) => <li><a class="text-fog transition-colors hover:text-signal" href={`/work/${c.slug}`}>{c.title}</a></li>)}
+        </ul>
+      </div>
+      <div>
+        <p class="label text-mute">Elsewhere</p>
+        <ul class="mt-4 grid gap-2.5" data-social>
+          <li><a class="text-fog transition-colors hover:text-signal" href={`https://t.me/${telegram}`} rel="me noopener" target="_blank">Telegram ↗</a></li>
+          {
+            socials
+              .filter((x) => x.id !== "telegram")
+              .map((x) => (
+                <li>
+                  <a class="text-fog transition-colors hover:text-signal" data-social={x.id} href={x.href} rel="me noopener" target="_blank">
+                    {x.label} ↗
+                  </a>
+                </li>
+              ))
+          }
+        </ul>
+      </div>
+    </nav>
+  </div>
+  <div class="wrap flex flex-wrap items-baseline justify-between gap-3 border-t border-hair py-5">
+    <p class="label text-mute">© {year} ImTryingToDesign · {site.based}</p>
+    <p class="label text-mute"><span data-ct-clock>Kyiv</span></p>
+  </div>
+</footer>

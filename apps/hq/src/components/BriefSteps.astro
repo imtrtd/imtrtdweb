@@ -1,0 +1,175 @@
+---
+/**
+ * Brief in four steps. Posts to admin.imtrtd.space/api/leads through site-api.js (Telegram + email
+ * notifications happen server-side). Without JS: every step is visible and the form falls back to mailto.
+ */
+interface Props {
+  email: string;
+  label?: string;
+}
+const { email, label = "Brief" } = Astro.props;
+
+const types = ["Website", "Identity", "Interface", "Tool", "Care", "Not sure yet"];
+const budgets = ["Under €1k", "€1–3k", "€3–8k", "€8k+", "Not sure yet"];
+const timelines = ["As soon as possible", "In 1–2 months", "Flexible"];
+const haves = ["Logo and brand files", "Copy, even rough", "Photos or work plates", "A site to replace"];
+const steps = ["Type", "Scope", "Details", "Contact"];
+---
+
+<form
+  class="brief card p-5 sm:p-7 lg:p-9"
+  data-brief="steps"
+  data-brief-label={label}
+  action={`mailto:${email}`}
+  method="post"
+  enctype="text/plain"
+  novalidate
+>
+  <ol class="brief-progress mb-8 grid grid-cols-4 gap-2" aria-hidden="true">
+    {
+      steps.map((s, i) => (
+        <li data-progress={i + 1} class="grid gap-2">
+          <span class="h-0.5 bg-hair-strong transition-colors duration-300" />
+          <span class="label text-mute transition-colors max-sm:text-[0.62rem]">
+            {String(i + 1).padStart(2, "0")} {s}
+          </span>
+        </li>
+      ))
+    }
+  </ol>
+
+  <fieldset data-step="1" class="brief-step">
+    <legend class="display-md mb-6 max-w-[18ch]">What are we making?</legend>
+    <div class="grid grid-cols-2 gap-2 sm:grid-cols-3">
+      {
+        types.map((t) => (
+          <label class="opt">
+            <input type="radio" name="task" value={t} />
+            <span>{t}</span>
+          </label>
+        ))
+      }
+    </div>
+  </fieldset>
+
+  <fieldset data-step="2" class="brief-step">
+    <legend class="display-md mb-6 max-w-[18ch]">Budget and timing</legend>
+    <p class="label text-mute">Budget</p>
+    <div class="mt-3 flex flex-wrap gap-2">
+      {
+        budgets.map((b) => (
+          <label class="opt">
+            <input type="radio" name="budget" value={b} />
+            <span>{b}</span>
+          </label>
+        ))
+      }
+    </div>
+    <p class="label mt-7 text-mute">When</p>
+    <div class="mt-3 flex flex-wrap gap-2">
+      {
+        timelines.map((t) => (
+          <label class="opt">
+            <input type="radio" name="timeline" value={t} />
+            <span>{t}</span>
+          </label>
+        ))
+      }
+    </div>
+    <label class="mt-7 grid max-w-sm gap-2">
+      <span class="label text-mute">A date that matters <span class="normal-case tracking-normal">(optional)</span></span>
+      <input class="field" type="text" name="date" placeholder="Launch, event, season…" maxlength="120" />
+    </label>
+  </fieldset>
+
+  <fieldset data-step="3" class="brief-step">
+    <legend class="display-md mb-6 max-w-[18ch]">Tell me more</legend>
+    <label class="grid gap-2">
+      <span class="label text-mute">What should a visitor do on the first screen?</span>
+      <textarea class="field" name="note" rows="4" maxlength="3000" placeholder="Book a session, buy a ticket, write to you…"></textarea>
+    </label>
+    <label class="mt-5 grid gap-2">
+      <span class="label text-mute">Links <span class="normal-case tracking-normal">(current site, Instagram, references)</span></span>
+      <input class="field" type="text" name="links" maxlength="400" inputmode="url" />
+    </label>
+    <p class="label mt-6 text-mute">Already have</p>
+    <div class="mt-3 flex flex-wrap gap-2">
+      {
+        haves.map((h) => (
+          <label class="opt">
+            <input type="checkbox" name="have" value={h} />
+            <span>{h}</span>
+          </label>
+        ))
+      }
+    </div>
+  </fieldset>
+
+  <fieldset data-step="4" class="brief-step">
+    <legend class="display-md mb-6 max-w-[18ch]">Where do I reply?</legend>
+    <div class="grid gap-4 sm:grid-cols-2">
+      <label class="grid gap-2">
+        <span class="label text-mute">Name</span>
+        <input class="field" name="name" autocomplete="name" required maxlength="120" />
+      </label>
+      <label class="grid gap-2">
+        <span class="label text-mute">Email or Telegram</span>
+        <input class="field" name="contact" autocomplete="email" required maxlength="200" />
+      </label>
+    </div>
+    <p class="privacy-note mt-4">Your details are only used to reply to this request. They are never shared.</p>
+  </fieldset>
+
+  <div class="brief-nav mt-8 flex flex-wrap items-center gap-3 border-t border-hair pt-6">
+    <button type="button" class="btn btn-ghost" data-brief-back hidden>← Back</button>
+    <button type="button" class="btn btn-primary" data-brief-next hidden>Next <span class="arrow" aria-hidden="true">→</span></button>
+    <button type="submit" class="btn btn-primary" data-brief-send>Send brief <span class="arrow" aria-hidden="true">→</span></button>
+    <span class="label ml-auto text-mute" data-brief-count aria-live="polite"></span>
+  </div>
+
+  <div class="brief-done hidden py-6" data-brief-done tabindex="-1">
+    <p class="label text-signal">Sent</p>
+    <p class="display-md mt-3 max-w-[20ch]">Thank you. I’ll answer within a working day.</p>
+    <p class="mt-4 text-fog">Meanwhile, the <a class="text-signal underline" href="/selected">work</a> and the <a class="text-signal underline" href="/practice">way I work</a> are one click away.</p>
+  </div>
+</form>
+
+<style>
+  .brief-step + .brief-step {
+    margin-top: 2.5rem;
+  }
+  :global(.js) .brief[data-ready] .brief-step {
+    margin-top: 0;
+  }
+  :global(.js) .brief[data-ready] .brief-step:not([data-active]) {
+    display: none;
+  }
+  .brief[data-ready] [data-progress].is-done span:first-child,
+  .brief[data-ready] [data-progress].is-on span:first-child {
+    background: var(--color-signal);
+  }
+  .brief[data-ready] [data-progress].is-on span:last-child {
+    color: var(--color-paper);
+  }
+  .brief[data-sent] .brief-step,
+  .brief[data-sent] .brief-nav,
+  .brief[data-sent] .brief-progress {
+    display: none !important;
+  }
+  .brief[data-sent] .brief-done {
+    display: block;
+  }
+  .brief-step[data-active] {
+    animation: step-in 0.45s var(--ease-out-expo);
+  }
+  @keyframes step-in {
+    from {
+      opacity: 0;
+      transform: translateX(12px);
+    }
+  }
+</style>
+
+<script>
+  import "../scripts/brief.js";
+</script>

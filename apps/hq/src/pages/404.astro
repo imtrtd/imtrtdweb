@@ -1,0 +1,16 @@
+---
+import Base from "../layouts/Base.astro";
+---
+
+<Base title="Page not found — IMTRTD" description="This page does not exist. Go to the IMTRTD home page, selected work or send a brief." path="/404" noindex>
+  <section class="wrap grid min-h-[70svh] content-center py-20">
+    <p class="sec-index label">Error 404</p>
+    <h1 class="display-xl mt-5 max-w-[12ch]">This page is not here.</h1>
+    <p class="lead mt-6 max-w-[46ch] text-fog">The link may be old or mistyped. The work, the samples and the brief form are still one click away.</p>
+    <div class="mt-9 flex flex-wrap gap-3">
+      <a href="/" class="btn btn-primary btn-lg">Back to home</a>
+      <a href="/selected" class="btn btn-ghost btn-lg">Selected work</a>
+      <a href="/contact#brief" class="btn btn-ghost btn-lg" data-fx="send">Send a brief</a>
+    </div>
+  </section>
+</Base>

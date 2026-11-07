@@ -1,0 +1,72 @@
+---
+import { availability } from "../data/site";
+import { cases } from "../data/cases";
+
+interface Props {
+  heroLine: string;
+  languages: readonly string[];
+}
+const { heroLine, languages } = Astro.props;
+const avail = availability();
+const facts = [
+  { k: "Live builds", v: `${cases.length} projects` },
+  { k: "Team", v: "Design + code, one person" },
+  { k: "Reply", v: "Within a working day" },
+  { k: "Languages", v: languages.join(" · ") },
+];
+---
+
+<!-- .pulse-stage / .pulse-shader are the hooks fx.js uses for the WebGL solar system -->
+<section class="pulse-stage relative isolate overflow-hidden" aria-labelledby="hero-title">
+  <div aria-hidden="true" class="pulse-figure relative h-[46svh] min-h-[18rem] lg:absolute lg:inset-0 lg:h-auto">
+    <canvas class="pulse-shader absolute inset-0 h-full w-full touch-none"></canvas>
+  </div>
+
+  <div class="wrap relative grid min-h-0 lg:min-h-[calc(100svh-4.5rem)] lg:grid-cols-12 lg:items-center">
+    <div class="pb-10 lg:col-span-7 lg:py-24">
+      <p class="chip hero-rise"><i class="dot-live" aria-hidden="true"></i>{avail.long}</p>
+      <h1 id="hero-title" class="display-xl hero-rise mt-6 uppercase [animation-delay:80ms]">
+        <span class="block">Digital</span>
+        <span class="glitch block" data-text="Experiences">Experiences</span>
+        <span class="block">with a pulse.</span>
+      </h1>
+      <p class="lead hero-rise mt-7 max-w-[40ch] [animation-delay:160ms]">{heroLine}</p>
+      <div class="hero-rise mt-9 flex flex-wrap gap-3 [animation-delay:240ms]">
+        <a href="/contact#brief" class="btn btn-primary btn-lg" data-fx="send">Start a project <span class="arrow" aria-hidden="true">→</span></a>
+        <a href="#work" class="btn btn-ghost btn-lg" data-fx="explore">See the work <span aria-hidden="true">↓</span></a>
+      </div>
+    </div>
+  </div>
+
+  <dl class="wrap relative grid grid-cols-2 border-t border-hair lg:absolute lg:inset-x-0 lg:bottom-0 lg:grid-cols-4">
+    {
+      facts.map((f, i) => (
+        <div class:list={["py-4 pr-4 lg:py-5", i % 2 === 1 && "max-lg:border-l max-lg:border-hair max-lg:pl-4", i > 0 && "lg:border-l lg:border-hair lg:pl-5", i > 1 && "max-lg:border-t max-lg:border-hair"]}>
+          <dt class="label text-mute">{f.k}</dt>
+          <dd class="mt-1.5 text-sm text-paper lg:text-base">{f.v}</dd>
+        </div>
+      ))
+    }
+  </dl>
+</section>
+
+<style>
+  .hero-rise {
+    animation: hero-rise 0.9s var(--ease-out-expo) both;
+  }
+  @keyframes hero-rise {
+    from {
+      opacity: 0;
+      transform: translateY(14px);
+    }
+  }
+  /* fallback when WebGL is unavailable (fx.js sets data-fallback) */
+  .pulse-shader[data-fallback="1"] {
+    background: radial-gradient(circle at 65% 48%, color-mix(in oklab, var(--color-signal) 75%, white), color-mix(in oklab, var(--color-signal) 30%, #111) 14%, transparent 34%);
+  }
+  @media (width < 64rem) {
+    .pulse-shader[data-fallback="1"] {
+      background: radial-gradient(circle at 50% 50%, color-mix(in oklab, var(--color-signal) 75%, white), color-mix(in oklab, var(--color-signal) 30%, #111) 18%, transparent 42%);
+    }
+  }
+</style>

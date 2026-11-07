@@ -1,0 +1,20 @@
+{
+  "name": "imtrtd-hq",
+  "private": true,
+  "type": "module",
+  "description": "imtrtd.space: Astro static build served by the imtrtd-hq Worker",
+  "scripts": {
+    "dev": "astro dev --port 4321",
+    "build": "astro build && node scripts/check-dist.mjs",
+    "preview": "npm run build && wrangler dev",
+    "check": "astro check",
+    "deploy": "npm run build && wrangler deploy"
+  },
+  "devDependencies": {
+    "@astrojs/check": "0.9.11",
+    "@tailwindcss/vite": "4.3.3",
+    "astro": "7.4.2",
+    "tailwindcss": "4.3.3",
+    "typescript": "6.0.3"
+  }
+}

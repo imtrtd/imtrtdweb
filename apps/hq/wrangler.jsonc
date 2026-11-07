@@ -1,15 +1,16 @@
 /**
- * HQ Worker: static studio site for imtrtd.space (http->https, *.html->clean 301, static assets).
- * Unknown paths get public/404.html with status 404 (not_found_handling: 404-page).
+ * HQ Worker: imtrtd.space (http->https, *.html->clean 301, security headers) in front of the
+ * Astro build in ./dist (npm run build). Source: src/ (pages, components, data).
+ * Unknown paths get dist/404.html with status 404 (not_found_handling: 404-page).
  * Deployed by .github/workflows/deploy-hq.yml.
  */
 {
 	"$schema": "https://unpkg.com/wrangler@4.88.0/config-schema.json",
 	"name": "imtrtd-hq",
-	"main": "./src/index.js",
+	"main": "./worker/index.js",
 	"compatibility_date": "2026-08-10",
 	"assets": {
-		"directory": "./public",
+		"directory": "./dist",
 		"binding": "ASSETS",
 		"run_worker_first": true,
 		"html_handling": "auto-trailing-slash",

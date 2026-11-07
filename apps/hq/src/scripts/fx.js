@@ -1,4 +1,4 @@
-/* imtrtd merged — lightweight vanilla replacement for the original React bundles */
+/* imtrtd.space effects: sound, accent switch, starfield, WebGL hero, preview frames. Bundled by Astro (hashed, immutable). */
 (function(){
 'use strict';
 var EMAIL='admin@imtrtd.space', KEY='imtrtd-accent', ACCENTS={lime:'#d8ff00',violet:'#b28dff',magenta:'#ff2bd6',cyan:'#2ee9ff'};
@@ -85,7 +85,7 @@ var TRACKS={
       if(s===0||s===10)A.kick(t,.22);if(s===4||s===12)A.hit(t,.03,.08,6000,'hp');if(s%2===1)A.hit(t,.02,.025,11000,'hp')}}
 };
 /* UI sounds: main buttons only (primary CTAs, brief send/open, Preview). Nav, logo, mail, colour switcher and planet clicks are silent. */
-var FX_MAIN=[['[data-fx=explore]',[[0,4,7,12],40]],['[data-fx=send],form button[type=submit],.lx-dlg button[type=submit]',[[0,7,12,19],45]],['[data-lx-open],[data-ct-brief]',[[0,7,12],45]],['a.bg-signal[href*="work/"]',[[7,12],50]]];
+var FX_MAIN=[['[data-fx=explore]',[[0,4,7,12],40]],['[data-fx=send],form button[type=submit],.lx-dlg button[type=submit]',[[0,7,12,19],45]],['[data-lx-open],[data-ct-brief]',[[0,7,12],45]],['a[href^="/work/"],a.btn-primary',[[7,12],50]]];
 document.addEventListener('pointerdown',function(e){if(!Audio_.on||!e.target.closest)return;for(var i=0;i<FX_MAIN.length;i++){if(e.target.closest(FX_MAIN[i][0])){Audio_.blip(FX_MAIN[i][1][0],FX_MAIN[i][1][1]);return}}},true);
 window.addEventListener('imtrtd-accent',function(){if(Audio_.on&&Audio_.ctx)Audio_.play(currentAccent())});
 

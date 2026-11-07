@@ -1,0 +1,18 @@
+---
+import Base from "../layouts/Base.astro";
+import markup from "../legacy/archive.html?raw";
+import "../styles/samples.css";
+---
+
+<Base
+  title="Samples — five starting systems and a brief visualizer — IMTRTD"
+  description="Templates, then the brief. Five starting systems, then a visualizer for the sample a client needs."
+  path="/archive"
+>
+  <!-- Ported as-is from the pre-Astro site: samples.js drives #brief-lab inside this markup. -->
+  <div class="px-4 py-8 sm:px-6 sm:py-12 lg:px-8 lg:py-16 xl:px-12" set:html={markup} />
+</Base>
+
+<script>
+  import "../scripts/samples.js";
+</script>

@@ -19,13 +19,13 @@
 
 ## Как связаны hq и studio
 
-- imtrtd.space — статика без сборки; тексты и кейсы браузер дотягивает из `https://admin.imtrtd.space/api/content`.
+- imtrtd.space — Astro-сборка (`apps/hq`); копия из `https://admin.imtrtd.space/api/content` применяется при сборке, если `hq_cms = on` (ежедневная пересборка).
 - Форма брифа на imtrtd.space → `POST https://admin.imtrtd.space/api/leads` (CORS разрешён для `https://imtrtd.space`).
 - Turnstile на форме выключен, пока на studio не заданы `TURNSTILE_SITE_KEY` (var) и `TURNSTILE_SECRET_KEY` (secret) — см. README.
 
 ## Деплой
 
-Только GitHub Actions по мерджу в `main`: `deploy-hq.yml` (`apps/hq/**`), `deploy.yml` (`apps/studio/**`), `deploy-portfolio.yml`, `deploy-tg-bot.yml`, `deploy-psihovika.yml` (`apps/psihovika/**`). Правило `?v=` / immutable-кэша для `apps/hq` — в README.
+Только GitHub Actions по мерджу в `main`: `deploy-hq.yml` (`apps/hq/**`), `deploy.yml` (`apps/studio/**`), `deploy-portfolio.yml`, `deploy-tg-bot.yml`, `deploy-psihovika.yml` (`apps/psihovika/**`). Кэш `apps/hq` (хэшированные `/assets/*`, immutable) — в README.
 
 ## GitHub Actions
 

@@ -1,0 +1,227 @@
+/* Samples page (/archive): brief visualizer + template cards. Carried over from the pre-Astro site CSS. */
+@keyframes tz-drift {
+  50% {
+    transform: translate(0.4rem);
+  }
+}
+.tz-templates {
+  grid-template-columns: 1fr;
+  gap: 0.75rem;
+  display: grid;
+}
+.tz-card,
+.tz-row button,
+.tz-stage-bar button,
+.tz-stage-bar a,
+.tz-field input {
+  border: 1px solid var(--color-hair);
+  color: var(--color-paper);
+  font: inherit;
+  background: 0 0;
+}
+.tz-card {
+  text-align: left;
+  gap: 0.45rem;
+  min-height: 2.75rem;
+  padding: 0.55rem;
+  display: grid;
+}
+.tz-card.is-on,
+.tz-row button.is-on,
+.tz-stage-bar button.is-on {
+  border-color: var(--color-signal);
+  color: var(--color-signal);
+}
+.tz-card-preview {
+  pointer-events: none;
+  height: 8.5rem;
+  display: block;
+  overflow: hidden;
+}
+.tz-card-preview .tz-frame {
+  transform-origin: 0 0;
+  width: 138%;
+  height: 16rem;
+  transform: scale(0.72);
+}
+.tz-card-name {
+  letter-spacing: -0.03em;
+  font-size: 1.05rem;
+  font-weight: 650;
+}
+.tz-card-line {
+  color: var(--color-mute);
+  font-size: 0.8rem;
+  line-height: 1.4;
+}
+.tz-lab {
+  gap: 1.25rem;
+  margin-top: 2.5rem;
+  display: grid;
+}
+.tz-controls,
+.tz-stage {
+  min-width: 0;
+}
+.tz-field {
+  gap: 0.3rem;
+  margin-top: 0.85rem;
+  display: grid;
+}
+.tz-field span,
+.tz-group {
+  color: var(--color-mute);
+  font-family: var(--font-mono);
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  font-size: 0.68rem;
+}
+.tz-group {
+  margin: 1rem 0 0.4rem;
+}
+.tz-field input {
+  outline: none;
+  min-height: 2.75rem;
+  padding: 0 0.75rem;
+}
+.tz-field input:focus {
+  border-color: var(--color-signal);
+}
+.tz-row {
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  display: flex;
+}
+.tz-row button,
+.tz-stage-bar button,
+.tz-stage-bar a {
+  align-items: center;
+  gap: 0.4rem;
+  min-height: 2.75rem;
+  padding: 0 0.75rem;
+  display: inline-flex;
+}
+.tz-row button i {
+  width: 0.55rem;
+  height: 0.55rem;
+}
+.tz-stage-bar {
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  margin-bottom: 0.6rem;
+  display: flex;
+}
+.tz-device {
+  border: 1px solid var(--color-hair);
+  height: min(34rem, 72vh);
+  overflow: auto;
+}
+.tz-device.is-phone {
+  width: min(100%, 24rem);
+  margin-inline: auto;
+}
+.tz-frame {
+  align-content: start;
+  gap: 1rem;
+  min-height: 100%;
+  display: grid;
+}
+.tz-nav,
+.tz-hero,
+.tz-modules li {
+  justify-content: space-between;
+  gap: 0.75rem;
+  display: flex;
+}
+.tz-hero {
+  align-items: end;
+}
+.tz-hero-stack,
+.tz-hero-editorial {
+  justify-content: start;
+  display: grid;
+}
+.tz-hero-editorial h3 {
+  max-width: 7ch;
+}
+.tz-kicker {
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  margin: 0 0 0.35rem;
+  font-size: 0.68rem;
+}
+.tz-frame h3 {
+  letter-spacing: -0.05em;
+  text-transform: uppercase;
+  margin: 0;
+  font-weight: 750;
+  line-height: 0.9;
+}
+.tz-offer {
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  gap: 0.2rem;
+  min-width: 5.5rem;
+  padding: 0.7rem;
+  font-size: 0.75rem;
+  display: grid;
+}
+.tz-modules {
+  gap: 0.45rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: grid;
+}
+.tz-modules-grid {
+  grid-template-columns: 1fr 1fr;
+}
+.tz-modules li {
+  border-top: 1px solid;
+  padding-top: 0.35rem;
+  font-size: 0.78rem;
+  line-height: 1.35;
+}
+.tz-motion-drift .tz-kicker {
+  animation: 7s ease-in-out infinite tz-drift;
+}
+.tz-glitch {
+  text-shadow:
+    -1px 0 #8a5cff,
+    1px 0 #d8ff26;
+}
+.tz-spec {
+  max-height: 14rem;
+  color: var(--color-mute);
+  font-family: var(--font-mono);
+  white-space: pre-wrap;
+  margin: 0.75rem 0 0;
+  font-size: 0.72rem;
+  line-height: 1.45;
+  overflow: auto;
+}
+@media (width>=720px) {
+  .tz-templates {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+@media (width>=1100px) {
+  .tz-templates {
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+  }
+  .tz-lab {
+    grid-template-columns: minmax(16rem, 22rem) minmax(0, 1fr);
+    align-items: start;
+  }
+  .tz-stage {
+    position: sticky;
+    top: 6.5rem;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .tz-motion-drift .tz-kicker,
+  .tz-glitch {
+    text-shadow: none;
+    animation: none;
+  }
+}
