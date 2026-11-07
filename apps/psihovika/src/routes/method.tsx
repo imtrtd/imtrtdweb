@@ -2,9 +2,10 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { CrisisNote } from "@/components/crisis";
 import { Shell } from "@/components/shell";
 import { TESTS, DEFAULT_SEARCH } from "@/data/catalog";
+import { BRAND } from "@/lib/brand";
 
 export const Route = createFileRoute("/method")({
-  head: () => ({ meta: [{ title: "Метод — psy" }] }),
+  head: () => ({ meta: [{ title: `Метод — ${BRAND}` }] }),
   component: Method,
 });
 

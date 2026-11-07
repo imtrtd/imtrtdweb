@@ -87,6 +87,8 @@
   "devDependencies": {
     "@cloudflare/vite-plugin": "^1.67.0",
     "@eslint/js": "^9.20.0",
+    "@neon/config": "^1.13.0",
+    "@neon/env": "^1.6.15",
     "@types/node": "^22.16.5",
     "@types/pg": "^8.11.10",
     "@types/react": "^19.2.0",

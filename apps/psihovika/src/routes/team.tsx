@@ -11,9 +11,10 @@ import {
 } from "@/lib/cms/active-team";
 import type { TeamNote, TeamRow } from "@/lib/cms/types";
 import { useCurrentUserState } from "@/lib/auth/use-current-user";
+import { BRAND } from "@/lib/brand";
 
 export const Route = createFileRoute("/team")({
-  head: () => ({ meta: [{ title: "Команда — psy" }] }),
+  head: () => ({ meta: [{ title: `Команда — ${BRAND}` }] }),
   component: TeamPage,
 });
 

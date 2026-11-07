@@ -1,6 +1,10 @@
 import { createServerFn } from "@tanstack/react-start";
 import { authMiddleware } from "@/lib/auth/middleware";
+import { applyContentOverride } from "@/lib/cms/content";
 import type { ContentOverride, MethodPatch, TeamNote, TeamRow } from "@/lib/cms/types";
+import { TESTS, getTest } from "@/data/catalog";
+import type { Test } from "@/data/build";
+import { BRAND } from "@/lib/brand";
 
 function newId(prefix: string) {
   return `${prefix}_${crypto.randomUUID().replace(/-/g, "").slice(0, 16)}`;
@@ -18,6 +22,23 @@ function inviteCode() {
 async function sql() {
   const { getSql } = await import("@/lib/db");
   return getSql();
+}
+
+/** Site-wide content is public, so only emails in EDITOR_EMAILS (comma-separated) may edit it. */
+async function requireSiteEditor(userId: string) {
+  const allowed = (process.env.EDITOR_EMAILS ?? "")
+    .split(",")
+    .map((e) => e.trim().toLowerCase())
+    .filter(Boolean);
+  if (allowed.length === 0) throw new Error("Редактор отключён: не задан EDITOR_EMAILS.");
+  const db = await sql();
+  const rows = await db<{ email: string; emailVerified: boolean }>`
+    select "email", "emailVerified" from "user" where "id" = ${userId} limit 1
+  `;
+  const u = rows[0];
+  if (!u || !u.emailVerified || !allowed.includes(u.email.toLowerCase())) {
+    throw new Error("Нет прав на правку каталога.");
+  }
 }
 
 async function requireMembership(userId: string, teamId: string, write = false) {
@@ -190,3 +211,147 @@ export const addNote = createServerFn({ method: "POST" })
     `;
     return { id };
   });
+
+/** Create a personal workspace team on first editor open if the user has none. */
+export const ensureEditorWorkspace = createServerFn({ method: "POST" })
+  .middleware([authMiddleware])
+  .handler(async ({ context }) => {
+    await requireSiteEditor(context.userId);
+    const db = await sql();
+    const existing = await db<TeamRow>`
+      select t.id, t.name, t.invite_code, m.role
+      from teams t
+      join team_members m on m.team_id = t.id
+      where m.user_id = ${context.userId}
+      order by t.created_at asc
+      limit 1
+    `;
+    if (existing[0]) return existing[0];
+    const id = newId("team");
+    const code = inviteCode();
+    const name = BRAND;
+    await db`
+      insert into teams (id, name, invite_code, created_by)
+      values (${id}, ${name}, ${code}, ${context.userId})
+    `;
+    await db`
+      insert into team_members (team_id, user_id, role)
+      values (${id}, ${context.userId}, ${"owner"})
+    `;
+    return { id, name, invite_code: code, role: "owner" as const };
+  });
+
+export const listSiteContent = createServerFn({ method: "GET" })
+  .middleware([authMiddleware])
+  .handler(async ({ context }) => {
+    await requireSiteEditor(context.userId);
+    const db = await sql();
+    return db<ContentOverride>`
+      select
+        method_id as id,
+        'site'::text as team_id,
+        method_id,
+        title,
+        lead,
+        source,
+        warn,
+        notes,
+        updated_by,
+        updated_at::text as updated_at
+      from site_content
+      order by updated_at desc
+    `;
+  });
+
+export const saveSiteContent = createServerFn({ method: "POST" })
+  .middleware([authMiddleware])
+  .validator((data: { patch: MethodPatch }) => {
+    if (!data.patch?.methodId) throw new Error("Нужна методика.");
+    return data;
+  })
+  .handler(async ({ context, data }) => {
+    await requireSiteEditor(context.userId);
+    const db = await sql();
+    const p = data.patch;
+    await db`
+      insert into site_content (method_id, title, lead, source, warn, notes, updated_by)
+      values (
+        ${p.methodId},
+        ${p.title ?? null},
+        ${p.lead ?? null},
+        ${p.source ?? null},
+        ${p.warn ?? null},
+        ${p.notes ?? null},
+        ${context.userId}
+      )
+      on conflict (method_id) do update set
+        title = excluded.title,
+        lead = excluded.lead,
+        source = excluded.source,
+        warn = excluded.warn,
+        notes = excluded.notes,
+        updated_by = excluded.updated_by,
+        updated_at = CURRENT_TIMESTAMP
+    `;
+    return { ok: true as const };
+  });
+
+/** Public: catalog method with site_content merged (no auth). */
+export const getPublicMethod = createServerFn({ method: "GET" })
+  .validator((data: { id: string }) => {
+    if (!data?.id) throw new Error("Нужен id методики.");
+    return data;
+  })
+  .handler(async ({ data }): Promise<Test | null> => {
+    const base = getTest(data.id);
+    if (!base) return null;
+    try {
+      const db = await sql();
+      const rows = await db<ContentOverride>`
+        select
+          method_id as id,
+          'site'::text as team_id,
+          method_id,
+          title,
+          lead,
+          source,
+          warn,
+          notes,
+          updated_by,
+          updated_at::text as updated_at
+        from site_content
+        where method_id = ${data.id}
+        limit 1
+      `;
+      return applyContentOverride(base, rows[0] ?? null);
+    } catch {
+      // No DATABASE_URL / memory-only Workers: serve static catalog.
+      return base;
+    }
+  });
+
+export const listPublicCatalog = createServerFn({ method: "GET" }).handler(
+  async (): Promise<Test[]> => {
+    try {
+      const db = await sql();
+      const rows = await db<ContentOverride>`
+        select
+          method_id as id,
+          'site'::text as team_id,
+          method_id,
+          title,
+          lead,
+          source,
+          warn,
+          notes,
+          updated_by,
+          updated_at::text as updated_at
+        from site_content
+      `;
+      const byId = new Map(rows.map((r) => [r.method_id, r]));
+      return TESTS.map((t) => applyContentOverride(t, byId.get(t.id) ?? null));
+    } catch {
+      return TESTS;
+    }
+  },
+);

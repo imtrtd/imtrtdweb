@@ -1,6 +1,6 @@
 import { getRequest } from "@tanstack/react-start/server";
 import { gateIdentityEnabled } from "./gate-identity.server";
-import { auth, authConfigured } from "./server";
+import { authConfigured, getAuth } from "./server";
 
 /**
  * Server-side session resolution (server-only).
@@ -13,7 +13,9 @@ import { auth, authConfigured } from "./server";
  */
 
 /** True when a real database is configured server-side. */
-const databaseConfigured = Boolean(process.env.DATABASE_URL?.trim());
+const databaseConfigured = Boolean(
+  process.env.DATABASE_URL?.trim() || process.env.PSY_DATABASE_URL?.trim(),
+);
 
 /** Re-export so callers can branch on it without importing `server.ts`. */
 export { authConfigured };
@@ -65,7 +67,7 @@ export async function getSessionUser(
     headers = new Headers(request.headers);
     headers.set("Authorization", `Bearer ${bearerToken}`);
   }
-  const session = await auth.api.getSession({ headers });
+  const session = await getAuth().api.getSession({ headers });
   if (!session?.user) return null;
   return { id: session.user.id, email: session.user.email ?? null };
 }

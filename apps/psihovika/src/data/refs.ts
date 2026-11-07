@@ -212,7 +212,7 @@ function parseCitationFromSource(source: string): Citation | null {
   // Authors are Latin names or a capitalized surname — not prose like "отчёт".
   const looksLikeAuthor =
     /[A-Za-z]/.test(chunk) ||
-    /(?:^|\s)[A-ZА-ЯЁ][A-Za-zА-Яа-яЁё'`.\-]+$/u.test(chunk);
+    /(?:^|\s)[A-ZА-ЯЁ][A-Za-zА-Яа-яЁё'`.-]+$/u.test(chunk);
   if (!looksLikeAuthor) return null;
 
   return {

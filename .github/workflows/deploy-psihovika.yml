@@ -8,10 +8,219 @@ on:
       - "apps/psihovika/**"
       - ".github/workflows/deploy-psihovika.yml"
   workflow_dispatch:
+    inputs:
+      operation:
+        description: "Deploy the Worker or check Neon access"
+        type: choice
+        options:
+          - deploy
+          - check-neon
+          - provision-neon
+          - test-neon
+        default: deploy
 
 jobs:
+  check-neon:
+    name: Check Neon access
+    if: github.event_name == 'workflow_dispatch' && inputs.operation == 'check-neon'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: read
+    steps:
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - name: Verify Neon project and production branch
+        env:
+          NEON_API_KEY: ${{ secrets.NEON_API_KEY }}
+          EDITOR_EMAILS: ${{ secrets.EDITOR_EMAILS || secrets.EDITOR_EMAIL }}
+        run: |
+          set -euo pipefail
+          if [ -z "$NEON_API_KEY" ]; then
+            echo "::error::NEON_API_KEY is unavailable to this workflow."
+            exit 1
+          fi
+          if ! npx --yes neon@latest projects get withered-mountain-10644368 > "$RUNNER_TEMP/neon-project.json" 2> "$RUNNER_TEMP/neon-error.log"; then
+            echo "::error::Could not access the requested Neon project."
+            exit 1
+          fi
+          if ! npx --yes neon@latest branches list --project-id withered-mountain-10644368 -o json > "$RUNNER_TEMP/neon-branches.json" 2> "$RUNNER_TEMP/neon-error.log"; then
+            echo "::error::Could not list Neon branches."
+            exit 1
+          fi
+          if ! jq -e 'any(.[]; .name == "production")' "$RUNNER_TEMP/neon-branches.json" > /dev/null; then
+            echo "::error::The production branch was not found."
+            exit 1
+          fi
+          echo "Neon project and production branch are accessible."
+          if [ -n "$EDITOR_EMAILS" ]; then
+            echo "EDITOR_EMAILS is configured."
+          else
+            echo "::warning::EDITOR_EMAILS / EDITOR_EMAIL is not configured; site editing will remain disabled."
+          fi
+
+  provision-neon:
+    name: Provision Neon services
+    if: github.event_name == 'workflow_dispatch' && inputs.operation == 'provision-neon'
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    permissions:
+      contents: read
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - name: Install dependencies (incl. Neon config)
+        working-directory: apps/psihovika
+        run: npm ci
+      - name: Apply Neon configuration
+        working-directory: apps/psihovika
+        env:
+          NEON_API_KEY: ${{ secrets.NEON_API_KEY }}
+        run: |
+          set -euo pipefail
+          if [ -z "$NEON_API_KEY" ]; then
+            echo "::error::NEON_API_KEY is unavailable to this workflow."
+            exit 1
+          fi
+          if ! npx --yes neon@latest deploy --project-id withered-mountain-10644368 --branch production > "$RUNNER_TEMP/neon-deploy.log" 2>&1; then
+            echo "::error::Neon configuration could not be applied. Check project access, branch protection and Neon service eligibility."
+            exit 1
+          fi
+          if [ ! -f .env.local ] && [ ! -f .env ]; then
+            echo "::error::Neon did not write the environment file."
+            exit 1
+          fi
+          echo "Neon configuration applied and environment file retrieved."
+      - name: Check Postgres and Auth endpoints
+        working-directory: apps/psihovika
+        run: |
+          set -euo pipefail
+          env_file=".env.local"
+          if [ ! -f "$env_file" ]; then env_file=".env"; fi
+          node --env-file="$env_file" --input-type=module <<'NODE'
+          import pg from "pg";
+          if (!process.env.DATABASE_URL || !process.env.NEON_AUTH_BASE_URL) {
+            throw new Error("Neon did not provide the required service variables");
+          }
+          const pool = new pg.Pool({ connectionString: process.env.DATABASE_URL, max: 1 });
+          try {
+            const result = await pool.query("SELECT 1 AS ok");
+            if (result.rows[0]?.ok !== 1) throw new Error("Unexpected database result");
+            console.log("Postgres: SELECT 1 succeeded");
+          } finally {
+            await pool.end();
+          }
+          const base = process.env.NEON_AUTH_BASE_URL.replace(/\/+$/, "");
+          const response = await fetch(`${base}/get-session`);
+          if (response.status !== 200 && response.status !== 401) {
+            throw new Error(`Neon Auth session endpoint returned HTTP ${response.status}`);
+          }
+          console.log(`Neon Auth: session endpoint returned HTTP ${response.status}`);
+          NODE
+
+  test-neon:
+    name: Test app against isolated Neon branch
+    if: github.event_name == 'workflow_dispatch' && inputs.operation == 'test-neon'
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    permissions:
+      contents: read
+    env:
+      NEON_API_KEY: ${{ secrets.NEON_API_KEY }}
+      TEST_BRANCH: ci-psy-${{ github.run_id }}-${{ github.run_attempt }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - name: Install dependencies
+        run: npm --prefix apps/psihovika ci
+      - name: Create temporary database branch
+        id: branch
+        run: |
+          set -euo pipefail
+          if [ -z "$NEON_API_KEY" ]; then
+            echo "::error::NEON_API_KEY is unavailable to this workflow."
+            exit 1
+          fi
+          npx --yes neon@latest branches create \
+            --project-id withered-mountain-10644368 \
+            --parent production --name "$TEST_BRANCH" --no-secrets \
+            --expires-at "$(date -u -d '+1 day' +%FT%TZ)" > "$RUNNER_TEMP/branch.log" 2>&1
+          echo "created=true" >> "$GITHUB_OUTPUT"
+      - name: Pull temporary database environment
+        run: |
+          set -euo pipefail
+          npx --yes neon@latest env pull \
+            --project-id withered-mountain-10644368 --branch "$TEST_BRANCH" \
+            --service postgres --file "$RUNNER_TEMP/psy-neon-test.env" \
+            > "$RUNNER_TEMP/neon-env.log" 2>&1
+      - name: Build and verify local sign-in against Postgres
+        working-directory: apps/psihovika
+        run: |
+          set -euo pipefail
+          export BETTER_AUTH_SECRET
+          BETTER_AUTH_SECRET="$(openssl rand -hex 32)"
+          echo "::add-mask::$BETTER_AUTH_SECRET"
+          export BETTER_AUTH_URL="http://localhost:8080"
+          export VITE_AUTH_ENABLED=true
+          node --env-file="$RUNNER_TEMP/psy-neon-test.env" --input-type=module <<'NODE'
+          for (const key of ["DATABASE_URL", "DATABASE_URL_UNPOOLED"]) {
+            const value = process.env[key];
+            if (!value) throw new Error(`${key} was not provided by Neon`);
+            console.log(`::add-mask::${value}`);
+            console.log(`::add-mask::${new URL(value).password}`);
+          }
+          NODE
+          node --env-file="$RUNNER_TEMP/psy-neon-test.env" "$(command -v npm)" run build
+          node --env-file="$RUNNER_TEMP/psy-neon-test.env" "$(command -v npm)" run dev > "$RUNNER_TEMP/psy-server.log" 2>&1 &
+          server_pid=$!
+          trap 'kill "$server_pid" 2>/dev/null || true' EXIT
+          for attempt in $(seq 1 60); do
+            if curl -fsS -o /dev/null http://localhost:8080/; then break; fi
+            sleep 2
+          done
+          curl -fsS -o /dev/null http://localhost:8080/
+          test_email="ci-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}@example.invalid"
+          curl -fsS http://localhost:8080/api/auth/get-session > "$RUNNER_TEMP/anonymous.json"
+          jq -e '. == null' "$RUNNER_TEMP/anonymous.json" > /dev/null
+          signup_body="$(jq -n --arg email "$test_email" '{name:"Test User", email:$email, password:"ci-test-password-2026"}')"
+          curl -fsS -c "$RUNNER_TEMP/psy-cookies" \
+            -H 'Content-Type: application/json' -H 'Origin: http://localhost:8080' \
+            --data "$signup_body" \
+            http://localhost:8080/api/auth/sign-up/email > "$RUNNER_TEMP/signup.json"
+          curl -fsS -b "$RUNNER_TEMP/psy-cookies" \
+            http://localhost:8080/api/auth/get-session > "$RUNNER_TEMP/session.json"
+          jq -e --arg email "$test_email" '.user.email == $email' "$RUNNER_TEMP/session.json" > /dev/null
+          curl -fsS -b "$RUNNER_TEMP/psy-cookies" -c "$RUNNER_TEMP/psy-cookies" \
+            -H 'Content-Type: application/json' -H 'Origin: http://localhost:8080' \
+            --data '{}' http://localhost:8080/api/auth/sign-out > /dev/null
+          curl -fsS -b "$RUNNER_TEMP/psy-cookies" http://localhost:8080/api/auth/get-session > "$RUNNER_TEMP/signed-out.json"
+          jq -e '. == null' "$RUNNER_TEMP/signed-out.json" > /dev/null
+          signin_body="$(jq -n --arg email "$test_email" '{email:$email, password:"ci-test-password-2026"}')"
+          curl -fsS -c "$RUNNER_TEMP/psy-cookies" \
+            -H 'Content-Type: application/json' -H 'Origin: http://localhost:8080' \
+            --data "$signin_body" http://localhost:8080/api/auth/sign-in/email > /dev/null
+          curl -fsS -b "$RUNNER_TEMP/psy-cookies" http://localhost:8080/api/auth/get-session > "$RUNNER_TEMP/signed-in.json"
+          jq -e --arg email "$test_email" '.user.email == $email' "$RUNNER_TEMP/signed-in.json" > /dev/null
+          echo "App build, Postgres migrations, local signup, session, sign-out and sign-in succeeded."
+      - name: Delete temporary database branch
+        if: always() && steps.branch.outputs.created == 'true'
+        run: |
+          npx --yes neon@latest branches delete "$TEST_BRANCH" \
+            --project-id withered-mountain-10644368 > "$RUNNER_TEMP/neon-delete.log" 2>&1
+
   deploy:
     name: Deploy psy (Workers)
+    if: github.event_name != 'workflow_dispatch' || inputs.operation == 'deploy'
     runs-on: ubuntu-latest
     timeout-minutes: 20
     defaults:
@@ -34,12 +243,61 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
+      - name: Resolve secrets
+        id: secrets
+        env:
+          DATABASE_URL: ${{ secrets.PSY_DATABASE_URL || secrets.DATABASE_URL }}
+          BETTER_AUTH_SECRET: ${{ secrets.BETTER_AUTH_SECRET }}
+          BETTER_AUTH_URL: ${{ secrets.BETTER_AUTH_URL }}
+          EDITOR_EMAILS: ${{ secrets.EDITOR_EMAILS || secrets.EDITOR_EMAIL }}
+        run: |
+          set -euo pipefail
+          if [ -z "${DATABASE_URL}" ]; then
+            echo "::warning::No PSY_DATABASE_URL / DATABASE_URL — deploying public catalog only (no accounts, no /editor)."
+            echo "has_db=false" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+          if [ -z "${BETTER_AUTH_SECRET}" ]; then
+            echo "::error::Set repo secret BETTER_AUTH_SECRET (e.g. openssl rand -base64 32) when a database is configured."
+            exit 1
+          fi
+          echo "::add-mask::${DATABASE_URL}"
+          echo "::add-mask::${BETTER_AUTH_SECRET}"
+          echo "has_db=true" >> "$GITHUB_OUTPUT"
+          {
+            echo "DATABASE_URL=${DATABASE_URL}"
+            echo "PSY_DATABASE_URL=${DATABASE_URL}"
+            echo "BETTER_AUTH_SECRET=${BETTER_AUTH_SECRET}"
+            echo "BETTER_AUTH_URL=${BETTER_AUTH_URL:-https://psy.unitl.workers.dev}"
+            echo "EDITOR_EMAILS=${EDITOR_EMAILS}"
+          } >> "$GITHUB_ENV"
+
       - name: Build for Cloudflare
         run: npm run build:cloudflare
         env:
           DEPLOY_TARGET: cloudflare
 
-      - name: Deploy Worker
+      - name: Apply Postgres migrations
+        if: steps.secrets.outputs.has_db == 'true'
+        run: npm run db:migrate
+
+      - name: Deploy Worker (with database)
+        if: steps.secrets.outputs.has_db == 'true'
+        uses: cloudflare/wrangler-action@v4
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          wranglerVersion: "4.88.0"
+          workingDirectory: apps/psihovika
+          command: deploy
+          secrets: |
+            DATABASE_URL
+            BETTER_AUTH_SECRET
+            BETTER_AUTH_URL
+            EDITOR_EMAILS
+
+      - name: Deploy Worker (public catalog only)
+        if: steps.secrets.outputs.has_db != 'true'
         uses: cloudflare/wrangler-action@v4
         with:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}

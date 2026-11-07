@@ -61,28 +61,19 @@ import {
  * restart clears both the secret and PGLite together.
  *
  * Cloudflare Workers forbid generating random values at module top-level
- * (global scope). When `BETTER_AUTH_SECRET` is unset on Workers we use a fixed
- * ephemeral string instead — set the secret via `wrangler secret` for stable
- * sessions across isolates.
+ * (global scope), so the auth instance is built lazily on the first request
+ * (`getAuth()`), where RNG is allowed. Without `BETTER_AUTH_SECRET` a Worker
+ * gets a random per-isolate secret (in-memory mode only) — never a constant
+ * baked into the source, which would let anyone forge signed session cookies.
  */
 const globalAuthRef = globalThis as typeof globalThis & {
   __grokAuthPreviewSecret__?: string;
   __grokAuthMemoryDb__?: Record<string, unknown[]>;
 };
 
-/** Fixed Workers fallback — RNG at global scope is disallowed on CF Workers. */
-const WORKER_EPHEMERAL_AUTH_SECRET =
-  "psy-worker-ephemeral-auth-secret-set-BETTER_AUTH_SECRET";
-
+/** Must only be called inside a request on Workers (see `getAuth()`). */
 function previewAuthSecret(): string {
-  if (globalAuthRef.__grokAuthPreviewSecret__) {
-    return globalAuthRef.__grokAuthPreviewSecret__;
-  }
-  if (isCloudflareWorker()) {
-    globalAuthRef.__grokAuthPreviewSecret__ = WORKER_EPHEMERAL_AUTH_SECRET;
-    return globalAuthRef.__grokAuthPreviewSecret__;
-  }
-  globalAuthRef.__grokAuthPreviewSecret__ = randomBytes(32).toString("hex");
+  globalAuthRef.__grokAuthPreviewSecret__ ??= randomBytes(32).toString("hex");
   return globalAuthRef.__grokAuthPreviewSecret__;
 }
 
@@ -104,8 +95,7 @@ const grokClientId = env("GROK_AUTH_CLIENT_ID") ?? PREVIEW_CLIENT_ID;
 const grokClientSecret = env("GROK_AUTH_CLIENT_SECRET") ?? PREVIEW_CLIENT_SECRET;
 
 /** True when federated sign-in is active (real auth is enforced). */
-export const authConfigured =
-  !authDisabled && Boolean(grokClientId && grokClientSecret);
+export const authConfigured = !authDisabled && Boolean(grokClientId && grokClientSecret);
 
 // This app's own Better Auth origin. When deployed the deployer injects the
 // public URL. In the sandbox live preview there's no fixed URL (each preview gets
@@ -116,7 +106,11 @@ export const authConfigured =
 const explicitBaseURL = env("BETTER_AUTH_URL");
 // Explicit `string[]` (not a readonly tuple) — Better Auth's DynamicBaseURLConfig
 // requires a mutable `allowedHosts: string[]`.
-const previewAllowedHosts: string[] = [...PREVIEW_ALLOWED_HOSTS];
+// Quick tunnels (`*.trycloudflare.com`) only front a local dev server — anyone
+// can mint one, so a deployed Worker must never trust them as origins/hosts.
+const previewAllowedHosts: string[] = isCloudflareWorker()
+  ? PREVIEW_ALLOWED_HOSTS.filter((host) => host !== "*.trycloudflare.com")
+  : [...PREVIEW_ALLOWED_HOSTS];
 // Local `npm run dev` (port 8080 contract). Browsers may send Origin as any of
 // these for the same server — trusting only `localhost` rejects `127.0.0.1` and
 // breaks email/password with "Invalid origin".
@@ -147,7 +141,7 @@ const trustedOrigins: string[] = explicitBaseURL
       ...LOCAL_DEV_ORIGINS,
     ];
 
-const databaseUrl = env("DATABASE_URL");
+const databaseUrl = env("DATABASE_URL") ?? env("PSY_DATABASE_URL");
 const onCloudflareWorker = isCloudflareWorker();
 
 // Static broker OAuth endpoints (skip OIDC discovery on every sign-in / callback).
@@ -206,85 +200,108 @@ const grokOAuthPlugin = authConfigured
     })
   : null;
 
-export const auth = betterAuth({
-  baseURL,
-  // Deployed apps inject BETTER_AUTH_SECRET. Preview: process-stable secret on
-  // globalThis so HMR doesn't invalidate PGLite-backed sessions (see above).
-  secret: env("BETTER_AUTH_SECRET") ?? previewAuthSecret(),
-  database,
+function authSecret(): string {
+  const secret = env("BETTER_AUTH_SECRET");
+  if (secret) return secret;
+  // A persistent DB with a guessable signing secret would let sessions be forged.
+  if (databaseUrl && onCloudflareWorker) {
+    throw new Error(
+      "[auth] BETTER_AUTH_SECRET is required on Cloudflare Workers when " +
+        "DATABASE_URL is set — run `wrangler secret put BETTER_AUTH_SECRET`.",
+    );
+  }
+  return previewAuthSecret();
+}
 
-  // CSRF / origin check for credentialed auth POSTs (email sign-up/sign-in, …).
-  // See `trustedOrigins` construction above — must cover live preview hosts AND
-  // local loopback variants, or clients get "Invalid origin".
-  trustedOrigins,
+function createAuth() {
+  return betterAuth({
+    baseURL,
+    // Deployed apps inject BETTER_AUTH_SECRET. Preview / Worker in-memory mode:
+    // process-stable random secret on globalThis (see above).
+    secret: authSecret(),
+    database,
 
-  // Encrypt broker-issued OAuth tokens at rest, and treat the broker's upstreams
-  // as trusted first-party identities. The broker owns identity and X emails are
-  // synthetic/unverified, so WITHOUT this a login can fail with
-  // `account_not_linked` (Better Auth refuses to attach an untrusted, unverified
-  // identity to an existing user). Google and X carry DISTINCT emails, so this
-  // never merges them into one user — they stay separate identities.
-  account: {
-    encryptOAuthTokens: true,
-    accountLinking: {
-      enabled: true,
-      trustedProviders: [
-        ...GROK_PROVIDERS.map((p) => p.providerId),
-        GATE_PROVIDER_ID,
-      ],
-      // X's synthetic email is never "verified", so don't gate linking on the
-      // local user's email-verified state.
-      requireLocalEmailVerified: false,
+    // CSRF / origin check for credentialed auth POSTs (email sign-up/sign-in, …).
+    // See `trustedOrigins` construction above — must cover live preview hosts AND
+    // local loopback variants, or clients get "Invalid origin".
+    trustedOrigins,
+
+    // Encrypt broker-issued OAuth tokens at rest, and treat the broker's upstreams
+    // as trusted first-party identities. The broker owns identity and X emails are
+    // synthetic/unverified, so WITHOUT this a login can fail with
+    // `account_not_linked` (Better Auth refuses to attach an untrusted, unverified
+    // identity to an existing user). Google and X carry DISTINCT emails, so this
+    // never merges them into one user — they stay separate identities.
+    account: {
+      encryptOAuthTokens: true,
+      accountLinking: {
+        enabled: true,
+        trustedProviders: [...GROK_PROVIDERS.map((p) => p.providerId), GATE_PROVIDER_ID],
+        // X's synthetic email is never "verified", so don't gate linking on the
+        // local user's email-verified state.
+        requireLocalEmailVerified: false,
+      },
     },
-  },
 
-  // Cache the session in the short-lived signed `session_data` cookie so reads
-  // (incl. the client's `/get-session`) skip the DB — this shrinks the "loading"
-  // window and reduces auth flicker. See the `auth` skill for the full
-  // flicker-prevention guidance (gate on `isPending`; SSR the session).
-  session: { cookieCache: { enabled: true, maxAge: 300 } },
+    // Cache the session in the short-lived signed `session_data` cookie so reads
+    // (incl. the client's `/get-session`) skip the DB — this shrinks the "loading"
+    // window and reduces auth flicker. See the `auth` skill for the full
+    // flicker-prevention guidance (gate on `isPending`; SSR the session).
+    session: { cookieCache: { enabled: true, maxAge: 300 } },
 
-  // Local email/password — toggled only via `./email-password` (not a plugin).
-  ...(emailAndPasswordEnabled ? { emailAndPassword: { enabled: true } } : {}),
+    // Local email/password — toggled only via `./email-password` (not a plugin).
+    ...(emailAndPasswordEnabled ? { emailAndPassword: { enabled: true } } : {}),
 
-  // `__Host-` prefixed cookies: the browser REFUSES any same-named cookie that
-  // carries a `Domain` attribute, so a sibling `*.grok.me` app cannot "toss" a
-  // `Domain=.grok.me` session cookie onto this app. `__Host-` requires Secure +
-  // Path=/ + no Domain; Better Auth otherwise uses `__Secure-` (which permits
-  // Domain), so we drop its auto prefix (`useSecureCookies: false`) and set
-  // Secure + the names ourselves. (Browsers allow Secure cookies on
-  // `http://localhost`, so local dev still works.)
-  advanced: {
-    useSecureCookies: false,
-    defaultCookieAttributes: { secure: true, sameSite: "lax", path: "/" },
-    cookies: {
-      session_token: { name: SESSION_TOKEN_COOKIE },
-      session_data: { name: "__Host-grok-auth.session_data" },
-      account_data: { name: "__Host-grok-auth.account_data" },
-      dont_remember: { name: "__Host-grok-auth.dont_remember" },
+    // `__Host-` prefixed cookies: the browser REFUSES any same-named cookie that
+    // carries a `Domain` attribute, so a sibling `*.grok.me` app cannot "toss" a
+    // `Domain=.grok.me` session cookie onto this app. `__Host-` requires Secure +
+    // Path=/ + no Domain; Better Auth otherwise uses `__Secure-` (which permits
+    // Domain), so we drop its auto prefix (`useSecureCookies: false`) and set
+    // Secure + the names ourselves. (Browsers allow Secure cookies on
+    // `http://localhost`, so local dev still works.)
+    advanced: {
+      useSecureCookies: false,
+      defaultCookieAttributes: { secure: true, sameSite: "lax", path: "/" },
+      cookies: {
+        session_token: { name: SESSION_TOKEN_COOKIE },
+        session_data: { name: "__Host-grok-auth.session_data" },
+        account_data: { name: "__Host-grok-auth.account_data" },
+        dont_remember: { name: "__Host-grok-auth.dont_remember" },
+      },
     },
-  },
 
-  plugins: [
-    gateIdentitySessions(),
+    plugins: [
+      gateIdentitySessions(),
 
-    // One genericOAuth provider per upstream (when auth is on), all federating
-    // to the broker with the SAME client and differing only by the `idp` hint.
-    ...(grokOAuthPlugin ? [grokOAuthPlugin] : []),
+      // One genericOAuth provider per upstream (when auth is on), all federating
+      // to the broker with the SAME client and differing only by the `idp` hint.
+      ...(grokOAuthPlugin ? [grokOAuthPlugin] : []),
 
-    // Accept `Authorization: Bearer <session-token>` as an alternative to the
-    // cookie. Needed for the LIVE PREVIEW: the app runs in an embedded iframe
-    // where cookies are partitioned, so after popup sign-in it authenticates with
-    // a bearer token instead (see `client.ts` / the `auth` skill). The hook only
-    // fires when an Authorization header is present, so the cookie path
-    // (deployed apps) is unaffected.
-    bearer(),
+      // Accept `Authorization: Bearer <session-token>` as an alternative to the
+      // cookie. Needed for the LIVE PREVIEW: the app runs in an embedded iframe
+      // where cookies are partitioned, so after popup sign-in it authenticates with
+      // a bearer token instead (see `client.ts` / the `auth` skill). The hook only
+      // fires when an Authorization header is present, so the cookie path
+      // (deployed apps) is unaffected.
+      bearer(),
 
-    // Bridges Better Auth's Set-Cookie into TanStack Start responses. MUST be
-    // last so it runs after every other plugin's hooks.
-    tanstackStartCookies(),
-  ],
-});
+      // Bridges Better Auth's Set-Cookie into TanStack Start responses. MUST be
+      // last so it runs after every other plugin's hooks.
+      tanstackStartCookies(),
+    ],
+  });
+}
+
+let authInstance: ReturnType<typeof createAuth> | undefined;
+
+/**
+ * Lazily built Better Auth instance. Call it inside request handlers / server
+ * functions only — never at module scope (Workers forbid RNG there).
+ */
+export function getAuth(): ReturnType<typeof createAuth> {
+  authInstance ??= createAuth();
+  return authInstance;
+}
 
 export function readSessionToken(): string | null {
   return getCookie(SESSION_TOKEN_COOKIE) ?? null;
