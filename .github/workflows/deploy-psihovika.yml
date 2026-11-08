@@ -269,8 +269,8 @@ jobs:
           if [ -z "$DATABASE_URL" ] && [ -n "$NEON_API_KEY" ]; then
             if npx --yes neon@latest env pull --project-id "$NEON_PROJECT" --branch production \
                  --service postgres --file "$RUNNER_TEMP/neon.env" > "$RUNNER_TEMP/neon-env.log" 2>&1; then
-              DATABASE_URL="$(node --env-file="$RUNNER_TEMP/neon.env" -p 'process.env.DATABASE_URL ?? ""')"
-              DATABASE_URL_UNPOOLED="$(node --env-file="$RUNNER_TEMP/neon.env" -p 'process.env.DATABASE_URL_UNPOOLED ?? ""')"
+              DATABASE_URL="$(env -u DATABASE_URL -u DATABASE_URL_UNPOOLED node --env-file="$RUNNER_TEMP/neon.env" -p 'process.env.DATABASE_URL ?? ""')"
+              DATABASE_URL_UNPOOLED="$(env -u DATABASE_URL -u DATABASE_URL_UNPOOLED node --env-file="$RUNNER_TEMP/neon.env" -p 'process.env.DATABASE_URL_UNPOOLED ?? ""')"
               mask "$DATABASE_URL"; mask "$DATABASE_URL_UNPOOLED"
               echo "Database: Neon production branch (pulled with NEON_API_KEY)."
             else
