@@ -3,6 +3,8 @@
 @import "./styles/portfolio.css";
 @import "./styles/brand.css";
 @import "./styles/samples.css";
+@import "./styles/admin-fonts.css";
+@import "./styles/admin.css";
 
 @theme {
 	--font-display: "Space Grotesk", sans-serif;
@@ -21,11 +23,4 @@
 	--font-sans: "Space Grotesk", sans-serif;
 	--font-mono: "Geist Mono", ui-monospace, monospace;
 	color-scheme: dark;
-}
-
-.admin-shell {
-	min-height: 100vh;
-	background: #101218;
-	color: #eef1f6;
-	font-family: "Space Grotesk", sans-serif;
 }

@@ -9,11 +9,7 @@ import { DriftBed, DriftToggle } from "./components/landing/DriftControl";
 function App() {
 	const path = window.location.pathname.replace(/\/+$/, "") || "/";
 	if (path === "/admin" || path.startsWith("/admin/")) {
-		return (
-			<div className="admin-shell">
-				<AdminPage />
-			</div>
-		);
+		return <AdminPage />;
 	}
 	let page = <LandingPage />;
 	if (path === "/systems") page = <SystemsPage />;
