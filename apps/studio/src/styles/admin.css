@@ -1,0 +1,234 @@
+/*
+ * Admin (admin.imtrtd.space/admin) in the imtrtd design system — the same tokens, type and
+ * shapes as imtrtd.space (apps/hq/src/styles/global.css): dark ink ground, square corners,
+ * violet hairlines, uppercase mono labels, one accent that the header switch changes.
+ * Everything is scoped to .adm so the studio landing on "/" is untouched.
+ */
+
+.adm {
+	--ink: #0a0a0f;
+	--ink-soft: #14141c;
+	--ink-raise: #1c1c27;
+	--paper: #f3effa;
+	--fog: #c8cedb;
+	--mute: #8b93a7;
+	--signal: #b28dff;
+	--hair: rgb(178 141 255 / 0.18);
+	--hair-strong: rgb(178 141 255 / 0.34);
+	--ok: #3dff9e;
+	--err: #ff2bd6;
+	--warn: #ffc629;
+	--ease: cubic-bezier(0.16, 1, 0.3, 1);
+	--sans: Arial, "Arimo", sans-serif;
+	--display: "Space Grotesk", Arial, "Arimo", sans-serif;
+	--mono: "Geist Mono", ui-monospace, monospace;
+
+	min-height: 100dvh;
+	background: var(--ink);
+	color: var(--paper);
+	font-family: var(--sans);
+	font-size: 16px;
+	line-height: 1.5;
+	color-scheme: dark;
+	-webkit-text-size-adjust: 100%;
+}
+.adm[data-accent="lime"] { --signal: #d8ff00; }
+.adm[data-accent="magenta"] { --signal: #ff2bd6; --err: #ff4d19; }
+.adm[data-accent="cyan"] { --signal: #2ee9ff; }
+
+.adm *, .adm ::before, .adm ::after { box-sizing: border-box; }
+.adm ::selection { background: var(--signal); color: var(--ink); }
+.adm :focus-visible { outline: 2px solid var(--signal); outline-offset: 3px; }
+.adm h1, .adm h2, .adm h3 { font-family: var(--display); text-wrap: balance; margin: 0; }
+.adm p { margin: 0; text-wrap: pretty; }
+.adm a { color: inherit; text-decoration: none; }
+.adm button { font: inherit; color: inherit; background: none; border: 0; cursor: pointer; }
+.adm button:disabled { cursor: default; opacity: 0.55; }
+.adm ul { list-style: none; margin: 0; padding: 0; }
+.adm img { display: block; max-width: 100%; }
+
+/* ---------- primitives ---------- */
+.adm .label {
+	font-family: var(--mono);
+	font-size: 0.72rem;
+	line-height: 1.2;
+	letter-spacing: 0.14em;
+	text-transform: uppercase;
+}
+.adm .t-mute { color: var(--mute); }
+.adm .t-fog { color: var(--fog); }
+.adm .t-signal { color: var(--signal); }
+.adm .wrap { width: 100%; max-width: 76rem; margin-inline: auto; padding-inline: 1rem; }
+@media (width >= 40rem) { .adm .wrap { padding-inline: 1.5rem; } }
+@media (width >= 64rem) { .adm .wrap { padding-inline: 2rem; } }
+
+.adm .btn {
+	display: inline-flex; align-items: center; justify-content: center; gap: 0.6rem;
+	min-height: 2.75rem; padding: 0 1.25rem;
+	font-family: var(--mono); font-size: 0.74rem; letter-spacing: 0.14em; text-transform: uppercase;
+	white-space: nowrap; border: 1px solid transparent;
+	transition: transform 0.25s var(--ease), background-color 0.2s, color 0.2s, border-color 0.2s, box-shadow 0.25s;
+}
+.adm .btn:not(:disabled):hover { transform: translateY(-1px); }
+.adm .btn-primary { background: var(--signal); color: var(--ink); }
+.adm .btn-primary:not(:disabled):hover { box-shadow: 0 10px 40px -12px var(--signal); }
+.adm .btn-ghost { border-color: var(--hair-strong); color: var(--paper); }
+.adm .btn-ghost:not(:disabled):hover { border-color: var(--signal); color: var(--signal); }
+.adm .btn-danger { border-color: color-mix(in oklab, var(--err) 45%, transparent); color: var(--err); }
+.adm .btn-danger:not(:disabled):hover { border-color: var(--err); }
+.adm .btn-sm { min-height: 2.25rem; padding: 0 0.85rem; font-size: 0.68rem; }
+.adm .arrow { transition: transform 0.25s var(--ease); }
+.adm a:hover > .arrow, .adm .btn:hover .arrow { transform: translateX(3px); }
+
+.adm .chip {
+	display: inline-flex; align-items: center; gap: 0.45rem;
+	border: 1px solid var(--hair); padding: 0.3rem 0.6rem;
+	font-family: var(--mono); font-size: 0.68rem; letter-spacing: 0.1em; text-transform: uppercase;
+	color: var(--fog);
+}
+.adm .chip .dot { width: 0.45rem; height: 0.45rem; background: currentColor; }
+
+.adm .card {
+	position: relative;
+	background: linear-gradient(180deg, rgb(28 28 39 / 0.9), rgb(20 20 28 / 0.9));
+	border: 1px solid var(--hair);
+}
+
+/* fields: square, 16px so iOS does not zoom */
+.adm .field {
+	width: 100%; font: inherit; font-size: 16px; color: var(--paper);
+	background: rgb(10 10 15 / 0.7); border: 1px solid var(--hair-strong);
+	padding: 0.7rem 0.85rem; border-radius: 0; outline: none; transition: border-color 0.2s;
+}
+.adm .field:focus { border-color: var(--signal); }
+.adm .field::placeholder { color: var(--mute); }
+.adm textarea.field { resize: vertical; min-height: 4.5rem; line-height: 1.5; }
+.adm select.field {
+	appearance: none; padding-right: 2.2rem; cursor: pointer;
+	background-image: linear-gradient(45deg, transparent 50%, var(--mute) 50%), linear-gradient(-45deg, transparent 50%, var(--mute) 50%);
+	background-position: calc(100% - 1.05rem) 52%, calc(100% - 0.75rem) 52%;
+	background-size: 0.3rem 0.3rem; background-repeat: no-repeat;
+}
+.adm input[type="file"].field { padding: 0.45rem; font-size: 0.85rem; color: var(--fog); }
+.adm input[type="file"].field::file-selector-button {
+	margin-right: 0.75rem; padding: 0.45rem 0.8rem; border: 0; cursor: pointer;
+	background: var(--signal); color: var(--ink);
+	font-family: var(--mono); font-size: 0.68rem; letter-spacing: 0.12em; text-transform: uppercase;
+}
+.adm .fld { display: grid; gap: 0.45rem; }
+.adm .fld > span { color: var(--mute); }
+.adm .fld-hint { font-size: 0.78rem; color: var(--mute); line-height: 1.5; }
+
+/* option chips (filters) */
+.adm .opts { display: flex; flex-wrap: wrap; gap: 0.5rem; }
+.adm .opt {
+	display: inline-flex; align-items: center; gap: 0.5rem; min-height: 2.5rem; padding: 0 0.85rem;
+	border: 1px solid var(--hair-strong); font-size: 0.9rem; color: var(--fog);
+	transition: border-color 0.2s, background-color 0.2s, color 0.2s;
+}
+.adm .opt:hover { border-color: var(--signal); }
+.adm .opt[aria-pressed="true"] { border-color: var(--signal); background: color-mix(in oklab, var(--signal) 16%, transparent); color: var(--paper); }
+.adm .opt .n { font-family: var(--mono); font-size: 0.7rem; color: var(--mute); }
+
+/* status messages */
+.adm .msg { padding: 0.7rem 0.85rem; border: 1px solid var(--hair); font-size: 0.9rem; line-height: 1.45; background: var(--ink-soft); }
+.adm .msg[data-kind="err"] { border-color: var(--err); }
+.adm .msg[data-kind="err"] b { color: var(--err); }
+.adm .msg[data-kind="ok"] { border-color: var(--ok); }
+.adm .msg[data-kind="ok"] b { color: var(--ok); }
+
+/* ---------- header ---------- */
+.adm-head { position: sticky; top: 0; z-index: 20; border-bottom: 1px solid var(--hair); background: rgb(10 10 15 / 0.88); backdrop-filter: blur(6px); }
+.adm-head .row { display: grid; grid-template-columns: auto 1fr auto; align-items: center; gap: 0.25rem 1rem; padding-block: 0.5rem; }
+.adm-brand { display: inline-flex; align-items: center; gap: 0.75rem; padding-block: 0.25rem; }
+.adm-brand img { width: 2.5rem; height: 2.5rem; }
+@media (width < 48rem) { .adm-brand .label { display: none; } }
+.adm-tabs { grid-column: 1 / -1; grid-row: 2; display: flex; gap: 1.25rem; overflow-x: auto; scrollbar-width: none; margin-inline: -1rem; padding-inline: 1rem; }
+@media (width >= 64rem) { .adm-tabs { grid-column: 2; grid-row: 1; justify-content: center; gap: 1.75rem; margin: 0; padding: 0; } }
+.adm-tab { position: relative; display: inline-flex; align-items: center; gap: 0.45rem; height: 2.75rem; flex-shrink: 0; color: var(--mute); transition: color 0.2s; }
+.adm-tab:hover { color: var(--paper); }
+.adm-tab::after { content: ""; position: absolute; left: 0; right: 0; bottom: 0.55rem; height: 1px; background: var(--signal); transform: scaleX(0); transform-origin: left; transition: transform 0.3s var(--ease); }
+.adm-tab[aria-current="page"] { color: var(--paper); }
+.adm-tab[aria-current="page"]::after, .adm-tab:hover::after { transform: scaleX(1); }
+.adm-tab .badge { min-width: 1.25rem; padding: 0.1rem 0.3rem; background: var(--signal); color: var(--ink); font-size: 0.62rem; letter-spacing: 0.04em; text-align: center; }
+.adm-tools { display: flex; align-items: center; justify-content: flex-end; gap: 0.25rem; }
+
+.accents { display: flex; align-items: center; }
+.accents button { display: grid; place-items: center; width: 1.75rem; height: 2.75rem; }
+@media (width >= 40rem) { .accents button { width: 2rem; } }
+.accents span { width: 0.85rem; height: 0.85rem; opacity: 0.8; clip-path: polygon(0 0, calc(100% - 4px) 0, 100% 4px, 100% 100%, 4px 100%, 0 calc(100% - 4px)); }
+.accents [aria-checked="true"] span { opacity: 1; outline: 2px solid var(--paper); outline-offset: 2px; clip-path: none; }
+
+/* ---------- page ---------- */
+.adm-main { padding-block: 2.5rem 5rem; }
+@media (width >= 64rem) { .adm-main { padding-block: 3.5rem 6rem; } }
+.adm .sec-index { display: flex; gap: 0.75rem; align-items: center; color: var(--signal); }
+.adm .sec-index::before { content: ""; width: 1.5rem; height: 1px; background: currentColor; }
+.adm .sec-head { display: grid; gap: 0.9rem; margin-bottom: 2rem; }
+@media (width >= 64rem) { .adm .sec-head { grid-template-columns: minmax(0, 1fr) auto; align-items: end; margin-bottom: 2.5rem; } }
+.adm .display-md { font-weight: 600; letter-spacing: -0.03em; line-height: 1; font-size: clamp(2rem, 3.6vw, 3rem); }
+.adm .sec-head p { margin-top: 0.75rem; color: var(--fog); max-width: 60ch; }
+.adm .stack { display: grid; gap: 1rem; }
+.adm .sub { margin: 2.5rem 0 1rem; display: flex; align-items: baseline; justify-content: space-between; gap: 1rem; border-top: 1px solid var(--hair); padding-top: 1.25rem; }
+
+/* stats: hairline grid like "What shipped" */
+.adm .stats { display: grid; gap: 1px; background: var(--hair); border: 1px solid var(--hair); }
+@media (width >= 40rem) { .adm .stats { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (width >= 64rem) { .adm .stats { grid-template-columns: repeat(4, minmax(0, 1fr)); } }
+.adm .stat { display: grid; gap: 1.5rem; align-content: space-between; min-height: 9rem; padding: 1.5rem; background: rgb(10 10 15 / 0.94); text-align: left; transition: background-color 0.2s; }
+.adm .stat:hover { background: var(--ink-soft); }
+.adm .stat .num { font-family: var(--display); font-weight: 600; letter-spacing: -0.04em; line-height: 0.9; font-size: clamp(2.6rem, 5vw, 4rem); }
+.adm .stat .foot { display: flex; justify-content: space-between; align-items: center; gap: 0.5rem; color: var(--mute); }
+.adm .stat[data-alert="true"] .num { color: var(--warn); }
+.adm .stat[data-alert="true"] { box-shadow: inset 2px 0 0 var(--warn); }
+
+/* lead cards */
+.adm .lead { padding: 1.25rem; display: grid; gap: 1rem; }
+@media (width >= 40rem) { .adm .lead { padding: 1.5rem; } }
+.adm .lead-top { display: flex; flex-wrap: wrap; align-items: flex-start; justify-content: space-between; gap: 0.75rem 1rem; }
+.adm .lead-name { font-family: var(--display); font-weight: 600; font-size: 1.4rem; letter-spacing: -0.02em; line-height: 1.15; }
+.adm .lead-contact { color: var(--fog); }
+.adm .lead-contact:hover { color: var(--signal); }
+.adm .lead-msg { white-space: pre-wrap; color: var(--paper); border-left: 2px solid var(--signal); padding-left: 1rem; }
+.adm .lead-meta { display: flex; flex-wrap: wrap; gap: 0.5rem; }
+.adm .lead-status { width: auto; min-width: 11rem; font-size: 0.9rem; padding-block: 0.55rem; }
+.adm .grid-2 { display: grid; gap: 1rem; }
+@media (width >= 48rem) { .adm .grid-2 { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+.adm .span-2 { grid-column: 1 / -1; }
+
+.adm [data-st="new"] { color: var(--signal); }
+.adm [data-st="in_progress"] { color: var(--warn); }
+.adm [data-st="done"] { color: var(--ok); }
+.adm [data-st="archived"] { color: var(--mute); }
+
+/* rows (cases, services) */
+.adm .rows { border-top: 1px solid var(--hair); }
+.adm .row-item { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 0.75rem 1rem; padding: 1rem 0; border-bottom: 1px solid var(--hair); }
+.adm .row-main { display: flex; align-items: center; gap: 1rem; min-width: 0; flex: 1 1 18rem; }
+.adm .row-main img { width: 5.5rem; aspect-ratio: 16 / 10; object-fit: cover; object-position: top; background: var(--ink-soft); border: 1px solid var(--hair); flex-shrink: 0; }
+.adm .row-title { font-family: var(--display); font-weight: 600; font-size: 1.15rem; letter-spacing: -0.015em; }
+.adm .row-sub { margin-top: 0.2rem; font-size: 0.875rem; color: var(--mute); line-height: 1.5; }
+.adm .row-actions { display: flex; gap: 0.5rem; }
+.adm .form { padding: 1.25rem; display: grid; gap: 1rem; }
+@media (width >= 40rem) { .adm .form { padding: 1.5rem; } }
+.adm .empty { padding: 2.5rem 1.5rem; border: 1px dashed var(--hair-strong); color: var(--mute); text-align: center; }
+
+/* copy panel groups */
+.adm .group { display: grid; gap: 1rem; padding: 1.5rem; }
+.adm .group + .group { margin-top: 1rem; }
+.adm .group-head { display: flex; justify-content: space-between; align-items: baseline; gap: 1rem; }
+.adm .switch { display: inline-flex; border: 1px solid var(--hair-strong); }
+.adm .switch button { min-height: 2.5rem; padding: 0 1rem; font-family: var(--mono); font-size: 0.7rem; letter-spacing: 0.14em; text-transform: uppercase; color: var(--mute); }
+.adm .switch button[aria-pressed="true"] { background: var(--signal); color: var(--ink); }
+.adm .savebar { position: sticky; bottom: 0; margin-top: 1.5rem; padding: 1rem 0; display: flex; align-items: center; gap: 1rem; background: linear-gradient(transparent, var(--ink) 35%); }
+
+/* login */
+.adm-login { min-height: 100dvh; display: grid; place-items: center; padding: 1.5rem 1rem; background: radial-gradient(circle at 50% 30%, color-mix(in oklab, var(--signal) 12%, transparent), transparent 60%), var(--ink); }
+.adm-login form { width: 100%; max-width: 26rem; padding: 2rem; display: grid; gap: 1.25rem; }
+.adm-login img { width: 3rem; height: 3rem; }
+
+.adm .dot-live { display: inline-block; width: 0.5rem; height: 0.5rem; border-radius: 999px; background: var(--ok); }
+
+@media (prefers-reduced-motion: reduce) {
+	.adm *, .adm ::before, .adm ::after { transition-duration: 0.01ms !important; animation-duration: 0.01ms !important; }
+}
