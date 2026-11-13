@@ -53,3 +53,6 @@
 /sites/cuebox/*
   X-Robots-Tag: noindex
 
+
+/launcher
+  X-Robots-Tag: noindex, nofollow

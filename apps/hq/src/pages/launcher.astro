@@ -1,0 +1,410 @@
+---
+/**
+ * /launcher — a home-screen launcher for the owner's iPhone, installed as a full-screen web clip by
+ * the IMTRTD configuration profile. Standalone page (no site header/footer/starfield), not indexed.
+ * Apps open through their URL schemes; favourites and Shortcuts tiles the user adds live in this
+ * browser's localStorage only — nothing is sent anywhere.
+ */
+import "../styles/global.css";
+import { site } from "../data/site";
+
+type Tile = { href: string; mono: string; label: string; n: string };
+
+// iOS URL schemes. sms:, maps:, itms-apps:, shortcuts:, music: are documented or long-stable; the
+// rest (calshow, photos-redirect, mobilenotes, shareddocuments, message, clock, weather) are
+// unofficial but widely used. Camera and Settings have no web-openable scheme: use a Shortcut tile.
+const apps: Tile[] = [
+  { href: "sms:", mono: "Со", label: "Сообщения", n: "01" },
+  { href: "message://", mono: "По", label: "Почта", n: "02" },
+  { href: "maps://", mono: "Ка", label: "Карты", n: "03" },
+  { href: "calshow://", mono: "Кл", label: "Календарь", n: "04" },
+  { href: "photos-redirect://", mono: "Фо", label: "Фото", n: "05" },
+  { href: "mobilenotes://", mono: "За", label: "Заметки", n: "06" },
+  { href: "shareddocuments://", mono: "Фа", label: "Файлы", n: "07" },
+  { href: "music://", mono: "Му", label: "Музыка", n: "08" },
+  { href: "clock-alarm://", mono: "Ча", label: "Часы", n: "09" },
+  { href: "weather://", mono: "Пг", label: "Погода", n: "10" },
+  { href: "itms-apps://apps.apple.com", mono: "Ap", label: "App Store", n: "11" },
+  { href: "shortcuts://", mono: "Км", label: "Команды", n: "12" },
+];
+
+const own: Tile[] = [
+  { href: `${site.url}/`, mono: "I/TD", label: "Сайт", n: "A" },
+  { href: "https://admin.imtrtd.space/admin", mono: "Ad", label: "Админка", n: "B" },
+  { href: "https://psy.unitl.workers.dev/", mono: "Ps", label: "TrueSightPsy", n: "C" },
+];
+
+const accents = [
+  { id: "violet", color: "#b28dff" },
+  { id: "lime", color: "#d8ff00" },
+  { id: "magenta", color: "#ff2bd6" },
+  { id: "cyan", color: "#2ee9ff" },
+];
+---
+
+<!doctype html>
+<html lang="ru" class="antialiased">
+  <head>
+    <script is:inline>
+      try {
+        var a = localStorage.getItem("imtrtd-accent");
+        if (a && a !== "violet") document.documentElement.dataset.accent = a;
+      } catch (e) {}
+    </script>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <meta name="robots" content="noindex, nofollow" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <meta name="apple-mobile-web-app-title" content="Старт" />
+    <meta name="theme-color" content="#0a0a0f" />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+    <title>Старт — IMTRTD</title>
+  </head>
+  <body class="lx">
+    <main class="lx-wrap">
+      <header class="lx-head">
+        <div>
+          <p class="label text-signal" data-date>&nbsp;</p>
+          <p class="lx-time" data-time>--:--</p>
+        </div>
+        <img src="/brand/logo-mark.svg" alt="I/TD" width="44" height="44" class="size-11" />
+      </header>
+
+      <form class="lx-search" action="https://www.google.com/search" method="get" role="search">
+        <label class="sr-only" for="q">Поиск</label>
+        <input id="q" name="q" type="search" class="field" placeholder="Поиск в интернете" autocomplete="off" enterkeyhint="search" />
+      </form>
+
+      <section aria-labelledby="h-apps">
+        <h2 id="h-apps" class="sec-index label lx-h">Приложения</h2>
+        <ul class="lx-grid">
+          {
+            apps.map((t) => (
+              <li>
+                <a class="lx-tile" href={t.href} aria-label={t.label}>
+                  <span class="lx-n">{t.n}</span>
+                  <span class="lx-mono">{t.mono}</span>
+                  <span class="lx-label">{t.label}</span>
+                </a>
+              </li>
+            ))
+          }
+        </ul>
+      </section>
+
+      <section aria-labelledby="h-fav" data-fav-section>
+        <h2 id="h-fav" class="sec-index label lx-h">Избранные</h2>
+        <ul class="lx-people" data-fav-list></ul>
+        <p class="lx-empty" data-fav-empty>Пока пусто. Добавь контакт в «Настроить» внизу.</p>
+      </section>
+
+      <section aria-labelledby="h-sc" data-sc-section>
+        <h2 id="h-sc" class="sec-index label lx-h">Мои команды</h2>
+        <ul class="lx-grid" data-sc-list></ul>
+        <p class="lx-empty" data-sc-empty>
+          Камера, Настройки и любое приложение без ссылки открываются через Команды. Создай команду с действием «Открыть приложение» и добавь её имя в «Настроить».
+        </p>
+      </section>
+
+      <section aria-labelledby="h-own">
+        <h2 id="h-own" class="sec-index label lx-h">IMTRTD</h2>
+        <ul class="lx-grid">
+          {
+            own.map((t) => (
+              <li>
+                <a class="lx-tile lx-own" href={t.href} aria-label={t.label}>
+                  <span class="lx-n">{t.n}</span>
+                  <span class="lx-mono">{t.mono}</span>
+                  <span class="lx-label">{t.label}</span>
+                </a>
+              </li>
+            ))
+          }
+        </ul>
+      </section>
+
+      <details class="lx-edit card">
+        <summary class="label">Настроить</summary>
+        <div class="lx-edit-body">
+          <form data-add-fav class="lx-form">
+            <p class="label text-mute">Контакт</p>
+            <input name="name" class="field" placeholder="Имя" required maxlength="40" autocomplete="off" />
+            <input name="phone" class="field" placeholder="+380…" required inputmode="tel" maxlength="24" autocomplete="off" />
+            <button type="submit" class="btn btn-primary">Добавить контакт</button>
+          </form>
+          <form data-add-sc class="lx-form">
+            <p class="label text-mute">Команда</p>
+            <input name="name" class="field" placeholder="Точное имя команды, напр. Камера" required maxlength="60" autocomplete="off" />
+            <input name="label" class="field" placeholder="Подпись на плитке (необязательно)" maxlength="20" autocomplete="off" />
+            <button type="submit" class="btn btn-primary">Добавить команду</button>
+          </form>
+          <div class="lx-form">
+            <p class="label text-mute">Цвет</p>
+            <div class="lx-accents" role="radiogroup" aria-label="Цвет акцента">
+              {accents.map((a) => <button type="button" role="radio" aria-label={a.id} data-accent-pick={a.id} style={`--c:${a.color}`} />)}
+            </div>
+            <p class="lx-note">Контакты и команды хранятся только на этом телефоне. Удалить — кнопкой × на плитке.</p>
+          </div>
+        </div>
+      </details>
+    </main>
+
+    <style is:global>
+      .lx {
+        min-height: 100dvh;
+        padding: max(env(safe-area-inset-top), 1rem) 0 max(env(safe-area-inset-bottom), 1.5rem);
+        background:
+          radial-gradient(120% 60% at 100% 0%, color-mix(in oklab, var(--color-signal) 10%, transparent), transparent 60%),
+          var(--color-ink);
+        -webkit-user-select: none;
+        user-select: none;
+        -webkit-tap-highlight-color: transparent;
+      }
+      .lx input { -webkit-user-select: text; user-select: text; }
+      .lx-wrap {
+        width: 100%;
+        max-width: 34rem;
+        margin-inline: auto;
+        padding-inline: max(env(safe-area-inset-left), 1rem) max(env(safe-area-inset-right), 1rem);
+        display: grid;
+        gap: 1.75rem;
+      }
+      .lx-head { display: flex; justify-content: space-between; align-items: flex-start; padding-top: 1rem; }
+      .lx-time {
+        margin-top: 0.4rem;
+        font-family: var(--font-display);
+        font-weight: 600;
+        letter-spacing: -0.05em;
+        line-height: 0.9;
+        font-size: clamp(4rem, 22vw, 6.5rem);
+        font-variant-numeric: tabular-nums;
+      }
+      .lx-h { margin-bottom: 0.9rem; }
+      .lx-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); border-top: 1px solid var(--color-hair); border-left: 1px solid var(--color-hair); }
+      .lx-grid > li { position: relative; background: var(--color-ink); border-right: 1px solid var(--color-hair); border-bottom: 1px solid var(--color-hair); }
+      .lx-tile {
+        position: relative;
+        display: grid;
+        grid-template-rows: auto 1fr auto;
+        aspect-ratio: 1;
+        padding: 0.5rem;
+        color: var(--color-paper);
+        transition: background-color 0.15s;
+      }
+      .lx-tile:active { background: color-mix(in oklab, var(--color-signal) 18%, transparent); }
+      .lx-n { font-family: var(--font-mono); font-size: 0.6rem; letter-spacing: 0.1em; color: var(--color-mute); }
+      .lx-mono {
+        align-self: center;
+        justify-self: center;
+        font-family: var(--font-display);
+        font-weight: 600;
+        letter-spacing: -0.04em;
+        font-size: clamp(1.35rem, 6.4vw, 1.9rem);
+        line-height: 1;
+        color: var(--color-signal);
+      }
+      .lx-own .lx-mono { color: var(--color-paper); }
+      .lx-label {
+        font-family: var(--font-mono);
+        font-size: 0.56rem;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        color: var(--color-fog);
+        text-align: center;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+      .lx-del {
+        position: absolute;
+        top: 0;
+        right: 0;
+        width: 1.75rem;
+        height: 1.75rem;
+        display: grid;
+        place-items: center;
+        color: var(--color-mute);
+        font-size: 1rem;
+        line-height: 1;
+      }
+      .lx-people { border-top: 1px solid var(--color-hair); }
+      .lx-people > li { display: flex; align-items: center; gap: 0.5rem; padding: 0.6rem 0; border-bottom: 1px solid var(--color-hair); }
+      .lx-who { flex: 1; min-width: 0; }
+      .lx-who b { display: block; font-family: var(--font-display); font-weight: 600; font-size: 1.1rem; letter-spacing: -0.01em; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+      .lx-who span { font-family: var(--font-mono); font-size: 0.7rem; color: var(--color-mute); }
+      .lx-act { min-width: 2.75rem; min-height: 2.75rem; padding: 0 0.6rem; display: inline-grid; place-items: center; border: 1px solid var(--color-hair-strong); font-family: var(--font-mono); font-size: 0.66rem; letter-spacing: 0.1em; text-transform: uppercase; }
+      .lx-act:active { border-color: var(--color-signal); color: var(--color-signal); }
+      .lx-people .lx-del { position: static; width: 2.25rem; height: 2.75rem; }
+      .lx-empty, .lx-note { font-size: 0.85rem; line-height: 1.5; color: var(--color-mute); }
+      [data-fav-section]:has(li) .lx-empty, [data-sc-section]:has(li) .lx-empty { display: none; }
+      [data-sc-section]:not(:has(li)) .lx-grid { display: none; }
+      .lx-edit summary { list-style: none; cursor: pointer; padding: 1rem 1.25rem; color: var(--color-fog); }
+      .lx-edit summary::-webkit-details-marker { display: none; }
+      .lx-edit summary::after { content: "+"; float: right; color: var(--color-signal); }
+      .lx-edit[open] summary::after { content: "−"; }
+      .lx-edit-body { display: grid; gap: 1.5rem; padding: 0 1.25rem 1.25rem; }
+      .lx-form { display: grid; gap: 0.6rem; }
+      .lx-accents { display: flex; gap: 0.75rem; }
+      .lx-accents button { width: 2.75rem; height: 2.75rem; background: var(--c); clip-path: polygon(0 0, calc(100% - 6px) 0, 100% 6px, 100% 100%, 6px 100%, 0 calc(100% - 6px)); opacity: 0.75; }
+      .lx-accents button[aria-checked="true"] { opacity: 1; outline: 2px solid var(--color-paper); outline-offset: 3px; clip-path: none; }
+    </style>
+
+    <script>
+      const FAV = "imtrtd-launcher-fav";
+      const SC = "imtrtd-launcher-sc";
+      const ACCENT = "imtrtd-accent";
+      type Fav = { name: string; phone: string };
+      type Sc = { name: string; label: string };
+
+      const read = <T,>(k: string): T[] => {
+        try {
+          const v = JSON.parse(localStorage.getItem(k) || "[]");
+          return Array.isArray(v) ? v : [];
+        } catch {
+          return [];
+        }
+      };
+      const write = (k: string, v: unknown) => {
+        try {
+          localStorage.setItem(k, JSON.stringify(v));
+        } catch {
+          /* private mode: kept for this visit only */
+        }
+      };
+      const el = <K extends keyof HTMLElementTagNameMap>(tag: K, props: Partial<HTMLElementTagNameMap[K]> = {}, ...kids: (Node | string)[]) => {
+        const n = Object.assign(document.createElement(tag), props);
+        n.append(...kids);
+        return n;
+      };
+
+      // clock + date
+      const timeEl = document.querySelector<HTMLElement>("[data-time]")!;
+      const dateEl = document.querySelector<HTMLElement>("[data-date]")!;
+      const tick = () => {
+        const d = new Date();
+        timeEl.textContent = d.toLocaleTimeString("ru-RU", { hour: "2-digit", minute: "2-digit" });
+        dateEl.textContent = d.toLocaleDateString("ru-RU", { weekday: "short", day: "numeric", month: "long" }).replace(",", " ·");
+      };
+      tick();
+      setInterval(tick, 10_000);
+      document.addEventListener("visibilitychange", () => document.visibilityState === "visible" && tick());
+
+      // favourites
+      const favList = document.querySelector<HTMLUListElement>("[data-fav-list]")!;
+      const tel = (p: string) => p.replace(/[^\d+]/g, "");
+      function renderFav() {
+        const items = read<Fav>(FAV);
+        favList.replaceChildren(
+          ...items.map((f, i) => {
+            const del = el("button", { type: "button", className: "lx-del", textContent: "×", ariaLabel: `Убрать ${f.name}` });
+            del.addEventListener("click", () => {
+              if (!confirm(`Убрать «${f.name}» из избранных?`)) return;
+              const next = read<Fav>(FAV);
+              next.splice(i, 1);
+              write(FAV, next);
+              renderFav();
+            });
+            return el(
+              "li",
+              {},
+              el("div", { className: "lx-who" }, el("b", { textContent: f.name }), el("span", { textContent: f.phone })),
+              el("a", { className: "lx-act", href: `tel:${tel(f.phone)}`, textContent: "Звонок" }),
+              el("a", { className: "lx-act", href: `sms:${tel(f.phone)}`, textContent: "SMS" }),
+              el("a", { className: "lx-act", href: `facetime:${tel(f.phone)}`, textContent: "FT" }),
+              del,
+            );
+          }),
+        );
+      }
+
+      // shortcuts
+      const scList = document.querySelector<HTMLUListElement>("[data-sc-list]")!;
+      function renderSc() {
+        const items = read<Sc>(SC);
+        scList.replaceChildren(
+          ...items.map((s, i) => {
+            const label = s.label || s.name;
+            const a = el(
+              "a",
+              { className: "lx-tile", href: `shortcuts://run-shortcut?name=${encodeURIComponent(s.name)}`, ariaLabel: label },
+              el("span", { className: "lx-n", textContent: String(i + 1).padStart(2, "0") }),
+              el("span", { className: "lx-mono", textContent: label.slice(0, 2) }),
+              el("span", { className: "lx-label", textContent: label }),
+            );
+            const del = el("button", { type: "button", className: "lx-del", textContent: "×", ariaLabel: `Убрать ${label}` });
+            del.addEventListener("click", () => {
+              if (!confirm(`Убрать плитку «${label}»?`)) return;
+              const next = read<Sc>(SC);
+              next.splice(i, 1);
+              write(SC, next);
+              renderSc();
+            });
+            return el("li", {}, a, del);
+          }),
+        );
+      }
+
+      document.querySelector<HTMLFormElement>("[data-add-fav]")!.addEventListener("submit", (e) => {
+        e.preventDefault();
+        const f = e.currentTarget as HTMLFormElement;
+        const data = new FormData(f);
+        const name = String(data.get("name") || "").trim();
+        const phone = String(data.get("phone") || "").trim();
+        if (!name || !tel(phone)) return;
+        write(FAV, [...read<Fav>(FAV), { name, phone }].slice(0, 24));
+        f.reset();
+        renderFav();
+      });
+      document.querySelector<HTMLFormElement>("[data-add-sc]")!.addEventListener("submit", (e) => {
+        e.preventDefault();
+        const f = e.currentTarget as HTMLFormElement;
+        const data = new FormData(f);
+        const name = String(data.get("name") || "").trim();
+        const label = String(data.get("label") || "").trim();
+        if (!name) return;
+        write(SC, [...read<Sc>(SC), { name, label }].slice(0, 24));
+        f.reset();
+        renderSc();
+      });
+
+      // accent (shared with the site: same key)
+      const picks = document.querySelectorAll<HTMLButtonElement>("[data-accent-pick]");
+      const paint = () => {
+        const cur = document.documentElement.dataset.accent || "violet";
+        picks.forEach((b) => b.setAttribute("aria-checked", String(b.dataset.accentPick === cur)));
+      };
+      picks.forEach((b) =>
+        b.addEventListener("click", () => {
+          const a = b.dataset.accentPick!;
+          if (a === "violet") delete document.documentElement.dataset.accent;
+          else document.documentElement.dataset.accent = a;
+          try {
+            localStorage.setItem(ACCENT, a);
+          } catch {
+            /* not persisted */
+          }
+          paint();
+        }),
+      );
+
+      // first visit: tiles for the three Shortcuts the setup guide asks to create (deletable)
+      try {
+        if (localStorage.getItem(SC) === null)
+          write(SC, [
+            { name: "IMTRTD Фокус", label: "Фокус" },
+            { name: "Камера", label: "Камера" },
+            { name: "Настройки", label: "Настройки" },
+          ]);
+      } catch {
+        /* storage blocked */
+      }
+
+      renderFav();
+      renderSc();
+      paint();
+    </script>
+  </body>
+</html>

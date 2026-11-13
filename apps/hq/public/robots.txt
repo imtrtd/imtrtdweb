@@ -1,4 +1,5 @@
 User-agent: *
 Allow: /
+Disallow: /launcher
 
 Sitemap: https://imtrtd.space/sitemap.xml
