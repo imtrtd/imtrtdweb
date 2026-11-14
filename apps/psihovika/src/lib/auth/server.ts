@@ -171,8 +171,11 @@ const makeDatabase = () =>
       ? workerMemoryDatabase()
       : { dialect: pgliteDialect(() => getPglite()), type: "postgres" as const };
 
-// Kick PGLite bootstrap only when auth actually uses PGLite (Node preview).
-if (!databaseUrl && !onCloudflareWorker) {
+// Kick schema bootstrap when auth will hit a real DB (Neon or PGLite).
+// Neon migrations must finish before Better Auth queries `user`/`session` —
+// its Pool bypasses `getSql()`, so callers also `await ensureDbReady()` /
+// `getAuthReady()` on the request path. Skip Workers memory-auth (no DB).
+if (databaseUrl || !onCloudflareWorker) {
   void ensureDbReady();
 }
 
@@ -299,13 +302,20 @@ let authInstance: ReturnType<typeof createAuth> | undefined;
 
 /**
  * Lazily built Better Auth instance. Call it inside request handlers / server
- * functions only — never at module scope (Workers forbid RNG there).
+ * functions only — never at module scope (Workers forbid RNG there). Prefer
+ * `getAuthReady()` so Neon migrations apply before the first auth query.
  */
 export function getAuth(): ReturnType<typeof createAuth> {
   // Workers + Neon: never share pg sockets between requests (they hang in the next request).
   if (onCloudflareWorker && databaseUrl) return createAuth();
   authInstance ??= createAuth();
   return authInstance;
+}
+
+/** Await DB migrations (Neon/PGLite), then return the Better Auth instance. */
+export async function getAuthReady(): Promise<ReturnType<typeof createAuth>> {
+  await ensureDbReady();
+  return getAuth();
 }
 
 export function readSessionToken(): string | null {

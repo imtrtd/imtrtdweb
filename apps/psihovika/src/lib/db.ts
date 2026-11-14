@@ -299,12 +299,19 @@ export async function getPglite(): Promise<import("@electric-sql/pglite").PGlite
  *
  * - **PGLite** (preview / no `DATABASE_URL`): open the in-memory DB and apply
  *   `migrations/*.sql`. Idempotent — concurrent callers share one promise.
- * - **Neon**: no-op (pool is created lazily on first query).
+ * - **Neon** (`DATABASE_URL` / `PSY_DATABASE_URL`): same — open the pool and
+ *   apply pending migrations before auth or CMS touch the schema. Required
+ *   because Better Auth uses its own `pg` Pool and does not call `getSql()`.
+ * - **Workers without Neon**: no-op (memory auth; PGLite unsupported).
  *
  * Vite `configureServer` awaits this at dev startup; production imports of this
- * module kick it off immediately (see bottom of file).
+ * module kick it off immediately on the PGLite path (see bottom of file). On
+ * Neon/Workers, callers must `await ensureDbReady()` on the request path.
  */
 export function ensureDbReady(): Promise<void> {
+  if (dbSource === "neon") {
+    return getSql().then(() => undefined);
+  }
   // Workers without Neon have no PGLite — treat as ready so auth/module boot
   // does not reject via createSql()'s Worker guard.
   if (dbSource !== "pglite" || isCloudflareWorker()) {
