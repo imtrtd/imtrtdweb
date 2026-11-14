@@ -1,4 +1,5 @@
 ADMIN_TOKEN=dev-admin-token
 EDITOR_TOKEN=dev-editor-token
 # RESEND_API_KEY=
-# STUDIO_NOTIFY_EMAIL=hello@imtryingtodesign.com
+# STUDIO_NOTIFY_EMAIL=admin@imtrtd.space   # prod value is in wrangler.jsonc vars (Zoho mailbox)
+# RESEND_FROM_EMAIL="IMTRTD <leads@notify.imtrtd.space>"   # must be on a domain verified in Resend

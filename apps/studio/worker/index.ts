@@ -31,6 +31,7 @@ import {
 } from "./lib/leads";
 import { getMedia, uploadMedia } from "./lib/media";
 import { notifyLeadEmail } from "./lib/email";
+import { leadNotified } from "./lib/notify-result";
 import { sendTelegram } from "./lib/telegram";
 import { AppStore, doDatabase } from "./lib/store-do";
 import { turnstilePublicConfig, verifyTurnstile } from "./lib/turnstile";
@@ -184,22 +185,24 @@ const worker = {
 						? `${(body.message ?? "").trim()}\n\n— ${source}`.trim()
 						: body.message,
 				});
-				// Telegram and email go out in parallel from this one submission; each is fail-soft.
-				const [tg, mail] = await Promise.all([
+				// Telegram, the send_email binding and Resend go out in parallel; each is fail-soft and never
+				// blocks the 201. notified.* is the real per-channel outcome; *_error is a short code only.
+				const [tg, mail, studio] = await Promise.all([
 					sendTelegram(env, lead, source),
 					notifyLeadEmail(env, lead, source),
+					notifyStudio(env, lead),
 				]);
-				const extras = Promise.allSettled([notifyStudio(env, lead), notifyClient(env, lead)]);
+				const clientReply = notifyClient(env, lead);
 				if (ctx) {
-					ctx.waitUntil(extras);
+					ctx.waitUntil(clientReply);
 				} else {
-					await extras;
+					await clientReply;
 				}
 				return json(
 					{
 						ok: true,
 						id: lead.id,
-						notified: { telegram: tg.sent > 0, telegram_bot: tg.bot, email: mail.ok },
+						notified: leadNotified(tg, mail, studio),
 					},
 					201,
 				);

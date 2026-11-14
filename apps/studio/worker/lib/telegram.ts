@@ -1,4 +1,5 @@
 import type { Lead } from "./http";
+import { NOTIFY_TIMEOUT_MS, fetchFailureKind } from "./notify-result";
 
 export function escapeHtml(value: string): string {
 	return value
@@ -38,9 +39,14 @@ export function formatLeadMessage(
 	return lines.join("\n");
 }
 
-export type TelegramResult = { sent: number; bot?: string };
+/** `error` is the first failure as a short public-safe code ("telegram_403", "telegram_timeout"). */
+export type TelegramResult = { sent: number; bot?: string; error?: string };
 
-/** Sends the lead to every configured chat and reports the sending bot's public username. Never throws. */
+/**
+ * Sends the lead to every configured chat and reports the sending bot's public username. Never throws.
+ * A chat counts as sent only for HTTP 2xx with `{"ok":true}` in the body. Logs status and Telegram
+ * error_code only: no token, no chat id, no lead data.
+ */
 export async function sendTelegram(
 	env: { TELEGRAM_BOT_TOKEN?: string; TELEGRAM_CHAT_ID?: string },
 	lead: Lead,
@@ -55,29 +61,41 @@ export async function sendTelegram(
 	}
 	const text = formatLeadMessage(lead, source);
 	const out: TelegramResult = { sent: 0 };
+	const errors: string[] = [];
 	await Promise.all(
-		chats.map(async (chat_id) => {
+		chats.map(async (chat_id, i) => {
+			let res: Response;
 			try {
-				const res = await fetcher(`https://api.telegram.org/bot${token}/sendMessage`, {
+				res = await fetcher(`https://api.telegram.org/bot${token}/sendMessage`, {
 					method: "POST",
 					headers: { "Content-Type": "application/json" },
 					body: JSON.stringify({ chat_id, text, parse_mode: "HTML", disable_web_page_preview: true }),
+					signal: AbortSignal.timeout(NOTIFY_TIMEOUT_MS),
 				});
-				console.log(`telegram sendMessage status=${res.status}`);
-				if (res.ok) {
-					out.sent += 1;
-					try {
-						const data = (await res.json()) as { result?: { from?: { username?: string } } };
-						out.bot ??= data?.result?.from?.username;
-					} catch {
-						/* body is optional */
-					}
-				} else console.error(`telegram sendMessage failed for ${chat_id}: ${res.status}`);
 			} catch (err) {
-				console.error("telegram sendMessage error", err);
+				const kind = fetchFailureKind(err);
+				console.error(`telegram sendMessage chat#${i} failed: ${kind}`);
+				errors[i] = `telegram_${kind}`;
+				return;
 			}
+			let data: { ok?: boolean; error_code?: number; result?: { from?: { username?: string } } } = {};
+			try {
+				data = (await res.json()) as typeof data;
+			} catch {
+				/* non-JSON body */
+			}
+			if (res.ok && data?.ok === true) {
+				out.sent += 1;
+				out.bot ??= data.result?.from?.username;
+				return;
+			}
+			const code = typeof data?.error_code === "number" ? data.error_code : res.status;
+			console.error(`telegram sendMessage chat#${i} failed: status=${res.status} error_code=${code}`);
+			errors[i] = res.ok && typeof data?.error_code !== "number" ? "telegram_bad_response" : `telegram_${code}`;
 		}),
 	);
+	const firstError = errors.find(Boolean);
+	if (firstError) out.error = firstError;
 	return out;
 }
 
