@@ -205,6 +205,9 @@ html[data-accent="cyan"] { --color-signal: #2ee9ff; }
 
   /* background canvas + content layer */
   .cosmos-field { position: fixed; inset: 0; width: 100vw; height: 100lvh; z-index: 0; pointer-events: none; }
+  /* canvases fade in on their first drawn frame (fx.js adds .is-on), in step with the hero text rise */
+  .js .cosmos-field, .js .pulse-shader { opacity: 0; transition: opacity 0.9s var(--ease-out-expo); }
+  .js .cosmos-field.is-on, .js .pulse-shader.is-on { opacity: 1; }
   .site-layer { position: relative; z-index: 1; }
 
   /* sound volume (fx.js inserts it next to the sound button) */
