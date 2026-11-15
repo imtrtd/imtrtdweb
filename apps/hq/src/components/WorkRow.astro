@@ -1,0 +1,29 @@
+---
+/**
+ * One line of the "Selected work" list on the home page: the original imtrtd.space row
+ * (index, kind · place, title, one line, Preview) with a small live-build thumbnail on wider screens.
+ */
+import type { Case } from "../data/cases";
+
+interface Props {
+  c: Case;
+  index: number;
+}
+const { c, index } = Astro.props;
+const n = String(index + 1).padStart(2, "0");
+const img = `/images/previews/${c.preview}`;
+---
+
+<li class="work-row group relative grid gap-3 border-b border-hair py-5 md:grid-cols-[4.5rem_minmax(0,1fr)_9.5rem_auto] md:items-center md:gap-5 lg:py-6" data-reveal={index % 3}>
+  <span class="label text-signal">{n}</span>
+  <span class="min-w-0">
+    <span class="label text-mute">{c.kind} · {c.place}</span>
+    <a href={`/work/${c.slug}`} class="mt-1 block font-display text-2xl font-semibold tracking-tight break-words transition-colors group-hover:text-signal sm:text-3xl lg:text-4xl after:absolute after:inset-0">{c.title}</a>
+    <span class="mt-2 block max-w-[54ch] text-sm leading-relaxed text-mute">{c.summary}</span>
+  </span>
+  <picture class="relative hidden aspect-[16/10] overflow-hidden border border-hair bg-ink-soft md:block" aria-hidden="true">
+    <source type="image/webp" srcset={`${img}-n.webp`} />
+    <img src={`${img}-n.jpg`} width="900" height="563" alt="" loading="lazy" decoding="async" class="h-full w-full object-cover object-top opacity-80 transition duration-500 group-hover:scale-[1.04] group-hover:opacity-100" />
+  </picture>
+  <span class="label relative inline-flex h-11 w-full shrink-0 items-center justify-center bg-signal px-5 text-ink transition-transform duration-200 group-hover:-translate-y-px md:w-auto">Preview</span>
+</li>

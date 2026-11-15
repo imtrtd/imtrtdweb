@@ -14,14 +14,13 @@ const swatch = "polygon(0 0, calc(100% - 4px) 0, 100% 4px, 100% 100%, 4px 100%, 
 ---
 
 <header class="sticky top-0 z-40 border-b border-hair bg-ink/85 backdrop-blur-sm">
-  <div class="wrap grid grid-cols-[auto_1fr_auto] items-center gap-x-3 py-2 lg:py-3">
-    <a href="/" aria-label="ImTryingToDesign, home" data-fx="logo" class="inline-flex items-center gap-3 py-1">
+  <div class="wrap grid grid-cols-[auto_1fr_auto] items-center gap-x-3 py-2 lg:py-4">
+    <a href="/" aria-label="ImTryingToDesign, home" data-fx="logo" class="inline-flex items-center py-1">
       <!-- inline, so the mark paints with the header instead of arriving as a second request -->
-      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 959 978" width="44" height="44" class="size-10 lg:size-11" aria-hidden="true"><path fill="#E0F725" d="M0 0H822L959 137V978H128L0 850Z"/><path fill="#000" d="M157 606V567.03H201.81V407.97H157V369H289V407.97H244.19V567.03H289V606Z M336 632 437.37 361H479L377.63 632Z M509 369H652V410H605V606H557V410H509Z M688 606V369H755.44Q777.71 369 794.18 378.28Q810.66 387.56 819.83 404.37Q829 421.18 829 443.96V530.72Q829 553.24 819.83 570.21Q810.66 587.18 794.18 596.59Q777.71 606 755.44 606ZM728.86 564.59H755.44Q770.34 564.59 779.24 555.41Q788.14 546.23 788.14 530.72V443.96Q788.14 428.77 779.24 419.59Q770.34 410.41 755.44 410.41H728.86Z"/></svg>
-      <span class="label hidden text-mute xl:inline">imtrtd.space</span>
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 959 978" width="56" height="56" class="size-11 lg:size-14" aria-hidden="true"><path fill="#E0F725" d="M0 0H822L959 137V978H128L0 850Z"/><path fill="#000" d="M157 606V567.03H201.81V407.97H157V369H289V407.97H244.19V567.03H289V606Z M336 632 437.37 361H479L377.63 632Z M509 369H652V410H605V606H557V410H509Z M688 606V369H755.44Q777.71 369 794.18 378.28Q810.66 387.56 819.83 404.37Q829 421.18 829 443.96V530.72Q829 553.24 819.83 570.21Q810.66 587.18 794.18 596.59Q777.71 606 755.44 606ZM728.86 564.59H755.44Q770.34 564.59 779.24 555.41Q788.14 546.23 788.14 530.72V443.96Q788.14 428.77 779.24 419.59Q770.34 410.41 755.44 410.41H728.86Z"/></svg>
     </a>
 
-    <nav aria-label="Main" class="col-span-3 row-start-2 -mx-4 flex gap-x-5 overflow-x-auto px-4 [scrollbar-width:none] lg:col-span-1 lg:col-start-2 lg:row-start-1 lg:mx-0 lg:justify-center lg:gap-x-7 lg:px-0">
+    <nav aria-label="Main" class="col-span-3 row-start-2 -mx-4 flex gap-x-5 overflow-x-auto px-4 [scrollbar-width:none] lg:col-span-1 lg:col-start-2 lg:row-start-1 lg:mx-0 lg:justify-end lg:gap-x-6 lg:px-0 lg:pr-5">
       {
         nav.map((item) => (
           <a
@@ -36,7 +35,7 @@ const swatch = "polygon(0 0, calc(100% - 4px) 0, 100% 4px, 100% 100%, 4px 100%, 
       }
     </nav>
 
-    <div class="col-start-3 flex items-center justify-end gap-1">
+    <div class="col-start-3 flex items-center justify-end gap-1 lg:border-l lg:border-hair lg:pl-4">
       <button type="button" data-sound="true" aria-pressed="false" class="label inline-flex h-11 items-center gap-2 px-1 text-mute transition-colors hover:text-paper">
         <span class="snd-dot size-1.5 rounded-full bg-mute"></span><span class="max-sm:sr-only">Sound</span>
       </button>
@@ -49,7 +48,6 @@ const swatch = "polygon(0 0, calc(100% - 4px) 0, 100% 4px, 100% 100%, 4px 100%, 
           ))
         }
       </div>
-      <a href="/contact#brief" class="btn btn-primary ml-2 hidden lg:inline-flex" data-fx="send">Start a project</a>
     </div>
   </div>
 </header>
