@@ -142,6 +142,8 @@ var Loop={jobs:[],raf:0,
     if(more)Loop.go()}};
 document.addEventListener('visibilitychange',function(){Loop.go()});
 if(reduce.addEventListener)reduce.addEventListener('change',function(){Loop.go()});
+/* fade a canvas in once its first frame is drawn (CSS: .fx-canvas -> .is-on), so layers arrive smoothly, not with a pop */
+function shown(c){if(c&&!c.classList.contains('is-on'))requestAnimationFrame(function(){c.classList.add('is-on')})}
 /* start canvas work after the first paint and load, when the main thread is idle */
 function whenIdle(fn){function go(){(window.requestIdleCallback||function(f){return setTimeout(f,50)})(fn,{timeout:1000})}
   if(document.readyState==='complete')go();else addEventListener('load',go,{once:true})}
@@ -171,7 +173,7 @@ function initCosmos(){var t=$('.cosmos-field');if(!t)return;var n=t.getContext('
       col=s.tint>.82?acc.join(','):s.tint>.64?'123,92,255':'243,239,250',al=k*.75;
       if(!reduce.matches&&k>.62){var dx=r-b,dy=a-x,len=Math.hypot(dx,dy)||1,dd=k*k*36*c;n.strokeStyle='rgba('+col+','+al+')';n.lineWidth=Math.max(1,s.w*k*c);n.beginPath();n.moveTo(r,a);n.lineTo(r-dx/len*dd,a-dy/len*dd);n.stroke()}
       else{n.fillStyle='rgba('+col+','+al+')';var sz=s.w*(.5+k*1.8)*c;n.fillRect(r,a,sz,sz)}})}
-  frame(performance.now(),0);dirty=false;
+  frame(performance.now(),0);dirty=false;shown(t);
   /* while the page scrolls, the starfield drops to 15 fps: the main thread goes to scrolling and the reveal transitions */
   var job={iv:1000/30,want:function(){return !reduce.matches||dirty},run:function(e,fr){dirty=false;frame(e,fr)}},idle=0;
   addEventListener('scroll',function(){job.iv=1000/15;clearTimeout(idle);idle=setTimeout(function(){job.iv=1000/30},180)},{passive:true});
@@ -206,7 +208,7 @@ function initFigure(){var cv=$('.pulse-shader');if(!cv)return;var x=cv.getContex
     x.fillStyle=g;x.beginPath();x.arc(cx,cy,R*(1+Math.sin(s*1.85)*.03+pulse*.08),0,7);x.fill();
     x.lineWidth=dpr;for(var i=0;i<3;i++){var ph=((s/3.4)+i/3)%1;x.strokeStyle='rgba('+c+','+(.5*(1-ph))+')';x.beginPath();x.arc(cx,cy,R*(1+ph*.7),0,7);x.stroke()}
     x.strokeStyle='rgba('+c+',.35)';for(i=0;i<14;i++){var yy=cy+(i-6.5)*R*.13,k=Math.sqrt(Math.max(0,1-Math.pow((yy-cy)/R,2)))*R;var wob=Math.sin(s*2+i*.6)*(4+ptr.e*10+pulse*14)*dpr;x.beginPath();x.moveTo(cx-k,yy+wob);x.quadraticCurveTo(cx,yy-wob*1.5,cx+k,yy+wob);x.stroke()}}
-  Loop.add({iv:1000/30,want:function(){return vis&&(dirty||!reduce.matches)},run:function(t,fr){dirty=false;draw(t,fr)}})}
+  Loop.add({iv:1000/30,want:function(){return vis&&(dirty||!reduce.matches)},run:function(t,fr){dirty=false;draw(t,fr);shown(cv)}})}
 
 /* ---------- Hero: WebGL solar system (vanilla, one fragment shader, analytic sphere impostors) ---------- */
 var SOLAR_FS=[
@@ -290,7 +292,7 @@ function initSolar(){var cv=$('.pulse-shader');if(!cv)return false;var gl,soft=f
   try{var rn=String(gl.getParameter(gl.RENDERER));if(/^webkit/i.test(rn)){var ri=gl.getExtension('WEBGL_debug_renderer_info');if(ri)rn=String(gl.getParameter(ri.UNMASKED_RENDERER_WEBGL))}
     if(/swiftshader|llvmpipe|softpipe|software|basic render/i.test(rn))soft=true}catch(e){}
   /* compile two frames later: the new canvas is presented once, and that present would otherwise wait for the compile */
-  requestAnimationFrame(function(){requestAnimationFrame(function(){if(!setup())cv.dataset.fallback='1'})});cv.dataset.webgl='1';return true;
+  requestAnimationFrame(function(){requestAnimationFrame(function(){if(!setup()){cv.dataset.fallback='1';shown(cv)}})});cv.dataset.webgl='1';return true;
   function setup(){
   function sh(t,src){var s=gl.createShader(t);gl.shaderSource(s,src);gl.compileShader(s);if(!gl.getShaderParameter(s,gl.COMPILE_STATUS)){console.warn(gl.getShaderInfoLog(s));return null}return s}
   var vs=sh(gl.VERTEX_SHADER,'attribute vec2 p;void main(){gl_Position=vec4(p,0.,1.);}'),fs=sh(gl.FRAGMENT_SHADER,SOLAR_FS);if(!vs||!fs)return false;
@@ -351,7 +353,7 @@ function initSolar(){var cv=$('.pulse-shader');if(!cv)return false;var gl,soft=f
     gl.useProgram(pr);
     gl.uniform2f(U.R,w,h);gl.uniform1f(U.T,T*.75);gl.uniform1f(U.P,pulse);gl.uniform1f(U.F,fold.v);gl.uniform3f(U.A,acc[0]/255,acc[1]/255,acc[2]/255);gl.uniform2f(U.M,ptr.x,ptr.y);
     gl.uniform4fv(U.S,S);gl.uniform2fv(U.O,O);gl.uniform2f(U.C0,cx,cy);gl.uniform1f(U.K,K);gl.uniform1f(U.B,B);gl.uniform1f(U.D,dk?1:0);gl.uniform1f(U.Y,ys);gl.uniform1f(U.SC,sc);return true}
-  function draw(t,fr){if(!prep(t,fr))return;gl.clearColor(0,0,0,0);gl.clear(gl.COLOR_BUFFER_BIT);gl.drawArrays(gl.TRIANGLES,0,3)}
+  function draw(t,fr){if(!prep(t,fr))return;gl.clearColor(0,0,0,0);gl.clear(gl.COLOR_BUFFER_BIT);gl.drawArrays(gl.TRIANGLES,0,3);shown(cv)}
   /* band = next row to render (0 = no pass in flight); rows per band follow BAND_PX, which adapts to the measured band time */
   function drawBand(){var w=tw,h=th,y0=band,y1=Math.min(h,y0+Math.max(1,Math.round(BAND_PX/w)));
     if(!warm){y1=y0+1}
@@ -361,7 +363,7 @@ function initSolar(){var cv=$('.pulse-shader');if(!cv)return false;var gl,soft=f
     if(!warm){warm=true;dirty=true;gl.flush();return 300}var b0=performance.now();gl.readPixels(0,y0,1,1,gl.RGBA,gl.UNSIGNED_BYTE,px1);
     /* adaptive band size: aim for ~3 ms of GPU wait per band, so the whole rAF task (starfield + band) stays well under the 50 ms long-task line even at 4x CPU slowdown */
     var bt=performance.now()-b0;if(bt>.5)BAND_PX=Math.max(2e3,Math.min(6e4,BAND_PX*Math.max(.5,Math.min(1.5,BAND_MS/bt))));
-    band=y1;if(band<h)return 0;band=0;gl.bindFramebuffer(gl.FRAMEBUFFER,null);if(cv.width!==w||cv.height!==h){cv.width=w;cv.height=h}gl.viewport(0,0,w,h);gl.useProgram(bp);gl.bindTexture(gl.TEXTURE_2D,tex);gl.drawArrays(gl.TRIANGLES,0,3);return 0}
+    band=y1;if(band<h)return 0;band=0;gl.bindFramebuffer(gl.FRAMEBUFFER,null);if(cv.width!==w||cv.height!==h){cv.width=w;cv.height=h}gl.viewport(0,0,w,h);gl.useProgram(bp);gl.bindTexture(gl.TEXTURE_2D,tex);gl.drawArrays(gl.TRIANGLES,0,3);shown(cv);return 0}
   /* 30 fps while animating; a still frame is redrawn only when something changed (banded on the software path) */
   var job={iv:1000/30,want:function(){return vis&&(dirty||band>0||!still())},run:function(t,fr){
     if(banded()){job.iv=24;
