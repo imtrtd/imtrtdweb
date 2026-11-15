@@ -2,12 +2,12 @@
 import Base from "../layouts/Base.astro";
 import Hero from "../components/Hero.astro";
 import SectionHead from "../components/SectionHead.astro";
-import CaseCard from "../components/CaseCard.astro";
+import WorkRow from "../components/WorkRow.astro";
 import Process from "../components/Process.astro";
-import Packages from "../components/Packages.astro";
 import Faq from "../components/Faq.astro";
 import BriefSteps from "../components/BriefSteps.astro";
 import { getCases, getServices, getSite } from "../lib/cms";
+import { socials } from "../data/site";
 import { changelog, faqJsonLd, testimonials } from "../data/offer";
 
 const s = await getSite();
@@ -24,9 +24,9 @@ const services = await getServices();
       <SectionHead index="02" kicker="Selected work" id="h-work" title="Live builds, not mockups." lead="Every project below opens as the real site. Click through, try it on your phone.">
         <a href="/selected" class="btn btn-ghost mt-7">All work <span class="arrow" aria-hidden="true">→</span></a>
       </SectionHead>
-      <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-        {cases.map((c, i) => <CaseCard c={c} index={i} featured={i === 0} />)}
-      </div>
+      <ul class="border-t border-hair">
+        {cases.map((c, i) => <WorkRow c={c} index={i} />)}
+      </ul>
     </div>
   </section>
 
@@ -68,19 +68,11 @@ const services = await getServices();
     </div>
   </section>
 
-  <!-- 05 · Packages -->
-  <section id="packages" class="sec" aria-labelledby="h-packages">
-    <div class="wrap">
-      <SectionHead index="05" kicker="Ways to start" id="h-packages" title="Pick a starting point." lead="Every project begins with a brief and one working screen. The scope follows the sample, not the other way round." />
-      <Packages />
-    </div>
-  </section>
-
   {
     testimonials.length > 0 && (
       <section class="sec" aria-labelledby="h-words">
         <div class="wrap">
-          <SectionHead index="06" kicker="In their words" id="h-words" title="From the people who use it." />
+          <SectionHead index="05" kicker="In their words" id="h-words" title="From the people who use it." />
           <ul class="grid gap-4 md:grid-cols-2">
             {testimonials.map((t, i) => (
               <li class="card p-7" data-reveal={i}>
@@ -108,12 +100,12 @@ const services = await getServices();
   <section class="sec" aria-labelledby="h-faq">
     <div class="wrap grid gap-14 lg:grid-cols-12">
       <div class="lg:col-span-7">
-        <p class="sec-index label">06 · Questions</p>
+        <p class="sec-index label">05 · Questions</p>
         <h2 id="h-faq" class="display-md mt-4 mb-8">Before you write.</h2>
         <Faq />
       </div>
       <div class="lg:col-span-5">
-        <p class="sec-index label">07 · Build in public</p>
+        <p class="sec-index label">06 · Build in public</p>
         <h2 class="display-md mt-4 mb-8">Change log</h2>
         <ol class="border-t border-hair">
           {
@@ -136,13 +128,30 @@ const services = await getServices();
   <section id="brief" class="sec" aria-labelledby="h-brief">
     <div class="wrap grid gap-10 lg:grid-cols-12">
       <div class="lg:col-span-4">
-        <p class="sec-index label">08 · Brief</p>
+        <p class="sec-index label">07 · Brief</p>
         <h2 id="h-brief" class="display-lg mt-4">Got a project? <span class="text-signal">Let’s talk.</span></h2>
         <p class="lead mt-6 text-fog">Four short steps. None of it is required except a way to reply.</p>
-        <p class="mt-8 text-sm text-mute">
-          Prefer email? <a class="text-signal underline" href={`mailto:${s.email}`}><span data-mail-text>{s.email}</span></a><br />
-          Or Telegram: <a class="text-signal underline" href={`https://t.me/${s.telegram}`} rel="noopener" target="_blank">@{s.telegram}</a>
-        </p>
+        <ul class="mt-8 grid gap-px border border-hair bg-hair sm:grid-cols-2 lg:grid-cols-1" aria-label="Contact channels">
+          <li class="relative bg-ink">
+            <a class="group block p-4 pr-16" href={`mailto:${s.email}`}>
+              <span class="label text-mute">Email</span>
+              <span class="mt-1.5 block truncate text-paper transition-colors group-hover:text-signal" data-mail-text>{s.email}</span>
+              <span class="label mt-2 block text-signal">Write ↗</span>
+            </a>
+            <button type="button" class="label absolute top-3 right-3 border border-hair-strong px-2 py-1.5 hover:border-signal hover:text-signal" data-ct-copy={s.email} aria-label={`Copy email address ${s.email}`}>Copy</button>
+          </li>
+          {
+            socials.map((ch) => (
+              <li class="bg-ink">
+                <a class="group block p-4" href={ch.href} rel="me noopener" target="_blank">
+                  <span class="label text-mute">{ch.label}</span>
+                  <span class="mt-1.5 block truncate text-paper transition-colors group-hover:text-signal">{ch.handle}</span>
+                  <span class="label mt-2 block text-signal">{ch.action} ↗</span>
+                </a>
+              </li>
+            ))
+          }
+        </ul>
       </div>
       <div class="lg:col-span-8">
         <BriefSteps email={s.email} label="Home" />
