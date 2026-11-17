@@ -1,0 +1,51 @@
+name: Email Sending (notify.imtrtd.space)
+
+# Manual and idempotent. Sets up Cloudflare Email Sending for notify.imtrtd.space
+# (no third-party mail provider, no extra key): enables the subdomain, prints the DNS
+# records Cloudflare manages for it and their status, then sends one test email to the
+# studio inbox. The studio Worker sends through its send_email binding afterwards.
+
+on:
+  workflow_dispatch:
+    inputs:
+      test:
+        description: "Send a test email to admin@imtrtd.space"
+        type: boolean
+        default: true
+
+permissions:
+  contents: read
+
+jobs:
+  sending:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    env:
+      CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+      CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+      DOMAIN: notify.imtrtd.space
+      W: npx --yes wrangler@4.158.0
+    steps:
+      - name: Enable Email Sending
+        run: |
+          out=$($W email sending enable "$DOMAIN" 2>&1) && echo "$out" || {
+            echo "$out"
+            echo "$out" | grep -qiE "already|exists" || { echo "::error::Could not enable Email Sending for $DOMAIN"; exit 1; }
+          }
+
+      - name: DNS records and settings
+        run: |
+          $W email sending dns get "$DOMAIN" 2>&1 | grep -v "Proxy environment" || true
+          $W email sending settings "$DOMAIN" 2>&1 | grep -v "Proxy environment" || true
+
+      - name: Test email
+        if: inputs.test
+        run: |
+          for i in 1 2 3 4 5 6; do
+            if $W email sending send --from "leads@$DOMAIN" --to admin@imtrtd.space \
+                --subject "IMTRTD: mail works" --text "Email Sending on $DOMAIN is live. This is the only test; the next one will be a lead." 2>&1; then
+              exit 0
+            fi
+            echo "Not yet (DNS still settling?). Retry in 30 s."; sleep 30
+          done
+          echo "::error::Test email was not accepted after 3 minutes"; exit 1
