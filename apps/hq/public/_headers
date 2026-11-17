@@ -55,3 +55,9 @@
 
 /launcher
   X-Robots-Tag: noindex, nofollow
+
+/komandir
+  X-Robots-Tag: noindex, nofollow
+
+/komandir.webmanifest
+  Cache-Control: public, max-age=86400

@@ -4,7 +4,7 @@ Astro 7 static build, served by the assets Worker `imtrtd-hq` (custom domains `i
 
 ```
 src/
-  pages/        index, selected, work/[slug], contact, palette, practice, 404, sitemap.xml
+  pages/        index, selected, work/[slug], contact, palette, practice, launcher, komandir, 404, sitemap.xml
   components/   Header, Footer, Hero, CaseCard, BriefSteps, Packages, Process, Faq, SectionHead
   data/         site.ts (contacts, nav), cases.ts (case studies), offer.ts (services, packages, FAQ, testimonials, changelog)
   lib/cms.ts    build-time overrides from admin.imtrtd.space/api/content (only when hq_cms = "on")

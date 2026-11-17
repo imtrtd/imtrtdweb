@@ -1,0 +1,159 @@
+---
+/**
+ * /komandir — «Командир»: build your own commands from steps and run them in one tap.
+ * Web version of the iOS app of the same name. Standalone page in the /launcher style (no site
+ * header/footer/starfield), installable to the home screen, not indexed. Commands live in this
+ * browser's localStorage only; logic in src/scripts/komandir.ts.
+ */
+import "../styles/global.css";
+import "../styles/komandir.css";
+
+const accents = [
+  { id: "violet", color: "#b28dff" },
+  { id: "lime", color: "#d8ff00" },
+  { id: "magenta", color: "#ff2bd6" },
+  { id: "cyan", color: "#2ee9ff" },
+];
+
+const how = [
+  { k: "01", h: "Соберите", p: "Команда — это шаги по порядку: открыть ссылку или приложение, позвонить, написать, озвучить, спросить, подождать." },
+  { k: "02", h: "Запустите", p: "Одно нажатие на плитку — и шаги идут друг за другом. Если браузеру нужно подтверждение, команда покажет кнопку." },
+  { k: "03", h: "Вынесите", p: "У каждой команды есть ссылка. Положите её на экран «Домой» или в «Быстрые команды» iOS." },
+];
+---
+
+<!doctype html>
+<html lang="ru" class="antialiased">
+  <head>
+    <script is:inline>
+      document.documentElement.classList.add("js");
+      try {
+        var a = localStorage.getItem("imtrtd-accent");
+        if (a === "lime" || a === "magenta" || a === "cyan") document.documentElement.dataset.accent = a;
+      } catch (e) {}
+    </script>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <title>Командир — свои команды в одно нажатие — IMTRTD</title>
+    <meta name="description" content="Соберите свою команду из шагов — ссылка, приложение, звонок, сообщение, голос, пауза — и запускайте её одним нажатием." />
+    <meta name="robots" content="noindex, nofollow" />
+    <link rel="canonical" href="https://imtrtd.space/komandir" />
+    <link rel="preload" href="/fonts/space-grotesk-latin.woff2" as="font" type="font/woff2" crossorigin="anonymous" />
+    <link rel="preload" href="/fonts/geist-mono-cyrillic.woff2" as="font" type="font/woff2" crossorigin="anonymous" />
+    <meta name="theme-color" content="#0a0a0f" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <meta name="apple-mobile-web-app-title" content="Командир" />
+    <link rel="manifest" href="/komandir.webmanifest" />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="apple-touch-icon" href="/images/komandir/icon-180.png" />
+  </head>
+  <body class="km">
+    <main class="km-wrap">
+      <header class="km-head">
+        <a href="/" class="km-home label" aria-label="imtrtd.space — на главную">
+          <img src="/brand/logo-mark.svg" alt="" width="28" height="28" />
+          <span>imtrtd.space</span>
+        </a>
+        <p class="sec-index label">Командир</p>
+        <h1 class="km-title">Свои команды<br />в одно нажатие.</h1>
+        <p class="km-lead">
+          Соберите команду из шагов — открыть сайт или приложение, позвонить, написать, озвучить текст, подождать — и запускайте её с этой страницы, с экрана «Домой» или из «Быстрых команд» iOS.
+        </p>
+        <div class="km-row km-actions">
+          <button type="button" class="btn btn-primary btn-lg" data-km-new>+ Новая команда</button>
+          <button type="button" class="btn btn-ghost btn-lg" data-km-tpl>Шаблоны</button>
+        </div>
+      </header>
+
+      <p class="km-alert" data-km-missing hidden>
+        Команды «<b data-km-missing-name></b>» нет в этом браузере. Команды хранятся на том устройстве, где их создали — перенесите их кнопкой «Экспорт».
+      </p>
+      <p class="km-alert" data-km-storage hidden>Браузер не даёт сохранять данные (приватный режим?) — команды пропадут после закрытия вкладки.</p>
+
+      <section aria-labelledby="h-list">
+        <h2 id="h-list" class="sec-index label km-h">Мои команды</h2>
+        <ul class="km-grid" data-km-list hidden></ul>
+        <div class="km-empty card clip-corner" data-km-empty>
+          <p class="km-empty-title">Пока ни одной команды.</p>
+          <p class="km-note">Начните с шаблона — «Быстрая заметка», «Еду домой», «Перерыв» — или соберите свою с нуля.</p>
+          <div class="km-row">
+            <button type="button" class="btn btn-primary" data-km-new>Создать</button>
+            <button type="button" class="btn btn-ghost" data-km-tpl>Выбрать шаблон</button>
+          </div>
+        </div>
+      </section>
+
+      <section aria-labelledby="h-how">
+        <h2 id="h-how" class="sec-index label km-h">Как это работает</h2>
+        <ol class="km-how">
+          {
+            how.map((s) => (
+              <li>
+                <span class="label text-signal">{s.k}</span>
+                <h3 class="km-how-h">{s.h}</h3>
+                <p class="km-note">{s.p}</p>
+              </li>
+            ))
+          }
+        </ol>
+      </section>
+
+      <details class="km-more card">
+        <summary class="label">Переменные, ссылки, перенос</summary>
+        <div class="km-more-body">
+          <div>
+            <p class="label text-mute">Переменные</p>
+            <dl class="km-vars-list">
+              <dt>{"{{дата}}"}</dt><dd>сегодняшняя дата</dd>
+              <dt>{"{{время}}"}</dt><dd>текущее время</dd>
+              <dt>{"{{буфер}}"}</dt><dd>текст из буфера обмена</dd>
+              <dt>{"{{ввод}}"}</dt><dd>ответ из шага «Спросить»</dd>
+            </dl>
+          </div>
+          <div>
+            <p class="label text-mute">Запуск по ссылке</p>
+            <p class="km-note">
+              <code class="km-code">imtrtd.space/komandir?run=Название</code> открывает команду, кнопка «Запустить» стартует её. В «Быстрых командах» iOS — действие «Открыть URL» с этой ссылкой. Ссылку
+              конкретной команды копирует кнопка в её редакторе.
+            </p>
+          </div>
+          <div>
+            <p class="label text-mute">На экран «Домой»</p>
+            <p class="km-note">Safari → «Поделиться» → «На экран „Домой“». Командир откроется на весь экран, как приложение.</p>
+          </div>
+          <div>
+            <p class="label text-mute">Перенос и копия</p>
+            <p class="km-note">Команды хранятся только в этом браузере и никуда не отправляются. Чтобы перенести их на другое устройство — экспорт в файл и импорт там.</p>
+            <div class="km-row">
+              <button type="button" class="btn btn-ghost" data-km-export>Экспорт</button>
+              <button type="button" class="btn btn-ghost" data-km-import>Импорт</button>
+              <input type="file" accept="application/json,.json" data-km-file hidden />
+            </div>
+          </div>
+          <div>
+            <p class="label text-mute">Цвет</p>
+            <div class="km-accents" role="radiogroup" aria-label="Цвет акцента">
+              {accents.map((a) => <button type="button" role="radio" aria-label={a.id} data-accent-pick={a.id} style={`--c:${a.color}`} />)}
+            </div>
+          </div>
+        </div>
+      </details>
+
+      <footer class="km-foot label">
+        <span>I/TD · imtrtd.space</span>
+        <a href="/contact">Связаться</a>
+      </footer>
+    </main>
+
+    <dialog class="km-dialog" data-km-editor aria-label="Редактор команды"></dialog>
+    <dialog class="km-dialog" data-km-picker aria-label="Выбор шага"></dialog>
+    <dialog class="km-dialog" data-km-templates aria-label="Шаблоны"></dialog>
+    <dialog class="km-dialog" data-km-run aria-label="Выполнение команды"></dialog>
+
+    <script>
+      import "../scripts/komandir.ts";
+    </script>
+  </body>
+</html>
