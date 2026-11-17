@@ -1,0 +1,104 @@
+name: Resend domain (notify.imtrtd.space)
+
+# One-off / idempotent: makes the Resend sending domain real.
+# 1. finds or creates notify.imtrtd.space in Resend,
+# 2. writes the DNS records Resend asks for into the Cloudflare zone imtrtd.space (DNS only),
+#    plus a monitoring DMARC on the apex if there is none,
+# 3. asks Resend to verify and waits for the verdict,
+# 4. puts RESEND_API_KEY on the studio Worker (imtrtdweb), so lead mail can use it.
+# Values of secrets and DNS keys are never printed.
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  domain:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    env:
+      RESEND_API_KEY: ${{ secrets.RESEND_API_KEY }}
+      CF_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+      CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+      CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+      DOMAIN: notify.imtrtd.space
+      ZONE: imtrtd.space
+    steps:
+      - name: Check secrets
+        run: |
+          missing=""
+          [ -n "$RESEND_API_KEY" ] || missing="$missing RESEND_API_KEY"
+          [ -n "$CF_TOKEN" ] || missing="$missing CLOUDFLARE_API_TOKEN"
+          if [ -n "$missing" ]; then echo "::error::Missing repo secret(s):$missing"; exit 1; fi
+          echo "Secrets present."
+
+      - name: Resend domain + Cloudflare DNS + verify
+        run: |
+          node --input-type=module <<'NODE'
+          const R = "https://api.resend.com", C = "https://api.cloudflare.com/client/v4";
+          const rh = { Authorization: `Bearer ${process.env.RESEND_API_KEY}`, "Content-Type": "application/json" };
+          const ch = { Authorization: `Bearer ${process.env.CF_TOKEN}`, "Content-Type": "application/json" };
+          const { DOMAIN, ZONE } = process.env;
+          const j = async (r) => { const t = await r.text(); try { return JSON.parse(t) } catch { return { raw: t.slice(0, 200) } } };
+          const fail = (m) => { console.log(`::error::${m}`); process.exit(1) };
+
+          // 1. Resend domain
+          let res = await fetch(`${R}/domains`, { headers: rh });
+          let body = await j(res);
+          if (!res.ok) fail(`Resend list domains: HTTP ${res.status} ${body.name ?? ""} ${body.message ?? ""}`);
+          let dom = (body.data ?? []).find((d) => d.name === DOMAIN);
+          if (!dom) {
+            res = await fetch(`${R}/domains`, { method: "POST", headers: rh, body: JSON.stringify({ name: DOMAIN }) });
+            body = await j(res);
+            if (!res.ok) fail(`Resend create domain: HTTP ${res.status} ${body.name ?? ""} ${body.message ?? ""}`);
+            dom = body;
+            console.log(`Created ${DOMAIN} in Resend.`);
+          }
+          res = await fetch(`${R}/domains/${dom.id}`, { headers: rh });
+          dom = await j(res);
+          if (!res.ok) fail(`Resend get domain: HTTP ${res.status}`);
+          console.log(`Resend: ${DOMAIN} status=${dom.status}, ${dom.records?.length ?? 0} records requested.`);
+
+          // 2. Cloudflare zone + records
+          res = await fetch(`${C}/zones?name=${ZONE}`, { headers: ch });
+          body = await j(res);
+          const zone = body.result?.[0];
+          if (!res.ok || !zone) fail(`Cloudflare zone ${ZONE}: HTTP ${res.status} ${(body.errors ?? []).map((e) => e.message).join("; ")}`);
+                    async function upsert(type, name, content, priority) {
+            const q = new URLSearchParams({ type, name });
+            const ex = await j(await fetch(`${C}/zones/${zone.id}/dns_records?${q}`, { headers: ch }));
+            const same = (ex.result ?? []).find((r) => r.content.replace(/^"|"$/g, "") === content.replace(/^"|"$/g, ""));
+            if (same) return console.log(`= ${type} ${name} already set`);
+            const old = type === "TXT" && name.startsWith("resend._domainkey") ? ex.result?.[0] : null;
+            const rec = { type, name, content, ttl: 1, proxied: false, ...(priority != null ? { priority } : {}) };
+            const r = await fetch(`${C}/zones/${zone.id}/dns_records${old ? `/${old.id}` : ""}`, { method: old ? "PUT" : "POST", headers: ch, body: JSON.stringify(rec) });
+            const b = await j(r);
+            if (!r.ok || !b.success) fail(`Cloudflare ${type} ${name}: HTTP ${r.status} ${(b.errors ?? []).map((e) => `${e.code} ${e.message}`).join("; ")}`);
+            console.log(`+ ${type} ${name} ${old ? "updated" : "created"}`);
+          }
+          // Resend may give names relative to the domain ("send") or to the zone ("send.notify")
+          const sub = DOMAIN.slice(0, -(ZONE.length + 1));
+          const full = (n) => (n.endsWith(ZONE) ? n : n === sub || n.endsWith(`.${sub}`) ? `${n}.${ZONE}` : `${n}.${DOMAIN}`);
+          for (const r of dom.records ?? []) await upsert(r.type, full(r.name), r.value, r.priority ?? null);
+          const dm = await j(await fetch(`${C}/zones/${zone.id}/dns_records?type=TXT&name=_dmarc.${ZONE}`, { headers: ch }));
+          if (!(dm.result ?? []).length) await upsert("TXT", `_dmarc.${ZONE}`, `v=DMARC1; p=none; rua=mailto:admin@${ZONE}`, null);
+          else console.log(`= TXT _dmarc.${ZONE} exists, left as is`);
+
+          // 3. verify and wait
+          await fetch(`${R}/domains/${dom.id}/verify`, { method: "POST", headers: rh });
+          let status = "pending";
+          for (let i = 0; i < 24; i++) {
+            await new Promise((r) => setTimeout(r, 15000));
+            const d = await j(await fetch(`${R}/domains/${dom.id}`, { headers: rh }));
+            status = d.status;
+            console.log(`… ${status} (${(d.records ?? []).map((r) => `${r.record}:${r.status}`).join(", ")})`);
+            if (status === "verified" || status === "failed") break;
+          }
+          if (status !== "verified") fail(`Resend says ${status}. DNS may still be propagating: re-run this workflow later.`);
+          console.log(`Verified: ${DOMAIN}`);
+          NODE
+
+      - name: Put RESEND_API_KEY on the studio Worker
+        run: printf '%s' "$RESEND_API_KEY" | npx --yes wrangler@4.158.0 secret put RESEND_API_KEY --name imtrtdweb
