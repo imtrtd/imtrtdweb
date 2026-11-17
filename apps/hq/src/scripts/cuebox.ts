@@ -23,7 +23,7 @@ const FOLDERS: Folder[] = [
   { id: "copilot", name: "Copilot", url: "https://copilot.microsoft.com/" },
   { id: "grok", name: "Grok", url: "https://grok.com/" },
   { id: "deepseek", name: "DeepSeek", url: "https://chat.deepseek.com/" },
-  { id: "other", name: "Без папки", url: "" },
+  { id: "other", name: "Unfiled", url: "" },
 ];
 const folderById = (id: string) => FOLDERS.find((f) => f.id === id) ?? FOLDERS[FOLDERS.length - 1];
 
@@ -33,34 +33,34 @@ const uid = () => (crypto.randomUUID ? crypto.randomUUID() : `${Date.now().toStr
 
 const SEED: Omit<Prompt, "id" | "updatedAt" | "lastUsedAt" | "uses" | "favorite">[] = [
   {
-    title: "Ревью текста для сайта",
+    title: "Edit site copy",
     folder: "claude",
-    tags: ["тексты", "сайт"],
-    body: "Ты — редактор. Прочитай текст для страницы «{{страница}}» и предложи правки.\n\nАудитория: {{аудитория}}\nТон: {{тон:спокойный, по делу}}\n\nТекст:\n{{текст}}\n\nВерни: 1) три главные проблемы, 2) исправленный текст, 3) один вариант заголовка.",
+    tags: ["copy", "site"],
+    body: "You are an editor with no patience for filler. Read the copy for the {{page}} page and fix it.\n\nAudience: {{audience}}\nTone: {{tone:calm, plain, a little dry}}\n\nCopy:\n{{text}}\n\nReturn: 1) the three worst problems, 2) the edited copy, 3) one headline option.",
   },
   {
-    title: "Бриф на сайт из переписки",
+    title: "Brief from a client thread",
     folder: "chatgpt",
-    tags: ["клиенты", "бриф"],
-    body: "Вот переписка с клиентом:\n{{переписка}}\n\nСобери из неё бриф: цель сайта, что посетитель должен сделать на первом экране, страницы, языки, сроки, чего не хватает. Отдельным списком — вопросы, которые надо задать клиенту.",
+    tags: ["clients", "brief"],
+    body: "Here is a thread with a client:\n{{thread}}\n\nTurn it into a site brief: goal, what a visitor should do on the first screen, pages, languages, dates, gaps. Then list the questions I still have to ask.",
   },
   {
-    title: "Подпись к посту в Instagram",
+    title: "Instagram caption",
     folder: "chatgpt",
-    tags: ["соцсети"],
-    body: "Напиши подпись к посту о {{о чём пост}} для аккаунта {{аккаунт:@imtryingtodesign}}.\nДлина — до 300 знаков, без эмодзи-гирлянд, в конце — один вопрос к читателю. Три варианта.",
+    tags: ["social"],
+    body: "Write a caption about {{subject}} for {{account:@imtryingtodesign}}.\nUnder 300 characters, no emoji confetti, end on one question to the reader. Three options.",
   },
   {
-    title: "Разобраться в теме за 10 минут",
+    title: "Learn a topic in ten minutes",
     folder: "perplexity",
-    tags: ["исследование"],
-    body: "Объясни {{тема}} так, чтобы я за 10 минут понял главное. Дай: суть в двух фразах, 5 ключевых понятий, частые ошибки и 3 источника, которым можно доверять.",
+    tags: ["research"],
+    body: "Explain {{topic}} so I get the point in ten minutes: the gist in two sentences, five key terms, common mistakes, and three sources worth trusting.",
   },
   {
-    title: "Ревью pull request",
+    title: "Pull request review",
     folder: "claude",
-    tags: ["код"],
-    body: "Сделай ревью изменений. Язык: {{язык:TypeScript}}.\nСначала — ошибки и риски (с номерами строк), потом — упрощения. Мелочи стиля не перечисляй.\n\n{{diff}}",
+    tags: ["code"],
+    body: "Review these changes. Language: {{language:TypeScript}}.\nBugs and risks first (with line numbers), then simplifications. Skip the style nits.\n\n{{diff}}",
   },
 ];
 
@@ -121,7 +121,7 @@ function counts() {
 }
 function renderFolders() {
   const c = counts();
-  const list = [{ id: "all", name: "Все" }, { id: "fav", name: "★ Избранное" }, ...FOLDERS.filter((f) => c[f.id] || f.id === current)];
+  const list = [{ id: "all", name: "All" }, { id: "fav", name: "★ Favourites" }, ...FOLDERS.filter((f) => c[f.id] || f.id === current)];
   foldersEl.innerHTML = list
     .map((f) => `<button type="button" data-folder="${f.id}" aria-pressed="${f.id === current}">${esc(f.name)}<span class="n">${c[f.id] ?? 0}</span></button>`)
     .join("");
@@ -148,21 +148,21 @@ function renderList() {
       const f = folderById(p.folder);
       const n = vars(p.body).size;
       return `<li data-id="${p.id}">
-  <div class="cb-meta"><span class="label text-signal">${esc(f.name)}${n ? ` · ${n} перем.` : ""}</span>
-    <button type="button" class="cb-star" data-act="fav" aria-pressed="${p.favorite}" aria-label="${p.favorite ? "Убрать из избранного" : "В избранное"}">${p.favorite ? "★" : "☆"}</button></div>
+  <div class="cb-meta"><span class="label text-signal">${esc(f.name)}${n ? ` · ${n} var${n === 1 ? "" : "s"}` : ""}</span>
+    <button type="button" class="cb-star" data-act="fav" aria-pressed="${p.favorite}" aria-label="${p.favorite ? "Unfavourite" : "Favourite"}">${p.favorite ? "★" : "☆"}</button></div>
   <h3 class="cb-title">${esc(p.title)}</h3>
   <p class="cb-body">${highlight(p.body)}</p>
   ${p.tags.length ? `<ul class="cb-tags">${p.tags.map((t) => `<li class="chip">${esc(t)}</li>`).join("")}</ul>` : "<span></span>"}
   <div class="cb-acts">
-    <button type="button" class="btn btn-primary" data-act="use">${n ? "Заполнить" : "Копировать"}</button>
+    <button type="button" class="btn btn-primary" data-act="use">${n ? "Fill in" : "Copy"}</button>
     ${f.url ? `<button type="button" class="btn btn-ghost" data-act="open">${esc(f.name)} ↗</button>` : ""}
-    <button type="button" class="btn btn-ghost" data-act="edit">Изменить</button>
+    <button type="button" class="btn btn-ghost" data-act="edit">Edit</button>
   </div>
 </li>`;
     })
     .join("");
   emptyEl.hidden = shown.length > 0;
-  emptyEl.querySelector("[data-cb-empty-note]")!.textContent = q ? "Ничего не нашлось — попробуйте другой запрос." : current === "all" ? "Добавьте первый промпт." : "В этой папке пока нет промптов.";
+  emptyEl.querySelector("[data-cb-empty-note]")!.textContent = q ? "Nothing. Either it isn't here or it's spelled differently." : current === "all" ? "Add the first prompt. The library won't write itself." : "Nothing in this folder yet.";
 }
 function render() {
   renderFolders();
@@ -195,14 +195,14 @@ async function deliver(p: Prompt, text: string, open: boolean) {
   if (open && f.url) {
     if (f.prefill && text.length < 6000) {
       window.open(f.prefill(text), "_blank", "noopener");
-      toast(`Открыто в ${f.name}`);
+      toast(`Opened in ${f.name}`);
     } else {
       await copyText(text);
       window.open(f.url, "_blank", "noopener");
-      toast(`Скопировано — вставьте в ${f.name}`);
+      toast(`Copied. Paste into ${f.name}`);
     }
   } else {
-    toast((await copyText(text)) ? "Скопировано" : "Не удалось скопировать");
+    toast((await copyText(text)) ? "Copied" : "Copy failed");
   }
   renderList();
 }
@@ -212,22 +212,22 @@ function openUse(p: Prompt, openAfter: boolean) {
   const v = vars(p.body);
   const f = folderById(p.folder);
   useDlg.innerHTML = `<form class="ap-sheet" method="dialog">
-  <div class="ap-sheet-head"><div><p class="label text-signal">Переменные · ${v.size}</p><h2 class="ap-sheet-title">${esc(p.title)}</h2></div><button type="button" class="ap-x" data-x aria-label="Закрыть">×</button></div>
+  <div class="ap-sheet-head"><div><p class="label text-signal">Variables · ${v.size}</p><h2 class="ap-sheet-title">${esc(p.title)}</h2></div><button type="button" class="ap-x" data-x aria-label="Close">×</button></div>
   <div class="ap-sheet-body">
     ${[...v.entries()]
       .map(
         ([name, def], i) =>
           `<label class="ap-field"><span class="label">${esc(name)}</span>${
-            /текст|переписка|diff|код/i.test(name) ? `<textarea class="field" rows="4" data-var="${esc(name)}" ${i === 0 ? "autofocus" : ""}>${esc(def)}</textarea>` : `<input class="field" data-var="${esc(name)}" value="${esc(def)}" ${i === 0 ? "autofocus" : ""} />`
+            /text|thread|diff|code|draft|notes|текст|переписка|код/i.test(name) ? `<textarea class="field" rows="4" data-var="${esc(name)}" ${i === 0 ? "autofocus" : ""}>${esc(def)}</textarea>` : `<input class="field" data-var="${esc(name)}" value="${esc(def)}" ${i === 0 ? "autofocus" : ""} />`
           }</label>`,
       )
       .join("")}
-    <div class="ap-field"><span class="label text-mute">Что получится</span><div class="cb-preview" data-preview></div></div>
+    <div class="ap-field"><span class="label text-mute">Result</span><div class="cb-preview" data-preview></div></div>
   </div>
   <div class="ap-sheet-foot">
-    <button type="button" class="btn btn-ghost" data-go="copy">Копировать</button>
-    ${f.url ? `<button type="button" class="btn ${openAfter ? "btn-primary" : "btn-ghost"}" data-go="open">Открыть в ${esc(f.name)} ↗</button>` : ""}
-    ${openAfter ? "" : `<button type="button" class="btn btn-primary" data-go="copy-close">Копировать и закрыть</button>`}
+    <button type="button" class="btn btn-ghost" data-go="copy">Copy</button>
+    ${f.url ? `<button type="button" class="btn ${openAfter ? "btn-primary" : "btn-ghost"}" data-go="open">Open in ${esc(f.name)} ↗</button>` : ""}
+    ${openAfter ? "" : `<button type="button" class="btn btn-primary" data-go="copy-close">Copy and close</button>`}
   </div>
 </form>`;
   const values = () => new Map([...useDlg.querySelectorAll<HTMLInputElement | HTMLTextAreaElement>("[data-var]")].map((el) => [el.dataset.var!, el.value]));
@@ -253,37 +253,37 @@ function openEditor(p?: Prompt) {
   const isNew = !p;
   const d = p ?? { id: "", title: "", folder: current !== "all" && current !== "fav" ? current : "chatgpt", body: "", tags: [], favorite: false, uses: 0, updatedAt: now(), lastUsedAt: null };
   edDlg.innerHTML = `<form class="ap-sheet" novalidate>
-  <div class="ap-sheet-head"><div><p class="label text-signal">${isNew ? "Новый промпт" : "Редактор"}</p><h2 class="ap-sheet-title">${isNew ? "Что сохранить?" : esc(d.title)}</h2></div><button type="button" class="ap-x" data-x aria-label="Закрыть">×</button></div>
+  <div class="ap-sheet-head"><div><p class="label text-signal">${isNew ? "New prompt" : "Editor"}</p><h2 class="ap-sheet-title">${isNew ? "What are we keeping?" : esc(d.title)}</h2></div><button type="button" class="ap-x" data-x aria-label="Close">×</button></div>
   <div class="ap-sheet-body">
-    <label class="ap-field"><span class="label">Название</span><input class="field" name="title" value="${esc(d.title)}" maxlength="120" required /></label>
-    <label class="ap-field"><span class="label">Папка</span><select class="field" name="folder">${FOLDERS.map((f) => `<option value="${f.id}" ${f.id === d.folder ? "selected" : ""}>${esc(f.name)}</option>`).join("")}</select></label>
-    <label class="ap-field"><span class="label">Текст промпта</span><textarea class="field ap-area" name="body" rows="10" required>${esc(d.body)}</textarea></label>
-    <div class="ap-field"><span class="label text-mute">Переменные</span><div class="cb-vars" data-vars></div></div>
-    <label class="ap-field"><span class="label">Теги через запятую</span><input class="field" name="tags" value="${esc(d.tags.join(", "))}" /></label>
+    <label class="ap-field"><span class="label">Title</span><input class="field" name="title" value="${esc(d.title)}" maxlength="120" required /></label>
+    <label class="ap-field"><span class="label">Folder</span><select class="field" name="folder">${FOLDERS.map((f) => `<option value="${f.id}" ${f.id === d.folder ? "selected" : ""}>${esc(f.name)}</option>`).join("")}</select></label>
+    <label class="ap-field"><span class="label">Prompt</span><textarea class="field ap-area" name="body" rows="10" required>${esc(d.body)}</textarea></label>
+    <div class="ap-field"><span class="label text-mute">Variables</span><div class="cb-vars" data-vars></div></div>
+    <label class="ap-field"><span class="label">Tags, comma-separated</span><input class="field" name="tags" value="${esc(d.tags.join(", "))}" /></label>
     <p class="ap-note" data-err hidden></p>
   </div>
   <div class="ap-sheet-foot">
-    ${isNew ? "" : `<button type="button" class="btn ap-danger" data-del>Удалить</button><span class="ap-spacer"></span>`}
-    <button type="button" class="btn btn-ghost" data-x>Отмена</button>
-    <button type="submit" class="btn btn-primary">Сохранить</button>
+    ${isNew ? "" : `<button type="button" class="btn ap-danger" data-del>Delete</button><span class="ap-spacer"></span>`}
+    <button type="button" class="btn btn-ghost" data-x>Cancel</button>
+    <button type="submit" class="btn btn-primary">Save</button>
   </div>
 </form>`;
   const form = edDlg.querySelector("form")!;
   const varsEl = edDlg.querySelector<HTMLElement>("[data-vars]")!;
   const showVars = () => {
     const v = vars((form.elements.namedItem("body") as HTMLTextAreaElement).value);
-    varsEl.innerHTML = v.size ? [...v.entries()].map(([n, def]) => `<span class="chip">${esc(n)}${def ? ` = ${esc(def)}` : ""}</span>`).join("") : `<span class="ap-note">Нет. Добавьте {{имя}} или {{имя:по умолчанию}} в текст.</span>`;
+    varsEl.innerHTML = v.size ? [...v.entries()].map(([n, def]) => `<span class="chip">${esc(n)}${def ? ` = ${esc(def)}` : ""}</span>`).join("") : `<span class="ap-note">None. Add {{name}} or {{name:default}} to the text.</span>`;
   };
   form.addEventListener("input", showVars);
   showVars();
   edDlg.querySelectorAll("[data-x]").forEach((b) => b.addEventListener("click", () => edDlg.close()));
   edDlg.querySelector("[data-del]")?.addEventListener("click", () => {
-    if (!confirm(`Удалить «${d.title}»?`)) return;
+    if (!confirm(`Delete “${d.title}”?`)) return;
     items = items.filter((x) => x.id !== d.id);
     save();
     edDlg.close();
     render();
-    toast("Удалено");
+    toast("Deleted");
   });
   form.addEventListener("submit", (e) => {
     e.preventDefault();
@@ -291,7 +291,7 @@ function openEditor(p?: Prompt) {
     const err = edDlg.querySelector<HTMLElement>("[data-err]")!;
     if (!g("body")) {
       err.hidden = false;
-      err.textContent = "Добавьте текст промпта.";
+      err.textContent = "A prompt needs words. Some, at least.";
       return;
     }
     const next = normalize({ ...d, id: d.id || uid(), title: g("title"), folder: g("folder"), body: g("body"), tags: g("tags").split(",").map((t) => t.trim()).filter(Boolean), updatedAt: now() })!;
@@ -299,7 +299,7 @@ function openEditor(p?: Prompt) {
     save();
     edDlg.close();
     render();
-    toast("Сохранено");
+    toast("Saved");
   });
   edDlg.showModal();
   (form.elements.namedItem(isNew ? "title" : "body") as HTMLElement).focus();
@@ -309,7 +309,7 @@ document.querySelectorAll("[data-cb-new]").forEach((b) => b.addEventListener("cl
 /* ---------- import / export ---------- */
 document.querySelector("[data-cb-export]")!.addEventListener("click", () => {
   download(`cuebox-${new Date().toISOString().slice(0, 10)}.json`, { app: "cuebox-web", version: 1, exportedAt: now(), items });
-  toast(`Экспорт: ${items.length}`);
+  toast(`Exported ${items.length}`);
 });
 const fileEl = document.querySelector<HTMLInputElement>("[data-cb-file]")!;
 document.querySelector("[data-cb-import]")!.addEventListener("click", () => fileEl.click());
@@ -321,16 +321,16 @@ fileEl.addEventListener("change", async () => {
     const data = JSON.parse(await file.text());
     const raw: unknown[] = Array.isArray(data) ? data : Array.isArray(data?.items) ? data.items : Array.isArray(data?.prompts) ? data.prompts : [];
     const incoming = raw.map((x) => normalize(x as Prompt)).filter((x): x is Prompt => !!x);
-    if (!incoming.length) return toast("В файле нет промптов");
+    if (!incoming.length) return toast("No prompts in that file");
     const known = new Set(items.map((x) => x.id));
     const added = incoming.map((x) => (known.has(x.id) ? { ...x, id: uid() } : x));
     items = [...added, ...items];
     save();
     current = "all";
     render();
-    toast(`Добавлено: ${added.length}`);
+    toast(`Added ${added.length}`);
   } catch {
-    toast("Не удалось прочитать файл");
+    toast("Could not read that file");
   }
 });
 
