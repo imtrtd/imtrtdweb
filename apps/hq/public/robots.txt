@@ -1,5 +1,6 @@
 User-agent: *
 Allow: /
 Disallow: /launcher
+Disallow: /komandir
 
 Sitemap: https://imtrtd.space/sitemap.xml
