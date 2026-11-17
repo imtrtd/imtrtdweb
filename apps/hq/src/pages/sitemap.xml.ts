@@ -10,6 +10,10 @@ const pages: [string, string][] = [
   ["/contact", "0.7"],
   ["/palette", "0.6"],
   ["/practice", "0.6"],
+  ["/apps", "0.7"],
+  ["/apps/cuebox", "0.5"],
+  ["/apps/pulse", "0.5"],
+  ["/apps/shell", "0.4"],
   ...cases.map((c): [string, string] => [`/work/${c.slug}`, "0.6"]),
 ];
 

@@ -1,0 +1,77 @@
+/* Shared frame for the standalone apps under /apps (Cuebox, Pulse). Same idiom as /komandir and /launcher:
+   site tokens (global.css), hairline grids, mono labels, one accent, square corners, sheets as <dialog>. */
+
+.ap {
+  min-height: 100dvh;
+  padding: max(env(safe-area-inset-top), 1rem) 0 max(env(safe-area-inset-bottom), 1.5rem);
+  background:
+    radial-gradient(120% 60% at 100% 0%, color-mix(in oklab, var(--color-signal) 11%, transparent), transparent 60%),
+    var(--color-ink);
+  -webkit-tap-highlight-color: transparent;
+}
+.ap-wrap {
+  width: 100%;
+  max-width: 72rem;
+  margin-inline: auto;
+  padding-inline: max(env(safe-area-inset-left), 1rem) max(env(safe-area-inset-right), 1rem);
+  display: grid;
+  gap: 2.5rem;
+}
+@media (width >= 40rem) { .ap-wrap { padding-inline: 1.5rem; gap: 3.5rem; } }
+
+/* top bar: home mark · apps · title */
+.ap-bar { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 0.75rem 1.5rem; padding-block: 0.5rem; border-bottom: 1px solid var(--color-hair); }
+.ap-crumbs { display: inline-flex; align-items: center; gap: 0.75rem; color: var(--color-fog); }
+.ap-crumbs img { width: 1.75rem; height: 1.75rem; }
+.ap-crumbs a:hover { color: var(--color-signal); }
+.ap-crumbs span[aria-hidden] { color: var(--color-mute); }
+.ap-head { display: grid; gap: 1.1rem; }
+.ap-title { font-family: var(--font-display); font-weight: 600; letter-spacing: -0.04em; line-height: 0.95; font-size: clamp(2.4rem, 8vw, 5rem); }
+.ap-lead { max-width: 56ch; font-size: clamp(1.02rem, 1.5vw, 1.2rem); line-height: 1.55; color: rgb(243 239 250 / 0.82); }
+.ap-row { display: flex; flex-wrap: wrap; gap: 0.6rem; align-items: center; }
+.ap-h { margin-bottom: 1rem; }
+.ap-note { font-size: 0.88rem; line-height: 1.55; color: var(--color-mute); }
+.ap-alert { padding: 0.8rem 1rem; border: 1px solid var(--color-signal); background: color-mix(in oklab, var(--color-signal) 10%, transparent); font-size: 0.92rem; line-height: 1.5; }
+.ap-foot { display: flex; justify-content: space-between; flex-wrap: wrap; gap: 1rem; padding-top: 1.5rem; border-top: 1px solid var(--color-hair); color: var(--color-mute); }
+.ap-foot a:hover { color: var(--color-signal); }
+.ap-toast { position: fixed; left: 50%; bottom: max(env(safe-area-inset-bottom), 1.25rem); transform: translate(-50%, 1rem); z-index: 60; padding: 0.7rem 1rem; background: var(--color-signal); color: var(--color-ink); font-family: var(--font-mono); font-size: 0.72rem; letter-spacing: 0.12em; text-transform: uppercase; opacity: 0; pointer-events: none; transition: opacity 0.25s, transform 0.35s var(--ease-out-expo); }
+.ap-toast.is-on { opacity: 1; transform: translate(-50%, 0); }
+
+/* segmented filter */
+.ap-seg { display: flex; flex-wrap: wrap; gap: 0.4rem; }
+.ap-seg button { min-height: 2.5rem; padding: 0 0.8rem; border: 1px solid var(--color-hair-strong); font-size: 0.88rem; color: var(--color-fog); transition: border-color 0.2s, background-color 0.2s, color 0.2s; }
+.ap-seg button:hover { border-color: var(--color-signal); }
+.ap-seg button[aria-pressed="true"] { border-color: var(--color-signal); background: color-mix(in oklab, var(--color-signal) 16%, transparent); color: var(--color-paper); }
+.ap-seg .n { margin-left: 0.4rem; font-family: var(--font-mono); font-size: 0.68rem; color: var(--color-mute); }
+
+/* sheets */
+.ap-dialog { margin: 0; padding: 0; border: 0; background: transparent; color: var(--color-paper); width: 100%; max-width: 100%; height: 100%; max-height: 100%; inset: 0; }
+.ap-dialog::backdrop { background: rgb(5 5 9 / 0.72); }
+.ap-sheet { display: grid; grid-template-rows: auto 1fr auto; width: 100%; height: 100%; background: var(--color-ink-soft); border: 1px solid var(--color-hair-strong); }
+@media (width >= 40rem) {
+  .ap-dialog { display: none; place-items: center; padding: 2rem 1rem; }
+  .ap-dialog[open] { display: grid; }
+  .ap-sheet { max-width: 46rem; height: auto; max-height: calc(100dvh - 4rem); }
+}
+.ap-sheet-head { display: flex; justify-content: space-between; align-items: flex-start; gap: 1rem; padding: max(env(safe-area-inset-top), 1rem) 1rem 1rem; border-bottom: 1px solid var(--color-hair); }
+@media (width >= 40rem) { .ap-sheet-head { padding: 1.25rem 1.5rem; } }
+.ap-sheet-title { margin-top: 0.5rem; font-weight: 600; font-size: clamp(1.5rem, 4vw, 2rem); letter-spacing: -0.03em; line-height: 1.05; overflow-wrap: anywhere; }
+.ap-x { min-width: 2.75rem; min-height: 2.75rem; font-size: 1.5rem; line-height: 1; color: var(--color-fog); border: 1px solid var(--color-hair-strong); }
+.ap-x:hover { color: var(--color-signal); border-color: var(--color-signal); }
+.ap-sheet-body { overflow-y: auto; overscroll-behavior: contain; display: grid; align-content: start; gap: 1.4rem; padding: 1.25rem 1rem 2rem; }
+@media (width >= 40rem) { .ap-sheet-body { padding: 1.5rem; } }
+.ap-sheet-foot { display: flex; justify-content: flex-end; flex-wrap: wrap; gap: 0.6rem; padding: 0.85rem 1rem max(env(safe-area-inset-bottom), 0.85rem); border-top: 1px solid var(--color-hair); background: var(--color-ink-soft); }
+@media (width >= 40rem) { .ap-sheet-foot { padding: 1rem 1.5rem; } }
+.ap-sheet-foot .btn { flex: 1 1 auto; }
+@media (width >= 40rem) { .ap-sheet-foot .btn { flex: 0 0 auto; } }
+.ap-field { display: grid; gap: 0.45rem; }
+.ap-field > span { color: var(--color-fog); }
+.ap-area { min-height: 9rem; resize: vertical; font-family: var(--font-mono); font-size: 0.92rem; line-height: 1.55; }
+.ap-danger { border-color: rgb(255 43 214 / 0.45); color: #ff7be6; }
+.ap-danger:hover { border-color: #ff2bd6; color: #ff2bd6; }
+.ap .ap-spacer { flex: 1 1 auto; }
+select.field { appearance: none; background-image: linear-gradient(45deg, transparent 50%, var(--color-signal) 50%), linear-gradient(135deg, var(--color-signal) 50%, transparent 50%); background-position: calc(100% - 1.1rem) 50%, calc(100% - 0.8rem) 50%; background-size: 0.3rem 0.3rem; background-repeat: no-repeat; padding-right: 2rem; }
+
+.ap-accents { display: flex; gap: 0.75rem; }
+.ap-accents button { width: 2.75rem; height: 2.75rem; background: var(--c); clip-path: polygon(0 0, calc(100% - 6px) 0, 100% 6px, 100% 100%, 6px 100%, 0 calc(100% - 6px)); opacity: 0.75; }
+.ap-accents button[aria-checked="true"] { opacity: 1; outline: 2px solid var(--color-paper); outline-offset: 3px; clip-path: none; }
