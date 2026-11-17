@@ -186,7 +186,7 @@ function setMuted(on: boolean) {
 	}
 }
 
-export async function playDrift(user = true) {
+async function playDrift(user = true) {
 	if (user) setMuted(false);
 	await score.start();
 	if (muted) {
@@ -197,7 +197,7 @@ export async function playDrift(user = true) {
 	setLive(true);
 }
 
-export function stopDrift(user = true) {
+function stopDrift(user = true) {
 	if (user) setMuted(true);
 	score.mute();
 	setLive(false);
