@@ -16,6 +16,8 @@ const next = cases[(i + 1) % cases.length]!;
 const prev = cases[(i - 1 + cases.length) % cases.length]!;
 const img = `/images/previews/${c.preview}`;
 const url = `${s.url}/work/${c.slug}`;
+/** cases that also live as working apps under /apps */
+const appFor: Record<string, string> = { cuebox: "/apps/cuebox", "pulse-box": "/apps/pulse" };
 const taskFor: Record<string, string> = { Product: "Interface", Tool: "Tool", "Music app": "Interface" };
 
 const ld = {
@@ -60,7 +62,8 @@ const crumbs = {
           <p class="lead mt-6 max-w-[48ch]">{c.summary}</p>
         </div>
         <div class="flex flex-wrap gap-3 lg:col-span-4 lg:justify-end">
-          <a href={c.demo} class="btn btn-primary" target="_blank" rel="noopener">Open the live build ↗</a>
+          {appFor[c.slug] && <a href={appFor[c.slug]} class="btn btn-primary">Use the app <span class="arrow" aria-hidden="true">→</span></a>}
+          <a href={c.demo} class:list={["btn", appFor[c.slug] ? "btn-ghost" : "btn-primary"]} target="_blank" rel="noopener">Open the live build ↗</a>
           {c.live && <a href={c.live.href} class="btn btn-ghost" target="_blank" rel="noopener">{c.live.label} ↗</a>}
         </div>
       </div>

@@ -1,0 +1,151 @@
+---
+/**
+ * /apps/pulse — PULSEBOX, the 8-bit step sequencer, as a full web app in the imtrtd design system:
+ * four NES-style channels, 16 steps × 4 bars, notes per step, songs, tempo, loop or song playback.
+ * Synthesised live with Web Audio; the song is kept in localStorage. Logic: src/scripts/pulse.ts.
+ */
+import AppPage from "../../layouts/AppPage.astro";
+
+const channels = [
+  { id: 0, name: "Pulse 1", role: "Мелодия" },
+  { id: 1, name: "Pulse 2", role: "Гармония" },
+  { id: 2, name: "Triangle", role: "Бас" },
+  { id: 3, name: "Noise", role: "Барабаны" },
+];
+---
+
+<AppPage
+  title="Pulse — 8-битный секвенсор — IMTRTD"
+  app="Pulse"
+  description="Четыре канала в духе NES, 16 шагов, 4 такта. Соберите луп в браузере — без установки и без аккаунта."
+  path="/apps/pulse"
+  icon="/images/apps/pulse-180.png"
+>
+  <header class="ap-head">
+    <p class="sec-index label">PULSEBOX · 8-bit studio</p>
+    <h1 class="ap-title">Четыре канала.<br />Шестнадцать шагов.</h1>
+    <p class="ap-lead">
+      Выберите ноту у канала и проведите по сетке. Два пульса, треугольный бас и шум для барабанов. Луп одного такта или вся песня из четырёх. Пробел — играть и остановить.
+    </p>
+  </header>
+
+  <section class="pb card" aria-label="Секвенсор">
+    <div class="pb-top">
+      <span class="label">PULSEBOX</span>
+      <span class="label text-signal" data-pb-status>NIGHT MARKET · BAR 1/4 · LOOP</span>
+    </div>
+
+    <div class="pb-transport">
+      <button type="button" class="btn btn-primary pb-play" data-pb-play aria-pressed="false">▶ Играть</button>
+      <div class="ap-seg" role="group" aria-label="Такт" data-pb-bars>
+        {[0, 1, 2, 3].map((b) => <button type="button" data-bar={b} aria-pressed={b === 0 ? "true" : "false"}>Такт {b + 1}</button>)}
+      </div>
+      <div class="ap-seg" role="group" aria-label="Режим">
+        <button type="button" data-mode="loop" aria-pressed="true">Луп</button>
+        <button type="button" data-mode="song" aria-pressed="false">Песня</button>
+      </div>
+      <div class="pb-tempo" role="group" aria-label="Темп">
+        <button type="button" class="btn btn-ghost btn-sm-pb" data-bpm="-4" aria-label="Медленнее">−</button>
+        <span class="label"><b data-pb-bpm>116</b> BPM</span>
+        <button type="button" class="btn btn-ghost btn-sm-pb" data-bpm="4" aria-label="Быстрее">+</button>
+      </div>
+    </div>
+
+    <div class="pb-screen" data-pb-screen>
+      {
+        channels.map((c) => (
+          <div class="pb-row" data-ch={c.id}>
+            <div class="pb-ch">
+              <span class="pb-ch-name">{c.name}</span>
+              <span class="label text-mute">{c.role}</span>
+              <label class="pb-pen">
+                <span class="sr-only">Нота для {c.name}</span>
+                <select class="field" data-pen={c.id} />
+              </label>
+            </div>
+            <div class="pb-steps" data-steps={c.id} role="group" aria-label={`Шаги ${c.name}`} />
+            <div class="pb-knobs">
+              {c.id < 2 && <button type="button" class="pb-knob" data-duty={c.id} title="Скважность пульса">50%</button>}
+              <button type="button" class="pb-knob" data-level={c.id} title="Громкость">HI</button>
+              <button type="button" class="pb-knob" data-mute={c.id} aria-pressed="false" title="Выключить канал">M</button>
+            </div>
+          </div>
+        ))
+      }
+    </div>
+
+    <div class="pb-foot">
+      <label class="pb-song">
+        <span class="label text-mute">Песня</span>
+        <select class="field" data-pb-song>
+          <option value="night">Night Market</option>
+          <option value="boss">Boss Door</option>
+          <option value="river">River</option>
+          <option value="blank">Пустой лист</option>
+        </select>
+      </label>
+      <div class="ap-row">
+        <button type="button" class="btn btn-ghost" data-pb-copy>Копировать такт →</button>
+        <button type="button" class="btn btn-ghost" data-pb-clear>Очистить такт</button>
+        <button type="button" class="btn btn-ghost" data-pb-export>Экспорт</button>
+        <button type="button" class="btn btn-ghost" data-pb-import>Импорт</button>
+        <input type="file" accept="application/json,.json" data-pb-file hidden />
+      </div>
+    </div>
+  </section>
+
+  <p class="ap-alert" data-pb-noaudio hidden>Этот браузер не поддерживает Web Audio — сетку можно редактировать, но звука не будет.</p>
+
+  <section aria-labelledby="h-how">
+    <h2 id="h-how" class="sec-index label ap-h">Как играть</h2>
+    <ol class="pb-how">
+      <li><span class="label text-signal">01</span><p>Выберите ноту в списке у канала — у барабанов это бочка, малый или хэт.</p></li>
+      <li><span class="label text-signal">02</span><p>Нажмите на шаг или проведите по ряду. Нажатие по занятому шагу его стирает.</p></li>
+      <li><span class="label text-signal">03</span><p>«Луп» повторяет выбранный такт, «Песня» играет все четыре подряд. Всё сохраняется само.</p></li>
+    </ol>
+  </section>
+</AppPage>
+
+<style is:global>
+  .pb { display: grid; gap: 1rem; padding: 1rem; }
+  @media (width >= 48rem) { .pb { padding: 1.5rem; gap: 1.25rem; } }
+  .pb-top { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 0.5rem; }
+  .pb-transport { display: flex; flex-wrap: wrap; align-items: center; gap: 0.6rem 1rem; }
+  .pb-play { min-width: 8.5rem; }
+  .pb-play[aria-pressed="true"] { background: var(--color-paper); }
+  .pb-tempo { display: inline-flex; align-items: center; gap: 0.5rem; }
+  .pb-tempo b { font-weight: 600; color: var(--color-paper); }
+  .btn-sm-pb { min-height: 2.5rem; min-width: 2.5rem; padding: 0; font-size: 1rem; }
+  .pb-screen { display: grid; gap: 0.6rem; padding: 0.75rem; background: var(--color-ink); border: 1px solid var(--color-hair); }
+  .pb-row { display: grid; gap: 0.5rem; padding-bottom: 0.6rem; border-bottom: 1px solid var(--color-hair); }
+  .pb-row:last-child { border-bottom: 0; padding-bottom: 0; }
+  @media (width >= 56rem) { .pb-row { grid-template-columns: 9.5rem minmax(0, 1fr) 9.75rem; align-items: center; gap: 1rem; } .pb-knobs { justify-content: flex-end; } }
+  .pb-ch { display: flex; flex-wrap: wrap; align-items: center; gap: 0.25rem 0.75rem; }
+  @media (width >= 56rem) { .pb-ch { display: grid; gap: 0.3rem; } }
+  .pb-ch-name { font-family: var(--font-mono); font-size: 0.78rem; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; }
+  .pb-pen .field { min-height: 2.25rem; padding: 0.3rem 2rem 0.3rem 0.6rem; font-family: var(--font-mono); font-size: 0.82rem; }
+  .pb-steps { display: grid; grid-template-columns: repeat(8, minmax(0, 1fr)); gap: 4px; touch-action: none; }
+  @media (width >= 40rem) { .pb-steps { grid-template-columns: repeat(16, minmax(0, 1fr)); } }
+  .pb-steps button { position: relative; aspect-ratio: 1; min-height: 1.1rem; background: #1c1c27; display: grid; place-items: center; font-family: var(--font-mono); font-size: 0.5rem; color: transparent; overflow: hidden; }
+  .pb-steps button:nth-child(4n + 1) { background: #262636; }
+  .pb-steps button.on { background: var(--color-signal); color: var(--color-ink); box-shadow: 0 0 8px color-mix(in oklab, var(--color-signal) 60%, transparent); }
+  .pb-steps button.now { outline: 1px solid var(--color-paper); outline-offset: 1px; }
+  @media (width >= 56rem) { .pb-steps button.on { color: var(--color-ink); font-size: 0.56rem; } }
+  @media (width < 56rem) { .pb-steps button.on { color: transparent; } }
+  .pb-row.muted .pb-steps { opacity: 0.35; }
+  .pb-knobs { display: flex; gap: 0.35rem; }
+  .pb-knob { min-height: 2.25rem; min-width: 2.75rem; padding: 0 0.5rem; border: 1px solid var(--color-hair-strong); font-family: var(--font-mono); font-size: 0.66rem; letter-spacing: 0.08em; color: var(--color-fog); }
+  .pb-knob:hover { border-color: var(--color-signal); }
+  .pb-knob[aria-pressed="true"], .pb-knob.lo { background: var(--color-mute); color: var(--color-ink); border-color: var(--color-mute); }
+  .pb-foot { display: grid; gap: 0.75rem; }
+  @media (width >= 48rem) { .pb-foot { grid-template-columns: minmax(0, 16rem) 1fr; align-items: end; } .pb-foot .ap-row { justify-content: flex-end; } }
+  .pb-song { display: grid; gap: 0.4rem; }
+  .pb-bars-dot { margin-left: 0.35rem; color: var(--color-signal); }
+  .pb-how { display: grid; gap: 1px; border: 1px solid var(--color-hair); background: var(--color-hair); }
+  @media (width >= 40rem) { .pb-how { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+  .pb-how > li { display: grid; gap: 0.5rem; align-content: start; padding: 1.25rem; background: rgb(10 10 15 / 0.92); color: var(--color-fog); font-size: 0.92rem; line-height: 1.5; }
+</style>
+
+<script>
+  import "../../scripts/pulse.ts";
+</script>

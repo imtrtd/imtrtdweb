@@ -1,0 +1,36 @@
+---
+import Base from "../../layouts/Base.astro";
+import { getSite } from "../../lib/cms";
+
+const s = await getSite();
+---
+
+<Base title="I/TD shell — coming soon — IMTRTD" description="I/TD shell is the next tool from the studio. Leave a contact to hear first when it opens." path="/apps/shell">
+  <section class="sec" style="border-top:0" aria-labelledby="h-shell">
+    <div class="wrap grid gap-12 lg:grid-cols-12 lg:items-start">
+      <div class="lg:col-span-7">
+        <nav aria-label="Breadcrumb" class="label text-mute"><a href="/apps" class="hover:text-signal">Apps</a> <span aria-hidden="true">/</span> <span class="text-fog">I/TD shell</span></nav>
+        <p class="sec-index label mt-10">Coming soon</p>
+        <h1 id="h-shell" class="display-xl mt-5">I/TD <span class="text-signal">shell</span></h1>
+        <p class="lead mt-8 max-w-[44ch]">The next tool from the studio. It is not open yet. Leave a contact and you will hear first when it is.</p>
+        <div class="mt-10 flex flex-wrap items-center gap-3">
+          <a href="#notify" class="btn btn-primary btn-lg">Notify me at launch <span class="arrow" aria-hidden="true">↓</span></a>
+          <a href={`https://t.me/${s.telegram}`} class="btn btn-ghost btn-lg" target="_blank" rel="noopener">Telegram @{s.telegram} ↗</a>
+        </div>
+      </div>
+
+      <div id="notify" class="card scroll-mt-28 p-6 lg:col-span-5 lg:p-8">
+        <p class="label text-signal">Notify me</p>
+        <h2 class="display-md mt-3">Tell me when it opens.</h2>
+        <form class="mt-6 grid gap-4" data-brief="inline" data-brief-label="I/TD shell" novalidate>
+          <input type="hidden" name="task" value="I/TD shell · notify at launch" />
+          <label class="grid gap-1.5"><span class="label text-mute">Name</span><input class="field" name="name" autocomplete="name" required maxlength="120" /></label>
+          <label class="grid gap-1.5"><span class="label text-mute">Email or Telegram</span><input class="field" name="contact" autocomplete="email" required maxlength="200" /></label>
+          <label class="grid gap-1.5"><span class="label text-mute">What would you use it for? <span class="normal-case">(optional)</span></span><textarea class="field" name="note" rows="3" maxlength="2000"></textarea></label>
+          <button type="submit" class="btn btn-primary">Notify me</button>
+          <p class="privacy-note">Used only to tell you about the launch. Never shared.</p>
+        </form>
+      </div>
+    </div>
+  </section>
+</Base>

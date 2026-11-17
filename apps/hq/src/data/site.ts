@@ -39,6 +39,7 @@ export function availability(now = new Date()): { short: string; long: string } 
 export const nav = [
   { href: "/", label: "Home", fx: "home" },
   { href: "/selected", label: "Work", fx: "work" },
+  { href: "/apps", label: "Apps", fx: "samples" },
   { href: "/palette", label: "Palette", fx: "samples" },
   { href: "/practice", label: "Practice", fx: "practice" },
   { href: "/contact", label: "Contact", fx: "contact" },

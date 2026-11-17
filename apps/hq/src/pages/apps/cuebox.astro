@@ -1,0 +1,92 @@
+---
+/**
+ * /apps/cuebox — Cuebox, the AI prompt library, as a local-first web app in the imtrtd design system.
+ * The full product (accounts, Postgres, MCP) lives at app.imtryingtodesign.com; this one keeps the
+ * library in localStorage. Logic: src/scripts/cuebox.ts.
+ */
+import AppPage from "../../layouts/AppPage.astro";
+---
+
+<AppPage
+  title="Cuebox — библиотека промптов — IMTRTD"
+  app="Cuebox"
+  description="Сохраните промпт один раз, подставьте переменные и отправьте в нужный AI. Библиотека хранится в вашем браузере."
+  path="/apps/cuebox"
+  icon="/images/apps/cuebox-180.png"
+>
+  <header class="ap-head">
+    <p class="sec-index label">Cuebox · AI working library</p>
+    <h1 class="ap-title">Промпт один раз.<br />Дальше — в одно касание.</h1>
+    <p class="ap-lead">
+      Храните рабочие промпты по папкам AI-сервисов, отмечайте переменные <code class="cb-code">{"{{так}}"}</code> и перед отправкой заполняйте их в форме. Копируйте или открывайте сразу в ChatGPT, Claude или
+      Perplexity.
+    </p>
+    <div class="ap-row">
+      <button type="button" class="btn btn-primary btn-lg" data-cb-new>+ Новый промпт</button>
+      <button type="button" class="btn btn-ghost btn-lg" data-cb-export>Экспорт</button>
+      <button type="button" class="btn btn-ghost btn-lg" data-cb-import>Импорт</button>
+      <input type="file" accept="application/json,.json" data-cb-file hidden />
+    </div>
+  </header>
+
+  <p class="ap-alert" data-cb-storage hidden>Браузер не даёт сохранять данные (приватный режим?) — библиотека пропадёт после закрытия вкладки.</p>
+
+  <section aria-labelledby="h-lib" class="cb-lib">
+    <div class="cb-tools">
+      <h2 id="h-lib" class="sec-index label">Библиотека</h2>
+      <label class="cb-search"><span class="sr-only">Поиск</span><input type="search" class="field" placeholder="Поиск по названию, тексту, тегам" data-cb-q autocomplete="off" /></label>
+    </div>
+    <div class="ap-seg" role="group" aria-label="Папки" data-cb-folders></div>
+    <ul class="cb-grid" data-cb-list></ul>
+    <div class="cb-empty card" data-cb-empty hidden>
+      <p class="cb-empty-title">Здесь пусто.</p>
+      <p class="ap-note" data-cb-empty-note>В этой папке пока нет промптов.</p>
+      <div class="ap-row"><button type="button" class="btn btn-primary" data-cb-new>Создать промпт</button></div>
+    </div>
+  </section>
+
+  <section aria-labelledby="h-how">
+    <h2 id="h-how" class="sec-index label ap-h">Переменные</h2>
+    <ol class="cb-how">
+      <li><span class="label text-signal">01</span><p><code class="cb-code">{"{{тема}}"}</code> — поле, которое спросят перед отправкой.</p></li>
+      <li><span class="label text-signal">02</span><p><code class="cb-code">{"{{тон:дружелюбный}}"}</code> — поле со значением по умолчанию.</p></li>
+      <li><span class="label text-signal">03</span><p>Одинаковые имена заполняются один раз — сколько бы раз они ни встречались в тексте.</p></li>
+    </ol>
+  </section>
+
+  <Fragment slot="after">
+    <dialog class="ap-dialog" data-cb-editor aria-label="Редактор промпта"></dialog>
+    <dialog class="ap-dialog" data-cb-use aria-label="Заполнить переменные"></dialog>
+  </Fragment>
+</AppPage>
+
+<style is:global>
+  .cb-code { font-family: var(--font-mono); font-size: 0.85em; color: var(--color-signal); }
+  .cb-lib { display: grid; gap: 1rem; }
+  .cb-tools { display: grid; gap: 0.75rem; }
+  @media (width >= 48rem) { .cb-tools { grid-template-columns: 1fr minmax(0, 26rem); align-items: center; } }
+  .cb-grid { display: grid; border-top: 1px solid var(--color-hair); border-left: 1px solid var(--color-hair); }
+  @media (width >= 40rem) { .cb-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+  @media (width >= 64rem) { .cb-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+  .cb-grid > li { display: grid; grid-template-rows: auto auto 1fr auto auto; gap: 0.6rem; padding: 1rem; background: rgb(10 10 15 / 0.6); border-right: 1px solid var(--color-hair); border-bottom: 1px solid var(--color-hair); min-width: 0; }
+  .cb-meta { display: flex; justify-content: space-between; align-items: center; gap: 0.5rem; }
+  .cb-star { min-width: 2.25rem; min-height: 2.25rem; font-size: 1.1rem; color: var(--color-mute); }
+  .cb-star[aria-pressed="true"] { color: var(--color-signal); }
+  .cb-title { font-family: var(--font-display); font-weight: 600; font-size: 1.2rem; letter-spacing: -0.015em; line-height: 1.2; overflow-wrap: anywhere; }
+  .cb-body { font-family: var(--font-mono); font-size: 0.78rem; line-height: 1.55; color: var(--color-mute); white-space: pre-wrap; overflow-wrap: anywhere; display: -webkit-box; -webkit-line-clamp: 4; -webkit-box-orient: vertical; overflow: hidden; max-height: calc(1.55em * 4); }
+  .cb-body mark { background: none; color: var(--color-signal); }
+  .cb-tags { display: flex; flex-wrap: wrap; gap: 0.35rem; }
+  .cb-acts { display: flex; flex-wrap: wrap; gap: 0.4rem; padding-top: 0.6rem; border-top: 1px solid var(--color-hair); }
+  .cb-acts .btn { min-height: 2.5rem; padding: 0 0.85rem; font-size: 0.68rem; }
+  .cb-empty { display: grid; gap: 0.75rem; padding: 1.5rem; }
+  .cb-empty-title { font-family: var(--font-display); font-weight: 600; font-size: 1.4rem; letter-spacing: -0.02em; }
+  .cb-how { display: grid; gap: 1px; border: 1px solid var(--color-hair); background: var(--color-hair); }
+  @media (width >= 40rem) { .cb-how { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+  .cb-how > li { display: grid; gap: 0.5rem; align-content: start; padding: 1.25rem; background: rgb(10 10 15 / 0.92); color: var(--color-fog); font-size: 0.92rem; line-height: 1.5; }
+  .cb-vars { display: flex; flex-wrap: wrap; gap: 0.35rem; }
+  .cb-preview { padding: 1rem; border: 1px solid var(--color-hair); background: rgb(10 10 15 / 0.55); font-family: var(--font-mono); font-size: 0.82rem; line-height: 1.6; white-space: pre-wrap; overflow-wrap: anywhere; max-height: 16rem; overflow: auto; }
+</style>
+
+<script>
+  import "../../scripts/cuebox.ts";
+</script>
