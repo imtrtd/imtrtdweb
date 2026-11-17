@@ -252,108 +252,84 @@ export async function markReminded(db: D1Database, leadId: string) {
 }
 
 function isEmail(value: string): boolean {
-	return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value);
+	return /^[^\s@,;<>]+@[^\s@,;<>]+\.[^\s@,;<>]+$/.test(value);
 }
 
-export async function notifyStudio(env: Env, lead: Lead): Promise<void> {
-	const to = env.STUDIO_NOTIFY_EMAIL;
-	if (!to) {
-		return;
+export const DEFAULT_OUT_FROM = "leads@notify.imtrtd.space";
+
+/** Auto-reply to the client when the contact looks like an email. */
+export async function notifyClient(env: Env, lead: Lead): Promise<boolean> {
+	const to = lead.contact.trim();
+	if (!isEmail(to)) {
+		return false;
 	}
-	await sendEmail(
+	const first = lead.name.trim().split(/\s+/)[0] || "there";
+	return sendOut(
 		env,
 		to,
-		`Новая заявка: ${lead.name}`,
+		"Got it. A human reads this next.",
 		[
-			`Имя: ${lead.name}`,
-			`Контакт: ${lead.contact}`,
-			`Тип: ${lead.task_type || "—"}`,
-			`Бюджет: ${lead.budget || "—"}`,
+			`Hi ${first},`,
 			"",
-			lead.message || "(без сообщения)",
+			"Your message reached the studio. A reply follows within one working day, written by a person, not by whatever wrote this.",
 			"",
-			`ID: ${lead.id}`,
-		].join("\n"),
-	);
-}
-
-/** Auto-reply to the client when contact looks like an email. */
-export async function notifyClient(env: Env, lead: Lead): Promise<void> {
-	if (!isEmail(lead.contact)) {
-		return;
-	}
-	await sendEmail(
-		env,
-		lead.contact,
-		"Заявка получена — I'm Trying To Design",
-		[
-			`Здравствуйте, ${lead.name}!`,
-			"",
-			"Мы получили вашу заявку и ответим в течение одного рабочего дня.",
-			"",
-			"Если срочно — напишите в Telegram: @imtrtd",
+			"In a hurry: Telegram @imtrtd.",
 			"",
 			"— I'm Trying To Design",
+			"https://imtrtd.space",
 		].join("\n"),
+		"admin@imtrtd.space",
 	);
 }
 
-export async function notifyStaleLead(env: Env, lead: Lead): Promise<void> {
-	const to = env.STUDIO_NOTIFY_EMAIL;
-	if (!to) {
-		return;
-	}
-	await sendEmail(
+export async function notifyStaleLead(env: Env, lead: Lead): Promise<boolean> {
+	const to = (env.STUDIO_NOTIFY_EMAIL || env.LEAD_NOTIFY_EMAIL || "admin@imtrtd.space").trim();
+	return sendOut(
 		env,
 		to,
-		`Напоминание: заявка без ответа (${lead.name})`,
+		`Напоминание: заявка без ответа (${lead.name.replace(/[\r\n]+/g, " ").slice(0, 80)})`,
 		[
-			`Заявка старше 24 часов всё ещё в статусе new.`,
+			"Заявка старше 24 часов всё ещё в статусе new.",
 			"",
 			`Имя: ${lead.name}`,
 			`Контакт: ${lead.contact}`,
 			`Создана: ${lead.created_at}`,
 			`ID: ${lead.id}`,
 			"",
-			"Откройте /admin и ответьте или смените статус.",
+			"https://admin.imtrtd.space/admin",
 		].join("\n"),
 	);
 }
 
-async function sendEmail(
-	env: Env,
-	to: string,
-	subject: string,
-	text: string,
-): Promise<void> {
-	const apiKey = env.RESEND_API_KEY;
-	if (!apiKey) {
-		return;
+/** Sends via the unrestricted `MAIL_OUT` binding (Cloudflare Email Sending). Fail-soft. */
+async function sendOut(env: Env, to: string, subject: string, text: string, replyTo?: string): Promise<boolean> {
+	if (!env.MAIL_OUT) {
+		return false;
 	}
-
-	await fetch("https://api.resend.com/emails", {
-		method: "POST",
-		headers: {
-			Authorization: `Bearer ${apiKey}`,
-			"Content-Type": "application/json",
-		},
-		body: JSON.stringify({
-			from: "IMTRTD <onboarding@resend.dev>",
-			to: [to],
+	try {
+		await env.MAIL_OUT.send({
+			to,
+			from: { email: (env.OUT_FROM_EMAIL || DEFAULT_OUT_FROM).trim(), name: "I'm Trying To Design" },
 			subject,
 			text,
-		}),
-	}).catch(() => {
-		/* non-blocking */
-	});
+			...(replyTo ? { replyTo } : {}),
+		});
+		return true;
+	} catch (err) {
+		console.error("mail out failed", (err as Error)?.message ?? String(err));
+		return false;
+	}
 }
 
 export async function remindStaleLeads(env: Env): Promise<number> {
 	const cutoff = new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString();
 	const stale = await listStaleUnreminded(env.DB, cutoff);
+	let sent = 0;
 	for (const lead of stale) {
-		await notifyStaleLead(env, lead);
-		await markReminded(env.DB, lead.id);
+		if (await notifyStaleLead(env, lead)) {
+			await markReminded(env.DB, lead.id);
+			sent++;
+		}
 	}
-	return stale.length;
+	return sent;
 }
