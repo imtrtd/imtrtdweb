@@ -51,7 +51,6 @@ export CLOUDFLARE_API_TOKEN=...
 export CLOUDFLARE_ACCOUNT_ID=...
 export ADMIN_TOKEN=...          # обязательно
 export EDITOR_TOKEN=...         # рекомендуется
-export RESEND_API_KEY=...       # опционально
 npm run publish:cloudflare
 ```
 

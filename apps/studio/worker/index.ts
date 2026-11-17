@@ -23,7 +23,6 @@ import {
 	getLeadStats,
 	listLeads,
 	notifyClient,
-	notifyStudio,
 	remindStaleLeads,
 	updateLead,
 	validateLead,
@@ -189,7 +188,7 @@ const worker = {
 					sendTelegram(env, lead, source),
 					notifyLeadEmail(env, lead, source),
 				]);
-				const extras = Promise.allSettled([notifyStudio(env, lead), notifyClient(env, lead)]);
+				const extras = notifyClient(env, lead);
 				if (ctx) {
 					ctx.waitUntil(extras);
 				} else {
