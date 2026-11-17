@@ -1,3 +1,4 @@
+import Link from "next/link";
 const systems = [
   {
     code: "SYS/01",
@@ -33,12 +34,12 @@ export default function SystemsPage() {
   return (
     <main className="systems-page">
       <nav className="systems-nav">
-        <a className="case-brand" href="/" aria-label="ImTryingToDesign — home"><img className="lockup" src="/brand/logo-lockup.svg" width={124} height={36} alt="" /><img className="mark" src="/brand/logo-mark.svg" width={35} height={36} alt="" /></a>
-        <a className="case-back" href="/">← HOME</a>
+        <Link className="case-brand" href="/" aria-label="ImTryingToDesign — home"><img className="lockup" src="/brand/logo-lockup.svg" width={124} height={36} alt="" /><img className="mark" src="/brand/logo-mark.svg" width={35} height={36} alt="" /></Link>
+        <Link className="case-back" href="/">← HOME</Link>
         <span className="mono case-nav-meta">REFERENCE SYSTEMS / 2026</span>
       </nav>
       <section className="systems-intro">
-        <p className="mono">// REUSABLE DESIGN DIRECTIONS</p>
+        <p className="mono">{"// REUSABLE DESIGN DIRECTIONS"}</p>
         <h1>NOT TEMPLATES. STARTING POINTS.</h1>
         <span>These are original, internal reference systems: a way to discuss mood, hierarchy, interaction, and delivery with clarity before a client project begins.</span>
       </section>
