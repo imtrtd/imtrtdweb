@@ -25,7 +25,7 @@ const accents = [
 ---
 
 <!doctype html>
-<html lang="ru" class="antialiased">
+<html lang="en" class="antialiased">
   <head>
     <script is:inline>
       document.documentElement.classList.add("js");
@@ -51,19 +51,19 @@ const accents = [
   </head>
   <body class="ap">
     <main class="ap-wrap">
-      <nav class="ap-bar" aria-label="Навигация">
+      <nav class="ap-bar" aria-label="Navigation">
         <span class="ap-crumbs label">
-          <a href="/" aria-label="imtrtd.space — на главную"><img src="/brand/logo-mark.svg" alt="" width="28" height="28" /></a>
+          <a href="/" aria-label="imtrtd.space, home"><img src="/brand/logo-mark.svg" alt="" width="28" height="28" /></a>
           <a href="/apps">Apps</a><span aria-hidden="true">/</span><span class="text-paper">{app}</span>
         </span>
-        <span class="ap-accents" role="radiogroup" aria-label="Цвет акцента" style="gap:0.25rem">
+        <span class="ap-accents" role="radiogroup" aria-label="Accent colour" style="gap:0.25rem">
           {accents.map((a) => <button type="button" role="radio" aria-label={a.id} data-accent-pick={a.id} style={`--c:${a.color};width:1.75rem;height:1.75rem`} />)}
         </span>
       </nav>
       <slot />
       <footer class="ap-foot label">
-        <span>I/TD · {app} · данные хранятся только в этом браузере</span>
-        <span class="ap-row"><a href="/apps">Все приложения</a><a href="/contact">Связаться</a></span>
+        <span>I/TD · {app} · your data stays in this browser</span>
+        <span class="ap-row"><a href="/apps">All apps</a><a href="/contact">Contact</a></span>
       </footer>
     </main>
     <div class="ap-toast" role="status" aria-live="polite" data-ap-toast></div>

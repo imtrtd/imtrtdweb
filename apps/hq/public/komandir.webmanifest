@@ -1,12 +1,12 @@
 {
-  "name": "Командир — IMTRTD",
-  "short_name": "Командир",
-  "description": "Свои команды из шагов — в одно нажатие.",
+  "name": "Komandir — IMTRTD",
+  "short_name": "Komandir",
+  "description": "Your commands, one tap each.",
   "id": "/komandir",
   "start_url": "/komandir",
   "scope": "/komandir",
   "display": "standalone",
-  "lang": "ru",
+  "lang": "en",
   "background_color": "#0a0a0f",
   "theme_color": "#0a0a0f",
   "icons": [

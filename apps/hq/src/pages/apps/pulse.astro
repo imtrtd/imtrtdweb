@@ -7,47 +7,47 @@
 import AppPage from "../../layouts/AppPage.astro";
 
 const channels = [
-  { id: 0, name: "Pulse 1", role: "Мелодия" },
-  { id: 1, name: "Pulse 2", role: "Гармония" },
-  { id: 2, name: "Triangle", role: "Бас" },
-  { id: 3, name: "Noise", role: "Барабаны" },
+  { id: 0, name: "Pulse 1", role: "Lead" },
+  { id: 1, name: "Pulse 2", role: "Harmony" },
+  { id: 2, name: "Triangle", role: "Bass" },
+  { id: 3, name: "Noise", role: "Drums" },
 ];
 ---
 
 <AppPage
-  title="Pulse — 8-битный секвенсор — IMTRTD"
+  title="Pulse — an 8-bit sequencer — IMTRTD"
   app="Pulse"
-  description="Четыре канала в духе NES, 16 шагов, 4 такта. Соберите луп в браузере — без установки и без аккаунта."
+  description="Four NES-style channels, sixteen steps, four bars. A loop in the browser: no install, no account, no regrets."
   path="/apps/pulse"
   icon="/images/apps/pulse-180.png"
 >
   <header class="ap-head">
     <p class="sec-index label">PULSEBOX · 8-bit studio</p>
-    <h1 class="ap-title">Четыре канала.<br />Шестнадцать шагов.</h1>
+    <h1 class="ap-title">Four channels.<br />Sixteen steps.</h1>
     <p class="ap-lead">
-      Выберите ноту у канала и проведите по сетке. Два пульса, треугольный бас и шум для барабанов. Луп одного такта или вся песня из четырёх. Пробел — играть и остановить.
+      Pick a note, drag across the grid. Two pulse voices, a triangle bass, noise for drums: the 1985 palette, synthesised live. Loop a bar or play all four. Space starts and stops it, as nature intended.
     </p>
   </header>
 
-  <section class="pb card" aria-label="Секвенсор">
+  <section class="pb card" aria-label="Sequencer">
     <div class="pb-top">
       <span class="label">PULSEBOX</span>
       <span class="label text-signal" data-pb-status>NIGHT MARKET · BAR 1/4 · LOOP</span>
     </div>
 
     <div class="pb-transport">
-      <button type="button" class="btn btn-primary pb-play" data-pb-play aria-pressed="false">▶ Играть</button>
-      <div class="ap-seg" role="group" aria-label="Такт" data-pb-bars>
-        {[0, 1, 2, 3].map((b) => <button type="button" data-bar={b} aria-pressed={b === 0 ? "true" : "false"}>Такт {b + 1}</button>)}
+      <button type="button" class="btn btn-primary pb-play" data-pb-play aria-pressed="false">▶ Play</button>
+      <div class="ap-seg" role="group" aria-label="Bar" data-pb-bars>
+        {[0, 1, 2, 3].map((b) => <button type="button" data-bar={b} aria-pressed={b === 0 ? "true" : "false"}>Bar {b + 1}</button>)}
       </div>
-      <div class="ap-seg" role="group" aria-label="Режим">
-        <button type="button" data-mode="loop" aria-pressed="true">Луп</button>
-        <button type="button" data-mode="song" aria-pressed="false">Песня</button>
+      <div class="ap-seg" role="group" aria-label="Mode">
+        <button type="button" data-mode="loop" aria-pressed="true">Loop</button>
+        <button type="button" data-mode="song" aria-pressed="false">Song</button>
       </div>
-      <div class="pb-tempo" role="group" aria-label="Темп">
-        <button type="button" class="btn btn-ghost btn-sm-pb" data-bpm="-4" aria-label="Медленнее">−</button>
+      <div class="pb-tempo" role="group" aria-label="Tempo">
+        <button type="button" class="btn btn-ghost btn-sm-pb" data-bpm="-4" aria-label="Slower">−</button>
         <span class="label"><b data-pb-bpm>116</b> BPM</span>
-        <button type="button" class="btn btn-ghost btn-sm-pb" data-bpm="4" aria-label="Быстрее">+</button>
+        <button type="button" class="btn btn-ghost btn-sm-pb" data-bpm="4" aria-label="Faster">+</button>
       </div>
     </div>
 
@@ -59,15 +59,15 @@ const channels = [
               <span class="pb-ch-name">{c.name}</span>
               <span class="label text-mute">{c.role}</span>
               <label class="pb-pen">
-                <span class="sr-only">Нота для {c.name}</span>
+                <span class="sr-only">Note for {c.name}</span>
                 <select class="field" data-pen={c.id} />
               </label>
             </div>
-            <div class="pb-steps" data-steps={c.id} role="group" aria-label={`Шаги ${c.name}`} />
+            <div class="pb-steps" data-steps={c.id} role="group" aria-label={`${c.name} steps`} />
             <div class="pb-knobs">
-              {c.id < 2 && <button type="button" class="pb-knob" data-duty={c.id} title="Скважность пульса">50%</button>}
-              <button type="button" class="pb-knob" data-level={c.id} title="Громкость">HI</button>
-              <button type="button" class="pb-knob" data-mute={c.id} aria-pressed="false" title="Выключить канал">M</button>
+              {c.id < 2 && <button type="button" class="pb-knob" data-duty={c.id} title="Pulse duty">50%</button>}
+              <button type="button" class="pb-knob" data-level={c.id} title="Level">HI</button>
+              <button type="button" class="pb-knob" data-mute={c.id} aria-pressed="false" title="Mute">M</button>
             </div>
           </div>
         ))
@@ -76,32 +76,32 @@ const channels = [
 
     <div class="pb-foot">
       <label class="pb-song">
-        <span class="label text-mute">Песня</span>
+        <span class="label text-mute">Song</span>
         <select class="field" data-pb-song>
           <option value="night">Night Market</option>
           <option value="boss">Boss Door</option>
           <option value="river">River</option>
-          <option value="blank">Пустой лист</option>
+          <option value="blank">Blank page</option>
         </select>
       </label>
       <div class="ap-row">
-        <button type="button" class="btn btn-ghost" data-pb-copy>Копировать такт →</button>
-        <button type="button" class="btn btn-ghost" data-pb-clear>Очистить такт</button>
-        <button type="button" class="btn btn-ghost" data-pb-export>Экспорт</button>
-        <button type="button" class="btn btn-ghost" data-pb-import>Импорт</button>
+        <button type="button" class="btn btn-ghost" data-pb-copy>Copy bar →</button>
+        <button type="button" class="btn btn-ghost" data-pb-clear>Clear bar</button>
+        <button type="button" class="btn btn-ghost" data-pb-export>Export</button>
+        <button type="button" class="btn btn-ghost" data-pb-import>Import</button>
         <input type="file" accept="application/json,.json" data-pb-file hidden />
       </div>
     </div>
   </section>
 
-  <p class="ap-alert" data-pb-noaudio hidden>Этот браузер не поддерживает Web Audio — сетку можно редактировать, но звука не будет.</p>
+  <p class="ap-alert" data-pb-noaudio hidden>No Web Audio in this browser. The grid still edits; it just keeps the music to itself.</p>
 
   <section aria-labelledby="h-how">
-    <h2 id="h-how" class="sec-index label ap-h">Как играть</h2>
+    <h2 id="h-how" class="sec-index label ap-h">How to play</h2>
     <ol class="pb-how">
-      <li><span class="label text-signal">01</span><p>Выберите ноту в списке у канала — у барабанов это бочка, малый или хэт.</p></li>
-      <li><span class="label text-signal">02</span><p>Нажмите на шаг или проведите по ряду. Нажатие по занятому шагу его стирает.</p></li>
-      <li><span class="label text-signal">03</span><p>«Луп» повторяет выбранный такт, «Песня» играет все четыре подряд. Всё сохраняется само.</p></li>
+      <li><span class="label text-signal">01</span><p>Pick a note by the channel. For drums: kick, snare or hat.</p></li>
+      <li><span class="label text-signal">02</span><p>Tap a step or drag along a row. Tap a filled step to clear it.</p></li>
+      <li><span class="label text-signal">03</span><p>Loop repeats one bar, Song plays all four. Saving is automatic; regret is optional.</p></li>
     </ol>
   </section>
 </AppPage>

@@ -5,13 +5,13 @@ import { apps } from "../../data/apps";
 ---
 
 <Base
-  title="Apps — small tools from IMTRTD"
-  description="Personal mini apps from the studio, open in the browser: Cuebox prompt library, Pulse 8-bit sequencer, Komandir command builder. I/TD shell is coming."
+  title="Apps — IMTRTD"
+  description="Small tools from the studio, open in the browser: Cuebox, Pulse, Komandir. I/TD shell is on its way."
   path="/apps"
 >
   <section class="sec" style="border-top:0" aria-labelledby="h-apps">
     <div class="wrap">
-      <SectionHead index="01" kicker="Apps" id="h-apps" title="Small tools I use every day." lead="Open in the browser, on a phone or a laptop. No accounts: what you make stays on your device, and you can export it any time." />
+      <SectionHead index="01" kicker="Apps" id="h-apps" title="Small tools I actually use." lead="They run in the browser, on a phone or a laptop. No accounts: what you make stays on your device and leaves only by Export." />
       <ul class="grid gap-px border border-hair bg-hair md:grid-cols-2">
         {
           apps.map((a, i) => (
@@ -19,7 +19,7 @@ import { apps } from "../../data/apps";
               <a href={a.href} class="group flex flex-1 flex-col gap-5 p-6 lg:p-8">
                 <span class="flex items-start justify-between gap-4">
                   <span class="label text-signal">{String(i + 1).padStart(2, "0")} · {a.kind}</span>
-                  <span class:list={["chip", a.soon && "text-signal"]}>{a.soon ? "Coming soon" : a.lang}</span>
+                  {a.soon && <span class="chip text-signal">Soon</span>}
                 </span>
                 <span class="flex items-center gap-5">
                   <span class="grid size-16 shrink-0 place-items-center border border-hair-strong font-display text-2xl font-semibold tracking-tight text-signal transition-colors group-hover:border-signal lg:size-20 lg:text-3xl" aria-hidden="true">
@@ -33,14 +33,14 @@ import { apps } from "../../data/apps";
                 <span class="max-w-[52ch] text-sm leading-relaxed text-mute">{a.text}</span>
                 <span class="mt-auto flex flex-wrap items-center justify-between gap-3 border-t border-hair pt-4">
                   <span class="flex flex-wrap gap-1.5">{a.facts.map((f) => <span class="chip">{f}</span>)}</span>
-                  <span class="label inline-flex items-center gap-2 text-signal">{a.soon ? "Get notified" : "Open"} <span class="arrow" aria-hidden="true">→</span></span>
+                  <span class="label inline-flex items-center gap-2 text-signal">{a.soon ? "Notify me" : "Open"} <span class="arrow" aria-hidden="true">→</span></span>
                 </span>
               </a>
             </li>
           ))
         }
       </ul>
-      <p class="mt-6 text-sm text-mute">Data stays in your browser: clearing site data clears it too, so use Export before switching devices.</p>
+      <p class="mt-6 text-sm text-mute">Clearing site data clears your work too. Export first; future you will be grateful.</p>
     </div>
   </section>
 </Base>
