@@ -1,3 +1,4 @@
+import Link from "next/link";
 import type { CSSProperties } from "react";
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
@@ -73,8 +74,8 @@ export default async function WorkPage({
   return (
     <main className="case-page" style={caseStyle}>
       <nav className="case-nav">
-        <a className="case-brand" href="/" aria-label="ImTryingToDesign — home"><img className="lockup" src="/brand/logo-lockup.svg" width={124} height={36} alt="" /><img className="mark" src="/brand/logo-mark.svg" width={35} height={36} alt="" /></a>
-        <a className="case-back" href="/#work">← BACK TO WORK</a>
+        <Link className="case-brand" href="/" aria-label="ImTryingToDesign — home"><img className="lockup" src="/brand/logo-lockup.svg" width={124} height={36} alt="" /><img className="mark" src="/brand/logo-mark.svg" width={35} height={36} alt="" /></Link>
+        <Link className="case-back" href="/#work">← BACK TO WORK</Link>
         <span className="mono case-nav-meta">CONCEPT CASE STUDY / {study.index}</span>
       </nav>
       <section className="case-hero">
