@@ -16,24 +16,43 @@ import { apps } from "../../data/apps";
         {
           apps.map((a, i) => (
             <li class="relative flex flex-col bg-ink" data-reveal={i % 2}>
-              <a href={a.href} class="group flex flex-1 flex-col gap-5 p-6 lg:p-8">
-                <span class="flex items-start justify-between gap-4">
-                  <span class="label text-signal">{String(i + 1).padStart(2, "0")} · {a.kind}</span>
-                  {a.soon && <span class="chip text-signal">Soon</span>}
+              <a href={a.href} class="group flex flex-1 flex-col">
+                <span class="app-shot relative block aspect-[16/10] overflow-hidden border-b border-hair bg-ink-soft" aria-hidden="true">
+                  {a.shot ? (
+                    <picture>
+                      <source type="image/webp" srcset={`/images/apps/${a.shot}-card.webp`} />
+                      <img src={`/images/apps/${a.shot}-card.jpg`} width="960" height="600" alt="" loading={i < 2 ? "eager" : "lazy"} decoding="async" class="h-full w-full object-cover object-top opacity-85 transition duration-500 group-hover:scale-[1.03] group-hover:opacity-100" />
+                    </picture>
+                  ) : (
+                    <span class="app-term">
+                      <span class="app-term-bar"><i /><i /><i /><span>i/td shell</span></span>
+                      <span class="app-term-body">
+                        <span><b>~</b> itd --version</span>
+                        <span class="text-mute">not yet. soon.</span>
+                        <span><b>~</b> itd notify --when ready</span>
+                        <span class="text-mute">noted.</span>
+                        <span><b>~</b> <em class="app-caret" /></span>
+                      </span>
+                    </span>
+                  )}
                 </span>
-                <span class="flex items-center gap-5">
-                  <span class="grid size-16 shrink-0 place-items-center border border-hair-strong font-display text-2xl font-semibold tracking-tight text-signal transition-colors group-hover:border-signal lg:size-20 lg:text-3xl" aria-hidden="true">
-                    {a.mono}
+                <span class="flex flex-1 flex-col gap-4 p-6 lg:p-8">
+                  <span class="flex items-start justify-between gap-4">
+                    <span class="label text-signal">{String(i + 1).padStart(2, "0")} · {a.kind}</span>
+                    {a.soon && <span class="chip text-signal">Soon</span>}
                   </span>
-                  <span class="min-w-0">
-                    <span class="block font-display text-3xl font-semibold tracking-tight transition-colors group-hover:text-signal lg:text-4xl">{a.name}</span>
-                    <span class="mt-1 block text-sm text-fog">{a.line}</span>
+                  <span class="flex items-center gap-4">
+                    <span class="grid size-14 shrink-0 place-items-center border border-hair-strong font-display text-xl font-semibold tracking-tight text-signal transition-colors group-hover:border-signal lg:size-16 lg:text-2xl" aria-hidden="true">{a.mono}</span>
+                    <span class="min-w-0">
+                      <span class="block font-display text-3xl font-semibold tracking-tight transition-colors group-hover:text-signal lg:text-4xl">{a.name}</span>
+                      <span class="mt-1 block text-fog">{a.line}</span>
+                    </span>
                   </span>
-                </span>
-                <span class="max-w-[52ch] text-sm leading-relaxed text-mute">{a.text}</span>
-                <span class="mt-auto flex flex-wrap items-center justify-between gap-3 border-t border-hair pt-4">
-                  <span class="flex flex-wrap gap-1.5">{a.facts.map((f) => <span class="chip">{f}</span>)}</span>
-                  <span class="label inline-flex items-center gap-2 text-signal">{a.soon ? "Notify me" : "Open"} <span class="arrow" aria-hidden="true">→</span></span>
+                  <span class="max-w-[52ch] text-sm leading-relaxed text-mute">{a.text}</span>
+                  <span class="mt-auto flex flex-wrap items-center justify-between gap-3 border-t border-hair pt-4">
+                    <span class="flex flex-wrap gap-1.5">{a.facts.map((f) => <span class="chip">{f}</span>)}</span>
+                    <span class="label inline-flex items-center gap-2 text-signal">{a.soon ? "Notify me" : "Open"} <span class="arrow" aria-hidden="true">→</span></span>
+                  </span>
                 </span>
               </a>
             </li>
