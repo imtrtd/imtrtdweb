@@ -10,11 +10,14 @@ export type App = {
   text: string;
   facts: string[];
   soon?: boolean;
+  /** 16:10 preview of the working screen in /images/apps/<shot>-card.{webp,jpg}. None: a drawn placeholder. */
+  shot?: string;
 };
 
 export const apps: App[] = [
   {
     slug: "cuebox",
+    shot: "cuebox",
     href: "/apps/cuebox",
     name: "Cuebox",
     mono: "Cb",
@@ -25,6 +28,7 @@ export const apps: App[] = [
   },
   {
     slug: "pulse",
+    shot: "pulse",
     href: "/apps/pulse",
     name: "Pulse",
     mono: "Pb",
@@ -35,6 +39,7 @@ export const apps: App[] = [
   },
   {
     slug: "komandir",
+    shot: "komandir",
     href: "/komandir",
     name: "Komandir",
     mono: "Km",
