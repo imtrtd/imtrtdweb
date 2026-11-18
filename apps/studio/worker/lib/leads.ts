@@ -284,6 +284,7 @@ export async function notifyClient(env: Env, lead: Lead): Promise<boolean> {
 
 export async function notifyStaleLead(env: Env, lead: Lead): Promise<boolean> {
 	const to = (env.STUDIO_NOTIFY_EMAIL || env.LEAD_NOTIFY_EMAIL || "admin@imtrtd.space").trim();
+	// Studio inbox is a verified destination: the restricted EMAIL binding sends there on any plan.
 	return sendOut(
 		env,
 		to,
@@ -298,18 +299,32 @@ export async function notifyStaleLead(env: Env, lead: Lead): Promise<boolean> {
 			"",
 			"https://admin.imtrtd.space/admin",
 		].join("\n"),
+		undefined,
+		"studio",
 	);
 }
 
 /** Sends via the unrestricted `MAIL_OUT` binding (Cloudflare Email Sending). Fail-soft. */
-async function sendOut(env: Env, to: string, subject: string, text: string, replyTo?: string): Promise<boolean> {
-	if (!env.MAIL_OUT) {
+async function sendOut(
+	env: Env,
+	to: string,
+	subject: string,
+	text: string,
+	replyTo?: string,
+	via: "out" | "studio" = "out",
+): Promise<boolean> {
+	const binding = via === "studio" ? env.EMAIL : env.MAIL_OUT;
+	if (!binding) {
 		return false;
 	}
+	const from =
+		via === "studio"
+			? (env.LEAD_FROM_EMAIL || "leads@imtryingtodesign.com").trim()
+			: (env.OUT_FROM_EMAIL || DEFAULT_OUT_FROM).trim();
 	try {
-		await env.MAIL_OUT.send({
+		await binding.send({
 			to,
-			from: { email: (env.OUT_FROM_EMAIL || DEFAULT_OUT_FROM).trim(), name: "I'm Trying To Design" },
+			from: { email: from, name: "I'm Trying To Design" },
 			subject,
 			text,
 			...(replyTo ? { replyTo } : {}),
