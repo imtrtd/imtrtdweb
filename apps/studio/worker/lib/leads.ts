@@ -251,41 +251,9 @@ export async function markReminded(db: D1Database, leadId: string) {
 		.run();
 }
 
-function isEmail(value: string): boolean {
-	return /^[^\s@,;<>]+@[^\s@,;<>]+\.[^\s@,;<>]+$/.test(value);
-}
-
-export const DEFAULT_OUT_FROM = "leads@notify.imtrtd.space";
-
-/** Auto-reply to the client when the contact looks like an email. */
-export async function notifyClient(env: Env, lead: Lead): Promise<boolean> {
-	const to = lead.contact.trim();
-	if (!isEmail(to)) {
-		return false;
-	}
-	const first = lead.name.trim().split(/\s+/)[0] || "there";
-	return sendOut(
-		env,
-		to,
-		"Got it. A human reads this next.",
-		[
-			`Hi ${first},`,
-			"",
-			"Your message reached the studio. A reply follows within one working day, written by a person, not by whatever wrote this.",
-			"",
-			"In a hurry: Telegram @imtrtd.",
-			"",
-			"— I'm Trying To Design",
-			"https://imtrtd.space",
-		].join("\n"),
-		"admin@imtrtd.space",
-	);
-}
-
 export async function notifyStaleLead(env: Env, lead: Lead): Promise<boolean> {
 	const to = (env.STUDIO_NOTIFY_EMAIL || env.LEAD_NOTIFY_EMAIL || "admin@imtrtd.space").trim();
-	// Studio inbox is a verified destination: the restricted EMAIL binding sends there on any plan.
-	return sendOut(
+	return sendStudio(
 		env,
 		to,
 		`Напоминание: заявка без ответа (${lead.name.replace(/[\r\n]+/g, " ").slice(0, 80)})`,
@@ -299,39 +267,24 @@ export async function notifyStaleLead(env: Env, lead: Lead): Promise<boolean> {
 			"",
 			"https://admin.imtrtd.space/admin",
 		].join("\n"),
-		undefined,
-		"studio",
 	);
 }
 
-/** Sends via the unrestricted `MAIL_OUT` binding (Cloudflare Email Sending). Fail-soft. */
-async function sendOut(
-	env: Env,
-	to: string,
-	subject: string,
-	text: string,
-	replyTo?: string,
-	via: "out" | "studio" = "out",
-): Promise<boolean> {
-	const binding = via === "studio" ? env.EMAIL : env.MAIL_OUT;
-	if (!binding) {
+/** Sends to the studio inbox (a verified destination) via the EMAIL binding: free on any plan. Fail-soft. */
+async function sendStudio(env: Env, to: string, subject: string, text: string): Promise<boolean> {
+	if (!env.EMAIL) {
 		return false;
 	}
-	const from =
-		via === "studio"
-			? (env.LEAD_FROM_EMAIL || "leads@imtryingtodesign.com").trim()
-			: (env.OUT_FROM_EMAIL || DEFAULT_OUT_FROM).trim();
 	try {
-		await binding.send({
+		await env.EMAIL.send({
 			to,
-			from: { email: from, name: "I'm Trying To Design" },
+			from: { email: (env.LEAD_FROM_EMAIL || "leads@imtryingtodesign.com").trim(), name: "IMTRTD leads" },
 			subject,
 			text,
-			...(replyTo ? { replyTo } : {}),
 		});
 		return true;
 	} catch (err) {
-		console.error("mail out failed", (err as Error)?.message ?? String(err));
+		console.error("studio mail failed", (err as Error)?.message ?? String(err));
 		return false;
 	}
 }
