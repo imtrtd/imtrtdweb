@@ -1,5 +1,6 @@
 // Auto-plans: a group message that looks like a to-do list is parsed by Workers AI into tasks,
 // saved to the task storage and echoed back as a checklist with "done" buttons.
+import { gptOssReasoningOptions } from "./ai-model";
 import { Ctx } from "./env";
 import { esc, truncate } from "./tg";
 import { localParts, parseLocalDateTime } from "./time";
@@ -62,8 +63,7 @@ export async function aiParsePlan(c: Ctx, text: string, msgTs: number, topics: A
         messages,
         max_tokens: 900,
         temperature: 0.1,
-        // gpt-oss cannot disable reasoning; keep it short so the JSON plan fits max_tokens.
-        ...(String(model).includes("gpt-oss") ? { reasoning_effort: "low" } : {}),
+        ...gptOssReasoningOptions(String(model)),
       } as any);
       const raw = typeof out === "string" ? out : out?.response ?? out?.choices?.[0]?.message?.content ?? "";
       const j = typeof raw === "object" ? raw : JSON.parse(String(raw).match(/\{[\s\S]*\}/)?.[0] ?? "null");

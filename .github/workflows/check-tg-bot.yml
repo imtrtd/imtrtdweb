@@ -1,0 +1,56 @@
+name: Check Telegram bot
+
+on:
+  pull_request:
+    paths:
+      - "apps/tg-bot/**"
+      - ".github/workflows/check-tg-bot.yml"
+  push:
+    branches:
+      - main
+    paths:
+      - "apps/tg-bot/**"
+      - ".github/workflows/check-tg-bot.yml"
+
+concurrency:
+  group: check-tg-bot-${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  # Stable check name for required status checks: "tg-bot"
+  tg-bot:
+    name: tg-bot
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    defaults:
+      run:
+        working-directory: apps/tg-bot
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: npm
+          cache-dependency-path: apps/tg-bot/package-lock.json
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Typecheck
+        run: npm run check
+
+      - name: Dry-run deploy
+        run: npm run build
+
+      - name: Smoke AI (@cf/openai/gpt-oss-20b)
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          AI_MODEL: "@cf/openai/gpt-oss-20b"
+        run: npm run smoke:ai
