@@ -58,7 +58,13 @@ export async function aiParsePlan(c: Ctx, text: string, msgTs: number, topics: A
   const models = [c.env.AI_MODEL, c.env.AI_FALLBACK_MODEL].filter(Boolean);
   for (const model of models) {
     try {
-      const out: any = await c.env.AI.run(model as any, { messages, max_tokens: 900, temperature: 0.1 } as any);
+      const out: any = await c.env.AI.run(model as any, {
+        messages,
+        max_tokens: 900,
+        temperature: 0.1,
+        // gpt-oss cannot disable reasoning; keep it short so the JSON plan fits max_tokens.
+        ...(String(model).includes("gpt-oss") ? { reasoning_effort: "low" } : {}),
+      } as any);
       const raw = typeof out === "string" ? out : out?.response ?? out?.choices?.[0]?.message?.content ?? "";
       const j = typeof raw === "object" ? raw : JSON.parse(String(raw).match(/\{[\s\S]*\}/)?.[0] ?? "null");
       if (!j || typeof j !== "object") continue;

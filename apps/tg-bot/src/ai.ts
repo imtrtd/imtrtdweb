@@ -38,7 +38,13 @@ export async function aiReply(c: Ctx, opts: { chatId: number; threadId: number; 
   let lastErr: unknown;
   for (const model of models) {
     try {
-      const out: any = await c.env.AI.run(model as any, { messages, max_tokens: 600, temperature: 0.6 } as any);
+      const out: any = await c.env.AI.run(model as any, {
+        messages,
+        max_tokens: 600,
+        temperature: 0.6,
+        // gpt-oss cannot disable reasoning; keep it short so the reply fits max_tokens.
+        ...(String(model).includes("gpt-oss") ? { reasoning_effort: "low" } : {}),
+      } as any);
       const text = (typeof out === "string" ? out : out?.response ?? out?.choices?.[0]?.message?.content ?? "").trim();
       if (text) return text.replace(/\*\*(.+?)\*\*/g, "$1").slice(0, 3900);
     } catch (e) {
