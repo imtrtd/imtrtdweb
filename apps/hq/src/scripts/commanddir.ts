@@ -1,5 +1,5 @@
 /**
- * /komandir — command builder. A command is a list of steps (open a link or an app, run an iOS
+ * /commanddir — command builder. A command is a list of steps (open a link or an app, run an iOS
  * Shortcut, call, SMS, e-mail, copy / speak / show / ask text, vibrate, wait) that run one after
  * another. Everything lives in this browser's localStorage; nothing is sent anywhere.
  *
@@ -36,7 +36,8 @@ type Field = {
 
 type Kind = { title: string; summary: string; group: string; fields: Field[]; note?: string; needsText?: boolean };
 
-const STORE = "imtrtd-komandir";
+const STORE = "imtrtd-commanddir";
+const LEGACY_STORE = "imtrtd-komandir";
 const ACCENT = "imtrtd-accent";
 
 const GROUPS = ["Sites and apps", "People", "Text", "Device and time"];
@@ -230,9 +231,23 @@ function describe(s: Step): string {
 // ---------- storage ----------
 
 function load(): Command[] {
+  const parse = (raw: string | null): Command[] => {
+    try {
+      const v = JSON.parse(raw || "[]");
+      return Array.isArray(v) ? v.filter((c) => c && typeof c.id === "string" && Array.isArray(c.steps)) : [];
+    } catch {
+      return [];
+    }
+  };
   try {
-    const v = JSON.parse(localStorage.getItem(STORE) || "[]");
-    return Array.isArray(v) ? v.filter((c) => c && typeof c.id === "string" && Array.isArray(c.steps)) : [];
+    const current = parse(localStorage.getItem(STORE));
+    if (current.length) return current;
+    const legacy = parse(localStorage.getItem(LEGACY_STORE));
+    if (legacy.length) {
+      localStorage.setItem(STORE, JSON.stringify(legacy));
+      return legacy;
+    }
+    return [];
   } catch {
     return [];
   }
@@ -250,7 +265,7 @@ function save() {
 }
 const byId = (id: string) => commands.find((c) => c.id === id);
 const byName = (name: string) => commands.find((c) => c.name.toLocaleLowerCase() === name.toLocaleLowerCase());
-const runLink = (c: Command) => `${location.origin}/komandir?run=${encodeURIComponent(c.name)}`;
+const runLink = (c: Command) => `${location.origin}/commanddir?run=${encodeURIComponent(c.name)}`;
 
 // ---------- templates ----------
 
@@ -1019,8 +1034,8 @@ function openRun(id: string, autostart: boolean) {
 // ---------- export / import ----------
 
 function exportAll() {
-  const blob = new Blob([JSON.stringify({ app: "komandir", version: 1, commands }, null, 2)], { type: "application/json" });
-  const a = el("a", { href: URL.createObjectURL(blob), download: `komandir-${new Date().toISOString().slice(0, 10)}.json` });
+  const blob = new Blob([JSON.stringify({ app: "commanddir", version: 1, commands }, null, 2)], { type: "application/json" });
+  const a = el("a", { href: URL.createObjectURL(blob), download: `commanddir-${new Date().toISOString().slice(0, 10)}.json` });
   document.body.append(a);
   a.click();
   a.remove();
@@ -1101,7 +1116,7 @@ if ("speechSynthesis" in window) speechSynthesis.getVoices();
 renderList();
 paintAccent();
 
-// /komandir?run=<name or id>: open the command ready to start (a tap starts it, so the browser
+// /commanddir?run=<name or id>: open the command ready to start (a tap starts it, so the browser
 // allows sound, new tabs and the clipboard)
 const want = new URLSearchParams(location.search).get("run");
 if (want) {

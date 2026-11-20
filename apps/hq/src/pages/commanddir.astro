@@ -1,12 +1,12 @@
 ---
 /**
- * /komandir — Komandir: build your own commands from steps and run them in one tap.
+ * /commanddir — CommandDir: build your own commands from steps and run them in one tap.
  * Web version of the iOS app of the same name. Standalone page in the /launcher style (no site
  * header/footer/starfield), installable to the home screen, not indexed. Commands live in this
- * browser's localStorage only; logic in src/scripts/komandir.ts.
+ * browser's localStorage only; logic in src/scripts/commanddir.ts.
  */
 import "../styles/global.css";
-import "../styles/komandir.css";
+import "../styles/commanddir.css";
 
 const accents = [
   { id: "violet", color: "#b28dff" },
@@ -34,20 +34,20 @@ const how = [
     </script>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-    <title>Komandir — commands in one tap — IMTRTD</title>
+    <title>CommandDir — commands in one tap — IMTRTD</title>
     <meta name="description" content="Chain steps (a link, an app, a call, a text, a voice, a pause) into a command and run it in one tap." />
     <meta name="robots" content="noindex, nofollow" />
-    <link rel="canonical" href="https://imtrtd.space/komandir" />
+    <link rel="canonical" href="https://imtrtd.space/commanddir" />
     <link rel="preload" href="/fonts/space-grotesk-latin.woff2" as="font" type="font/woff2" crossorigin="anonymous" />
     <link rel="preload" href="/fonts/geist-mono-cyrillic.woff2" as="font" type="font/woff2" crossorigin="anonymous" />
     <meta name="theme-color" content="#0a0a0f" />
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
-    <meta name="apple-mobile-web-app-title" content="Komandir" />
-    <link rel="manifest" href="/komandir.webmanifest" />
+    <meta name="apple-mobile-web-app-title" content="CommandDir" />
+    <link rel="manifest" href="/commanddir.webmanifest" />
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
-    <link rel="apple-touch-icon" href="/images/komandir/icon-180.png" />
+    <link rel="apple-touch-icon" href="/images/commanddir/icon-180.png" />
   </head>
   <body class="km">
     <main class="km-wrap">
@@ -56,7 +56,7 @@ const how = [
           <img src="/brand/logo-mark.svg" alt="" width="28" height="28" />
           <span>imtrtd.space</span>
         </a>
-        <p class="sec-index label">Komandir</p>
+        <p class="sec-index label">CommandDir</p>
         <h1 class="km-title">Your commands.<br />One tap each.</h1>
         <p class="km-lead">
           Chain a few steps (open a site or an app, call, text, read aloud, wait) and run them from here, the Home Screen or iOS Shortcuts. Like a macro, minus the manual.
@@ -115,13 +115,13 @@ const how = [
           <div>
             <p class="label text-mute">Run by link</p>
             <p class="km-note">
-              <code class="km-code">imtrtd.space/komandir?run=Name</code> opens a command; Run starts it. In iOS Shortcuts, use Open URL with that link. Each command’s editor
+              <code class="km-code">imtrtd.space/commanddir?run=Name</code> opens a command; Run starts it. In iOS Shortcuts, use Open URL with that link. Each command’s editor
               copies its own.
             </p>
           </div>
           <div>
             <p class="label text-mute">Home Screen</p>
-            <p class="km-note">Safari → Share → Add to Home Screen. Komandir then opens full screen, like an app that never asked for permission.</p>
+            <p class="km-note">Safari → Share → Add to Home Screen. CommandDir then opens full screen, like an app that never asked for permission.</p>
           </div>
           <div>
             <p class="label text-mute">Moving and backup</p>
@@ -153,7 +153,7 @@ const how = [
     <dialog class="km-dialog" data-km-run aria-label="Running a command"></dialog>
 
     <script>
-      import "../scripts/komandir.ts";
+      import "../scripts/commanddir.ts";
     </script>
   </body>
 </html>

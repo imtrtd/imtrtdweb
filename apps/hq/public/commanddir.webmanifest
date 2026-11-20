@@ -1,0 +1,17 @@
+{
+  "name": "CommandDir — IMTRTD",
+  "short_name": "CommandDir",
+  "description": "Your commands, one tap each.",
+  "id": "/commanddir",
+  "start_url": "/commanddir",
+  "scope": "/commanddir",
+  "display": "standalone",
+  "lang": "en",
+  "background_color": "#0a0a0f",
+  "theme_color": "#0a0a0f",
+  "icons": [
+    { "src": "/images/commanddir/icon-180.png", "sizes": "180x180", "type": "image/png" },
+    { "src": "/images/commanddir/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "/images/commanddir/icon-maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ]
+}
