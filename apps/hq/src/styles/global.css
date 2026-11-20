@@ -218,6 +218,19 @@ html[data-accent="cyan"] { --color-signal: #2ee9ff; }
   .opt input:hover + span { border-color: var(--color-signal); }
   .opt input:checked + span { border-color: var(--color-signal); background: color-mix(in oklab, var(--color-signal) 16%, transparent); color: var(--color-paper); }
   .opt input:focus-visible + span { outline: 2px solid var(--color-signal); outline-offset: 2px; }
+  /* Brief step 1: tiles with a hint line; a corner tick when picked. */
+  .opt-tile span { position: relative; flex-direction: column; align-items: flex-start; justify-content: space-between; gap: 0.35rem; min-height: 5.25rem; height: 100%; padding: 0.85rem 1rem; }
+  .opt-tile b { font-family: var(--font-display); font-weight: 600; font-size: 1.05rem; letter-spacing: -0.01em; }
+  .opt-tile small { font-size: 0.8rem; line-height: 1.35; color: var(--color-mute); }
+  .opt-tile span::after { content: ""; position: absolute; top: 0.85rem; right: 0.85rem; width: 0.6rem; height: 0.6rem; border: 1px solid var(--color-hair-strong); transition: background 0.2s, border-color 0.2s; }
+  .opt-tile input:checked + span::after { background: var(--color-signal); border-color: var(--color-signal); }
+  .opt-tile input:checked + span small { color: var(--color-fog); }
+  @media (width >= 64rem) {
+    .opt span { min-height: 3rem; padding-inline: 1.1rem; font-size: 1rem; }
+    .opt-tile span { min-height: 7rem; padding: 1.1rem 1.2rem; }
+    .opt-tile b { font-size: 1.3rem; }
+    .opt-tile small { font-size: 0.9rem; }
+  }
 
   /* prose for case pages */
   .lead { font-size: clamp(1.15rem, 1.6vw, 1.4rem); line-height: 1.55; color: rgb(243 239 250 / 0.86); }
