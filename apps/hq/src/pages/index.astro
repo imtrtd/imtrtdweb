@@ -131,10 +131,10 @@ const services = await getServices();
         <p class="sec-index label">07 · Brief</p>
         <h2 id="h-brief" class="display-lg mt-4">Got a project? <span class="text-signal">Let’s talk.</span></h2>
         <p class="lead mt-6 text-fog">Four short steps. None of it is required except a way to reply.</p>
-        <ul class="mt-8 grid gap-px border border-hair bg-hair sm:grid-cols-2 lg:grid-cols-1" aria-label="Contact channels">
+        <ul class="mt-8 grid gap-px border border-hair bg-hair sm:grid-cols-2" aria-label="Contact channels">
           <li class="relative bg-ink">
-            <a class="group block p-4 pr-16" href={`mailto:${s.email}`}>
-              <span class="label text-mute">Email</span>
+            <a class="group block p-4" href={`mailto:${s.email}`}>
+              <span class="label block pr-14 text-mute">Email</span>
               <span class="mt-1.5 block truncate text-paper transition-colors group-hover:text-signal" data-mail-text>{s.email}</span>
               <span class="label mt-2 block text-signal">Write ↗</span>
             </a>
@@ -144,7 +144,7 @@ const services = await getServices();
             socials.map((ch) => (
               <li class="bg-ink">
                 <a class="group block p-4" href={ch.href} rel="me noopener" target="_blank">
-                  <span class="label text-mute">{ch.label}</span>
+                  <span class="label block text-mute">{ch.label}</span>
                   <span class="mt-1.5 block truncate text-paper transition-colors group-hover:text-signal">{ch.handle}</span>
                   <span class="label mt-2 block text-signal">{ch.action} ↗</span>
                 </a>
@@ -153,7 +153,7 @@ const services = await getServices();
           }
         </ul>
       </div>
-      <div class="lg:col-span-8">
+      <div class="lg:col-span-8 lg:flex lg:flex-col">
         <BriefSteps email={s.email} label="Home" />
       </div>
     </div>
