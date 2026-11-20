@@ -143,6 +143,11 @@ var Loop={jobs:[],raf:0,
 document.addEventListener('visibilitychange',function(){Loop.go()});
 if(reduce.addEventListener)reduce.addEventListener('change',function(){Loop.go()});
 /* fade a canvas in once its first frame is drawn (CSS: .fx-canvas -> .is-on), so layers arrive smoothly, not with a pop */
+/* hero, desktop: the free space right of the copy (headline + lead), measured from the text itself, so the
+   scene sits beside the words at any width instead of behind them. Re-measured at most twice a second. */
+var HS={c:0,s:0,t:0};function heroSpace(){var n=performance.now();if(HS.s&&n-HS.t<500)return HS;HS.t=n;var W=innerWidth,r=0;
+  ['#hero-title','.pulse-stage .lead','.pulse-stage .label'].forEach(function(q){document.querySelectorAll(q).forEach(function(e){var g=document.createRange();g.selectNodeContents(e);var b=g.getBoundingClientRect();if(b.width)r=Math.max(r,b.right)})});
+  var gap=Math.max(24,W*.03),L=r?r+gap:W*.34,sp=Math.min(W*.66,Math.max(W*.3,W-L-W*.015));HS.c=Math.min(W-sp*.5,L+sp*.5);HS.s=sp;return HS}
 function shown(c){if(c&&!c.classList.contains('is-on'))requestAnimationFrame(function(){c.classList.add('is-on')})}
 /* start canvas work after the first paint and load, when the main thread is idle */
 function whenIdle(fn){function go(){(window.requestIdleCallback||function(f){return setTimeout(f,50)})(fn,{timeout:1000})}
@@ -202,7 +207,7 @@ function initFigure(){var cv=$('.pulse-shader');if(!cv)return;var x=cv.getContex
   if(window.ResizeObserver)new ResizeObserver(redraw).observe(cv);
   new IntersectionObserver(function(en){vis=en[0].isIntersecting;if(vis)Loop.go()}).observe(cv);
   function draw(t,fr){var dpr=dprCap(),w=Math.round(cv.clientWidth*dpr),h=Math.round(cv.clientHeight*dpr);if(!w||!h)return;if(cv.width!==w||cv.height!==h){cv.width=w;cv.height=h}
-    var s=t*.001,c=rgb(signal()).join(','),R=Math.min(w,h)*.34*(1-fold.v*.25),cx=w*(.5+(ptr.x-.5)*.08),cy=h*(.5+(ptr.y-.5)*.08);
+    var s=t*.001,c=rgb(signal()).join(','),R=Math.min(w,h)*.34*(1-fold.v*.25),cx=w*(.5+(ptr.x-.5)*.08),dk2=innerWidth>=1024,hs=dk2?heroSpace():0;if(dk2){R=Math.min(R,hs.s*.36*dpr);cx=(hs.c-cv.getBoundingClientRect().left)*dpr+(ptr.x-.5)*R*.2}var cy=h*(.5+(ptr.y-.5)*.08);
     if(reduce.matches){s=4;pulse=0;ptr.e=0}ptr.e*=Math.pow(.96,fr);pulse*=Math.pow(.93,fr);x.clearRect(0,0,w,h);
     var g=x.createRadialGradient(cx-R*.25,cy-R*.3,R*.05,cx,cy,R*1.05);g.addColorStop(0,'rgba(255,255,255,.85)');g.addColorStop(.22,'rgba('+c+',.9)');g.addColorStop(.6,'rgba(40,20,80,.9)');g.addColorStop(1,'rgba(10,10,15,0)');
     x.fillStyle=g;x.beginPath();x.arc(cx,cy,R*(1+Math.sin(s*1.85)*.03+pulse*.08),0,7);x.fill();
@@ -340,11 +345,11 @@ function initSolar(){var cv=$('.pulse-shader');if(!cv)return false;var gl,soft=f
     /* easing is scaled by elapsed frames (fr), so the 30 fps cap keeps the same speed as the old 60 fps loop */
     var dk=desk.matches,ys=1,T=st?T_STILL:(t-t0)/1000;
     if(st){ptr.x=ptr.y=0;pulse=0}else{ptr.x+=(ptr.tx-ptr.x)*(1-Math.pow(.94,fr));ptr.y+=(ptr.ty-ptr.y)*(1-Math.pow(.94,fr));pulse*=Math.pow(.94,fr)}
-    var K=(dk?.5:.47)+ptr.y*(dk?.08:.1),uu=.5*Math.min(w,h),oa=dk?.1:0,sr=dk?.34:.28,fit=dk?Math.min(innerWidth*.66*(1-fold.v*.3)*dpr*.5/1.62*1.36,(h*.5)/(K*1.2+.3))/uu:Math.min(Math.min(cw*.45,252)*dpr,(h*.5)/(K*1.1+.42))/uu;
+    var K=(dk?.5:.47)+ptr.y*(dk?.08:.1),uu=.5*Math.min(w,h),oa=dk?.1:0,sr=dk?.34:.28,fit=dk?Math.min(heroSpace().s*(1-fold.v*.3)*dpr*.5/1.62*1.36,(h*.5)/(K*1.2+.3))/uu:Math.min(Math.min(cw*.45,252)*dpr,(h*.5)/(K*1.1+.42))/uu;
     var lv=Audio_.on&&!st?Audio_.levels():{beat:0,amp:0},rm=reduce.matches?.4:1;
     beatS+=((lv.beat)-beatS)*(1-Math.pow(1-(lv.beat>beatS?.6:.18),fr));ampS+=(lv.amp-ampS)*(1-Math.pow(1-(lv.amp>ampS?.25:.06),fr));
     var B=(beatS*.75+ampS*.45)*rm+(Audio_.on?0:(.5+.5*Math.sin(T*1.1))*.12*rm);
-    var ox=0;if(dk){var br=cv.getBoundingClientRect();ox=((innerWidth*(.655+fold.v*.07)-br.left)*dpr-w*.5)/uu}
+    var ox=0;if(dk){var br=cv.getBoundingClientRect();ox=((heroSpace().c+innerWidth*fold.v*.07-br.left)*dpr-w*.5)/uu}
     var sc=fit*(1+pulse*.04),cx=ox+ptr.x*.12,cy=-ptr.y*.06+(dk?0:MOY),bs=1+B*.035;
     var S=[cx,cy,0,sr*sc*(1+pulse*.15)*bs],O=[],pos={};
     // orbit angle in ellipse-normalized space: angle of (x,-z) since e=d/(a,aK)
