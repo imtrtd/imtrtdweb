@@ -21,7 +21,7 @@ const channels = [
 ];
 ---
 
-<Base title="Contact — send a brief — IMTRTD" description="Send a brief in four short steps, or write by email or Telegram. A site, system or tool that fits an existing brand. Reply within a working day." path="/contact" jsonLd={[faqJsonLd(), { "@type": "ContactPage", name: "Contact — IMTRTD", url: `${s.url}/contact` }]}>
+<Base footerCta={false} title="Contact — send a brief — IMTRTD" description="Send a brief in four short steps, or write by email or Telegram. A site, system or tool that fits an existing brand. Reply within a working day." path="/contact" jsonLd={[faqJsonLd(), { "@type": "ContactPage", name: "Contact — IMTRTD", url: `${s.url}/contact` }]}>
   <header class="wrap pt-12 pb-10 lg:pt-20">
     <p class="sec-index label">01 · New work</p>
     <h1 class="display-xl mt-5">Got a project?<br /><span class="text-signal">Let’s talk.</span></h1>
@@ -61,7 +61,7 @@ const channels = [
               <span class="mt-1 block font-display text-lg font-semibold">{ch.handle}</span>
             </span>
             <span class="label text-signal">
-              {ch.action} <span aria-hidden="true">↗</span>
+              {ch.action} <span aria-hidden="true">↗︎</span>
             </span>
           </a>
         ))

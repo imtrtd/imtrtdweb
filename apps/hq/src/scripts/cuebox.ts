@@ -155,7 +155,7 @@ function renderList() {
   ${p.tags.length ? `<ul class="cb-tags">${p.tags.map((t) => `<li class="chip">${esc(t)}</li>`).join("")}</ul>` : "<span></span>"}
   <div class="cb-acts">
     <button type="button" class="btn btn-primary" data-act="use">${n ? "Fill in" : "Copy"}</button>
-    ${f.url ? `<button type="button" class="btn btn-ghost" data-act="open">${esc(f.name)} ↗</button>` : ""}
+    ${f.url ? `<button type="button" class="btn btn-ghost" data-act="open">${esc(f.name)} ↗︎</button>` : ""}
     <button type="button" class="btn btn-ghost" data-act="edit">Edit</button>
   </div>
 </li>`;
@@ -226,7 +226,7 @@ function openUse(p: Prompt, openAfter: boolean) {
   </div>
   <div class="ap-sheet-foot">
     <button type="button" class="btn btn-ghost" data-go="copy">Copy</button>
-    ${f.url ? `<button type="button" class="btn ${openAfter ? "btn-primary" : "btn-ghost"}" data-go="open">Open in ${esc(f.name)} ↗</button>` : ""}
+    ${f.url ? `<button type="button" class="btn ${openAfter ? "btn-primary" : "btn-ghost"}" data-go="open">Open in ${esc(f.name)} ↗︎</button>` : ""}
     ${openAfter ? "" : `<button type="button" class="btn btn-primary" data-go="copy-close">Copy and close</button>`}
   </div>
 </form>`;
