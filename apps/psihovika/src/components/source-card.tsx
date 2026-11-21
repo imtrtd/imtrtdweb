@@ -2,7 +2,7 @@ import { FIDELITY_LABEL, type MethodMeta } from "@/data/refs";
 
 export function SourceCard({ meta, source }: { meta: MethodMeta; source: string }) {
   return (
-    <section className="rise-in border border-line bg-sheet p-5">
+    <section className="rise-in float-card p-5">
       <p className="text-xs uppercase tracking-widest text-ox">{FIDELITY_LABEL[meta.fidelity]}</p>
       {meta.instrument ? (
         <h2 className="mt-2 font-serif text-2xl text-balance">{meta.instrument}</h2>
@@ -15,9 +15,7 @@ export function SourceCard({ meta, source }: { meta: MethodMeta; source: string 
           {meta.citations.map((cite, i) => (
             <li key={`${cite.title}-${i}`} className="border-t border-line pt-3 text-sm">
               <p className="text-pretty">
-                <span className="text-ink">{cite.authors}</span>
-                {" "}
-                ({cite.year}). {cite.title}
+                <span className="text-ink">{cite.authors}</span> ({cite.year}). {cite.title}
                 {cite.venue ? `. ${cite.venue}` : ""}.
               </p>
               {cite.note ? <p className="mt-1 text-muted text-pretty">{cite.note}</p> : null}

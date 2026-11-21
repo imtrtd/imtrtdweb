@@ -73,17 +73,11 @@ function kindsFor(count: number): { id: Kind; label: string }[] {
   ];
 }
 
-function Tip({
-  active,
-  payload,
-}: {
-  active?: boolean;
-  payload?: { payload?: Row }[];
-}) {
+function Tip({ active, payload }: { active?: boolean; payload?: { payload?: Row }[] }) {
   const row = payload?.[0]?.payload;
   if (!active || !row) return null;
   return (
-    <div className="max-w-56 border border-line bg-sheet px-3 py-2 text-sm shadow-none">
+    <div className="max-w-56 float-glass rounded-xl px-3 py-2 text-sm">
       <p className="font-medium">{row.name}</p>
       <p className="text-ox">{row.title}</p>
       <p className="tabular-nums text-muted">
@@ -234,7 +228,7 @@ export function Diagrams({ pieces, gold }: { pieces: Piece[]; gold?: boolean }) 
   const kinds = kindsFor(pieces.length);
   const [kind, setKind] = useState<Kind>(kinds[0]?.id ?? "bars");
   const rows = rowsOf(pieces);
-  const active = kinds.some((item) => item.id === kind) ? kind : kinds[0]?.id ?? "bars";
+  const active = kinds.some((item) => item.id === kind) ? kind : (kinds[0]?.id ?? "bars");
 
   useEffect(() => {
     setMounted(true);
@@ -243,10 +237,10 @@ export function Diagrams({ pieces, gold }: { pieces: Piece[]; gold?: boolean }) 
   if (!pieces.length) return null;
 
   return (
-    <section className="mt-4 border border-line bg-sheet p-5">
+    <section className="mt-4 float-card p-5">
       <div className="flex flex-wrap items-end justify-between gap-3">
         <h2 className="font-serif text-3xl">Рисунок</h2>
-        <div className="flex flex-wrap gap-1" role="group" aria-label="Вид диаграммы">
+        <div className="float-glass flex flex-wrap gap-1 rounded-full p-1" role="group" aria-label="Вид диаграммы">
           {kinds.map((item) => (
             <button
               key={item.id}
@@ -254,8 +248,8 @@ export function Diagrams({ pieces, gold }: { pieces: Piece[]; gold?: boolean }) 
               aria-pressed={active === item.id}
               onClick={() => setKind(item.id)}
               className={cn(
-                "h-11 px-3 text-sm",
-                active === item.id ? "bg-ox text-oxink" : "text-muted",
+                "h-9 rounded-full px-4 text-sm transition-colors",
+                active === item.id ? "bg-ox text-oxink shadow-md" : "text-muted hover:text-ink",
               )}
             >
               {item.label}

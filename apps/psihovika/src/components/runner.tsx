@@ -37,7 +37,9 @@ export function Runner({ test }: { test: Test }) {
   const saved = useSyncExternalStore(subscribe, getSnapshot, getServerSnapshot);
   const [phase, setPhase] = useState<Phase>("intro");
   const [step, setStep] = useState(0);
-  const [answers, setAnswers] = useState<(number | null)[]>(() => Array(test.items.length).fill(null));
+  const [answers, setAnswers] = useState<(number | null)[]>(() =>
+    Array(test.items.length).fill(null),
+  );
   const [depth, setDepth] = useState<Depth>("work");
   const [draftDepth, setDraftDepth] = useState<Depth | null>(null);
   const [copied, setCopied] = useState<"prompt" | "file" | null>(null);
@@ -82,7 +84,10 @@ export function Runner({ test }: { test: Test }) {
         const raw = sessionStorage.getItem(draftKey(test.id, item));
         if (!raw) return false;
         const parsed = JSON.parse(raw) as { answers?: (number | null)[] };
-        return Array.isArray(parsed.answers) && parsed.answers.length === passageOf(test, item).items.length;
+        return (
+          Array.isArray(parsed.answers) &&
+          parsed.answers.length === passageOf(test, item).items.length
+        );
       } catch {
         return false;
       }
@@ -185,7 +190,7 @@ export function Runner({ test }: { test: Test }) {
         <p className="text-xs uppercase tracking-widest text-muted">
           {test.category} · {passage.title} · вопрос {step + 1} из {passage.items.length}
         </p>
-          <div
+        <div
           className="mt-3 h-1 overflow-hidden bg-line"
           role="progressbar"
           aria-valuenow={step + 1}
@@ -197,9 +202,13 @@ export function Runner({ test }: { test: Test }) {
             style={{ width: `${((step + 1) / passage.items.length) * 100}%` }}
           />
         </div>
-        <p className="mt-3 text-sm tabular-nums text-muted">{mins}:{secs}</p>
+        <p className="mt-3 text-sm tabular-nums text-muted">
+          {mins}:{secs}
+        </p>
         <fieldset className="mt-8 rise-in" key={step}>
-          <legend className="font-serif text-3xl leading-tight text-balance sm:text-4xl">{item.text}</legend>
+          <legend className="font-serif text-3xl leading-tight text-balance sm:text-4xl">
+            {item.text}
+          </legend>
           <div className="mt-6 flex flex-col gap-2">
             {opts.map((opt) => {
               const on = picked === opt.v;
@@ -210,8 +219,10 @@ export function Runner({ test }: { test: Test }) {
                   aria-pressed={on}
                   onClick={() => choose(opt.v)}
                   className={cn(
-                    "min-h-12 border px-4 py-3 text-left text-base transition-colors duration-200",
-                    on ? "border-ox bg-ox text-oxink" : "border-line bg-sheet text-ink hover:border-ox",
+                    "float-card min-h-12 px-4 py-3 text-left text-base",
+                    on
+                      ? "!border-ox !bg-ox text-oxink shadow-[0_16px_30px_-14px_color-mix(in_oklab,var(--color-ox)_85%,transparent)]"
+                      : "float-lift text-ink",
                   )}
                 >
                   {opt.label}
@@ -220,8 +231,8 @@ export function Runner({ test }: { test: Test }) {
             })}
           </div>
         </fieldset>
-        <div className="fixed inset-x-0 bottom-0 z-20 border-t border-line bg-paper/95 backdrop-blur">
-          <div className="mx-auto flex max-w-3xl items-center justify-between gap-3 px-4 py-3">
+        <div className="pointer-events-none fixed inset-x-0 bottom-0 z-20 px-3 pb-[max(0.75rem,env(safe-area-inset-bottom))] sm:px-4">
+          <div className="float-glass float-glass-strong pointer-events-auto mx-auto flex max-w-3xl items-center justify-between gap-3 rounded-full px-3 py-2">
             <Button
               variant="ghost"
               onClick={() => {
@@ -260,7 +271,11 @@ export function Runner({ test }: { test: Test }) {
         ? [{ ...score.total, name: test.scoreName ?? "Итог" }]
         : [];
     const at = savedAt ?? Date.now();
-    const prompt = resultPrompt(test, score, at, { depth: passage.title, note: passage.note, watch });
+    const prompt = resultPrompt(test, score, at, {
+      depth: passage.title,
+      note: passage.note,
+      watch,
+    });
 
     async function copyPrompt() {
       try {
@@ -288,24 +303,31 @@ export function Runner({ test }: { test: Test }) {
         <h1 className="mt-2 font-serif text-4xl text-balance sm:text-5xl">{test.title}</h1>
         <p className="mt-2 text-sm text-muted">{passage.title}</p>
         {score.total ? (
-          <section className="mt-8 border border-line bg-sheet p-5">
-            <p className="text-xs uppercase tracking-widest text-muted">{test.scoreName ?? "Индекс самонаблюдения"}</p>
+          <section className="mt-8 float-card p-5">
+            <p className="text-xs uppercase tracking-widest text-muted">
+              {test.scoreName ?? "Индекс самонаблюдения"}
+            </p>
             <h2 className="mt-2 font-serif text-4xl text-balance">{score.total.title}</h2>
             <Meter piece={score.total} />
             <p className="mt-4 text-pretty">{score.total.text}</p>
             {!test.gold ? (
               <p className="mt-3 text-sm text-muted text-pretty">
-                Индекс от 0 до 100 внутри этой учебной методики. Это не норма по населению и не диагноз.
+                Индекс от 0 до 100 внутри этой учебной методики. Это не норма по населению и не
+                диагноз.
               </p>
             ) : (
-              <p className="mt-3 text-sm text-muted text-pretty">Подсчёт как в исходной публичной шкале. Скрининг не заменяет беседу.</p>
+              <p className="mt-3 text-sm text-muted text-pretty">
+                Подсчёт как в исходной публичной шкале. Скрининг не заменяет беседу.
+              </p>
             )}
-            {passage.mode !== "official" || watch ? <p className="mt-3 text-sm text-pretty">{passage.note}</p> : null}
+            {passage.mode !== "official" || watch ? (
+              <p className="mt-3 text-sm text-pretty">{passage.note}</p>
+            ) : null}
           </section>
         ) : null}
 
         {test.shape === "profile" && top ? (
-          <section className="mt-4 border border-line p-5">
+          <section className="mt-4 float-card p-5">
             <h2 className="font-serif text-3xl text-balance">
               {top.pct < 42
                 ? "Нет одного громкого полюса"
@@ -324,7 +346,7 @@ export function Runner({ test }: { test: Test }) {
         <Diagrams pieces={drawn} gold={test.gold && passage.mode !== "slice"} />
 
         {watch ? (
-          <section className="mt-4 border border-line bg-sheet p-5">
+          <section className="mt-4 float-card p-5">
             <p className="text-xs uppercase tracking-widest text-muted">Вне балла шкалы</p>
             <h2 className="mt-2 font-serif text-3xl text-balance">{watch.title}</h2>
             <Meter piece={watch} />
@@ -333,7 +355,7 @@ export function Runner({ test }: { test: Test }) {
         ) : null}
 
         {score.dims.length > 0 ? (
-          <section className="mt-4 flex flex-col gap-6 border border-line bg-sheet p-5">
+          <section className="mt-4 flex flex-col gap-6 float-card p-5">
             <h2 className="font-serif text-3xl">Как это читается</h2>
             {score.dims.map((dim) => (
               <div key={dim.id}>
@@ -352,7 +374,7 @@ export function Runner({ test }: { test: Test }) {
           <SourceCard meta={metaFor(test)} source={test.source} />
         </div>
         {test.warn ? (
-          <section className="mt-4 border border-line p-5">
+          <section className="mt-4 float-card p-5">
             <p className="text-pretty">{test.warn}</p>
           </section>
         ) : null}
@@ -361,20 +383,23 @@ export function Runner({ test }: { test: Test }) {
           <CrisisNote hot={score.crisis} />
         </div>
 
-        <section className="mt-4 border border-line p-5">
+        <section className="mt-4 float-card p-5">
           <h2 className="font-serif text-3xl">Промпт для ИИ</h2>
           <p className="mt-2 text-pretty">
-            Готовый текст для Grok или другого чата: баллы, чтение методики и просьба не ставить диагноз. Можно скопировать или скачать файлом. Итог уже лежит в кабинете этого браузера.
+            Готовый текст для Grok или другого чата: баллы, чтение методики и просьба не ставить
+            диагноз. Можно скопировать или скачать файлом. Итог уже лежит в кабинете этого браузера.
           </p>
           <textarea
             readOnly
             value={prompt}
             aria-label="Промпт для ИИ"
-            className="mt-4 h-48 w-full resize-y border border-line bg-paper p-3 text-sm text-ink"
+            className="mt-4 h-48 w-full resize-y float-input p-3 text-sm text-ink"
             onFocus={(event) => event.currentTarget.select()}
           />
           <div className="mt-3 flex flex-wrap gap-2">
-            <Button onClick={() => void copyPrompt()}>{copied === "prompt" ? "Промпт скопирован" : "Скопировать промпт"}</Button>
+            <Button onClick={() => void copyPrompt()}>
+              {copied === "prompt" ? "Промпт скопирован" : "Скопировать промпт"}
+            </Button>
             <Button variant="line" onClick={downloadPrompt}>
               {copied === "file" ? "Файл скачан" : "Скачать итог"}
             </Button>
@@ -423,9 +448,10 @@ export function Runner({ test }: { test: Test }) {
         {meta.instrument ? ` · ${meta.instrument}` : ""}
       </p>
       <p className="mt-6 text-pretty">{test.frame}</p>
-      {test.warn ? <p className="mt-4 border border-line bg-sheet p-4 text-pretty">{test.warn}</p> : null}
+      {test.warn ? <p className="mt-4 float-card p-4 text-pretty">{test.warn}</p> : null}
       <p className="mt-4 text-sm text-muted text-pretty">
-        Ответы не уходят на сервер. Выберите глубину: итог, рисунок и промпт для ИИ сохранятся в кабинете этого браузера. Это не диагноз.
+        Ответы не уходят на сервер. Выберите глубину: итог, рисунок и промпт для ИИ сохранятся в
+        кабинете этого браузера. Это не диагноз.
       </p>
       <div className="stagger mt-6 flex flex-col gap-3">
         {DEPTHS.map((item) => {
@@ -435,7 +461,7 @@ export function Runner({ test }: { test: Test }) {
               key={item.id}
               type="button"
               onClick={() => begin(item.id, false)}
-              className="border border-line bg-sheet p-4 text-left transition-[border-color,transform] duration-300 hover:-translate-y-0.5 hover:border-ox"
+              className="float-card p-4 text-left float-lift"
             >
               <span className="flex items-baseline justify-between gap-3">
                 <span className="font-serif text-2xl">{item.title}</span>
@@ -480,7 +506,7 @@ function Related({ test }: { test: Test }) {
       <ul className="mt-3 flex flex-col gap-2">
         {items.map((item) => (
           <li key={item.id}>
-            <Link to="/m/$id" params={{ id: item.id }} className="block border border-line bg-sheet p-4 hover:border-ox">
+            <Link to="/m/$id" params={{ id: item.id }} className="block float-card p-4 float-lift">
               <span className="text-xs uppercase tracking-widest text-muted">{item.category}</span>
               <span className="mt-1 block font-serif text-2xl">{item.title}</span>
             </Link>

@@ -124,7 +124,7 @@ function EditorPage() {
         {isPending || booting ? <div className="mt-8 h-12 w-40 animate-pulse bg-line" /> : null}
 
         {!isPending && !user ? (
-          <div className="mt-8 border border-line bg-sheet p-5">
+          <div className="mt-8 float-card p-5">
             <p>Редактор доступен после входа.</p>
             <Button className="mt-4" asChild>
               <Link to="/login">Войти</Link>
@@ -136,7 +136,7 @@ function EditorPage() {
 
         {!isPending && !booting && user && base ? (
           <div className="mt-8 grid gap-6 lg:grid-cols-[0.9fr_1.4fr]">
-            <aside className="border border-line bg-sheet p-4">
+            <aside className="float-card p-4">
               <p className="text-xs uppercase tracking-widest text-muted">
                 Публичный контент
                 {workspace ? ` · ${workspace.name}` : ""}
@@ -147,7 +147,7 @@ function EditorPage() {
                   value={q}
                   onChange={(e) => setQ(e.target.value)}
                   placeholder="PHQ, привязанность…"
-                  className="h-11 w-full border border-line bg-paper px-3 text-sm focus:border-ox focus:outline-none"
+                  className="h-11 w-full float-input px-3 text-sm focus:outline-none"
                 />
               </label>
               <ul className="mt-3 max-h-[28rem] overflow-y-auto">
@@ -176,7 +176,7 @@ function EditorPage() {
               </ul>
             </aside>
 
-            <form onSubmit={(e) => void onSave(e)} className="border border-line p-5">
+            <form onSubmit={(e) => void onSave(e)} className="float-card p-5">
               <div className="flex flex-wrap items-start justify-between gap-3">
                 <div>
                   <p className="text-xs uppercase tracking-widest text-ox">
@@ -196,7 +196,7 @@ function EditorPage() {
                 <input
                   value={title}
                   onChange={(e) => setTitle(e.target.value)}
-                  className="mt-1 h-12 w-full border border-line bg-sheet px-4 focus:border-ox focus:outline-none"
+                  className="mt-1 h-12 w-full float-input px-4 focus:outline-none"
                 />
               </label>
               <label className="mt-4 block">
@@ -205,7 +205,7 @@ function EditorPage() {
                   value={lead}
                   onChange={(e) => setLead(e.target.value)}
                   rows={3}
-                  className="mt-1 w-full border border-line bg-sheet px-4 py-3 focus:border-ox focus:outline-none"
+                  className="mt-1 w-full float-input px-4 py-3 focus:outline-none"
                 />
               </label>
               <label className="mt-4 block">
@@ -214,7 +214,7 @@ function EditorPage() {
                   value={source}
                   onChange={(e) => setSource(e.target.value)}
                   rows={4}
-                  className="mt-1 w-full border border-line bg-sheet px-4 py-3 focus:border-ox focus:outline-none"
+                  className="mt-1 w-full float-input px-4 py-3 focus:outline-none"
                 />
               </label>
               <label className="mt-4 block">
@@ -223,7 +223,7 @@ function EditorPage() {
                   value={warn}
                   onChange={(e) => setWarn(e.target.value)}
                   rows={2}
-                  className="mt-1 w-full border border-line bg-sheet px-4 py-3 focus:border-ox focus:outline-none"
+                  className="mt-1 w-full float-input px-4 py-3 focus:outline-none"
                 />
               </label>
               <label className="mt-4 block">
@@ -233,7 +233,7 @@ function EditorPage() {
                   onChange={(e) => setNotes(e.target.value)}
                   rows={3}
                   placeholder="Что сверить с бланком, перевод, пороги…"
-                  className="mt-1 w-full border border-line bg-sheet px-4 py-3 focus:border-ox focus:outline-none"
+                  className="mt-1 w-full float-input px-4 py-3 focus:outline-none"
                 />
               </label>
 
