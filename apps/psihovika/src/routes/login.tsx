@@ -21,11 +21,13 @@ function isEmail(value: string) {
 
 function explain(message: string) {
   const text = message.toLowerCase();
-  if (text.includes("exist") || text.includes("already")) return "Эта почта уже есть. Войдите с тем же паролем.";
+  if (text.includes("exist") || text.includes("already"))
+    return "Эта почта уже есть. Войдите с тем же паролем.";
   if (text.includes("invalid") || text.includes("credential") || text.includes("password")) {
     return "Почта или пароль не подошли.";
   }
-  if (text.includes("short") || text.includes("length")) return "Пароль слишком короткий. Нужно хотя бы 8 символов.";
+  if (text.includes("short") || text.includes("length"))
+    return "Пароль слишком короткий. Нужно хотя бы 8 символов.";
   return "Не получилось. Проверьте почту и пароль и попробуйте ещё раз.";
 }
 
@@ -82,7 +84,12 @@ function LoginPage() {
     setBusy(true);
     const result =
       mode === "up"
-        ? await authClient.signUp.email({ email: mail, password, name: name.trim(), callbackURL: "/history" })
+        ? await authClient.signUp.email({
+            email: mail,
+            password,
+            name: name.trim(),
+            callbackURL: "/history",
+          })
         : await authClient.signIn.email({ email: mail, password, callbackURL: "/history" });
     if (result.error) {
       setError(explain(result.error.message ?? ""));
@@ -94,125 +101,142 @@ function LoginPage() {
 
   return (
     <Shell>
-      <main className="mx-auto max-w-md px-4 py-10">
-        <p className="text-xs uppercase tracking-widest text-ox">Аккаунт</p>
-        <h1 className="mt-3 font-serif text-5xl text-balance rise-in">{mode === "up" ? "Регистрация" : "Вход"}</h1>
-        <p className="mt-4 text-pretty text-muted">
-          Через Google или почту с паролем. Методики можно проходить и без входа: ответы остаются в этом браузере.
-          Команда и админка — после входа.
-        </p>
+      <main className="mx-auto max-w-md px-3 py-8 sm:px-4 sm:py-12">
+        <div className="float-card px-5 py-8 sm:px-8 sm:py-10">
+          <p className="text-xs uppercase tracking-widest text-ox">Аккаунт</p>
+          <h1 className="mt-3 font-serif text-5xl text-balance rise-in">
+            {mode === "up" ? "Регистрация" : "Вход"}
+          </h1>
+          <p className="mt-4 text-pretty text-muted">
+            Через Google или почту с паролем. Методики можно проходить и без входа: ответы остаются
+            в этом браузере. Команда и админка — после входа.
+          </p>
 
-        {isPending ? <div className="mt-8 h-11 w-40 animate-pulse bg-line" /> : null}
+          {isPending ? <div className="mt-8 h-11 w-40 animate-pulse bg-line" /> : null}
 
-        {!isPending && user ? (
-          <div className="mt-8 border border-line bg-sheet p-5 rise-in">
-            <p>Вы уже вошли{user.primaryEmail ? `: ${user.primaryEmail}` : ""}.</p>
-            <div className="mt-4">
-              <UserButton />
+          {!isPending && user ? (
+            <div className="mt-8 float-card p-5 rise-in">
+              <p>Вы уже вошли{user.primaryEmail ? `: ${user.primaryEmail}` : ""}.</p>
+              <div className="mt-4">
+                <UserButton />
+              </div>
+              <div className="mt-4 flex flex-wrap gap-3">
+                <Button asChild>
+                  <Link to="/history">В кабинет</Link>
+                </Button>
+                <Button variant="line" asChild>
+                  <Link to="/team">К команде</Link>
+                </Button>
+              </div>
             </div>
-            <div className="mt-4 flex flex-wrap gap-3">
-              <Button asChild>
-                <Link to="/history">В кабинет</Link>
-              </Button>
-              <Button variant="line" asChild>
-                <Link to="/team">К команде</Link>
-              </Button>
-            </div>
-          </div>
-        ) : null}
+          ) : null}
 
-        {!isPending && !user ? (
-          <div className="rise-in">
-            <Button className="mt-8 w-full" size="lg" disabled={busy} onClick={() => void google()}>
-              Войти через Google
-            </Button>
-
-            <p className="mt-8 text-center text-xs uppercase tracking-widest text-muted">или почта</p>
-
-            <div className="mt-4 grid grid-cols-2 border border-line">
-              <button
-                type="button"
-                className={cn("h-11 transition-colors", mode === "in" ? "bg-ink text-paper" : "bg-sheet text-ink")}
-                onClick={() => {
-                  setMode("in");
-                  setError(null);
-                }}
+          {!isPending && !user ? (
+            <div className="rise-in">
+              <Button
+                className="mt-8 w-full"
+                size="lg"
+                disabled={busy}
+                onClick={() => void google()}
               >
-                Войти
-              </button>
-              <button
-                type="button"
-                className={cn("h-11 transition-colors", mode === "up" ? "bg-ink text-paper" : "bg-sheet text-ink")}
-                onClick={() => {
-                  setMode("up");
-                  setError(null);
-                }}
-              >
-                Регистрация
-              </button>
-            </div>
+                Войти через Google
+              </Button>
 
-            <form className="mt-4 flex flex-col gap-3" onSubmit={(event) => void submit(event)}>
-              {mode === "up" ? (
+              <p className="mt-8 text-center text-xs uppercase tracking-widest text-muted">
+                или почта
+              </p>
+
+              <div className="float-glass mt-4 grid grid-cols-2 gap-1 rounded-full p-1">
+                <button
+                  type="button"
+                  className={cn(
+                    "h-11 rounded-full transition-colors",
+                    mode === "in" ? "bg-ink text-paper shadow-md" : "text-ink hover:bg-ink/10",
+                  )}
+                  onClick={() => {
+                    setMode("in");
+                    setError(null);
+                  }}
+                >
+                  Войти
+                </button>
+                <button
+                  type="button"
+                  className={cn(
+                    "h-11 rounded-full transition-colors",
+                    mode === "up" ? "bg-ink text-paper shadow-md" : "text-ink hover:bg-ink/10",
+                  )}
+                  onClick={() => {
+                    setMode("up");
+                    setError(null);
+                  }}
+                >
+                  Регистрация
+                </button>
+              </div>
+
+              <form className="mt-4 flex flex-col gap-3" onSubmit={(event) => void submit(event)}>
+                {mode === "up" ? (
+                  <label className="block">
+                    <span className="text-sm text-muted">Как к вам обращаться</span>
+                    <input
+                      id="signup-name"
+                      name="name"
+                      value={name}
+                      onChange={(event) => setName(event.target.value)}
+                      autoComplete="name"
+                      className="mt-1 h-12 w-full float-input px-4 text-base text-ink focus:outline-none"
+                    />
+                  </label>
+                ) : null}
                 <label className="block">
-                  <span className="text-sm text-muted">Как к вам обращаться</span>
+                  <span className="text-sm text-muted">Почта</span>
                   <input
-                    id="signup-name"
-                    name="name"
-                    value={name}
-                    onChange={(event) => setName(event.target.value)}
-                    autoComplete="name"
-                    className="mt-1 h-12 w-full border border-line bg-sheet px-4 text-base text-ink focus:border-ox focus:outline-none"
+                    id="auth-email"
+                    name="email"
+                    type="email"
+                    inputMode="email"
+                    autoComplete="email"
+                    value={email}
+                    onChange={(event) => setEmail(event.target.value)}
+                    placeholder="name@example.com"
+                    className="mt-1 h-12 w-full float-input px-4 text-base text-ink placeholder:text-muted focus:outline-none"
                   />
                 </label>
-              ) : null}
-              <label className="block">
-                <span className="text-sm text-muted">Почта</span>
-                <input
-                  id="auth-email"
-                  name="email"
-                  type="email"
-                  inputMode="email"
-                  autoComplete="email"
-                  value={email}
-                  onChange={(event) => setEmail(event.target.value)}
-                  placeholder="name@example.com"
-                  className="mt-1 h-12 w-full border border-line bg-sheet px-4 text-base text-ink placeholder:text-muted focus:border-ox focus:outline-none"
-                />
-              </label>
-              <label className="block">
-                <span className="text-sm text-muted">Пароль</span>
-                <input
-                  id="auth-password"
-                  name="password"
-                  type="password"
-                  autoComplete={mode === "up" ? "new-password" : "current-password"}
-                  value={password}
-                  onChange={(event) => setPassword(event.target.value)}
-                  className="mt-1 h-12 w-full border border-line bg-sheet px-4 text-base text-ink focus:border-ox focus:outline-none"
-                />
-              </label>
-              {mode === "up" ? (
                 <label className="block">
-                  <span className="text-sm text-muted">Ещё раз пароль</span>
+                  <span className="text-sm text-muted">Пароль</span>
                   <input
-                    id="signup-confirm"
-                    name="confirm"
+                    id="auth-password"
+                    name="password"
                     type="password"
-                    autoComplete="new-password"
-                    value={confirm}
-                    onChange={(event) => setConfirm(event.target.value)}
-                    className="mt-1 h-12 w-full border border-line bg-sheet px-4 text-base text-ink focus:border-ox focus:outline-none"
+                    autoComplete={mode === "up" ? "new-password" : "current-password"}
+                    value={password}
+                    onChange={(event) => setPassword(event.target.value)}
+                    className="mt-1 h-12 w-full float-input px-4 text-base text-ink focus:outline-none"
                   />
                 </label>
-              ) : null}
-              {error ? <p className="text-sm text-ox text-pretty">{error}</p> : null}
-              <Button type="submit" size="lg" disabled={busy}>
-                {busy ? "Секунду…" : mode === "up" ? "Создать аккаунт" : "Войти"}
-              </Button>
-            </form>
-          </div>
-        ) : null}
+                {mode === "up" ? (
+                  <label className="block">
+                    <span className="text-sm text-muted">Ещё раз пароль</span>
+                    <input
+                      id="signup-confirm"
+                      name="confirm"
+                      type="password"
+                      autoComplete="new-password"
+                      value={confirm}
+                      onChange={(event) => setConfirm(event.target.value)}
+                      className="mt-1 h-12 w-full float-input px-4 text-base text-ink focus:outline-none"
+                    />
+                  </label>
+                ) : null}
+                {error ? <p className="text-sm text-ox text-pretty">{error}</p> : null}
+                <Button type="submit" size="lg" disabled={busy}>
+                  {busy ? "Секунду…" : mode === "up" ? "Создать аккаунт" : "Войти"}
+                </Button>
+              </form>
+            </div>
+          ) : null}
+        </div>
       </main>
     </Shell>
   );

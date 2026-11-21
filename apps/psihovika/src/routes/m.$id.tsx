@@ -26,8 +26,14 @@ function MethodPage() {
       <Shell>
         <main className="mx-auto max-w-3xl px-4 py-16">
           <h1 className="font-serif text-4xl">Такой методики нет</h1>
-          <p className="mt-3 text-pretty">Возможно, ссылка устарела. В каталоге сейчас другой состав.</p>
-          <Link to="/" search={DEFAULT_SEARCH} className="mt-6 inline-flex h-11 items-center text-ox">
+          <p className="mt-3 text-pretty">
+            Возможно, ссылка устарела. В каталоге сейчас другой состав.
+          </p>
+          <Link
+            to="/"
+            search={DEFAULT_SEARCH}
+            className="mt-6 inline-flex h-11 items-center text-ox"
+          >
             В каталог
           </Link>
         </main>
@@ -36,12 +42,14 @@ function MethodPage() {
   }
   return (
     <Shell>
-      <div className="border-b border-line">
-        <div className="mx-auto max-w-3xl px-4 py-3">
-          <Link to="/" search={DEFAULT_SEARCH} className="text-sm text-muted">
-            ← Каталог
-          </Link>
-        </div>
+      <div className="mx-auto max-w-3xl px-4 pt-6">
+        <Link
+          to="/"
+          search={DEFAULT_SEARCH}
+          className="float-glass inline-flex h-10 items-center rounded-full px-4 text-sm text-muted transition-colors hover:text-ink"
+        >
+          ← Каталог
+        </Link>
       </div>
       <Runner test={test} />
     </Shell>

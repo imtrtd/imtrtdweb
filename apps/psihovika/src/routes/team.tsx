@@ -128,7 +128,7 @@ function TeamPage() {
         {isPending ? <div className="mt-8 h-12 w-48 animate-pulse bg-line" /> : null}
 
         {!isPending && !user ? (
-          <div className="mt-8 border border-line bg-sheet p-5">
+          <div className="mt-8 float-card p-5">
             <p>Чтобы работать вдвоём, войдите в аккаунт.</p>
             <Button className="mt-4" asChild>
               <Link to="/login">Войти или зарегистрироваться</Link>
@@ -139,14 +139,14 @@ function TeamPage() {
         {!isPending && user ? (
           <div className="mt-8 flex flex-col gap-6">
             <section className="grid gap-4 sm:grid-cols-2">
-              <form onSubmit={(e) => void onCreate(e)} className="border border-line bg-sheet p-4">
+              <form onSubmit={(e) => void onCreate(e)} className="float-card p-4">
                 <h2 className="font-serif text-2xl">Новая команда</h2>
                 <label className="mt-3 block">
                   <span className="text-sm text-muted">Название</span>
                   <input
                     value={name}
                     onChange={(e) => setName(e.target.value)}
-                    className="mt-1 h-12 w-full border border-line bg-paper px-4 text-ink focus:border-ox focus:outline-none"
+                    className="mt-1 h-12 w-full float-input px-4 text-ink focus:outline-none"
                     placeholder="Супервизия / клиника"
                   />
                 </label>
@@ -154,14 +154,14 @@ function TeamPage() {
                   Создать
                 </Button>
               </form>
-              <form onSubmit={(e) => void onJoin(e)} className="border border-line bg-sheet p-4">
+              <form onSubmit={(e) => void onJoin(e)} className="float-card p-4">
                 <h2 className="font-serif text-2xl">Код коллеги</h2>
                 <label className="mt-3 block">
                   <span className="text-sm text-muted">Приглашение</span>
                   <input
                     value={code}
                     onChange={(e) => setCode(e.target.value.toUpperCase())}
-                    className="mt-1 h-12 w-full border border-line bg-paper px-4 uppercase tracking-widest text-ink focus:border-ox focus:outline-none"
+                    className="mt-1 h-12 w-full float-input px-4 uppercase tracking-widest text-ink focus:outline-none"
                     placeholder="ABCD2345"
                   />
                 </label>
@@ -173,7 +173,7 @@ function TeamPage() {
 
             {error ? <p className="text-sm text-ox">{error}</p> : null}
 
-            <section className="border border-line p-4">
+            <section className="float-card p-4">
               <h2 className="font-serif text-2xl">Ваши команды</h2>
               {teams.length === 0 ? (
                 <p className="mt-3 text-sm text-muted">Пока пусто — создайте или вступите по коду.</p>
@@ -182,7 +182,7 @@ function TeamPage() {
                   {teams.map((team) => {
                     const on = active?.id === team.id;
                     return (
-                      <li key={team.id} className="flex flex-wrap items-center justify-between gap-3 border border-line bg-sheet px-4 py-3">
+                      <li key={team.id} className="flex flex-wrap items-center justify-between gap-3 float-card px-4 py-3">
                         <div>
                           <p className="font-medium">{team.name}</p>
                           <p className="text-xs uppercase tracking-widest text-muted">
@@ -204,7 +204,7 @@ function TeamPage() {
             </section>
 
             {active ? (
-              <section className="border border-line bg-sheet p-4">
+              <section className="float-card p-4">
                 <div className="flex flex-wrap items-end justify-between gap-3">
                   <div>
                     <h2 className="font-serif text-2xl">Заметки · {active.name}</h2>
@@ -220,7 +220,7 @@ function TeamPage() {
                     onChange={(e) => setNote(e.target.value)}
                     rows={3}
                     placeholder="Что обсудили, какую методику правите, что проверить…"
-                    className="w-full border border-line bg-paper px-4 py-3 text-ink focus:border-ox focus:outline-none"
+                    className="w-full float-input px-4 py-3 text-ink focus:outline-none"
                   />
                   <Button type="submit" disabled={busy || !note.trim()}>
                     Отправить коллеге

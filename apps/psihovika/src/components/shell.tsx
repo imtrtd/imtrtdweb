@@ -38,7 +38,7 @@ export function Shell({ children }: { children: ReactNode }) {
     const el = headerRef.current;
     if (!el) return;
     const sync = () => {
-      document.documentElement.style.setProperty("--shell-header-h", `${el.offsetHeight}px`);
+      document.documentElement.style.setProperty("--shell-header-h", `${el.offsetHeight + 8}px`);
     };
     sync();
     const ro = new ResizeObserver(sync);
@@ -51,15 +51,28 @@ export function Shell({ children }: { children: ReactNode }) {
 
   return (
     <div className="min-h-dvh bg-transparent text-ink">
-      <header
-        ref={headerRef}
-        className="sticky top-0 z-30 border-b border-line/80 bg-paper/80 backdrop-blur-md"
-      >
-        <div className="mx-auto flex max-w-6xl flex-wrap items-center justify-between gap-x-3 gap-y-1 px-4 py-3">
+      <div className="orbs" aria-hidden>
+        <span
+          className="orb -left-24 -top-24 size-[26rem] bg-ox/40 sm:size-[34rem]"
+          style={{ ["--dur" as string]: "31s" }}
+        />
+        <span
+          className="orb -right-32 top-[30%] size-[24rem] bg-glow/35 sm:size-[32rem]"
+          style={{ ["--dur" as string]: "37s" }}
+        />
+        <span
+          className="orb -bottom-40 left-[22%] size-[22rem] bg-ox/20 sm:size-[28rem]"
+          style={{ ["--dur" as string]: "43s" }}
+        />
+      </div>
+      <header ref={headerRef} className="sticky top-0 z-30 px-3 pt-3 sm:px-4">
+        <div className="float-glass float-glass-strong mx-auto flex max-w-6xl flex-wrap items-center justify-between gap-x-3 gap-y-1 rounded-[1.6rem] px-3 py-1.5 sm:rounded-full sm:px-5">
           <div className="flex shrink-0 items-center gap-1">
             <Link to="/" search={DEFAULT_SEARCH} className="group flex items-baseline gap-2">
               <span className="font-serif text-lg tracking-wide sm:text-xl">{BRAND}</span>
-              <span className="hidden text-xs uppercase tracking-widest text-muted sm:inline">кабинет</span>
+              <span className="hidden text-xs uppercase tracking-widest text-muted sm:inline">
+                кабинет
+              </span>
             </Link>
             <button
               type="button"
@@ -70,7 +83,7 @@ export function Shell({ children }: { children: ReactNode }) {
               <Heart className="size-4 fill-ox" />
             </button>
           </div>
-          <nav className="-mx-1 flex w-full items-center gap-0.5 overflow-x-auto px-1 [scrollbar-width:none] sm:mx-0 sm:w-auto sm:overflow-visible sm:px-0 [&::-webkit-scrollbar]:hidden">
+          <nav className="-mx-1 flex w-full items-center gap-0.5 overflow-x-auto px-1 [scrollbar-width:none] sm:mx-0 sm:w-auto sm:max-w-full lg:overflow-visible sm:px-0 [&::-webkit-scrollbar]:hidden">
             {LINKS.map((link) => {
               const active = link.to === "/" ? path === "/" : path.startsWith(link.to);
               return (
@@ -78,11 +91,18 @@ export function Shell({ children }: { children: ReactNode }) {
                   key={link.to}
                   to={link.to}
                   className={cn(
-                    "inline-flex h-11 shrink-0 items-center px-2.5 text-sm transition-colors duration-200 sm:px-3",
+                    "inline-flex h-11 shrink-0 items-center px-0.5 text-sm transition-colors duration-200 sm:px-0.5",
                     active ? "text-ink" : "text-muted hover:text-ink",
                   )}
                 >
-                  <span className={cn("border-b pb-0.5", active ? "border-ox" : "border-transparent")}>{link.label}</span>
+                  <span
+                    className={cn(
+                      "rounded-full px-3 py-1.5 transition-colors",
+                      active ? "bg-ink/10 text-ink" : "",
+                    )}
+                  >
+                    {link.label}
+                  </span>
                 </Link>
               );
             })}
@@ -99,12 +119,13 @@ export function Shell({ children }: { children: ReactNode }) {
         </div>
       </header>
       {burst > 0 ? <Salute key={burst} onDone={() => setBurst(0)} /> : null}
-      <div className="fade-in">{children}</div>
-      <footer className="border-t border-line">
-        <div className="mx-auto max-w-6xl px-4 py-8 pb-[max(2rem,env(safe-area-inset-bottom))] text-sm text-muted">
+      <div className="fade-in relative z-[1]">{children}</div>
+      <footer className="relative z-0 px-3 pb-[max(1.5rem,env(safe-area-inset-bottom))] pt-6 sm:px-4">
+        <div className="float-glass mx-auto max-w-6xl rounded-[1.6rem] px-5 py-6 text-sm text-muted sm:px-8">
           <p className="max-w-2xl text-pretty">
             {BRAND} не ставит диагноз и не заменяет врача или психотерапевта. Ответы остаются в этом
-            браузере. У публичных шкал — отсылки к первоисточникам; учебные профили помечены отдельно.
+            браузере. У публичных шкал — отсылки к первоисточникам; учебные профили помечены
+            отдельно.
           </p>
         </div>
       </footer>
@@ -124,7 +145,10 @@ function AccountSlot({ path }: { path: string }) {
         </Link>
       </SignedOut>
       <SignedIn>
-        <Link to="/history" className="inline-flex h-11 items-center px-2 text-sm text-muted hover:text-ink">
+        <Link
+          to="/history"
+          className="inline-flex h-11 items-center px-2 text-sm text-muted hover:text-ink"
+        >
           Профиль
         </Link>
       </SignedIn>
@@ -145,14 +169,22 @@ function Salute({ onDone }: { onDone: () => void }) {
 
   return (
     <div className="pointer-events-none fixed inset-0 z-40" aria-live="polite">
-      <p className={cn("love-line absolute inset-x-0 top-[38%] text-center font-serif text-4xl text-ox sm:text-6xl", still && "opacity-100")}>
+      <p
+        className={cn(
+          "love-line absolute inset-x-0 top-[38%] text-center font-serif text-4xl text-ox sm:text-6xl",
+          still && "opacity-100",
+        )}
+      >
         Люблю тебя
       </p>
       {BURST.map((heart, i) => (
         <Heart
           key={i}
           aria-hidden
-          className={cn("heart-salute absolute left-1/2 top-[46%] fill-ox text-ox", still && "opacity-100")}
+          className={cn(
+            "heart-salute absolute left-1/2 top-[46%] fill-ox text-ox",
+            still && "opacity-100",
+          )}
           style={{
             width: heart.size,
             height: heart.size,
@@ -160,7 +192,10 @@ function Salute({ onDone }: { onDone: () => void }) {
             ["--dx" as string]: `${heart.dx}px`,
             ["--dy" as string]: `${heart.dy}px`,
             ...(still
-              ? { transform: `translate(${heart.dx * 0.35}px, ${heart.dy * 0.35}px)`, opacity: 0.85 }
+              ? {
+                  transform: `translate(${heart.dx * 0.35}px, ${heart.dy * 0.35}px)`,
+                  opacity: 0.85,
+                }
               : null),
           }}
         />
