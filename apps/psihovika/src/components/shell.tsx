@@ -51,15 +51,12 @@ export function Shell({ children }: { children: ReactNode }) {
 
   return (
     <div className="min-h-dvh bg-transparent text-ink">
-      <header
-        ref={headerRef}
-        className="sticky top-0 z-30 border-b border-line/80 bg-paper/80 backdrop-blur-md"
-      >
+      <header ref={headerRef} className="sticky top-0 z-30 border-b border-line/70 shell-glass">
         <div className="mx-auto flex max-w-6xl flex-wrap items-center justify-between gap-x-3 gap-y-1 px-4 py-3">
           <div className="flex shrink-0 items-center gap-1">
             <Link to="/" search={DEFAULT_SEARCH} className="group flex items-baseline gap-2">
               <span className="font-serif text-lg tracking-wide sm:text-xl">{BRAND}</span>
-              <span className="hidden text-xs uppercase tracking-widest text-muted sm:inline">кабинет</span>
+              <span className="hidden text-[0.65rem] uppercase tracking-[0.2em] text-muted sm:inline">кабинет</span>
             </Link>
             <button
               type="button"
@@ -103,8 +100,8 @@ export function Shell({ children }: { children: ReactNode }) {
       <footer className="border-t border-line">
         <div className="mx-auto max-w-6xl px-4 py-8 pb-[max(2rem,env(safe-area-inset-bottom))] text-sm text-muted">
           <p className="max-w-2xl text-pretty">
-            {BRAND} не ставит диагноз и не заменяет врача или психотерапевта. Ответы остаются в этом
-            браузере. У публичных шкал — отсылки к первоисточникам; учебные профили помечены отдельно.
+            {BRAND} не ставит диагноз и не заменяет врача или психотерапевта. Ответы остаются в этом браузере. У
+            публичных шкал — отсылки к первоисточникам; учебные профили помечены отдельно.
           </p>
         </div>
       </footer>
@@ -145,7 +142,12 @@ function Salute({ onDone }: { onDone: () => void }) {
 
   return (
     <div className="pointer-events-none fixed inset-0 z-40" aria-live="polite">
-      <p className={cn("love-line absolute inset-x-0 top-[38%] text-center font-serif text-4xl text-ox sm:text-6xl", still && "opacity-100")}>
+      <p
+        className={cn(
+          "love-line absolute inset-x-0 top-[38%] text-center font-serif text-4xl text-ox sm:text-6xl",
+          still && "opacity-100",
+        )}
+      >
         Люблю тебя
       </p>
       {BURST.map((heart, i) => (
@@ -159,9 +161,7 @@ function Salute({ onDone }: { onDone: () => void }) {
             animationDelay: `${heart.delay}ms`,
             ["--dx" as string]: `${heart.dx}px`,
             ["--dy" as string]: `${heart.dy}px`,
-            ...(still
-              ? { transform: `translate(${heart.dx * 0.35}px, ${heart.dy * 0.35}px)`, opacity: 0.85 }
-              : null),
+            ...(still ? { transform: `translate(${heart.dx * 0.35}px, ${heart.dy * 0.35}px)`, opacity: 0.85 } : null),
           }}
         />
       ))}

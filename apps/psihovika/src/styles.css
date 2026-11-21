@@ -1,30 +1,33 @@
 @import "tailwindcss";
-@import "@fontsource-variable/literata/wght.css";
-@import "@fontsource-variable/manrope/wght.css";
+@import "@fontsource-variable/fraunces/wght.css";
+@import "@fontsource-variable/sora/wght.css";
 
 @theme {
-  --color-paper: #121416;
-  --color-sheet: #1a1d21;
-  --color-ink: #ece8e1;
-  --color-muted: #9b958c;
-  --color-line: #2c3138;
-  --color-ox: #d4a574;
-  --color-oxink: #1a1410;
-  --color-haze: #1e242c;
-  --font-sans: "Manrope Variable", ui-sans-serif, sans-serif;
-  --font-serif: "Literata Variable", ui-serif, serif;
-  --radius-card: 0px;
+  --color-paper: #0b1218;
+  --color-sheet: #121c24;
+  --color-ink: #e8eef3;
+  --color-muted: #8a9aa8;
+  --color-line: #243140;
+  --color-ox: #4fb8a8;
+  --color-oxink: #061210;
+  --color-haze: #15232e;
+  --color-mist: #7a9bb0;
+  --font-sans: "Sora Variable", "Sora", ui-sans-serif, sans-serif;
+  --font-serif: "Fraunces Variable", "Fraunces", ui-serif, serif;
+  --radius-card: 0.75rem;
+  --radius-control: 0.55rem;
 }
 
 html[data-theme="light"] {
-  --color-paper: #f2f0eb;
-  --color-sheet: #faf8f4;
-  --color-ink: #1a1814;
-  --color-muted: #6f6a62;
-  --color-line: #ddd6cb;
-  --color-ox: #8a4f2b;
-  --color-oxink: #faf6f0;
-  --color-haze: #ebe6dc;
+  --color-paper: #e8eef2;
+  --color-sheet: #f3f7f9;
+  --color-ink: #101820;
+  --color-muted: #5c6b78;
+  --color-line: #c5d2dc;
+  --color-ox: #1f7a6e;
+  --color-oxink: #f1fbf9;
+  --color-haze: #d7e3ea;
+  --color-mist: #4d6a7c;
 }
 
 @layer base {
@@ -37,8 +40,9 @@ html[data-theme="light"] {
     -webkit-text-size-adjust: 100%;
     text-size-adjust: 100%;
   }
-  /* iOS Safari zooms into inputs below 16px */
-  input, select, textarea {
+  input,
+  select,
+  textarea {
     font-size: max(16px, 1em);
   }
   body {
@@ -46,13 +50,32 @@ html[data-theme="light"] {
     line-height: 1.55;
     min-height: 100dvh;
     background:
-      radial-gradient(ellipse 90% 55% at 12% -10%, color-mix(in oklab, var(--color-ox) 18%, transparent), transparent 55%),
-      radial-gradient(ellipse 70% 45% at 100% 0%, color-mix(in oklab, var(--color-haze) 80%, transparent), transparent 50%),
+      radial-gradient(ellipse 80% 50% at 8% -8%, color-mix(in oklab, var(--color-ox) 16%, transparent), transparent 58%),
+      radial-gradient(ellipse 70% 45% at 100% 0%, color-mix(in oklab, var(--color-mist) 22%, transparent), transparent 52%),
+      radial-gradient(ellipse 55% 40% at 70% 100%, color-mix(in oklab, var(--color-haze) 70%, transparent), transparent 60%),
       var(--color-paper);
   }
-  h1, h2, h3 {
+  body::before {
+    content: "";
+    pointer-events: none;
+    position: fixed;
+    inset: 0;
+    z-index: 50;
+    opacity: 0.045;
+    mix-blend-mode: soft-light;
+    background-image: url("/brand/noise.svg");
+    background-size: 180px 180px;
+  }
+  html[data-theme="light"] body::before {
+    opacity: 0.07;
+    mix-blend-mode: multiply;
+  }
+  h1,
+  h2,
+  h3 {
     text-wrap: balance;
     font-family: var(--font-serif);
+    font-variation-settings: "SOFT" 50, "WONK" 0.4;
   }
   p {
     text-wrap: pretty;
@@ -65,7 +88,9 @@ html[data-theme="light"] {
     background: var(--color-ox);
     color: var(--color-oxink);
   }
-  input, select, textarea {
+  input,
+  select,
+  textarea {
     color-scheme: inherit;
   }
 }
@@ -104,7 +129,7 @@ html[data-theme="light"] {
 @keyframes rise-in {
   from {
     opacity: 0;
-    transform: translateY(14px);
+    transform: translateY(18px);
   }
   to {
     opacity: 1;
@@ -140,6 +165,40 @@ html[data-theme="light"] {
   }
 }
 
+@keyframes hero-drift {
+  0% {
+    transform: scale(1.08) translate3d(0, 0, 0);
+  }
+  50% {
+    transform: scale(1.14) translate3d(-1.4%, -0.8%, 0);
+  }
+  100% {
+    transform: scale(1.08) translate3d(0, 0, 0);
+  }
+}
+
+@keyframes mist-breathe {
+  0%,
+  100% {
+    opacity: 0.55;
+    transform: translate3d(0, 0, 0);
+  }
+  50% {
+    opacity: 0.85;
+    transform: translate3d(1.5%, -0.6%, 0);
+  }
+}
+
+@keyframes accent-glow {
+  0%,
+  100% {
+    opacity: 0.35;
+  }
+  50% {
+    opacity: 0.7;
+  }
+}
+
 .heart-salute {
   animation: heart-salute 1.7s cubic-bezier(0.16, 0.84, 0.32, 1) forwards;
 }
@@ -149,15 +208,15 @@ html[data-theme="light"] {
 }
 
 .rise-in {
-  animation: rise-in 0.55s cubic-bezier(0.22, 1, 0.36, 1) both;
+  animation: rise-in 0.7s cubic-bezier(0.22, 1, 0.36, 1) both;
 }
 
 .fade-in {
-  animation: fade-in 0.4s ease both;
+  animation: fade-in 0.45s ease both;
 }
 
 .stagger > * {
-  animation: rise-in 0.5s cubic-bezier(0.22, 1, 0.36, 1) both;
+  animation: rise-in 0.55s cubic-bezier(0.22, 1, 0.36, 1) both;
 }
 .stagger > *:nth-child(1) {
   animation-delay: 0.02s;
@@ -202,6 +261,84 @@ html[data-theme="light"] {
   display: none;
 }
 
+.hero-plane {
+  isolation: isolate;
+}
+
+.hero-media {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+}
+
+.hero-media img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center 38%;
+  filter: saturate(1.08) contrast(1.05) brightness(1.08);
+  animation: hero-drift 28s ease-in-out infinite;
+  will-change: transform;
+}
+html[data-theme="light"] .hero-media img {
+  filter: saturate(1.05) contrast(1.02) brightness(1.12);
+}
+
+.hero-veil {
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(
+      180deg,
+      color-mix(in oklab, var(--color-paper) 18%, transparent) 0%,
+      color-mix(in oklab, var(--color-paper) 28%, transparent) 38%,
+      color-mix(in oklab, var(--color-paper) 62%, transparent) 72%,
+      var(--color-paper) 100%
+    ),
+    linear-gradient(95deg, color-mix(in oklab, var(--color-paper) 42%, transparent) 0%, transparent 58%);
+}
+html[data-theme="light"] .hero-veil {
+  background:
+    linear-gradient(
+      180deg,
+      color-mix(in oklab, var(--color-paper) 12%, transparent) 0%,
+      color-mix(in oklab, var(--color-paper) 35%, transparent) 45%,
+      color-mix(in oklab, var(--color-paper) 78%, transparent) 78%,
+      var(--color-paper) 100%
+    ),
+    linear-gradient(95deg, color-mix(in oklab, var(--color-paper) 48%, transparent) 0%, transparent 60%);
+}
+
+.hero-mist-layer {
+  position: absolute;
+  inset: -8%;
+  background:
+    radial-gradient(ellipse 50% 40% at 70% 35%, color-mix(in oklab, var(--color-mist) 28%, transparent), transparent 70%),
+    radial-gradient(ellipse 40% 35% at 20% 60%, color-mix(in oklab, var(--color-ox) 14%, transparent), transparent 65%);
+  animation: mist-breathe 12s ease-in-out infinite;
+  pointer-events: none;
+}
+
+.hero-accent-line {
+  width: 3.5rem;
+  height: 2px;
+  background: var(--color-ox);
+  animation: accent-glow 4.5s ease-in-out infinite;
+}
+
+.surface-panel {
+  border: 1px solid color-mix(in oklab, var(--color-line) 90%, var(--color-mist));
+  background:
+    linear-gradient(160deg, color-mix(in oklab, var(--color-sheet) 92%, var(--color-mist)), var(--color-sheet));
+  border-radius: var(--radius-card);
+}
+
+.shell-glass {
+  background: color-mix(in oklab, var(--color-paper) 78%, transparent);
+  backdrop-filter: blur(14px) saturate(1.15);
+  -webkit-backdrop-filter: blur(14px) saturate(1.15);
+}
+
 @media (prefers-reduced-motion: reduce) {
   *,
   *::before,
@@ -215,7 +352,10 @@ html[data-theme="light"] {
   .rise-in,
   .fade-in,
   .stagger > *,
-  .progress-fill {
+  .progress-fill,
+  .hero-media img,
+  .hero-mist-layer,
+  .hero-accent-line {
     animation: none;
     opacity: 1;
     transform: none;

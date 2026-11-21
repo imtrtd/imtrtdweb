@@ -15,8 +15,9 @@ function Method() {
   return (
     <Shell>
       <main className="mx-auto max-w-3xl px-4 py-10">
-        <p className="text-xs uppercase tracking-widest text-ox">Как это собрано</p>
-        <h1 className="mt-3 font-serif text-5xl text-balance rise-in">Не витрина интернет-тестов</h1>
+        <p className="text-xs uppercase tracking-[0.18em] text-ox">Как это собрано</p>
+        <div className="hero-accent-line mt-4" aria-hidden />
+        <h1 className="mt-5 font-serif text-5xl text-balance rise-in">Не витрина интернет-тестов</h1>
         <p className="mt-5 text-lg text-pretty">
           В кабинете {TESTS.length} методик. {depth} из них про психоанализ, юнгианский анализ и разговорную терапию. {gold} — публичные клинические шкалы с их собственным подсчётом и ссылками на первоисточники.
         </p>

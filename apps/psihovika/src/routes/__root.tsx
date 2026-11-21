@@ -18,7 +18,7 @@ export const Route = createRootRoute({
         content:
           "Психологические тесты на русском: психоанализ, психотерапия и публичные клинические шкалы с первоисточниками. Больше ста методик, с телефона, без отправки ответов.",
       },
-      { name: "theme-color", content: "#121416" },
+      { name: "theme-color", content: "#0b1218" },
       { name: "color-scheme", content: "dark light" },
     ],
     links: [

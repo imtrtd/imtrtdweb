@@ -2,7 +2,7 @@ import { cn } from "@/lib/cn";
 
 export function CrisisNote({ hot = false }: { hot?: boolean }) {
   return (
-    <aside className={cn("border p-4", hot ? "border-ox bg-sheet" : "border-line bg-paper")}>
+    <aside className={cn("surface-panel p-4", hot ? "border-ox" : "")}>
       <h2 className="font-serif text-2xl text-balance">{hot ? "Если сейчас совсем плохо" : "Если станет невыносимо"}</h2>
       <p className="mt-2 text-pretty">
         Экстренно, если есть угроза жизни: <strong>112</strong>. Психологическая поддержка круглосуточно:{" "}
