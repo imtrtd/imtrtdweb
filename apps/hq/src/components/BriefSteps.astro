@@ -9,7 +9,14 @@ interface Props {
 }
 const { email, label = "Brief" } = Astro.props;
 
-const types = ["Website", "Identity", "Interface", "Tool", "Care", "Not sure yet"];
+const types = [
+  { v: "Website", hint: "Landing, portfolio, shop" },
+  { v: "Identity", hint: "Logo, type, colour" },
+  { v: "Interface", hint: "App or product screens" },
+  { v: "Tool", hint: "Something that works in a browser" },
+  { v: "Care", hint: "Fixes and updates to what exists" },
+  { v: "Not sure yet", hint: "We work it out together" },
+];
 const budgets = ["Under €1k", "€1–3k", "€3–8k", "€8k+", "Not sure yet"];
 const timelines = ["As soon as possible", "In 1–2 months", "Flexible"];
 const haves = ["Logo and brand files", "Copy, even rough", "Photos or work plates", "A site to replace"];
@@ -17,7 +24,7 @@ const steps = ["Type", "Scope", "Details", "Contact"];
 ---
 
 <form
-  class="brief card p-5 sm:p-7 lg:p-9"
+  class="brief card p-5 sm:p-7 lg:flex lg:h-full lg:flex-col lg:p-9"
   data-brief="steps"
   data-brief-label={label}
   action={`mailto:${email}`}
@@ -31,7 +38,7 @@ const steps = ["Type", "Scope", "Details", "Contact"];
         <li data-progress={i + 1} class="grid gap-2">
           <span class="h-0.5 bg-hair-strong transition-colors duration-300" />
           <span class="label text-mute transition-colors max-sm:text-[0.62rem]">
-            {String(i + 1).padStart(2, "0")} {s}
+            {String(i + 1).padStart(2, "0")} <span class="step-word">{s}</span>
           </span>
         </li>
       ))
@@ -43,9 +50,12 @@ const steps = ["Type", "Scope", "Details", "Contact"];
     <div class="grid grid-cols-2 gap-2 sm:grid-cols-3">
       {
         types.map((t) => (
-          <label class="opt">
-            <input type="radio" name="task" value={t} />
-            <span>{t}</span>
+          <label class="opt opt-tile">
+            <input type="radio" name="task" value={t.v} />
+            <span>
+              <b>{t.v}</b>
+              <small>{t.hint}</small>
+            </span>
           </label>
         ))
       }
@@ -120,7 +130,7 @@ const steps = ["Type", "Scope", "Details", "Contact"];
     <p class="privacy-note mt-4">Your details are only used to reply to this request. They are never shared.</p>
   </fieldset>
 
-  <div class="brief-nav mt-8 flex flex-wrap items-center gap-3 border-t border-hair pt-6">
+  <div class="brief-nav mt-8 flex lg:mt-auto flex-wrap items-center gap-3 border-t border-hair pt-6">
     <button type="button" class="btn btn-ghost" data-brief-back hidden>← Back</button>
     <button type="button" class="btn btn-primary" data-brief-next hidden>Next <span class="arrow" aria-hidden="true">→</span></button>
     <button type="submit" class="btn btn-primary" data-brief-send>Send brief <span class="arrow" aria-hidden="true">→</span></button>
@@ -138,17 +148,27 @@ const steps = ["Type", "Scope", "Details", "Contact"];
   .brief-step + .brief-step {
     margin-top: 2.5rem;
   }
+  @media (width >= 64rem) {
+    .brief-step {
+      margin-bottom: 2.5rem;
+    }
+  }
   :global(.js) .brief[data-ready] .brief-step {
     margin-top: 0;
   }
   :global(.js) .brief[data-ready] .brief-step:not([data-active]) {
     display: none;
   }
-  .brief[data-ready] [data-progress].is-done span:first-child,
-  .brief[data-ready] [data-progress].is-on span:first-child {
+  .brief[data-ready] [data-progress].is-done > span:first-child,
+  .brief[data-ready] [data-progress].is-on > span:first-child {
     background: var(--color-signal);
   }
-  .brief[data-ready] [data-progress].is-on span:last-child {
+  @media (width < 40rem) {
+    .brief[data-ready] [data-progress]:not(.is-on) .step-word {
+      display: none;
+    }
+  }
+  .brief[data-ready] [data-progress].is-on > span:last-child {
     color: var(--color-paper);
   }
   .brief[data-sent] .brief-step,

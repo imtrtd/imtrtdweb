@@ -9,54 +9,54 @@ export type App = {
   line: string;
   text: string;
   facts: string[];
-  lang: string;
   soon?: boolean;
+  /** 16:10 preview of the working screen in /images/apps/<shot>-card.{webp,jpg}. None: a drawn placeholder. */
+  shot?: string;
 };
 
 export const apps: App[] = [
   {
     slug: "cuebox",
+    shot: "cuebox",
     href: "/apps/cuebox",
     name: "Cuebox",
     mono: "Cb",
     kind: "Prompt library",
-    line: "Save a prompt once, reuse it everywhere.",
-    text: "Prompts in folders per AI service, variables you fill in before sending, then copy or open straight in ChatGPT, Claude or Perplexity.",
-    facts: ["Variables", "Folders", "Import / export"],
-    lang: "RU",
+    line: "Write it once. Paste it forever.",
+    text: "Prompts sorted by the AI they work on, blanks filled in before sending, then copied or opened straight in ChatGPT, Claude or Perplexity.",
+    facts: ["Variables", "Folders", "Export"],
   },
   {
     slug: "pulse",
+    shot: "pulse",
     href: "/apps/pulse",
     name: "Pulse",
     mono: "Pb",
     kind: "8-bit sequencer",
-    line: "Four channels, sixteen steps, four bars.",
-    text: "Two pulse voices, a triangle bass and a noise drum kit, synthesised live. Loop a bar or play the song; three tunes to start from.",
+    line: "Four channels. Sixteen steps. No install.",
+    text: "Two pulse voices, a triangle bass and a noise kit, synthesised live. Three tunes to start from, or a blank page for the brave.",
     facts: ["Web Audio", "Songs", "Space plays"],
-    lang: "RU",
   },
   {
-    slug: "komandir",
-    href: "/komandir",
-    name: "Командир",
-    mono: "Km",
+    slug: "commanddir",
+    shot: "commanddir",
+    href: "/commanddir",
+    name: "CommandDir",
+    mono: "Cd",
     kind: "Command builder",
-    line: "Your own commands, one tap each.",
-    text: "Chain steps: open a link or an app, run an iOS Shortcut, call, message, speak, wait. Run them from a tile, a link or the home screen.",
+    line: "Your commands. One tap each.",
+    text: "Chain steps (a link, an app, an iOS Shortcut, a call, a text, a voice, a pause) and run them from a tile, a link or the Home Screen.",
     facts: ["iOS Shortcuts", "Run links", "Templates"],
-    lang: "RU",
   },
   {
     slug: "shell",
     href: "/apps/shell",
     name: "I/TD shell",
     mono: "Sh",
-    kind: "Announcement",
-    line: "Coming soon.",
-    text: "The next tool from the studio. Leave a contact and you will hear first when it opens.",
+    kind: "Coming soon",
+    line: "Not yet. Soon.",
+    text: "The next tool. Details when it is ready to defend them; leave a contact to hear first.",
     facts: ["Notify me"],
-    lang: "",
     soon: true,
   },
 ];

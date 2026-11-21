@@ -1,5 +1,6 @@
 // Auto-plans: a group message that looks like a to-do list is parsed by Workers AI into tasks,
 // saved to the task storage and echoed back as a checklist with "done" buttons.
+import { gptOssReasoningOptions } from "./ai-model";
 import { Ctx } from "./env";
 import { esc, truncate } from "./tg";
 import { localParts, parseLocalDateTime } from "./time";
@@ -58,7 +59,12 @@ export async function aiParsePlan(c: Ctx, text: string, msgTs: number, topics: A
   const models = [c.env.AI_MODEL, c.env.AI_FALLBACK_MODEL].filter(Boolean);
   for (const model of models) {
     try {
-      const out: any = await c.env.AI.run(model as any, { messages, max_tokens: 900, temperature: 0.1 } as any);
+      const out: any = await c.env.AI.run(model as any, {
+        messages,
+        max_tokens: 900,
+        temperature: 0.1,
+        ...gptOssReasoningOptions(String(model)),
+      } as any);
       const raw = typeof out === "string" ? out : out?.response ?? out?.choices?.[0]?.message?.content ?? "";
       const j = typeof raw === "object" ? raw : JSON.parse(String(raw).match(/\{[\s\S]*\}/)?.[0] ?? "null");
       if (!j || typeof j !== "object") continue;

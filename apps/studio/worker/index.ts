@@ -22,8 +22,6 @@ import {
 	createLead,
 	getLeadStats,
 	listLeads,
-	notifyClient,
-	notifyStudio,
 	remindStaleLeads,
 	updateLead,
 	validateLead,
@@ -113,7 +111,7 @@ const worker = {
 	async handle(
 		request: Request,
 		env: Env,
-		ctx?: ExecutionContext,
+		_ctx?: ExecutionContext,
 	): Promise<Response> {
 		const url = new URL(request.url);
 		const { pathname } = url;
@@ -189,12 +187,6 @@ const worker = {
 					sendTelegram(env, lead, source),
 					notifyLeadEmail(env, lead, source),
 				]);
-				const extras = Promise.allSettled([notifyStudio(env, lead), notifyClient(env, lead)]);
-				if (ctx) {
-					ctx.waitUntil(extras);
-				} else {
-					await extras;
-				}
 				return json(
 					{
 						ok: true,

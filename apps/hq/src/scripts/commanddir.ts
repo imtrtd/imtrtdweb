@@ -1,5 +1,5 @@
 /**
- * /komandir — command builder. A command is a list of steps (open a link or an app, run an iOS
+ * /commanddir — command builder. A command is a list of steps (open a link or an app, run an iOS
  * Shortcut, call, SMS, e-mail, copy / speak / show / ask text, vibrate, wait) that run one after
  * another. Everything lives in this browser's localStorage; nothing is sent anywhere.
  *
@@ -36,114 +36,115 @@ type Field = {
 
 type Kind = { title: string; summary: string; group: string; fields: Field[]; note?: string; needsText?: boolean };
 
-const STORE = "imtrtd-komandir";
+const STORE = "imtrtd-commanddir";
+const LEGACY_STORE = "imtrtd-komandir";
 const ACCENT = "imtrtd-accent";
 
-const GROUPS = ["Сайты и приложения", "Связь", "Текст", "Устройство и время"];
+const GROUPS = ["Sites and apps", "People", "Text", "Device and time"];
 
 const KINDS: Record<StepKind, Kind> = {
   openURL: {
-    title: "Открыть ссылку",
-    summary: "Сайт в новой вкладке",
+    title: "Open a link",
+    summary: "A site, in a new tab",
     group: GROUPS[0],
     needsText: true,
-    fields: [{ key: "text", label: "Адрес", placeholder: "https://example.com", type: "url", vars: true, note: "Без https:// — добавится сам." }],
+    fields: [{ key: "text", label: "Address", placeholder: "https://example.com", type: "url", vars: true, note: "Skip the https://. It will cope." }],
   },
   openApp: {
-    title: "Открыть приложение",
-    summary: "Telegram, Карты, Заметки…",
+    title: "Open an app",
+    summary: "Telegram, Maps, Notes…",
     group: GROUPS[0],
     needsText: true,
-    fields: [{ key: "text", label: "Ссылка-схема", placeholder: "tg://", note: "Выберите выше или впишите свою. Работает на iPhone." }],
+    fields: [{ key: "text", label: "URL scheme", placeholder: "tg://", note: "Pick one above or type your own. iPhone only." }],
   },
   runShortcut: {
-    title: "Быстрая команда",
-    summary: "Запустить команду из «Быстрых команд» iOS",
+    title: "Shortcut",
+    summary: "Run one from the iOS Shortcuts app",
     group: GROUPS[0],
     needsText: true,
     fields: [
-      { key: "text", label: "Название команды", placeholder: "Точно как в «Быстрых командах»" },
-      { key: "detail", label: "Текст на вход", placeholder: "Необязательно", vars: true },
+      { key: "text", label: "Shortcut name", placeholder: "Exactly as in Shortcuts" },
+      { key: "detail", label: "Input text", placeholder: "Optional", vars: true },
     ],
   },
   call: {
-    title: "Позвонить",
-    summary: "Набрать номер",
+    title: "Call",
+    summary: "Dial a number",
     group: GROUPS[1],
     needsText: true,
-    fields: [{ key: "text", label: "Номер", placeholder: "+380 00 000 00 00", type: "tel" }],
+    fields: [{ key: "text", label: "Number", placeholder: "+380 00 000 00 00", type: "tel" }],
   },
   message: {
-    title: "Сообщение",
-    summary: "SMS или iMessage с готовым текстом",
+    title: "Message",
+    summary: "SMS or iMessage, pre-written",
     group: GROUPS[1],
     fields: [
-      { key: "text", label: "Получатель", placeholder: "+380 00 000 00 00", type: "tel", note: "Можно оставить пустым и выбрать в «Сообщениях»." },
-      { key: "detail", label: "Текст", area: true, vars: true },
+      { key: "text", label: "To", placeholder: "+380 00 000 00 00", type: "tel", note: "Leave empty to pick someone in Messages." },
+      { key: "detail", label: "Text", area: true, vars: true },
     ],
   },
   email: {
-    title: "Письмо",
-    summary: "Почта с темой и текстом",
+    title: "Email",
+    summary: "Subject and body, ready to go",
     group: GROUPS[1],
     fields: [
-      { key: "text", label: "Кому", placeholder: "name@example.com", type: "email" },
-      { key: "detail", label: "Тема", vars: true },
-      { key: "extra", label: "Текст", area: true, vars: true },
+      { key: "text", label: "To", placeholder: "name@example.com", type: "email" },
+      { key: "detail", label: "Subject", vars: true },
+      { key: "extra", label: "Body", area: true, vars: true },
     ],
   },
   copyText: {
-    title: "Скопировать",
-    summary: "Текст в буфер обмена",
+    title: "Copy",
+    summary: "Text to the clipboard",
     group: GROUPS[2],
     needsText: true,
-    fields: [{ key: "text", label: "Текст", area: true, vars: true }],
+    fields: [{ key: "text", label: "Text", area: true, vars: true }],
   },
   speak: {
-    title: "Произнести",
-    summary: "Озвучить текст голосом",
+    title: "Speak",
+    summary: "Read text aloud",
     group: GROUPS[2],
     needsText: true,
-    fields: [{ key: "text", label: "Текст", area: true, vars: true }],
+    fields: [{ key: "text", label: "Text", area: true, vars: true }],
   },
   showText: {
-    title: "Показать",
-    summary: "Сообщение и кнопка «Дальше»",
+    title: "Show",
+    summary: "A note and a Next button",
     group: GROUPS[2],
     needsText: true,
-    fields: [{ key: "text", label: "Текст", area: true, vars: true }],
+    fields: [{ key: "text", label: "Text", area: true, vars: true }],
   },
   askInput: {
-    title: "Спросить",
-    summary: "Ответ попадёт в {{ввод}}",
+    title: "Ask",
+    summary: "The answer lands in {{input}}",
     group: GROUPS[2],
-    fields: [{ key: "text", label: "Вопрос", placeholder: "Что записать?" }],
+    fields: [{ key: "text", label: "Question", placeholder: "What should I note?" }],
   },
   vibrate: {
-    title: "Вибрация",
-    summary: "Короткий отклик",
+    title: "Vibrate",
+    summary: "A short buzz",
     group: GROUPS[3],
     fields: [],
-    note: "Работает на Android. iPhone не даёт сайтам вибрировать — шаг пропустится.",
+    note: "Android only. iPhone does not let websites buzz, so the step is skipped.",
   },
   wait: {
-    title: "Пауза",
-    summary: "Подождать перед следующим шагом",
+    title: "Wait",
+    summary: "Pause before the next step",
     group: GROUPS[3],
-    fields: [{ key: "number", label: "Секунд", type: "number" }],
+    fields: [{ key: "number", label: "Seconds", type: "number" }],
   },
 };
 
 const APPS: [string, string][] = [
-  ["Быстрые команды", "shortcuts://"],
-  ["Карты", "maps://"],
-  ["Музыка", "music://"],
-  ["Заметки", "mobilenotes://"],
-  ["Календарь", "calshow://"],
-  ["Фото", "photos-redirect://"],
-  ["Почта", "message://"],
-  ["Файлы", "shareddocuments://"],
-  ["Погода", "weather://"],
+  ["Shortcuts", "shortcuts://"],
+  ["Maps", "maps://"],
+  ["Music", "music://"],
+  ["Notes", "mobilenotes://"],
+  ["Calendar", "calshow://"],
+  ["Photos", "photos-redirect://"],
+  ["Mail", "message://"],
+  ["Files", "shareddocuments://"],
+  ["Weather", "weather://"],
   ["App Store", "itms-apps://apps.apple.com"],
   ["Telegram", "tg://"],
   ["WhatsApp", "whatsapp://"],
@@ -153,23 +154,18 @@ const APPS: [string, string][] = [
 ];
 
 const VARS: [string, string][] = [
-  ["{{дата}}", "сегодняшняя дата"],
-  ["{{время}}", "текущее время"],
-  ["{{буфер}}", "текст из буфера обмена"],
-  ["{{ввод}}", "ответ из шага «Спросить»"],
+  ["{{date}}", "today"],
+  ["{{time}}", "now"],
+  ["{{clipboard}}", "whatever you copied last"],
+  ["{{input}}", "the answer from an Ask step"],
 ];
 
 // ---------- helpers ----------
 
 const uid = () => (crypto.randomUUID ? crypto.randomUUID() : Math.random().toString(36).slice(2) + Date.now().toString(36));
 
-const plural = (n: number, one: string, few: string, many: string) => {
-  const m10 = n % 10;
-  const m100 = n % 100;
-  const w = m100 >= 11 && m100 <= 14 ? many : m10 === 1 ? one : m10 >= 2 && m10 <= 4 ? few : many;
-  return `${n} ${w}`;
-};
-const stepsWord = (n: number) => (n ? plural(n, "шаг", "шага", "шагов") : "нет шагов");
+const plural = (n: number, one: string, many: string) => `${n} ${n === 1 ? one : many}`;
+const stepsWord = (n: number) => (n ? plural(n, "step", "steps") : "no steps");
 
 type Props = Record<string, unknown>;
 function el<K extends keyof HTMLElementTagNameMap>(tag: K, props: Props = {}, ...kids: (Node | string | null | false | undefined)[]): HTMLElementTagNameMap[K] {
@@ -211,22 +207,22 @@ const newStep = (kind: StepKind, init: Partial<Step> = {}): Step => ({
 const isReady = (s: Step) => !KINDS[s.kind].needsText || s.text.trim() !== "";
 
 function describe(s: Step): string {
-  if (!isReady(s)) return "Нужно заполнить";
+  if (!isReady(s)) return "Needs filling in";
   switch (s.kind) {
     case "openApp":
       return APPS.find(([, v]) => v === s.text)?.[0] ?? s.text;
     case "runShortcut":
-      return `«${s.text}»`;
+      return `“${s.text}”`;
     case "message":
-      return [s.text, s.detail].filter(Boolean).join(" · ") || "Получатель и текст — в «Сообщениях»";
+      return [s.text, s.detail].filter(Boolean).join(" · ") || "Recipient and text: in Messages";
     case "email":
-      return [s.text, s.detail].filter(Boolean).join(" · ") || "Пустое письмо";
+      return [s.text, s.detail].filter(Boolean).join(" · ") || "A blank email";
     case "askInput":
-      return `${s.text || "Введите текст"} → {{ввод}}`;
+      return `${s.text || "Type a question"} → {{input}}`;
     case "wait":
-      return plural(s.number, "секунда", "секунды", "секунд");
+      return plural(s.number, "second", "seconds");
     case "vibrate":
-      return "Короткий отклик";
+      return "A short buzz";
     default:
       return s.text;
   }
@@ -235,9 +231,23 @@ function describe(s: Step): string {
 // ---------- storage ----------
 
 function load(): Command[] {
+  const parse = (raw: string | null): Command[] => {
+    try {
+      const v = JSON.parse(raw || "[]");
+      return Array.isArray(v) ? v.filter((c) => c && typeof c.id === "string" && Array.isArray(c.steps)) : [];
+    } catch {
+      return [];
+    }
+  };
   try {
-    const v = JSON.parse(localStorage.getItem(STORE) || "[]");
-    return Array.isArray(v) ? v.filter((c) => c && typeof c.id === "string" && Array.isArray(c.steps)) : [];
+    const current = parse(localStorage.getItem(STORE));
+    if (current.length) return current;
+    const legacy = parse(localStorage.getItem(LEGACY_STORE));
+    if (legacy.length) {
+      localStorage.setItem(STORE, JSON.stringify(legacy));
+      return legacy;
+    }
+    return [];
   } catch {
     return [];
   }
@@ -254,48 +264,48 @@ function save() {
   renderList();
 }
 const byId = (id: string) => commands.find((c) => c.id === id);
-const byName = (name: string) => commands.find((c) => c.name.toLocaleLowerCase("ru") === name.toLocaleLowerCase("ru"));
-const runLink = (c: Command) => `${location.origin}/komandir?run=${encodeURIComponent(c.name)}`;
+const byName = (name: string) => commands.find((c) => c.name.toLocaleLowerCase() === name.toLocaleLowerCase());
+const runLink = (c: Command) => `${location.origin}/commanddir?run=${encodeURIComponent(c.name)}`;
 
 // ---------- templates ----------
 
 const templates = (): Command[] =>
   [
     {
-      name: "Доброе утро",
-      steps: [newStep("speak", { text: "Доброе утро! Сегодня {{дата}}, сейчас {{время}}." }), newStep("openApp", { text: "weather://" })],
+      name: "Good morning",
+      steps: [newStep("speak", { text: "Good morning. It is {{date}}, {{time}}. Coffee first." }), newStep("openApp", { text: "weather://" })],
     },
     {
-      name: "Быстрая заметка",
+      name: "Quick note",
       steps: [
-        newStep("askInput", { text: "Что записать?" }),
-        newStep("copyText", { text: "{{дата}}, {{время}}: {{ввод}}" }),
-        newStep("showText", { text: "Скопировано. Вставьте в Заметках." }),
+        newStep("askInput", { text: "What should I note?" }),
+        newStep("copyText", { text: "{{date}}, {{time}}: {{input}}" }),
+        newStep("showText", { text: "Copied. Paste it into Notes." }),
         newStep("openApp", { text: "mobilenotes://" }),
       ],
     },
     {
-      name: "Еду домой",
-      steps: [newStep("message", { detail: "Выезжаю, скоро буду. Отправлено в {{время}}." }), newStep("openApp", { text: "maps://" })],
+      name: "Heading home",
+      steps: [newStep("message", { detail: "On my way. Sent at {{time}}, give or take traffic." }), newStep("openApp", { text: "maps://" })],
     },
     {
-      name: "Перерыв",
+      name: "Break",
       steps: [
-        newStep("speak", { text: "Время сделать перерыв." }),
+        newStep("speak", { text: "Break time. The screen will still be here." }),
         newStep("wait", { number: 60 }),
         newStep("vibrate"),
-        newStep("showText", { text: "Перерыв окончен. Возвращаемся к делам." }),
+        newStep("showText", { text: "Break over. Back to it." }),
       ],
     },
     {
-      name: "Отчёт за день",
-      steps: [newStep("askInput", { text: "Что сделано сегодня?" }), newStep("email", { detail: "Отчёт за {{дата}}", extra: "{{ввод}}" })],
+      name: "Daily report",
+      steps: [newStep("askInput", { text: "What got done today?" }), newStep("email", { detail: "Report for {{date}}", extra: "{{input}}" })],
     },
     {
-      name: "Найти из буфера",
-      steps: [newStep("openURL", { text: "https://www.google.com/search?q={{буфер}}" })],
+      name: "Search the clipboard",
+      steps: [newStep("openURL", { text: "https://www.google.com/search?q={{clipboard}}" })],
     },
-    { name: "Позвонить близким", steps: [newStep("call")] },
+    { name: "Call family", steps: [newStep("call")] },
   ].map((t) => ({ id: uid(), createdAt: new Date().toISOString(), runCount: 0, ...t }));
 
 // ---------- list ----------
@@ -312,13 +322,13 @@ function renderList() {
     ...commands.map((c, i) => {
       const run = el(
         "button",
-        { type: "button", class: "km-tile", "aria-label": `Запустить «${c.name}», ${stepsWord(c.steps.length)}`, onclick: () => openRun(c.id, true) },
+        { type: "button", class: "km-tile", "aria-label": `Run “${c.name}”, ${stepsWord(c.steps.length)}`, onclick: () => openRun(c.id, true) },
         el("span", { class: "km-n", text: String(i + 1).padStart(2, "0") }),
         el("span", { class: "km-mono", text: c.name.trim().slice(0, 2) || "—" }),
         el("span", { class: "km-name", text: c.name }),
         el("span", { class: "km-meta", text: stepsWord(c.steps.length) }),
       );
-      const edit = el("button", { type: "button", class: "km-edit", "aria-label": `Изменить «${c.name}»`, text: "Изменить", onclick: () => openEditor(c) });
+      const edit = el("button", { type: "button", class: "km-edit", "aria-label": `Edit “${c.name}”`, text: "Edit", onclick: () => openEditor(c) });
       return el("li", {}, run, edit);
     }),
   );
@@ -346,7 +356,7 @@ function sheetHead(label: string, title: string, close: () => void) {
     "header",
     { class: "km-sheet-head" },
     el("div", {}, el("p", { class: "label sec-index", text: label }), el("h2", { class: "km-sheet-title", text: title })),
-    el("button", { type: "button", class: "km-x", "aria-label": "Закрыть", text: "×", onclick: close }),
+    el("button", { type: "button", class: "km-x", "aria-label": "Close", text: "×", onclick: close }),
   );
 }
 
@@ -368,7 +378,7 @@ function openEditor(c?: Command, fresh = false) {
 const dirty = () => draft !== null && JSON.stringify(draft) !== original;
 
 function closeEditor(force = false) {
-  if (!force && dirty() && !confirm("Закрыть без сохранения?")) return;
+  if (!force && dirty() && !confirm("Close without saving?")) return;
   editorDlg.close();
   draft = null;
 }
@@ -413,7 +423,7 @@ function fieldEl(step: Step, f: Field, onChange: () => void) {
     f.vars &&
     el(
       "div",
-      { class: "km-vars", role: "group", "aria-label": "Вставить переменную" },
+      { class: "km-vars", role: "group", "aria-label": "Insert a variable" },
       ...VARS.map(([t, hint]) => el("button", { type: "button", class: "km-var", title: hint, text: t, onclick: () => insertAt(input, t) })),
     );
   return el(
@@ -451,8 +461,8 @@ function stepCard(step: Step, index: number, total: number) {
   if (step.kind === "openApp") {
     const sel = el(
       "select",
-      { class: "field", "aria-label": "Приложение" },
-      el("option", { value: "", text: "Выберите приложение…" }),
+      { class: "field", "aria-label": "App" },
+      el("option", { value: "", text: "Pick an app…" }),
       ...APPS.map(([name, scheme]) => el("option", { value: scheme, text: name })),
     );
     sel.value = APPS.some(([, s]) => s === step.text) ? step.text : "";
@@ -463,7 +473,7 @@ function stepCard(step: Step, index: number, total: number) {
       if (inp) inp.value = sel.value;
       refresh();
     });
-    body.append(el("div", { class: "km-field" }, el("span", { class: "label km-field-label", text: "Приложение" }), sel));
+    body.append(el("div", { class: "km-field" }, el("span", { class: "label km-field-label", text: "App" }), sel));
   }
   for (const f of k.fields) body.append(fieldEl(step, f, refresh));
   if (k.note) body.append(el("p", { class: "km-note", text: k.note }));
@@ -479,9 +489,9 @@ function stepCard(step: Step, index: number, total: number) {
       el(
         "div",
         { class: "km-step-tools" },
-        el("button", { type: "button", class: "km-tool", "aria-label": "Выше", text: "↑", disabled: index === 0, onclick: () => move(index - 1) }),
-        el("button", { type: "button", class: "km-tool", "aria-label": "Ниже", text: "↓", disabled: index === total - 1, onclick: () => move(index + 1) }),
-        el("button", { type: "button", class: "km-tool km-tool-del", "aria-label": `Удалить шаг ${index + 1}`, text: "×", onclick: remove }),
+        el("button", { type: "button", class: "km-tool", "aria-label": "Move up", text: "↑", disabled: index === 0, onclick: () => move(index - 1) }),
+        el("button", { type: "button", class: "km-tool", "aria-label": "Move down", text: "↓", disabled: index === total - 1, onclick: () => move(index + 1) }),
+        el("button", { type: "button", class: "km-tool km-tool-del", "aria-label": `Delete step ${index + 1}`, text: "×", onclick: remove }),
       ),
     ),
     body,
@@ -494,13 +504,13 @@ function renderEditor(focusStep?: string) {
   const nameInput = el("input", {
     class: "field km-name-input",
     "data-km-name": true,
-    placeholder: "Например: Доброе утро",
+    placeholder: "Say, Good morning",
     maxlength: 60,
     autocomplete: "off",
-    "aria-label": "Название команды",
+    "aria-label": "Command name",
   });
   nameInput.value = d.name;
-  const saveBtn = el("button", { type: "button", class: "btn btn-primary", text: isNew ? "Создать" : "Сохранить" });
+  const saveBtn = el("button", { type: "button", class: "btn btn-primary", text: isNew ? "Create" : "Save" });
   const syncSave = () => (saveBtn.disabled = d.name.trim() === "");
   nameInput.addEventListener("input", () => {
     d.name = nameInput.value;
@@ -510,8 +520,8 @@ function renderEditor(focusStep?: string) {
   saveBtn.addEventListener("click", () => {
     const name = d.name.trim();
     if (!name) return;
-    const clash = commands.find((c) => c.id !== d.id && c.name.toLocaleLowerCase("ru") === name.toLocaleLowerCase("ru"));
-    if (clash && !confirm(`Команда «${name}» уже есть. Ссылка запуска по имени откроет первую из них. Сохранить всё равно?`)) return;
+    const clash = commands.find((c) => c.id !== d.id && c.name.toLocaleLowerCase() === name.toLocaleLowerCase());
+    if (clash && !confirm(`“${name}” already exists. A run link by name opens the first one. Save anyway?`)) return;
     d.name = name;
     const i = commands.findIndex((c) => c.id === d.id);
     if (i >= 0) commands[i] = d;
@@ -522,21 +532,21 @@ function renderEditor(focusStep?: string) {
 
   const extra: HTMLElement[] = [];
   if (!isNew) {
-    const copy = el("button", { type: "button", class: "btn btn-ghost", text: "Скопировать ссылку" });
+    const copy = el("button", { type: "button", class: "btn btn-ghost", text: "Copy run link" });
     copy.addEventListener("click", async () => {
       try {
         await navigator.clipboard.writeText(runLink(d));
-        copy.textContent = "Скопировано";
+        copy.textContent = "Copied";
       } catch {
-        prompt("Ссылка для запуска:", runLink(d));
+        prompt("Run link:", runLink(d));
       }
     });
     const del = el("button", {
       type: "button",
       class: "btn km-danger",
-      text: "Удалить команду",
+      text: "Delete command",
       onclick: () => {
-        if (!confirm(`Удалить «${d.name}»? Это нельзя отменить.`)) return;
+        if (!confirm(`Delete “${d.name}”? There is no undo.`)) return;
         commands = commands.filter((c) => c.id !== d.id);
         save();
         closeEditor(true);
@@ -546,10 +556,10 @@ function renderEditor(focusStep?: string) {
       el(
         "section",
         { class: "km-block" },
-        el("p", { class: "label sec-index", text: "Запуск" }),
+        el("p", { class: "label sec-index", text: "Run link" }),
         el("p", {
           class: "km-note",
-          text: "Ссылка открывает эту команду. Её можно положить на экран «Домой», в закладки или в «Быстрые команды» — действием «Открыть URL».",
+          text: "Opens this command. Put it on the Home Screen, in bookmarks, or in Shortcuts as an Open URL action.",
         }),
         el("div", { class: "km-row" }, copy, del),
       ),
@@ -560,26 +570,26 @@ function renderEditor(focusStep?: string) {
     el(
       "div",
       { class: "km-sheet" },
-      sheetHead(isNew ? "Новая команда" : "Команда", isNew ? "Собрать команду" : d.name || "Без названия", () => closeEditor()),
+      sheetHead(isNew ? "New command" : "Command", isNew ? "Build a command" : d.name || "Untitled", () => closeEditor()),
       el(
         "div",
         { class: "km-sheet-body" },
-        el("label", { class: "label km-field-label", text: "Название" }, nameInput),
+        el("label", { class: "label km-field-label", text: "Name" }, nameInput),
         el(
           "section",
           { class: "km-block" },
-          el("p", { class: "label sec-index", text: `Шаги · ${d.steps.length}` }),
+          el("p", { class: "label sec-index", text: `Steps · ${d.steps.length}` }),
           d.steps.length
             ? el("ol", { class: "km-steps" }, ...d.steps.map((s, i) => stepCard(s, i, d.steps.length)))
-            : el("p", { class: "km-note", text: "Шагов пока нет. Добавьте первый — например, «Открыть ссылку» или «Произнести»." }),
-          el("button", { type: "button", class: "btn btn-ghost km-add", text: "+ Добавить шаг", onclick: openPicker }),
+            : el("p", { class: "km-note", text: "No steps yet. Start with Open a link, or Speak if you like being talked to." }),
+          el("button", { type: "button", class: "btn btn-ghost km-add", text: "+ Add a step", onclick: openPicker }),
         ),
         ...extra,
       ),
       el(
         "footer",
         { class: "km-sheet-foot" },
-        el("button", { type: "button", class: "btn btn-ghost", text: "Отмена", onclick: () => closeEditor() }),
+        el("button", { type: "button", class: "btn btn-ghost", text: "Cancel", onclick: () => closeEditor() }),
         saveBtn,
       ),
     ),
@@ -594,7 +604,7 @@ function openPicker() {
     el(
       "div",
       { class: "km-sheet km-sheet-sm" },
-      sheetHead("Шаг", "Что сделать?", () => pickerDlg.close()),
+      sheetHead("Step", "What should happen?", () => pickerDlg.close()),
       el(
         "div",
         { class: "km-sheet-body" },
@@ -648,11 +658,11 @@ function openTemplates() {
     el(
       "div",
       { class: "km-sheet km-sheet-sm" },
-      sheetHead("Шаблоны", "С чего начать", () => tplDlg.close()),
+      sheetHead("Templates", "Somewhere to start", () => tplDlg.close()),
       el(
         "div",
         { class: "km-sheet-body" },
-        el("p", { class: "km-note", text: "Шаблон откроется в редакторе — поменяйте что нужно и сохраните." }),
+        el("p", { class: "km-note", text: "Opens in the editor. Change what you like, then save." }),
         el(
           "ul",
           { class: "km-kinds" },
@@ -716,7 +726,7 @@ function openRun(id: string, autostart: boolean) {
       ...c.steps.map((s, i) => {
         const st = statuses.get(s.id) ?? "wait";
         const mark = { wait: "", run: "…", done: "✓", skip: "—", fail: "!" }[st];
-        const word = { wait: "ожидает", run: "выполняется", done: "готово", skip: "пропущен", fail: "ошибка" }[st];
+        const word = { wait: "waiting", run: "running", done: "done", skip: "skipped", fail: "failed" }[st];
         return el(
           "li",
           { class: `km-run-step is-${st}` },
@@ -742,8 +752,8 @@ function openRun(id: string, autostart: boolean) {
   const ask = (message: string, opts: { input?: boolean; ok?: string; action?: () => void | Promise<void> } = {}) =>
     new Promise<string | null>((resolve) => {
       const field = opts.input ? el("input", { class: "field", autocomplete: "off", "aria-label": message }) : null;
-      const ok = el("button", { type: "button", class: "btn btn-primary", text: opts.ok ?? "Дальше" });
-      const stop = el("button", { type: "button", class: "btn btn-ghost", text: "Остановить" });
+      const ok = el("button", { type: "button", class: "btn btn-primary", text: opts.ok ?? "Next" });
+      const stop = el("button", { type: "button", class: "btn btn-ghost", text: "Stop" });
       const finish = (v: string | null) => {
         pending = null;
         promptBox.hidden = true;
@@ -771,18 +781,21 @@ function openRun(id: string, autostart: boolean) {
   const resolveVars = async (t: string) => {
     if (!t.includes("{{")) return t;
     const now = new Date();
+    // English names; the Russian ones of the first version still work
+    const date = now.toLocaleDateString("en-GB", { day: "numeric", month: "long", year: "numeric" });
+    const time = now.toLocaleTimeString("en-GB", { hour: "2-digit", minute: "2-digit" });
     let r = t
-      .replaceAll("{{дата}}", now.toLocaleDateString("ru-RU", { day: "numeric", month: "long", year: "numeric" }))
-      .replaceAll("{{время}}", now.toLocaleTimeString("ru-RU", { hour: "2-digit", minute: "2-digit" }))
-      .replaceAll("{{ввод}}", input);
-    if (r.includes("{{буфер}}")) {
+      .replaceAll("{{date}}", date).replaceAll("{{дата}}", date)
+      .replaceAll("{{time}}", time).replaceAll("{{время}}", time)
+      .replaceAll("{{input}}", input).replaceAll("{{ввод}}", input);
+    if (r.includes("{{clipboard}}") || r.includes("{{буфер}}")) {
       let clip = "";
       try {
         clip = await navigator.clipboard.readText();
       } catch {
-        clip = (await ask("Браузер не дал прочитать буфер обмена. Вставьте текст сюда:", { input: true })) ?? "";
+        clip = (await ask("The browser would not share the clipboard. Paste it here:", { input: true })) ?? "";
       }
-      r = r.replaceAll("{{буфер}}", clip);
+      r = r.replaceAll("{{clipboard}}", clip).replaceAll("{{буфер}}", clip);
     }
     return r;
   };
@@ -794,8 +807,8 @@ function openRun(id: string, autostart: boolean) {
         w.opener = null;
         return;
       }
-      const v = await ask("Браузер не открыл вкладку сам. Нажмите, чтобы открыть:", {
-        ok: "Открыть",
+      const v = await ask("The browser wants a tap before opening a tab:", {
+        ok: "Open",
         action: () => {
           window.open(url, "_blank");
         },
@@ -812,8 +825,10 @@ function openRun(id: string, autostart: boolean) {
     new Promise<boolean>((resolve) => {
       if (!("speechSynthesis" in window)) return resolve(false);
       const u = new SpeechSynthesisUtterance(text);
-      u.lang = "ru-RU";
-      const voice = speechSynthesis.getVoices().find((v) => v.lang.toLowerCase().startsWith("ru"));
+      // the voice follows the text: Cyrillic is read in Russian, everything else in English
+      const lang = /[\u0400-\u04FF]/.test(text) ? "ru" : "en";
+      u.lang = lang === "ru" ? "ru-RU" : "en-GB";
+      const voice = speechSynthesis.getVoices().find((v) => v.lang.toLowerCase().startsWith(lang));
       if (voice) u.voice = voice;
       let started = false;
       const end = () => resolve(true);
@@ -833,7 +848,7 @@ function openRun(id: string, autostart: boolean) {
     });
 
   const perform = async (s: Step): Promise<Status> => {
-    if (!isReady(s)) throw new Error("Шаг не заполнен — откройте команду и допишите его.");
+    if (!isReady(s)) throw new Error("This step is unfinished. Open the command and fill it in.");
     switch (s.kind) {
       case "openURL": {
         let u = (await resolveVars(s.text)).trim();
@@ -842,7 +857,7 @@ function openRun(id: string, autostart: boolean) {
         try {
           new URL(enc);
         } catch {
-          throw new Error("Некорректная ссылка.");
+          throw new Error("That is not a link.");
         }
         await openExternal(enc);
         return "done";
@@ -883,18 +898,18 @@ function openRun(id: string, autostart: boolean) {
         try {
           await navigator.clipboard.writeText(t);
         } catch {
-          const v = await ask("Браузер просит подтвердить копирование:", { ok: "Скопировать", action: () => navigator.clipboard.writeText(t) });
+          const v = await ask("The browser wants a tap before copying:", { ok: "Copy", action: () => navigator.clipboard.writeText(t) });
           if (v === null) throw new Stopped();
         }
         return "done";
       }
       case "speak": {
         const t = await resolveVars(s.text);
-        if (!("speechSynthesis" in window)) throw new Error("Этот браузер не умеет озвучивать текст.");
+        if (!("speechSynthesis" in window)) throw new Error("This browser cannot speak.");
         if (await speak(t)) return "done";
         const tap: { spoken?: Promise<boolean> } = {};
-        const v = await ask("Браузер ждёт нажатия, чтобы включить звук:", {
-          ok: "Озвучить",
+        const v = await ask("The browser wants a tap before it makes noise:", {
+          ok: "Speak",
           action: () => {
             tap.spoken = speak(t);
           },
@@ -909,7 +924,7 @@ function openRun(id: string, autostart: boolean) {
         return "done";
       }
       case "askInput": {
-        const v = await ask(s.text.trim() || "Введите текст", { input: true, ok: "Продолжить" });
+        const v = await ask(s.text.trim() || "Type something", { input: true, ok: "Continue" });
         if (v === null) throw new Stopped();
         input = v;
         return "done";
@@ -926,7 +941,7 @@ function openRun(id: string, autostart: boolean) {
     running = false;
     runDlg.dataset.lock = "0";
     state.textContent = text;
-    setMain("Запустить снова", start);
+    setMain("Run again", start);
     paint();
   };
 
@@ -938,7 +953,7 @@ function openRun(id: string, autostart: boolean) {
     input = "";
     c.steps.forEach((s) => statuses.set(s.id, "wait"));
     errors.clear();
-    setMain("Остановить", stop);
+    setMain("Stop", stop);
     c.runCount = (c.runCount || 0) + 1;
     c.lastRunAt = new Date().toISOString();
     save();
@@ -946,22 +961,22 @@ function openRun(id: string, autostart: boolean) {
     for (const [i, s] of c.steps.entries()) {
       if (!running) return;
       statuses.set(s.id, "run");
-      state.textContent = `Шаг ${i + 1} из ${c.steps.length}`;
+      state.textContent = `Step ${i + 1} of ${c.steps.length}`;
       paint();
       try {
         statuses.set(s.id, await perform(s));
       } catch (e) {
         if (e instanceof Stopped || (e instanceof DOMException && e.name === "AbortError")) {
           statuses.set(s.id, "wait");
-          return finish("Остановлено");
+          return finish("Stopped");
         }
         statuses.set(s.id, "fail");
-        errors.set(s.id, e instanceof Error ? e.message : "Не получилось.");
-        return finish(`Ошибка на шаге ${i + 1}`);
+        errors.set(s.id, e instanceof Error ? e.message : "That did not work.");
+        return finish(`Step ${i + 1} failed`);
       }
       paint();
     }
-    finish(c.steps.length ? "Готово" : "В команде нет шагов");
+    finish(c.steps.length ? "Done" : "Nothing to run");
   }
 
   function stop() {
@@ -977,7 +992,7 @@ function openRun(id: string, autostart: boolean) {
     el(
       "div",
       { class: "km-sheet km-sheet-sm" },
-      sheetHead("Выполнение", c.name, () => {
+      sheetHead("Running", c.name, () => {
         stop();
         runDlg.close();
       }),
@@ -988,7 +1003,7 @@ function openRun(id: string, autostart: boolean) {
         el("button", {
           type: "button",
           class: "btn btn-ghost",
-          text: "Изменить",
+          text: "Edit",
           onclick: () => {
             stop();
             runDlg.close();
@@ -1009,8 +1024,8 @@ function openRun(id: string, autostart: boolean) {
       stop();
     }
   };
-  state.textContent = c.steps.length ? stepsWord(c.steps.length) : "В команде нет шагов";
-  setMain("Запустить", start);
+  state.textContent = c.steps.length ? stepsWord(c.steps.length) : "Nothing to run";
+  setMain("Run", start);
   paint();
   runDlg.showModal();
   if (autostart && c.steps.length) void start();
@@ -1019,8 +1034,8 @@ function openRun(id: string, autostart: boolean) {
 // ---------- export / import ----------
 
 function exportAll() {
-  const blob = new Blob([JSON.stringify({ app: "komandir", version: 1, commands }, null, 2)], { type: "application/json" });
-  const a = el("a", { href: URL.createObjectURL(blob), download: `komandir-${new Date().toISOString().slice(0, 10)}.json` });
+  const blob = new Blob([JSON.stringify({ app: "commanddir", version: 1, commands }, null, 2)], { type: "application/json" });
+  const a = el("a", { href: URL.createObjectURL(blob), download: `commanddir-${new Date().toISOString().slice(0, 10)}.json` });
   document.body.append(a);
   a.click();
   a.remove();
@@ -1038,7 +1053,7 @@ async function importFile(file: File) {
       .filter((c): c is Record<string, unknown> => !!c && typeof c === "object")
       .map((c) => ({
         id: uid(),
-        name: str(c.name, 60).trim() || "Без названия",
+        name: str(c.name, 60).trim() || "Untitled",
         createdAt: new Date().toISOString(),
         runCount: 0,
         steps: (Array.isArray(c.steps) ? c.steps : [])
@@ -1053,12 +1068,12 @@ async function importFile(file: File) {
             }),
           ),
       }));
-    if (!clean.length) return alert("В файле нет команд.");
-    if (!confirm(`Добавить ${plural(clean.length, "команду", "команды", "команд")} из файла?`)) return;
+    if (!clean.length) return alert("No commands in that file.");
+    if (!confirm(`Add ${plural(clean.length, "command", "commands")} from the file?`)) return;
     commands = [...commands, ...clean].slice(0, 200);
     save();
   } catch {
-    alert("Не получилось прочитать файл. Нужен JSON, сохранённый кнопкой «Экспорт».");
+    alert("Could not read that. It needs the JSON from Export.");
   }
 }
 
@@ -1101,7 +1116,7 @@ if ("speechSynthesis" in window) speechSynthesis.getVoices();
 renderList();
 paintAccent();
 
-// /komandir?run=<name or id>: open the command ready to start (a tap starts it, so the browser
+// /commanddir?run=<name or id>: open the command ready to start (a tap starts it, so the browser
 // allows sound, new tabs and the clipboard)
 const want = new URLSearchParams(location.search).get("run");
 if (want) {

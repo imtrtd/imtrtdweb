@@ -1,4 +1,4 @@
-/* Shared frame for the standalone apps under /apps (Cuebox, Pulse). Same idiom as /komandir and /launcher:
+/* Shared frame for the standalone apps under /apps (Cuebox, Pulse). Same idiom as /commanddir and /launcher:
    site tokens (global.css), hairline grids, mono labels, one accent, square corners, sheets as <dialog>. */
 
 .ap {

@@ -15,7 +15,7 @@ type Song = {
 const KEY = "imtrtd-pulse";
 const NAMES = ["C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B"];
 const noteName = (m: number) => `${NAMES[m % 12]}${Math.floor(m / 12) - 1}`;
-const DRUMS = ["", "Бочка", "Малый", "Хэт"];
+const DRUMS = ["", "Kick", "Snare", "Hat"];
 const DRUM_SHORT = ["", "K", "S", "H"];
 
 /* ---------- songs (original) ---------- */
@@ -76,7 +76,7 @@ const SONGS: Record<string, () => Song> = {
       bar("F#5 - - - - - - - D5 - - - - - - -", "D4 - F#4 - A4 - F#4 - D4 - F#4 - A4 - - -", "D2 - - - - - - - D2 - - - - - - -", "k - - - h - - - s - - - - - - -"),
     ],
   }),
-  blank: () => ({ name: "Пустой лист", bpm: 120, duty: [0.5, 0.25], level: [1, 1, 1, 1], mute: [false, false, false, false], bars: empty() }),
+  blank: () => ({ name: "Blank page", bpm: 120, duty: [0.5, 0.25], level: [1, 1, 1, 1], mute: [false, false, false, false], bars: empty() }),
 };
 
 function valid(s: unknown): s is Song {
@@ -224,13 +224,13 @@ function start() {
   nextTime = c.currentTime + 0.05;
   schedule();
   timer = window.setInterval(schedule, 25);
-  playBtn.textContent = "■ Стоп";
+  playBtn.textContent = "■ Stop";
   playBtn.setAttribute("aria-pressed", "true");
 }
 function stop() {
   playing = false;
   clearInterval(timer);
-  playBtn.textContent = "▶ Играть";
+  playBtn.textContent = "▶ Play";
   playBtn.setAttribute("aria-pressed", "false");
   document.querySelectorAll(".pb-steps .now").forEach((n) => n.classList.remove("now"));
   status();
@@ -261,7 +261,7 @@ pens.forEach((sel, ch) => {
 });
 
 rowsSteps.forEach((row, ch) => {
-  row.innerHTML = Array.from({ length: 16 }, (_, i) => `<button type="button" data-step="${i}" aria-label="Шаг ${i + 1}"></button>`).join("");
+  row.innerHTML = Array.from({ length: 16 }, (_, i) => `<button type="button" data-step="${i}" aria-label="Step ${i + 1}"></button>`).join("");
   let paint: boolean | null = null;
   const apply = (btn: HTMLButtonElement) => {
     const i = Number(btn.dataset.step);
@@ -332,7 +332,7 @@ function paintBars() {
     const i = Number(b.dataset.bar);
     b.setAttribute("aria-pressed", String(i === curBar));
     const has = song.bars[i].some((c) => c.some(Boolean));
-    b.innerHTML = `Такт ${i + 1}${has ? '<span class="pb-bars-dot" aria-hidden="true">•</span>' : ""}`;
+    b.innerHTML = `Bar ${i + 1}${has ? '<span class="pb-bars-dot" aria-hidden="true">•</span>' : ""}`;
   });
 }
 function status(b = curBar) {
@@ -398,7 +398,7 @@ document.querySelectorAll<HTMLButtonElement>("[data-mute]").forEach((b) =>
 songSel.value = songKey in SONGS ? songKey : "night";
 songSel.addEventListener("change", () => {
   const dirty = JSON.stringify(song) !== JSON.stringify(SONGS[songKey]?.());
-  if (dirty && !confirm("Загрузить другую песню? Текущие изменения пропадут — сначала можно сделать экспорт.")) {
+  if (dirty && !confirm("Load another song? This one gets overwritten. Export first if it deserves to live.")) {
     songSel.value = songKey;
     return;
   }
@@ -414,7 +414,7 @@ document.querySelector("[data-pb-copy]")!.addEventListener("click", () => {
   save();
   curBar = to;
   paintGrid();
-  toast(`Скопировано в такт ${to + 1}`);
+  toast(`Copied to bar ${to + 1}`);
 });
 document.querySelector("[data-pb-clear]")!.addEventListener("click", () => {
   song.bars[curBar] = [0, 1, 2, 3].map(() => Array(16).fill(0));
@@ -431,15 +431,15 @@ fileEl.addEventListener("change", async () => {
   try {
     const data = JSON.parse(await f.text());
     const s = data?.song ?? data;
-    if (!valid(s)) return toast("Это не файл Pulse");
-    song = { ...SONGS.blank(), ...s, name: String(s.name || "Импорт").slice(0, 40) };
+    if (!valid(s)) return toast("Not a Pulse file");
+    song = { ...SONGS.blank(), ...s, name: String(s.name || "Imported").slice(0, 40) };
     songKey = "import";
     curBar = 0;
     save();
     paintGrid();
-    toast("Песня загружена");
+    toast("Song loaded");
   } catch {
-    toast("Не удалось прочитать файл");
+    toast("Could not read that file");
   }
 });
 

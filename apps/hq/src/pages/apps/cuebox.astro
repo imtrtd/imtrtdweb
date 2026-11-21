@@ -8,55 +8,55 @@ import AppPage from "../../layouts/AppPage.astro";
 ---
 
 <AppPage
-  title="Cuebox — библиотека промптов — IMTRTD"
+  title="Cuebox — a prompt library — IMTRTD"
   app="Cuebox"
-  description="Сохраните промпт один раз, подставьте переменные и отправьте в нужный AI. Библиотека хранится в вашем браузере."
+  description="Write a prompt once, fill its blanks, send it to whichever AI you are talking to today. Kept in your browser."
   path="/apps/cuebox"
   icon="/images/apps/cuebox-180.png"
 >
   <header class="ap-head">
     <p class="sec-index label">Cuebox · AI working library</p>
-    <h1 class="ap-title">Промпт один раз.<br />Дальше — в одно касание.</h1>
+    <h1 class="ap-title">Write it once.<br />Paste it forever.</h1>
     <p class="ap-lead">
-      Храните рабочие промпты по папкам AI-сервисов, отмечайте переменные <code class="cb-code">{"{{так}}"}</code> и перед отправкой заполняйте их в форме. Копируйте или открывайте сразу в ChatGPT, Claude или
-      Perplexity.
+      Prompts that work, sorted by the AI they work on. Mark the blanks <code class="cb-code">{"{{like this}}"}</code>, fill them in before sending, then copy or open straight in ChatGPT, Claude or
+      Perplexity. Retyping is for people with time.
     </p>
     <div class="ap-row">
-      <button type="button" class="btn btn-primary btn-lg" data-cb-new>+ Новый промпт</button>
-      <button type="button" class="btn btn-ghost btn-lg" data-cb-export>Экспорт</button>
-      <button type="button" class="btn btn-ghost btn-lg" data-cb-import>Импорт</button>
+      <button type="button" class="btn btn-primary btn-lg" data-cb-new>+ New prompt</button>
+      <button type="button" class="btn btn-ghost btn-lg" data-cb-export>Export</button>
+      <button type="button" class="btn btn-ghost btn-lg" data-cb-import>Import</button>
       <input type="file" accept="application/json,.json" data-cb-file hidden />
     </div>
   </header>
 
-  <p class="ap-alert" data-cb-storage hidden>Браузер не даёт сохранять данные (приватный режим?) — библиотека пропадёт после закрытия вкладки.</p>
+  <p class="ap-alert" data-cb-storage hidden>This browser won’t store anything (private mode?). The library leaves with the tab.</p>
 
   <section aria-labelledby="h-lib" class="cb-lib">
     <div class="cb-tools">
-      <h2 id="h-lib" class="sec-index label">Библиотека</h2>
-      <label class="cb-search"><span class="sr-only">Поиск</span><input type="search" class="field" placeholder="Поиск по названию, тексту, тегам" data-cb-q autocomplete="off" /></label>
+      <h2 id="h-lib" class="sec-index label">Library</h2>
+      <label class="cb-search"><span class="sr-only">Search</span><input type="search" class="field" placeholder="Search titles, text, tags" data-cb-q autocomplete="off" /></label>
     </div>
-    <div class="ap-seg" role="group" aria-label="Папки" data-cb-folders></div>
+    <div class="ap-seg" role="group" aria-label="Folders" data-cb-folders></div>
     <ul class="cb-grid" data-cb-list></ul>
     <div class="cb-empty card" data-cb-empty hidden>
-      <p class="cb-empty-title">Здесь пусто.</p>
-      <p class="ap-note" data-cb-empty-note>В этой папке пока нет промптов.</p>
-      <div class="ap-row"><button type="button" class="btn btn-primary" data-cb-new>Создать промпт</button></div>
+      <p class="cb-empty-title">Empty.</p>
+      <p class="ap-note" data-cb-empty-note>Nothing in this folder yet.</p>
+      <div class="ap-row"><button type="button" class="btn btn-primary" data-cb-new>Create a prompt</button></div>
     </div>
   </section>
 
   <section aria-labelledby="h-how">
-    <h2 id="h-how" class="sec-index label ap-h">Переменные</h2>
+    <h2 id="h-how" class="sec-index label ap-h">Variables</h2>
     <ol class="cb-how">
-      <li><span class="label text-signal">01</span><p><code class="cb-code">{"{{тема}}"}</code> — поле, которое спросят перед отправкой.</p></li>
-      <li><span class="label text-signal">02</span><p><code class="cb-code">{"{{тон:дружелюбный}}"}</code> — поле со значением по умолчанию.</p></li>
-      <li><span class="label text-signal">03</span><p>Одинаковые имена заполняются один раз — сколько бы раз они ни встречались в тексте.</p></li>
+      <li><span class="label text-signal">01</span><p><code class="cb-code">{"{{topic}}"}</code> is a blank you fill in before sending.</p></li>
+      <li><span class="label text-signal">02</span><p><code class="cb-code">{"{{tone:friendly}}"}</code> comes pre-filled, for when you agree with yourself.</p></li>
+      <li><span class="label text-signal">03</span><p>Same name, same value: fill it once, however often it repeats.</p></li>
     </ol>
   </section>
 
   <Fragment slot="after">
-    <dialog class="ap-dialog" data-cb-editor aria-label="Редактор промпта"></dialog>
-    <dialog class="ap-dialog" data-cb-use aria-label="Заполнить переменные"></dialog>
+    <dialog class="ap-dialog" data-cb-editor aria-label="Prompt editor"></dialog>
+    <dialog class="ap-dialog" data-cb-use aria-label="Fill in variables"></dialog>
   </Fragment>
 </AppPage>
 

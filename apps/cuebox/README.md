@@ -17,7 +17,7 @@ Cuebox is a prompt library for individuals and small teams who want a clean plac
 
 ## Live
 
-A static demo of Cuebox is hosted at **[https://imtrtd.space/sites/cuebox/](https://imtrtd.space/sites/cuebox/)**.
+A static demo of Cuebox is available from the studio website.
 
 Local mode works in the browser without an account. Sign in on the live site to sync a cloud library across devices.
 
@@ -166,11 +166,9 @@ Open:
 
 ## Deployment
 
-Vercel runs `npm run vercel-build`. If `DATABASE_URL_UNPOOLED` is missing
-or empty, the build copies `DATABASE_URL` so Prisma can generate and the
-app still compiles. Migrations run only when `VERCEL_ENV` is `production`
-**and** a real `DATABASE_URL_UNPOOLED` is set, so preview and misconfigured
-duplicate projects never apply migrations over a pooler URL.
+Cuebox can be deployed to Vercel. Configure authentication and database
+settings through the hosting provider's environment settings, and keep
+credentials out of source control.
 
 ### Connect Cuebox to ChatGPT
 

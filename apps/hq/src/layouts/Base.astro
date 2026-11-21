@@ -16,6 +16,8 @@ interface Props {
   noindex?: boolean;
   /** Draw the full-screen starfield behind the page. */
   cosmos?: boolean;
+  /** The footer's "Got a project? Let’s talk." block. Off on pages that already end with the brief form. */
+  footerCta?: boolean;
 }
 
 const s = await getSite();
@@ -28,6 +30,7 @@ const {
   jsonLd = [],
   noindex = false,
   cosmos = true,
+  footerCta = true,
 } = Astro.props;
 
 const canonical = new URL(path || "/", s.url).href;
@@ -106,7 +109,7 @@ const graph = {
       <main id="main">
         <slot />
       </main>
-      <Footer email={s.email} telegram={s.telegram} />
+      <Footer email={s.email} telegram={s.telegram} cta={footerCta} />
     </div>
     <script>
       import "../scripts/site-api.js";

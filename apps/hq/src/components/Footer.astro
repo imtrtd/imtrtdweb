@@ -5,14 +5,17 @@ import { cases } from "../data/cases";
 interface Props {
   email: string;
   telegram: string;
+  /** Show the "Got a project?" block; off where the page itself ends with the brief. */
+  cta?: boolean;
 }
-const { email, telegram } = Astro.props;
+const { email, telegram, cta = true } = Astro.props;
 const avail = availability();
 const year = new Date().getFullYear();
 ---
 
 <footer class="border-t border-hair bg-ink/85">
   <div class="wrap grid gap-12 py-14 lg:grid-cols-12 lg:py-20">
+    {cta && (
     <div class="lg:col-span-5">
       <p class="chip"><i class="dot-live" aria-hidden="true"></i>{avail.short}</p>
       <p class="display-md mt-6 max-w-[16ch]">Got a project? <span class="text-signal">Let’s talk.</span></p>
@@ -21,8 +24,9 @@ const year = new Date().getFullYear();
         <a href={`mailto:${email}`} class="btn btn-ghost" data-fx="mail" data-social="email"><span data-mail-text>{email}</span></a>
       </div>
     </div>
+    )}
 
-    <nav aria-label="Site" class="grid grid-cols-2 gap-8 sm:grid-cols-3 lg:col-span-7">
+    <nav aria-label="Site" class:list={["grid grid-cols-2 gap-8 sm:grid-cols-3", cta ? "lg:col-span-7" : "lg:col-span-12"]}>
       <div>
         <p class="label text-mute">Pages</p>
         <ul class="mt-4 grid gap-2.5">
@@ -38,14 +42,14 @@ const year = new Date().getFullYear();
       <div>
         <p class="label text-mute">Elsewhere</p>
         <ul class="mt-4 grid gap-2.5" data-social>
-          <li><a class="text-fog transition-colors hover:text-signal" href={`https://t.me/${telegram}`} rel="me noopener" target="_blank">Telegram ↗</a></li>
+          <li><a class="text-fog transition-colors hover:text-signal" href={`https://t.me/${telegram}`} rel="me noopener" target="_blank">Telegram ↗︎</a></li>
           {
             socials
               .filter((x) => x.id !== "telegram")
               .map((x) => (
                 <li>
                   <a class="text-fog transition-colors hover:text-signal" data-social={x.id} href={x.href} rel="me noopener" target="_blank">
-                    {x.label} ↗
+                    {x.label} ↗︎
                   </a>
                 </li>
               ))

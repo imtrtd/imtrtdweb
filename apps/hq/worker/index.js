@@ -66,6 +66,16 @@ export default {
 			return Response.redirect(url.toString(), 301);
 		}
 
+		// /komandir was renamed to /commanddir (Nov 2026): keep old links and run URLs working.
+		if (url.pathname === "/komandir" || url.pathname === "/komandir/") {
+			url.pathname = "/commanddir";
+			return Response.redirect(url.toString(), 301);
+		}
+		if (url.pathname === "/komandir.webmanifest") {
+			url.pathname = "/commanddir.webmanifest";
+			return Response.redirect(url.toString(), 301);
+		}
+
 		let response = await env.ASSETS.fetch(request);
 
 		// Per-site SPA fallback: extensionless deep links under /sites/<site>/

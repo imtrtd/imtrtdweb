@@ -251,109 +251,53 @@ export async function markReminded(db: D1Database, leadId: string) {
 		.run();
 }
 
-function isEmail(value: string): boolean {
-	return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value);
-}
-
-export async function notifyStudio(env: Env, lead: Lead): Promise<void> {
-	const to = env.STUDIO_NOTIFY_EMAIL;
-	if (!to) {
-		return;
-	}
-	await sendEmail(
+export async function notifyStaleLead(env: Env, lead: Lead): Promise<boolean> {
+	const to = (env.STUDIO_NOTIFY_EMAIL || env.LEAD_NOTIFY_EMAIL || "admin@imtrtd.space").trim();
+	return sendStudio(
 		env,
 		to,
-		`Новая заявка: ${lead.name}`,
+		`Напоминание: заявка без ответа (${lead.name.replace(/[\r\n]+/g, " ").slice(0, 80)})`,
 		[
-			`Имя: ${lead.name}`,
-			`Контакт: ${lead.contact}`,
-			`Тип: ${lead.task_type || "—"}`,
-			`Бюджет: ${lead.budget || "—"}`,
-			"",
-			lead.message || "(без сообщения)",
-			"",
-			`ID: ${lead.id}`,
-		].join("\n"),
-	);
-}
-
-/** Auto-reply to the client when contact looks like an email. */
-export async function notifyClient(env: Env, lead: Lead): Promise<void> {
-	if (!isEmail(lead.contact)) {
-		return;
-	}
-	await sendEmail(
-		env,
-		lead.contact,
-		"Заявка получена — I'm Trying To Design",
-		[
-			`Здравствуйте, ${lead.name}!`,
-			"",
-			"Мы получили вашу заявку и ответим в течение одного рабочего дня.",
-			"",
-			"Если срочно — напишите в Telegram: @imtrtd",
-			"",
-			"— I'm Trying To Design",
-		].join("\n"),
-	);
-}
-
-export async function notifyStaleLead(env: Env, lead: Lead): Promise<void> {
-	const to = env.STUDIO_NOTIFY_EMAIL;
-	if (!to) {
-		return;
-	}
-	await sendEmail(
-		env,
-		to,
-		`Напоминание: заявка без ответа (${lead.name})`,
-		[
-			`Заявка старше 24 часов всё ещё в статусе new.`,
+			"Заявка старше 24 часов всё ещё в статусе new.",
 			"",
 			`Имя: ${lead.name}`,
 			`Контакт: ${lead.contact}`,
 			`Создана: ${lead.created_at}`,
 			`ID: ${lead.id}`,
 			"",
-			"Откройте /admin и ответьте или смените статус.",
+			"https://admin.imtrtd.space/admin",
 		].join("\n"),
 	);
 }
 
-async function sendEmail(
-	env: Env,
-	to: string,
-	subject: string,
-	text: string,
-): Promise<void> {
-	const apiKey = env.RESEND_API_KEY;
-	if (!apiKey) {
-		return;
+/** Sends to the studio inbox (a verified destination) via the EMAIL binding: free on any plan. Fail-soft. */
+async function sendStudio(env: Env, to: string, subject: string, text: string): Promise<boolean> {
+	if (!env.EMAIL) {
+		return false;
 	}
-
-	await fetch("https://api.resend.com/emails", {
-		method: "POST",
-		headers: {
-			Authorization: `Bearer ${apiKey}`,
-			"Content-Type": "application/json",
-		},
-		body: JSON.stringify({
-			from: "IMTRTD <onboarding@resend.dev>",
-			to: [to],
+	try {
+		await env.EMAIL.send({
+			to,
+			from: { email: (env.LEAD_FROM_EMAIL || "leads@imtryingtodesign.com").trim(), name: "IMTRTD leads" },
 			subject,
 			text,
-		}),
-	}).catch(() => {
-		/* non-blocking */
-	});
+		});
+		return true;
+	} catch (err) {
+		console.error("studio mail failed", (err as Error)?.message ?? String(err));
+		return false;
+	}
 }
 
 export async function remindStaleLeads(env: Env): Promise<number> {
 	const cutoff = new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString();
 	const stale = await listStaleUnreminded(env.DB, cutoff);
+	let sent = 0;
 	for (const lead of stale) {
-		await notifyStaleLead(env, lead);
-		await markReminded(env.DB, lead.id);
+		if (await notifyStaleLead(env, lead)) {
+			await markReminded(env.DB, lead.id);
+			sent++;
+		}
 	}
-	return stale.length;
+	return sent;
 }

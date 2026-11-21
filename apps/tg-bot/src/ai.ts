@@ -1,3 +1,4 @@
+import { gptOssReasoningOptions } from "./ai-model";
 import { Ctx } from "./env";
 
 const HISTORY_LIMIT = 20;
@@ -38,7 +39,12 @@ export async function aiReply(c: Ctx, opts: { chatId: number; threadId: number; 
   let lastErr: unknown;
   for (const model of models) {
     try {
-      const out: any = await c.env.AI.run(model as any, { messages, max_tokens: 600, temperature: 0.6 } as any);
+      const out: any = await c.env.AI.run(model as any, {
+        messages,
+        max_tokens: 600,
+        temperature: 0.6,
+        ...gptOssReasoningOptions(String(model)),
+      } as any);
       const text = (typeof out === "string" ? out : out?.response ?? out?.choices?.[0]?.message?.content ?? "").trim();
       if (text) return text.replace(/\*\*(.+?)\*\*/g, "$1").slice(0, 3900);
     } catch (e) {
