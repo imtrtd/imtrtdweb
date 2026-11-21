@@ -34,6 +34,41 @@ export function Shell({ children }: { children: ReactNode }) {
   const { theme, toggle } = useTheme();
   const headerRef = useRef<HTMLElement>(null);
 
+  /* Liquid Glass: refraction only where the engine can run an SVG filter as a backdrop (Chromium);
+     everywhere else the panes stay frosted. The sheen follows the pointer over any pane. */
+  useEffect(() => {
+    const root = document.documentElement;
+    const ua = navigator.userAgent;
+    if (
+      /Chrome\//.test(ua) &&
+      !/CriOS|FxiOS|Firefox/.test(ua) &&
+      !window.matchMedia("(prefers-reduced-transparency: reduce)").matches
+    ) {
+      root.classList.add("lg-refract");
+    }
+    let raf = 0;
+    let last: PointerEvent | null = null;
+    const paint = () => {
+      raf = 0;
+      const pane = (last?.target as HTMLElement | null)?.closest<HTMLElement>(".float-glass");
+      if (!pane || !last) return;
+      const r = pane.getBoundingClientRect();
+      pane.style.setProperty("--x", `${last.clientX - r.left}px`);
+      pane.style.setProperty("--y", `${last.clientY - r.top}px`);
+    };
+    const move = (e: PointerEvent) => {
+      if (e.pointerType === "touch") return;
+      last = e;
+      if (!raf) raf = requestAnimationFrame(paint);
+    };
+    window.addEventListener("pointermove", move, { passive: true });
+    return () => {
+      window.removeEventListener("pointermove", move);
+      if (raf) cancelAnimationFrame(raf);
+      root.classList.remove("lg-refract");
+    };
+  }, []);
+
   useEffect(() => {
     const el = headerRef.current;
     if (!el) return;
@@ -65,6 +100,32 @@ export function Shell({ children }: { children: ReactNode }) {
           style={{ ["--dur" as string]: "43s" }}
         />
       </div>
+      <svg aria-hidden width="0" height="0" className="pointer-events-none absolute">
+        <filter
+          id="lg-refract"
+          x="0"
+          y="0"
+          width="100%"
+          height="100%"
+          colorInterpolationFilters="sRGB"
+        >
+          <feTurbulence
+            type="fractalNoise"
+            baseFrequency="0.011 0.018"
+            numOctaves="2"
+            seed="11"
+            result="noise"
+          />
+          <feGaussianBlur in="noise" stdDeviation="2.5" result="soft" />
+          <feDisplacementMap
+            in="SourceGraphic"
+            in2="soft"
+            scale="22"
+            xChannelSelector="R"
+            yChannelSelector="G"
+          />
+        </filter>
+      </svg>
       <header ref={headerRef} className="sticky top-0 z-30 px-3 pt-3 sm:px-4">
         <div className="float-glass float-glass-strong mx-auto flex max-w-6xl flex-wrap items-center justify-between gap-x-3 gap-y-1 rounded-[1.6rem] px-3 py-1.5 sm:rounded-full sm:px-5">
           <div className="flex shrink-0 items-center gap-1">
