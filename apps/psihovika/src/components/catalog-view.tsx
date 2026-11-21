@@ -121,6 +121,7 @@ function FloatStage({ tests }: { tests: Test[] }) {
       className="relative grid gap-3 lg:block lg:h-[27rem]"
       style={{ ["--px" as string]: 0, ["--py" as string]: 0 }}
     >
+      <div className="aura-halo hidden lg:block" aria-hidden />
       {picks.map((test, i) => {
         const slot = slots[i];
         return (
@@ -138,7 +139,7 @@ function FloatStage({ tests }: { tests: Test[] }) {
                 to="/m/$id"
                 params={{ id: test.id }}
                 onPointerMove={spotlight}
-                className="float-card float-lift block p-4 backdrop-blur-sm"
+                className="float-glass glass-refract glass-lift block rounded-[1.25rem] p-4"
               >
                 <p className="text-[0.7rem] uppercase tracking-widest text-ox">{test.school}</p>
                 <p className="mt-1.5 font-serif text-xl leading-tight text-balance">{test.title}</p>
