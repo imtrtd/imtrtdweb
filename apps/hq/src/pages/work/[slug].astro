@@ -63,8 +63,8 @@ const crumbs = {
         </div>
         <div class="flex flex-wrap gap-3 lg:col-span-4 lg:justify-end">
           {appFor[c.slug] && <a href={appFor[c.slug]} class="btn btn-primary">Use the app <span class="arrow" aria-hidden="true">→</span></a>}
-          <a href={c.demo} class:list={["btn", appFor[c.slug] ? "btn-ghost" : "btn-primary"]} target="_blank" rel="noopener">Open the live build ↗</a>
-          {c.live && <a href={c.live.href} class="btn btn-ghost" target="_blank" rel="noopener">{c.live.label} ↗</a>}
+          <a href={c.demo} class:list={["btn", appFor[c.slug] ? "btn-ghost" : "btn-primary"]} target="_blank" rel="noopener">Open the live build ↗︎</a>
+          {c.live && <a href={c.live.href} class="btn btn-ghost" target="_blank" rel="noopener">{c.live.label} ↗︎</a>}
         </div>
       </div>
     </header>

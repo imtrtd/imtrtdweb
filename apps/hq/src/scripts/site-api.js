@@ -1,4 +1,4 @@
-/* imtrtd.space ↔ admin.imtrtd.space: lead submission + optional CMS content. */
+/* imtrtd.space ↔︎ admin.imtrtd.space: lead submission + optional CMS content. */
 (function(){
 var API='https://admin.imtrtd.space',MAIL='admin@imtrtd.space';
 var page=(location.pathname.replace(/\.html$/,'').replace(/\/index$/,'/')||'/');

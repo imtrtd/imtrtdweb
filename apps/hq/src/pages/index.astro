@@ -15,7 +15,7 @@ const cases = await getCases();
 const services = await getServices();
 ---
 
-<Base jsonLd={[faqJsonLd()]}>
+<Base footerCta={false} jsonLd={[faqJsonLd()]}>
   <Hero heroLine={s.heroLine} languages={s.languages} />
 
   <!-- 02 · Work -->
@@ -136,7 +136,7 @@ const services = await getServices();
             <a class="group block p-4" href={`mailto:${s.email}`}>
               <span class="label block pr-14 text-mute">Email</span>
               <span class="mt-1.5 block truncate text-paper transition-colors group-hover:text-signal" data-mail-text>{s.email}</span>
-              <span class="label mt-2 block text-signal">Write ↗</span>
+              <span class="label mt-2 block text-signal">Write ↗︎</span>
             </a>
             <button type="button" class="label absolute top-3 right-3 border border-hair-strong px-2 py-1.5 hover:border-signal hover:text-signal" data-ct-copy={s.email} aria-label={`Copy email address ${s.email}`}>Copy</button>
           </li>
@@ -146,7 +146,7 @@ const services = await getServices();
                 <a class="group block p-4" href={ch.href} rel="me noopener" target="_blank">
                   <span class="label block text-mute">{ch.label}</span>
                   <span class="mt-1.5 block truncate text-paper transition-colors group-hover:text-signal">{ch.handle}</span>
-                  <span class="label mt-2 block text-signal">{ch.action} ↗</span>
+                  <span class="label mt-2 block text-signal">{ch.action} ↗︎</span>
                 </a>
               </li>
             ))
