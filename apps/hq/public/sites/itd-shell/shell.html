@@ -1,0 +1,236 @@
+<!doctype html>
+<html lang="ru" data-version="1.1.0">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; font-src 'self'; img-src 'self' file: data:; object-src 'none'; base-uri 'none'">
+<title>I/TD Shell</title>
+<link rel="stylesheet" href="fonts/fonts.css">
+<link rel="stylesheet" href="css/shell.css">
+<link rel="stylesheet" href="css/wm.css">
+</head>
+<body data-accent="violet" data-view="desktop" data-icons="medium" data-density="normal" data-cut="on" data-live="off">
+<canvas id="bg" aria-hidden="true"></canvas>
+<div id="wall" aria-hidden="true"></div>
+<div id="dim" aria-hidden="true"></div>
+<div id="grain" aria-hidden="true"></div>
+<div class="deco" aria-hidden="true"><i class="beam"></i><i class="d d1"></i><i class="d d2"></i><i class="d d3"></i><i class="core"></i></div>
+
+<header class="bar">
+  <button type="button" class="mark mark-btn" id="btnStart" aria-label="Пуск — меню I/TD" aria-expanded="false">I/TD</button>
+  <span class="bar-name">Shell</span>
+  <nav class="bar-nav" aria-label="Разделы">
+    <button type="button" data-view="desktop">01 Стол</button>
+    <button type="button" data-view="apps">02 Программы</button>
+    <button type="button" data-view="home">03 Проекты</button>
+    <button type="button" data-view="explorer">04 Файлы</button>
+    <button type="button" data-view="settings">05 Вид</button>
+  </nav>
+  <span class="grow"></span>
+  <button type="button" class="bar-search" id="openPalette"><span>Поиск программ, проектов, команд</span><kbd id="hotkeyHint">Ctrl K</kbd></button>
+  <span class="grow"></span>
+  <div class="accents" role="group" aria-label="Акцент" id="accents"></div>
+  <span class="bar-clock" id="barClock"></span>
+  <span class="dot-live" aria-hidden="true"></span>
+  <button type="button" class="bar-btn" id="btnMin" aria-label="Свернуть оболочку">–</button>
+  <button type="button" class="bar-btn" id="btnQuit" aria-label="Выйти из оболочки">×</button>
+</header>
+
+<div class="desk-area" id="deskArea">
+<main class="view" id="view-desktop">
+  <section class="hero">
+    <div class="hero-clock" id="wClock">
+      <span class="label accent" id="deskDate"></span>
+      <h1 class="clock" id="deskClock">00:00</h1>
+    </div>
+    <p class="lead">Программы, проекты, файлы и персонализация открываются окнами: их можно двигать, сворачивать в верхнюю панель и менять им размер.</p>
+    <div class="row">
+      <button type="button" class="btn btn-primary" id="deskSearch">Открыть поиск →</button>
+      <button type="button" class="btn" id="deskStart">Меню «Пуск»</button>
+      <button type="button" class="btn" id="deskExplorer">Программы</button>
+    </div>
+  </section>
+  <aside class="desk-side" id="widgets" aria-label="Виджеты"></aside>
+  <footer class="desk-foot">
+    <nav class="dock" id="dock" aria-label="Часто запускаемое"></nav>
+    <div class="hints label">
+      <span><b id="hintHotkey">Ctrl K</b> поиск</span>
+      <span><b id="hintStart">Ctrl Alt Space</b> пуск</span>
+      <span><b>Ctrl 1–5</b> окна</span>
+      <span><b>Esc</b> закрыть</span>
+    </div>
+  </footer>
+</main>
+
+<div class="desk-icons" id="deskIcons" role="list" aria-label="Ярлыки рабочего стола"></div>
+
+<div class="wins" id="wins">
+<i class="snap-hint" id="snapHint" aria-hidden="true"></i>
+
+<section class="win" id="win-apps" data-win="apps" data-state="closed" data-max="off" role="dialog" aria-label="Программы">
+  <header class="win-bar"><span class="win-tag label accent">02</span><span class="win-title">Программы</span><span class="win-sub label" id="appsCount"></span><span class="grow"></span><button type="button" class="win-btn" data-act="min" aria-label="Свернуть">–</button><button type="button" class="win-btn" data-act="max" aria-label="Развернуть">□</button><button type="button" class="win-btn win-close" data-act="close" aria-label="Закрыть">×</button></header>
+  <main class="view win-body" id="view-apps">
+    <nav class="side" id="appsSide" aria-label="Подборки программ"></nav>
+    <section class="apps-main">
+      <div class="apps-in">
+        <span class="accent arrow" aria-hidden="true">→</span>
+        <label class="sr" for="appsQ">Найти программу</label>
+        <input id="appsQ" type="search" autocomplete="off" spellcheck="false" placeholder="Найти программу">
+        <span class="chip" id="appsHint">Enter запуск</span>
+      </div>
+      <div class="tools" id="appsTools" role="toolbar" aria-label="Сортировка, группировка и вид"></div>
+      <div class="apps-grid" id="appsGrid" role="list"></div>
+    </section>
+  </main>
+</section>
+
+<section class="win" id="win-home" data-win="home" data-state="closed" data-max="off" role="dialog" aria-label="Проекты">
+  <header class="win-bar"><span class="win-tag label accent">03</span><span class="win-title">Проекты</span><span class="grow"></span><button type="button" class="win-btn" data-act="min" aria-label="Свернуть">–</button><button type="button" class="win-btn" data-act="max" aria-label="Развернуть">□</button><button type="button" class="win-btn win-close" data-act="close" aria-label="Закрыть">×</button></header>
+<main class="view win-body" id="view-home">
+  <nav class="side" aria-label="Фильтры">
+    <div class="label">Состояние</div>
+    <div class="side-list" id="fStatus"></div>
+    <div class="label">Категории</div>
+    <div class="side-list" id="fCat"></div>
+  </nav>
+  <section class="home-main">
+    <header class="home-head">
+      <div>
+        <span class="label accent">03 · Обсерватория</span>
+        <h1 class="h-md">Все проекты</h1>
+      </div>
+      <span class="label" id="homeCount"></span>
+    </header>
+    <div class="tools" id="homeTools" role="toolbar" aria-label="Сортировка, группировка и вид"></div>
+    <div class="grid-wrap" id="gridWrap"><div class="grid" id="grid"></div></div>
+  </section>
+  <aside class="inspector" id="inspector" aria-label="Инспектор"></aside>
+</main>
+</section>
+
+<section class="win" id="win-explorer" data-win="explorer" data-state="closed" data-max="off" role="dialog" aria-label="Файлы">
+  <header class="win-bar"><span class="win-tag label accent">04</span><span class="win-title">Файлы</span><span class="grow"></span><button type="button" class="win-btn" data-act="min" aria-label="Свернуть">–</button><button type="button" class="win-btn" data-act="max" aria-label="Развернуть">□</button><button type="button" class="win-btn win-close" data-act="close" aria-label="Закрыть">×</button></header>
+<main class="view win-body" id="view-explorer">
+  <nav class="side" id="places" aria-label="Места"></nav>
+  <section class="ex-main">
+    <div class="ex-tools">
+      <button type="button" class="sq" id="exBack" aria-label="Назад">←</button>
+      <button type="button" class="sq" id="exUp" aria-label="Вверх">↑</button>
+      <div class="crumbs" id="crumbs"></div>
+      <label class="sr" for="exFilter">Фильтр в папке</label>
+      <input id="exFilter" type="search" placeholder="Фильтр в папке" autocomplete="off" spellcheck="false">
+      <button type="button" class="sq term" id="exCmd" aria-label="Командная строка в этой папке" title="Командная строка здесь">C&gt;</button>
+      <button type="button" class="sq term" id="exPs" aria-label="PowerShell в этой папке" title="PowerShell здесь">PS</button>
+      <button type="button" class="sq term" id="exWin" aria-label="Открыть папку в Проводнике Windows" title="Открыть в Проводнике Windows">⧉</button>
+    </div>
+    <div class="tools" id="exTools" role="toolbar" aria-label="Сортировка, группировка и вид"></div>
+    <div class="ex-body">
+      <div class="ex-list" id="exList">
+        <table>
+          <thead><tr id="exHead"></tr></thead>
+          <tbody id="rows"></tbody>
+        </table>
+        <p class="empty" id="exEmpty" hidden></p>
+      </div>
+      <aside class="preview" id="preview" aria-label="Просмотр"></aside>
+    </div>
+    <footer class="ex-foot label"><span id="exStatus"></span><span><b>Enter</b> открыть · <b>Backspace</b> вверх</span></footer>
+  </section>
+</main>
+</section>
+
+<section class="win" id="win-settings" data-win="settings" data-state="closed" data-max="off" role="dialog" aria-label="Персонализация">
+  <header class="win-bar"><span class="win-tag label accent">05</span><span class="win-title">Персонализация</span><span class="grow"></span><button type="button" class="win-btn" data-act="min" aria-label="Свернуть">–</button><button type="button" class="win-btn" data-act="max" aria-label="Развернуть">□</button><button type="button" class="win-btn win-close" data-act="close" aria-label="Закрыть">×</button></header>
+<main class="view win-body" id="view-settings">
+  <nav class="side" id="setNav" aria-label="Разделы настроек"></nav>
+  <section class="set-main">
+    <header class="home-head">
+      <div>
+        <span class="label accent">05 · Персонализация</span>
+        <h1 class="h-md" id="setTitle">Акцент</h1>
+      </div>
+      <span class="label" id="setHint"></span>
+    </header>
+    <div class="set-body" id="setBody"></div>
+  </section>
+</main>
+</section>
+</div>
+</div>
+
+<div class="scrim" id="palette" hidden>
+  <section class="pal" role="dialog" aria-modal="true" aria-label="Поиск">
+    <div class="pal-in">
+      <span class="accent arrow" aria-hidden="true">→</span>
+      <label class="sr" for="q">Запрос</label>
+      <input id="q" type="text" autocomplete="off" spellcheck="false" placeholder="Что открыть?">
+      <span class="chip">Esc закрыть</span>
+    </div>
+    <div class="pal-scopes" id="scopes" role="group" aria-label="Где искать"></div>
+    <div class="pal-body">
+      <div class="pal-list" id="results"></div>
+      <aside class="pal-detail" id="detail"></aside>
+    </div>
+    <footer class="pal-foot label"><span id="palCount"></span><span><b>↑ ↓</b> выбор · <b>Tab</b> раздел · <b>Enter</b> открыть · <b>Ctrl O</b> в проводнике</span></footer>
+  </section>
+</div>
+
+<div class="scrim scrim-start" id="start" hidden>
+  <section class="start" role="dialog" aria-modal="true" aria-label="Меню Пуск">
+    <header class="start-head">
+      <span class="mark" aria-hidden="true">I/TD</span>
+      <span class="start-who"><b id="startUser">—</b><span class="label" id="startPc"></span></span>
+      <span class="grow"></span>
+      <div class="start-in">
+        <span class="accent arrow" aria-hidden="true">→</span>
+        <label class="sr" for="startQ">Поиск в меню</label>
+        <input id="startQ" type="text" autocomplete="off" spellcheck="false" placeholder="Поиск программ, проектов, команд">
+      </div>
+      <button type="button" class="sq" id="startClose" aria-label="Закрыть меню">×</button>
+    </header>
+    <div class="start-body">
+      <section class="start-main">
+        <div class="start-tabs" id="startTabs" role="tablist"></div>
+        <div class="start-alpha" id="startAlpha" hidden></div>
+        <div class="start-scroll" id="startList"></div>
+      </section>
+      <aside class="start-side">
+        <div class="label">Быстрые настройки</div>
+        <div class="start-quick" id="startQuick"></div>
+        <div class="label">Питание</div>
+        <div class="start-power" id="startPower"></div>
+      </aside>
+    </div>
+    <footer class="start-foot label"><span id="startCount"></span><span><b id="startHint">Ctrl Alt Space</b> вызов меню · <b>Esc</b> закрыть</span></footer>
+  </section>
+</div>
+
+<div class="scrim" id="confirm" hidden>
+  <section class="dlg" role="alertdialog" aria-modal="true" aria-labelledby="cfTitle">
+    <span class="label accent" id="cfTag">Подтверждение</span>
+    <h2 id="cfTitle">—</h2>
+    <p id="cfText"></p>
+    <div class="row dlg-row">
+      <button type="button" class="btn btn-primary" id="cfOk">Да</button>
+      <button type="button" class="btn" id="cfNo">Отмена</button>
+    </div>
+  </section>
+</div>
+
+<div class="ctx" id="ctx" role="menu" aria-label="Контекстное меню" hidden></div>
+
+<div class="toasts" id="toasts" aria-live="polite"></div>
+
+<div class="boot" id="boot" aria-hidden="true">
+  <span class="boot-halo"></span>
+  <span class="boot-glow"><span class="mark mark-lg">I/TD</span></span>
+  <span class="label">Shell v1.1.0 · запуск</span>
+  <span class="boot-term" aria-hidden="true"><i></i><i></i><i></i></span>
+</div>
+
+<script src="js/mock-itd.js"></script>
+<script src="js/projects.js"></script>
+<script src="js/bg.js"></script>
+<script src="js/app.js"></script>
+</body>
+</html>

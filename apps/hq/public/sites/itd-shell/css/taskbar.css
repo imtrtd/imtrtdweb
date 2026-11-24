@@ -1,0 +1,66 @@
+/* I/TD Shell — taskbar. imtrtd: ink ground, one hairline, square cells, mono labels, one accent. */
+:root {
+  color-scheme: dark;
+  --ink: #0a0a0f; --ink-soft: #14141c; --ink-raise: #1c1c27;
+  --paper: #f3effa; --fog: #c8cedb; --mute: #8b93a7;
+  --signal: #b28dff; --sig-rgb: 178 141 255; --hair: rgb(var(--sig-rgb) / 0.18); --hair-strong: rgb(var(--sig-rgb) / 0.34);
+  --brand-mark: #e0f725;
+  --sans: "Geist", Arial, "Arimo", sans-serif;
+  --mono: "Geist Mono", ui-monospace, Consolas, monospace;
+}
+body[data-accent="lime"] { --signal: #d8ff00; --sig-rgb: 216 255 0; }
+body[data-accent="magenta"] { --signal: #ff2bd6; --sig-rgb: 255 43 214; }
+body[data-accent="cyan"] { --signal: #2ee9ff; --sig-rgb: 46 233 255; }
+body { --hair: rgb(var(--sig-rgb) / 0.18); --hair-strong: rgb(var(--sig-rgb) / 0.34); }
+* { box-sizing: border-box; }
+html, body { height: 100%; margin: 0; overflow: hidden; background: var(--ink); color: var(--paper); font: 400 12px/1 var(--sans); user-select: none; }
+button { font: inherit; color: inherit; background: none; border: 0; padding: 0; cursor: default; }
+.tb { position: relative; height: 100%; display: flex; align-items: stretch; background: linear-gradient(180deg, #11111a, var(--ink)); border-top: 1px solid var(--hair-strong); box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.03); }
+.tb-start { width: 36px; display: flex; align-items: center; justify-content: center; border-right: 1px solid var(--hair); }
+.mark { display: inline-flex; align-items: center; justify-content: center; width: 22px; height: 22.4px; background: url("../brand/logo-mark.svg") center / 100% 100% no-repeat; color: transparent; font-size: 0; overflow: hidden; clip-path: polygon(0 0, 85.71% 0, 100% 14.01%, 100% 100%, 13.35% 100%, 0 86.91%); }
+.tb-start:hover .mark { filter: drop-shadow(0 0 6px rgb(224 247 37 / 0.7)); }
+.tb-ic { width: 34px; display: flex; align-items: center; justify-content: center; color: var(--fog); transition: color 0.2s, background-color 0.2s; }
+.tb-ic svg { display: block; }
+button:focus-visible { outline: 1px solid var(--signal); outline-offset: -2px; }
+.tb-sep { align-self: center; width: 1px; height: 14px; background: var(--hair); }
+.tb-ic:hover { color: var(--signal); background: rgb(255 255 255 / 0.04); }
+.tb-tasks { flex: 1 1 0; min-width: 0; display: flex; align-items: stretch; overflow: hidden; }
+.task { position: relative; flex: 0 1 180px; min-width: 36px; display: flex; align-items: center; gap: 6px; padding: 0 10px; border-right: 1px solid var(--hair); font: 500 10px/1 var(--mono); letter-spacing: 0.08em; text-transform: uppercase; color: var(--mute); transition: background-color 0.2s, color 0.2s; }
+.task:hover { background: rgb(255 255 255 / 0.04); color: var(--paper); }
+.task::after { content: ''; position: absolute; left: 0; right: 0; bottom: 0; height: 2px; background: transparent; }
+.task.fg { background: linear-gradient(180deg, rgb(var(--sig-rgb) / 0.04), rgb(var(--sig-rgb) / 0.14)); color: var(--paper); }
+.task.fg::after { background: var(--signal); box-shadow: 0 0 10px rgb(var(--sig-rgb) / 0.8); }
+.task:not(.fg):not(.min)::after { background: rgb(var(--sig-rgb) / 0.35); left: 35%; right: 35%; }
+.task:active { background: rgb(var(--sig-rgb) / 0.2); }
+.task.min { opacity: 0.6; }
+.task img, .task .ph { flex: none; width: 16px; height: 16px; }
+.task .ph { display: inline-flex; align-items: center; justify-content: center; background: var(--ink-raise); color: var(--signal); font: 600 7px/1 var(--mono); }
+.task span { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.tb-tray { display: flex; align-items: stretch; border-left: 1px solid var(--hair); }
+.tb-clock { display: flex; align-items: center; gap: 8px; padding: 0 10px; font: 500 11px/1 var(--mono); letter-spacing: 0.04em; }
+.tb-clock small { font: 400 9px/1 var(--mono); letter-spacing: 0.12em; text-transform: uppercase; color: var(--mute); }
+.tb-clock:hover b { color: var(--signal); }
+.tb-desk { width: 6px; border-left: 1px solid var(--hair); }
+.tb-desk { transition: background-color 0.2s; }
+.tb-desk:hover { background: rgb(var(--sig-rgb) / 0.55); }
+@media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
+/* a window asking for attention (FlashWindow): slow accent pulse until it is activated */
+.task.fl { color: var(--paper); animation: tb-flash 1.4s ease-in-out infinite; }
+.task.fl::after { background: var(--signal); left: 0; right: 0; }
+@keyframes tb-flash { 50% { background: rgb(var(--sig-rgb) / 0.22); } }
+@media (prefers-reduced-motion: reduce) { .task.fl { animation: none; background: rgb(var(--sig-rgb) / 0.18); } }
+
+/* ---- notification area ---- */
+.tb-notify { display: flex; align-items: stretch; }
+.tray-ic { width: 28px; display: flex; align-items: center; justify-content: center; position: relative; transition: background-color 0.2s; }
+.tray-ic[hidden] { display: none; }
+.tray-ic img { width: 16px; height: 16px; image-rendering: auto; opacity: 0.92; transition: opacity 0.2s, transform 0.2s; }
+.tray-ic:hover { background: rgb(255 255 255 / 0.05); }
+.tray-ic:hover img { opacity: 1; transform: translateY(-1px); }
+.tray-ic:active { background: rgb(var(--sig-rgb) / 0.18); }
+.tray-ic.noimg::before { content: ''; width: 6px; height: 6px; transform: rotate(45deg); border: 1px solid var(--hair-strong); }
+.tray-ic.noimg img { display: none; }
+.tb-more { width: 22px; }
+.tb-more svg { transition: transform 0.25s; }
+.tb-more.open svg { transform: rotate(180deg); }
+.tb-more[hidden] { display: none; }

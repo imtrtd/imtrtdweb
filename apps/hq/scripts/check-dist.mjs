@@ -3,12 +3,14 @@
 // and internal links to pages that do not exist.
 import { readFileSync, existsSync, readdirSync, statSync } from "node:fs";
 import { join, relative } from "node:path";
+import { fileURLToPath } from "node:url";
 
-const dist = new URL("../dist/", import.meta.url).pathname;
+// fileURLToPath, not .pathname: the latter gives "/D:/..." on Windows.
+const dist = fileURLToPath(new URL("../dist/", import.meta.url));
 const must = [
   "index.html", "selected.html", "palette.html", "practice.html", "contact.html", "404.html", "launcher.html", "apps.html", "apps/cuebox.html", "apps/pulse.html", "apps/shell.html", "commanddir.html", "commanddir.webmanifest",
   "sitemap.xml", "robots.txt", "_headers", "og.png", "brand/logo-mark.svg",
-  "sites/namenlos/index.html", "sites/pulse-box/index.html", "sites/natvik/index.html", "sites/cuebox/index.html",
+  "sites/namenlos/index.html", "sites/pulse-box/index.html", "sites/natvik/index.html", "sites/cuebox/index.html", "sites/itd-shell/index.html", "images/apps/shell-card.webp", "images/apps/shell-card.jpg",
   "work/namenlos.html", "work/pulse-box.html", "work/natvik.html", "work/cuebox.html", "work/truesightpsy.html",
 ];
 const errors = [];
