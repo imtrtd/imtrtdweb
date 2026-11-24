@@ -21,12 +21,12 @@ const services = await getServices();
   <!-- 02 · Work -->
   <section id="work" class="sec" aria-labelledby="h-work">
     <div class="wrap">
-      <SectionHead index="02" kicker="Selected work" id="h-work" title="Live builds, not mockups." lead="Every project below opens as the real site. Click through, try it on your phone.">
-        <a href="/selected" class="btn btn-ghost mt-7">All work <span class="arrow" aria-hidden="true">→</span></a>
-      </SectionHead>
+      <SectionHead index="02" kicker="Selected work" id="h-work" title="Live builds, not mockups." lead="Every project below opens as the real site. Click through, try it on your phone." />
       <ul class="border-t border-hair">
         {cases.map((c, i) => <WorkRow c={c} index={i} />)}
       </ul>
+      <!-- after the list, not in the head: right under the hero's "Explore work" it read as the same button twice -->
+      <a href="/selected" class="btn btn-ghost mt-10">All work <span class="arrow" aria-hidden="true">→</span></a>
     </div>
   </section>
 
