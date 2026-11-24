@@ -171,11 +171,11 @@ const makeDatabase = () =>
       ? workerMemoryDatabase()
       : { dialect: pgliteDialect(() => getPglite()), type: "postgres" as const };
 
-// Kick schema bootstrap when auth will hit a real DB (Neon or PGLite).
-// Neon migrations must finish before Better Auth queries `user`/`session` —
-// its Pool bypasses `getSql()`, so callers also `await ensureDbReady()` /
-// `getAuthReady()` on the request path. Skip Workers memory-auth (no DB).
-if (databaseUrl || !onCloudflareWorker) {
+// Eager PGLite bootstrap only (Node preview). Neon waits for `getAuthReady()`
+// on the request path — Cursor/host builds inject DATABASE_URL and `void
+// ensureDbReady()` at module load would migrate during `npm run build` and
+// fail the ship when Postgres is unreachable. Skip Workers memory-auth (no DB).
+if (!databaseUrl && !onCloudflareWorker) {
   void ensureDbReady();
 }
 
