@@ -1,0 +1,166 @@
+/* I/TD Shell 1.1.0 — windows, the Programs launcher, context menu, desktop shortcuts.
+   Same rules as shell.css: ink ground, hairlines, square corners, one accent (icons bring their own colour). */
+
+/* ---- desktop layer: always visible under the windows ---- */
+.desk-area { position: relative; flex: 1 1 0; min-height: 0; display: flex; }
+#deskArea > #view-desktop { display: grid; flex: 1 1 0; min-width: 0; padding-left: calc(var(--pad-view, 48px) + var(--desk-gutter, 0px)); transition: padding-left 0.5s var(--ease); }
+.deco { display: block; }
+body[data-maxed="on"] .deco { display: none; }
+#deskArea.drop-on::after { content: ""; position: absolute; inset: 8px; z-index: 4; border: 1px dashed var(--signal); background: color-mix(in srgb, var(--signal) 5%, transparent); pointer-events: none; }
+
+/* ---- windows ---- */
+.wins { position: absolute; inset: 0; z-index: 5; isolation: isolate; pointer-events: none; overflow: hidden; }
+.win { position: absolute; display: flex; flex-direction: column; min-width: 0; min-height: 0; pointer-events: auto;
+  background: rgb(12 12 18 / var(--panel-a, 0.95)); border: 1px solid var(--hair-strong);
+  box-shadow: 0 0 0 1px rgb(0 0 0 / 0.45), 0 40px 120px -40px rgb(0 0 0 / 0.95);
+  backdrop-filter: blur(var(--blur, 0px)); transition: border-color 0.4s var(--ease), box-shadow 0.4s var(--ease); }
+.win[data-state="closed"], .win[data-state="min"] { display: none; }
+.win.focused { border-color: color-mix(in srgb, var(--signal) 55%, transparent);
+  box-shadow: 0 0 0 1px rgb(0 0 0 / 0.45), 0 40px 120px -40px rgb(0 0 0 / 0.95), 0 30px 90px -50px var(--signal); }
+.win[data-max="on"] { left: 0 !important; top: 0 !important; width: 100% !important; height: 100% !important; border-width: 0; }
+.win[data-snap="left"] { left: 0 !important; top: 0 !important; width: 50% !important; height: 100% !important; }
+.win[data-snap="right"] { left: 50% !important; top: 0 !important; width: 50% !important; height: 100% !important; }
+.win.win-in { animation: win-in 0.42s var(--ease) backwards; }
+@keyframes win-in { from { opacity: 0; transform: translateY(18px) scale(0.97); } }
+
+.win-bar { flex: none; height: 38px; display: flex; align-items: center; gap: 12px; padding-left: 14px; border-bottom: 1px solid var(--hair); background: rgb(10 10 15 / 0.75); user-select: none; touch-action: none; cursor: default; }
+.win.focused .win-bar { background: linear-gradient(90deg, color-mix(in srgb, var(--signal) 14%, rgb(10 10 15 / 0.85)), rgb(10 10 15 / 0.85) 62%); }
+.win-tag { flex: none; }
+.win-title { font: 600 0.95rem/1 var(--display); letter-spacing: -0.01em; color: var(--paper); white-space: nowrap; }
+.win:not(.focused) .win-title { color: var(--fog); }
+.win-sub { min-width: 0; color: var(--mute); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.win-btn { flex: none; width: 46px; height: 37px; padding: 0; background: none; border: 0; color: var(--fog); font: 400 15px/1 var(--mono); transition: background-color 0.25s var(--ease), color 0.25s var(--ease); }
+.win-btn:hover { background: var(--tint); color: var(--paper); }
+.win-close:hover { background: var(--error); color: var(--ink); }
+
+/* the former full-screen views become window bodies */
+.win > .win-body { display: flex; flex: 1 1 0; min-height: 0; min-width: 0; background: none; animation: none !important; container-type: inline-size; }
+.win > .win-body .home-main, .win > .win-body .set-main { padding-top: 24px; }
+.win > .win-body .h-md { font-size: clamp(1.6rem, 3cqi, 2.4rem); }
+@container (max-width: 980px) { .inspector, .preview { display: none; } }
+@container (max-width: 700px) { .side { display: none; } .tools .label { display: none; } }
+
+/* resize handles sit on the frame edge; the frame clips nothing, so they stay reachable */
+.rz { position: absolute; z-index: 3; }
+.rz-n, .rz-s { left: 10px; right: 10px; height: 6px; cursor: ns-resize; }
+.rz-n { top: -3px; }
+.rz-s { bottom: -3px; }
+.rz-e, .rz-w { top: 10px; bottom: 10px; width: 6px; cursor: ew-resize; }
+.rz-e { right: -3px; }
+.rz-w { left: -3px; }
+.rz-ne, .rz-nw, .rz-se, .rz-sw { width: 14px; height: 14px; }
+.rz-ne { top: -3px; right: -3px; cursor: nesw-resize; }
+.rz-sw { bottom: -3px; left: -3px; cursor: nesw-resize; }
+.rz-nw { top: -3px; left: -3px; cursor: nwse-resize; }
+.rz-se { bottom: -3px; right: -3px; cursor: nwse-resize; }
+.rz-se::after { content: ""; position: absolute; right: 5px; bottom: 5px; width: 6px; height: 6px; border-right: 1px solid var(--hair-strong); border-bottom: 1px solid var(--hair-strong); }
+.win[data-max="on"] .rz, .win[data-snap="left"] .rz, .win[data-snap="right"] .rz { display: none; }
+body.wm-busy { cursor: grabbing; user-select: none; }
+body.wm-busy .win-body { pointer-events: none; }
+
+.snap-hint { position: absolute; z-index: 1000; display: none; border: 1px solid var(--signal); background: color-mix(in srgb, var(--signal) 9%, transparent); box-shadow: inset 0 0 60px -20px var(--signal); pointer-events: none; }
+.snap-hint[data-snap="max"] { display: block; inset: 8px; }
+.snap-hint[data-snap="left"] { display: block; left: 8px; top: 8px; bottom: 8px; width: calc(50% - 12px); }
+.snap-hint[data-snap="right"] { display: block; right: 8px; top: 8px; bottom: 8px; width: calc(50% - 12px); }
+
+/* ---- the section buttons in the top bar are the taskbar ---- */
+.bar-nav button { position: relative; }
+.bar-nav button[data-state="open"]::after, .bar-nav button[data-state="min"]::after {
+  content: ""; position: absolute; left: 50%; bottom: 6px; width: 5px; height: 5px; margin-left: -2px; transform: rotate(45deg); background: var(--mute); }
+.bar-nav button[data-state="open"]::after { background: var(--signal); }
+.bar-nav button[data-view="desktop"]::after { display: none; }
+
+/* ---- the Programs window ---- */
+#view-apps .side { width: 236px; }
+.apps-main { flex: 1 1 0; min-width: 0; display: flex; flex-direction: column; gap: 12px; padding: 20px 24px 0; }
+.apps-in { flex: none; display: flex; align-items: center; gap: 12px; height: 56px; padding: 0 16px; background: var(--ink); border: 1px solid var(--hair-strong); transition: border-color 0.3s var(--ease); }
+.apps-in:focus-within { border-color: var(--signal); }
+.apps-in .arrow { font: 400 18px/1 var(--mono); }
+#appsQ { flex: 1 1 0; min-width: 0; height: 44px; background: none; border: 0; outline: none; font: 600 1.35rem/1 var(--display); letter-spacing: -0.02em; user-select: text; }
+#appsQ::placeholder { color: var(--mute); }
+#appsQ::-webkit-search-cancel-button { display: none; }
+.apps-main .tools { border-top: 0; padding-top: 0; }
+.apps-grid { flex: 1 1 0; min-height: 0; overflow-y: auto; display: grid; grid-template-columns: repeat(auto-fill, minmax(calc(var(--tile) * 2.15), 1fr)); grid-auto-rows: min-content; align-content: start; gap: 10px; padding: 4px 8px 32px 2px; }
+.apps-grid > .grp-head { grid-column: 1 / -1; margin-top: 10px; }
+.apps-grid > .muted { grid-column: 1 / -1; padding: 24px 4px; }
+
+/* cards are built around the program's own icon; the icon lends the card its colour */
+.acard { position: relative; overflow: hidden; display: flex; flex-direction: column; align-items: center; gap: 10px; min-width: 0; padding: 20px 10px 14px; text-align: center;
+  background: linear-gradient(180deg, rgb(28 28 39 / 0.86), rgb(20 20 28 / 0.86)); border: 1px solid var(--hair);
+  transition: transform 0.45s var(--ease), border-color 0.45s var(--ease), box-shadow 0.45s var(--ease);
+  animation: rise 0.7s var(--ease) backwards; animation-delay: calc(min(var(--i, 0), 28) * 16ms); }
+.acard > * { position: relative; }
+.acard > .acard-glow { position: absolute; inset: 0; background: radial-gradient(130% 85% at 50% 0%, color-mix(in srgb, var(--c, var(--signal)) 30%, transparent), transparent 66%); opacity: 0.32; transition: opacity 0.5s var(--ease); pointer-events: none; }
+.acard::after { content: ""; position: absolute; left: 0; right: 0; bottom: 0; height: 2px; background: var(--c, var(--signal)); transform: scaleX(0); transition: transform 0.5s var(--ease); }
+.acard:hover { transform: translateY(-4px); border-color: color-mix(in srgb, var(--c, var(--signal)) 55%, transparent); }
+.acard:hover > .acard-glow, .acard[aria-selected="true"] > .acard-glow, .acard:focus-visible > .acard-glow { opacity: 1; }
+.acard:hover::after, .acard[aria-selected="true"]::after { transform: scaleX(1); }
+.acard[aria-selected="true"] { border-color: var(--c, var(--signal)); box-shadow: 0 24px 60px -36px var(--c, var(--signal)); }
+.acard:active { transform: translateY(-1px) scale(0.98); transition-duration: 0.1s; }
+.acard-name { width: 100%; font: 600 0.9rem/1.25 var(--display); letter-spacing: -0.01em; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; overflow-wrap: anywhere; }
+.acard-sub { max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 0.6rem; color: var(--mute); }
+.acard > .acard-pin { position: absolute; top: 8px; right: 8px; width: 7px; height: 7px; transform: rotate(45deg); background: var(--c, var(--signal)); }
+
+.tile-app { width: calc(var(--tile) * 1.18); height: calc(var(--tile) * 1.18); border: 0; background: none; font-size: calc(var(--tile) * 0.34); }
+.tile-app img { width: calc(var(--tile-img) * 1.18); height: calc(var(--tile-img) * 1.18); filter: drop-shadow(0 10px 18px color-mix(in srgb, var(--c, #000) 40%, rgb(0 0 0 / 0.6))); transition: transform 0.5s var(--ease); }
+.tile-app.has-icon { background: none; }
+.tile-app:not(.has-icon), .tile-desk:not(.has-icon) { background: color-mix(in srgb, var(--c, var(--signal)) 16%, var(--ink-raise)); border: 1px solid color-mix(in srgb, var(--c, var(--signal)) 45%, transparent); color: var(--c, var(--paper)); clip-path: var(--cut-md); }
+.acard:hover .tile-app img { transform: scale(1.08) translateY(-2px); }
+
+.apps-grid[data-mode="icons"] { grid-template-columns: repeat(auto-fill, minmax(calc(var(--tile) * 1.6), 1fr)); gap: 6px; }
+.apps-grid[data-mode="icons"] .acard { padding: 14px 6px 10px; gap: 8px; background: none; border-color: transparent; }
+.apps-grid[data-mode="icons"] .acard:hover, .apps-grid[data-mode="icons"] .acard[aria-selected="true"] { background: var(--tint); }
+.apps-grid[data-mode="icons"] .acard-name { font: 400 0.8rem/1.25 var(--sans); }
+.apps-grid[data-mode="table"] { grid-template-columns: minmax(0, 1fr); gap: 2px; }
+.apps-grid[data-mode="table"] .acard { flex-direction: row; gap: 14px; padding: 6px 14px; text-align: left; animation-delay: calc(min(var(--i, 0), 28) * 8ms); }
+.apps-grid[data-mode="table"] .acard:hover { transform: none; }
+.apps-grid[data-mode="table"] .tile-app { width: calc(var(--tile) * 0.62); height: calc(var(--tile) * 0.62); font-size: calc(var(--tile) * 0.2); }
+.apps-grid[data-mode="table"] .tile-app img { width: calc(var(--tile-img) * 0.66); height: calc(var(--tile-img) * 0.66); }
+.apps-grid[data-mode="table"] .acard-name { flex: 1 1 0; -webkit-line-clamp: 1; }
+.apps-grid[data-mode="table"] .acard-sub { flex: none; width: 220px; text-align: right; }
+.apps-grid[data-mode="table"] .acard > .acard-pin { position: static; flex: none; }
+
+/* project cards lean on their icon too */
+.pcard .tile.has-icon { background: color-mix(in srgb, var(--c, var(--signal)) 12%, rgb(243 239 250 / 0.03)); border-color: color-mix(in srgb, var(--c, var(--signal)) 35%, transparent); }
+
+/* ---- dock: pins and drops ---- */
+.dock { transition: border-color 0.3s var(--ease), box-shadow 0.3s var(--ease); }
+.dock.drop-on { border-color: var(--signal); box-shadow: 0 0 0 1px var(--signal), 0 20px 60px -30px var(--signal); }
+.dock button.pinned::before { content: ""; position: absolute; left: 50%; bottom: -5px; width: 5px; height: 5px; margin-left: -2px; transform: rotate(45deg); background: var(--c, var(--signal)); }
+
+/* ---- desktop shortcuts ---- */
+.desk-icons { position: absolute; inset: 0; z-index: 2; pointer-events: none; }
+.dicon { position: absolute; width: 96px; display: flex; flex-direction: column; align-items: center; gap: 6px; padding: 8px 4px 6px; background: none; border: 1px solid transparent; color: var(--paper); text-align: center; pointer-events: auto; touch-action: none;
+  transition: background-color 0.25s var(--ease), border-color 0.25s var(--ease), left 0.35s var(--ease), top 0.35s var(--ease); }
+.dicon:hover { background: rgb(243 239 250 / 0.06); border-color: var(--hair); }
+.dicon[aria-selected="true"] { background: color-mix(in srgb, var(--c, var(--signal)) 18%, transparent); border-color: color-mix(in srgb, var(--c, var(--signal)) 55%, transparent); }
+.dicon.dragging { z-index: 3; opacity: 0.88; transition: none; cursor: grabbing; }
+.tile-desk { width: 58px; height: 58px; border: 0; background: none; font-size: 18px; }
+.tile-desk.has-icon { background: none; }
+.tile-desk img { width: 48px; height: 48px; filter: drop-shadow(0 6px 12px rgb(0 0 0 / 0.65)); }
+.dicon-name { font-size: 0.78rem; line-height: 1.25; text-shadow: 0 1px 3px rgb(0 0 0 / 0.95), 0 0 12px rgb(0 0 0 / 0.6); display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; overflow-wrap: anywhere; }
+.dicon[aria-selected="true"] .dicon-name { -webkit-line-clamp: 4; }
+
+/* ---- context menu ---- */
+.ctx { position: fixed; z-index: 40; min-width: 250px; max-width: 360px; padding: 6px; display: flex; flex-direction: column; background: var(--ink-soft); border: 1px solid var(--hair-strong);
+  box-shadow: 0 0 0 1px rgb(0 0 0 / 0.4), 0 30px 80px -30px rgb(0 0 0 / 0.95), 0 20px 60px -40px var(--signal); animation: ctx-in 0.18s var(--ease) backwards; }
+.ctx[hidden] { display: none; }
+.ctx-head { padding: 8px 10px 6px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: var(--signal); }
+.ctx-item { display: flex; align-items: center; gap: 10px; min-height: 34px; padding: 0 10px; background: none; border: 0; border-left: 2px solid transparent; color: var(--fog); font-size: 0.875rem; text-align: left; transition: background-color 0.15s, color 0.15s, border-color 0.15s; }
+.ctx-item:hover, .ctx-item:focus-visible { background: var(--tint); color: var(--paper); border-left-color: var(--signal); outline: 0; }
+.ctx-item:disabled { opacity: 0.4; cursor: default; background: none; border-left-color: transparent; }
+.ctx-danger:hover, .ctx-danger:focus-visible { border-left-color: var(--error); }
+.ctx-ico { flex: none; width: 16px; color: var(--signal); font: 400 12px/1 var(--mono); text-align: center; }
+.ctx-label { flex: 1 1 0; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.ctx-item kbd { flex: none; font: 400 0.6rem/1 var(--mono); letter-spacing: 0.08em; text-transform: uppercase; color: var(--mute); }
+.ctx-sep { height: 1px; margin: 4px 6px; border: 0; background: var(--hair); }
+@keyframes ctx-in { from { opacity: 0; transform: translateY(-4px) scale(0.98); } }
+
+/* ---- info dialog (shortcut properties) ---- */
+#cfText { white-space: pre-line; overflow-wrap: anywhere; user-select: text; }
+.scrim[data-kind="info"] .dlg { border-color: var(--signal); box-shadow: 0 30px 80px -40px var(--signal); }
+
+@media (prefers-reduced-motion: reduce) {
+  .win.win-in, .acard, .ctx { animation: none; }
+  .dicon { transition: none; }
+}

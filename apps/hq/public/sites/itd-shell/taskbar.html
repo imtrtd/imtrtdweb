@@ -1,0 +1,28 @@
+<!doctype html>
+<html lang="ru" data-version="1.1.0">
+<head>
+<meta charset="utf-8">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self'; font-src 'self'; img-src 'self' data: file:; object-src 'none'; base-uri 'none'">
+<title>I/TD Taskbar</title>
+<link rel="stylesheet" href="fonts/fonts.css">
+<link rel="stylesheet" href="css/taskbar.css">
+</head>
+<body data-accent="violet">
+<nav class="tb" aria-label="Панель задач">
+  <button type="button" class="tb-start" id="tbStart" aria-label="Меню I/TD" title="Меню I/TD (Win)"><span class="mark">I/TD</span></button>
+  <button type="button" class="tb-ic" id="tbSearch" aria-label="Поиск" title="Поиск (Alt+Space)"><svg viewBox="0 0 16 16" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="square" aria-hidden="true"><circle cx="7" cy="7" r="4.2"/><path d="M10.2 10.2 14 14"/></svg></button>
+  <span class="tb-sep" aria-hidden="true"></span>
+  <div class="tb-tasks" id="tbTasks" role="list"></div>
+  <div class="tb-tray">
+    <div class="tb-notify" id="tbNotify" role="list" aria-label="Значки уведомлений"></div>
+    <button type="button" class="tb-ic tb-more" id="tbMore" aria-label="Показать все значки" title="Все значки" hidden><svg viewBox="0 0 16 16" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="square" aria-hidden="true"><path d="M10 4 6 8l4 4"/></svg></button>
+    <button type="button" class="tb-ic" id="tbSound" aria-label="Звук" title="Параметры звука"><svg viewBox="0 0 16 16" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="square" aria-hidden="true"><path d="M2.5 6.2h2.6L8.6 3v10L5.1 9.8H2.5z"/><path d="M11 5.8a3.2 3.2 0 0 1 0 4.4M12.9 4a5.8 5.8 0 0 1 0 8"/></svg></button>
+    <button type="button" class="tb-ic" id="tbNet" aria-label="Сеть" title="Параметры сети"><svg viewBox="0 0 16 16" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="square" aria-hidden="true"><path d="M1.8 6.2a8 8 0 0 1 12.4 0M4 8.8a5 5 0 0 1 8 0M6.2 11.3a2 2 0 0 1 3.6 0"/><path d="M8 13.6v.1"/></svg></button>
+    <button type="button" class="tb-clock" id="tbClock" aria-label="Дата и время" title="Параметры Windows"><b id="tbTime">--:--</b><small id="tbDate"></small></button>
+    <button type="button" class="tb-desk" id="tbDesk" aria-label="Показать рабочий стол" title="Показать рабочий стол"></button>
+  </div>
+</nav>
+<script src="js/mock-tb.js"></script>
+<script src="js/taskbar.js"></script>
+</body>
+</html>

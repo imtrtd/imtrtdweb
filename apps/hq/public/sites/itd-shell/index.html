@@ -1,0 +1,75 @@
+<!doctype html>
+<html lang="en" data-version="1.1.0">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>I/TD Shell 1.1.0 — live preview</title>
+<meta name="description" content="Test build of I/TD Shell 1.1.0 running in the browser: desktop, Start menu, search palette, explorer, settings, taskbar with tray and lock screen. Simulated, nothing on your computer is touched.">
+<meta name="robots" content="noindex">
+<meta name="theme-color" content="#0a0a0f">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="fonts/fonts.css">
+<link rel="stylesheet" href="host.css">
+</head>
+<body>
+<header class="bar">
+  <a class="back" href="/apps/shell"><span aria-hidden="true">←</span> I/TD shell</a>
+  <div class="title">
+    <h1>I/TD Shell <b>1.1.0</b> · live preview</h1>
+    <p class="tag">Test build 2026-11-24 · simulated: no files, programs or Windows settings are touched</p>
+  </div>
+  <nav class="tools" aria-label="Preview controls">
+    <button type="button" data-do="start" title="Ctrl+Alt+Space">Start</button>
+    <button type="button" data-do="search" title="Alt+Space">Search</button>
+    <button type="button" data-do="lock">Lock</button>
+    <button type="button" data-do="tray-add" title="Add a notification icon">+ Tray</button>
+    <button type="button" data-do="tray-del" title="Remove the newest notification icon">− Tray</button>
+    <button type="button" data-do="full">Fullscreen</button>
+    <button type="button" data-do="reset" class="quiet">Reset</button>
+  </nav>
+</header>
+
+<main>
+  <div class="stage" id="stage">
+    <div class="frame" id="frame">
+      <div class="screen" id="screen">
+        <div class="desk" aria-hidden="true">
+          <span>Windows desktop (simulated)</span>
+          <small>The shell is minimised. Click <b>I/TD</b> on the taskbar to bring it back.</small>
+        </div>
+        <iframe id="shell" src="shell.html" title="I/TD Shell desktop" class="shell"></iframe>
+        <iframe id="tb" src="taskbar.html" title="I/TD taskbar" class="tb"></iframe>
+        <iframe id="lock" title="I/TD lock screen" class="lock" hidden></iframe>
+        <div class="traymenu" id="trayMenu" role="menu" hidden></div>
+        <div class="toasts" id="toasts" role="status" aria-live="polite"></div>
+      </div>
+    </div>
+    <p class="small-note" id="smallNote">On a phone the preview is tiny: rotate the screen or use <b>Fullscreen</b>. It is built for a desktop and a mouse.</p>
+  </div>
+
+  <section class="notes">
+    <div>
+      <h2>What's new in 1.1.0</h2>
+      <ul>
+        <li><b>Own taskbar.</b> An AppBar strip with the live list of Windows windows, updated by system events instead of polling.</li>
+        <li><b>Notification area on the I/TD taskbar.</b> Real app icons with tooltips; left, right and double clicks reach the app. Past eight icons, the oldest fold behind the chevron by the clock.</li>
+        <li><b>Lock screen with a PIN.</b> Salted hash, a growing pause after five wrong tries.</li>
+        <li><b>Win key opens Start</b> through the small native helper, <code>itd-native.exe</code>.</li>
+      </ul>
+    </div>
+    <div>
+      <h2>Try this</h2>
+      <ul>
+        <li><kbd>Alt</kbd> <kbd>Space</kbd>: search palette. <kbd>Ctrl</kbd> <kbd>Alt</kbd> <kbd>Space</kbd> or <b>I/TD</b>: Start menu.</li>
+        <li><kbd>Ctrl</kbd> <kbd>1</kbd>…<kbd>5</kbd>: Desk, Programs, Projects, Files, Look; sections open as windows you can drag, snap and resize. Inside the shell, <kbd>Ctrl</kbd> <kbd>K</kbd> also searches.</li>
+        <li>Right-click a tray icon, double-click to “open” its window, press <b>+ Tray</b> until the chevron appears.</li>
+        <li>Set a PIN in <b>05 Вид → Поведение</b>, then <b>Lock</b>. Five wrong PINs start the pause.</li>
+        <li>Accent, wallpaper and fonts in <b>05 Вид</b> stay in this browser. <b>Reset</b> clears them.</li>
+      </ul>
+      <p class="fine">The interface is the shell's own code, in Russian, as on the desktop. Only the bridge to Windows is replaced: disks, apps and windows are made up.</p>
+    </div>
+  </section>
+</main>
+<script src="host.js"></script>
+</body>
+</html>

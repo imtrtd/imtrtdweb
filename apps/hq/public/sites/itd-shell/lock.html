@@ -1,0 +1,26 @@
+<!doctype html>
+<html lang="ru" data-version="1.1.0">
+<head>
+<meta charset="utf-8">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self'; font-src 'self'; img-src 'self' data:; object-src 'none'; base-uri 'none'">
+<title>I/TD Lock</title>
+<link rel="stylesheet" href="fonts/fonts.css">
+<link rel="stylesheet" href="css/lock.css">
+</head>
+<body data-accent="violet">
+<div class="bg" aria-hidden="true"><i class="blob b1"></i><i class="blob b2"></i><i class="blob b3"></i><i class="grid"></i><i class="scan"></i><i class="vig"></i></div>
+<div class="hair top"></div><div class="hair bot"></div>
+<div class="corner tl">I/TD SHELL</div><div class="corner tr" id="lkState">LOCKED</div>
+<main class="stage" id="stage">
+  <div class="col">
+    <div class="mark-wrap in"><div class="mark">I/TD</div></div>
+    <div class="clock in" id="lkClock">00<i>:</i>00</div>
+    <div class="date in" id="lkDate"></div>
+    <div class="pin in" id="lkPin" aria-hidden="true"></div>
+    <div class="hint in" id="lkHint">введите PIN</div>
+  </div>
+</main>
+<script src="js/mock-lock.js"></script>
+<script src="js/lock.js"></script>
+</body>
+</html>

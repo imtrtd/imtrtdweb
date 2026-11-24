@@ -50,13 +50,13 @@ export const apps: App[] = [
   },
   {
     slug: "shell",
+    shot: "shell",
     href: "/apps/shell",
     name: "I/TD shell",
     mono: "Sh",
-    kind: "Coming soon",
-    line: "Not yet. Soon.",
-    text: "The next tool. Details when it is ready to defend them; leave a contact to hear first.",
-    facts: ["Notify me"],
-    soon: true,
+    kind: "Windows shell",
+    line: "Not out yet. Try it in the browser.",
+    text: "Desktop, Start menu, search, files and its own taskbar with a tray, on top of Explorer. The live preview runs the real interface on a pretend PC.",
+    facts: ["Live preview", "v1.1"],
   },
 ];

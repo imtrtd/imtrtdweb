@@ -3,19 +3,23 @@ import Base from "../../layouts/Base.astro";
 import { getSite } from "../../lib/cms";
 
 const s = await getSite();
+/* The preview in /sites/itd-shell is built from the shell's own renderer
+   (itd-shell: node tools/build-web-preview.mjs <this app>/public/sites/itd-shell). */
+const version = "1.1.0";
+const preview = "/sites/itd-shell/";
 ---
 
-<Base title="I/TD shell — coming soon — IMTRTD" description="I/TD shell: the next tool from the studio. Leave a contact to hear first." path="/apps/shell">
+<Base title="I/TD shell — live preview — IMTRTD" description={`I/TD shell ${version}: a Windows shell over Explorer. Try the test build in the browser: desktop, Start menu, search, files, taskbar with tray, lock screen.`} path="/apps/shell">
   <section class="sec" style="border-top:0" aria-labelledby="h-shell">
     <div class="wrap grid gap-12 lg:grid-cols-12 lg:items-start">
       <div class="lg:col-span-7">
         <nav aria-label="Breadcrumb" class="label text-mute"><a href="/apps" class="hover:text-signal">Apps</a> <span aria-hidden="true">/</span> <span class="text-fog">I/TD shell</span></nav>
-        <p class="sec-index label mt-10">Coming soon</p>
+        <p class="sec-index label mt-10">Test build · v{version}</p>
         <h1 id="h-shell" class="display-xl mt-5">I/TD <span class="text-signal">shell</span></h1>
-        <p class="lead mt-8 max-w-[44ch]">The next tool. Not open yet, not described yet: it gets a description when it can defend one. Leave a contact and you hear first.</p>
+        <p class="lead mt-8 max-w-[46ch]">A Windows shell that sits on top of Explorer: desktop, Start menu, search, projects, files, its own taskbar with a tray, a lock screen. Not open yet. The preview is the real interface; only the bridge to Windows is faked.</p>
         <div class="mt-10 flex flex-wrap items-center gap-3">
-          <a href="#notify" class="btn btn-primary btn-lg">Notify me <span class="arrow" aria-hidden="true">↓</span></a>
-          <a href={`https://t.me/${s.telegram}`} class="btn btn-ghost btn-lg" target="_blank" rel="noopener">Telegram @{s.telegram} ↗︎</a>
+          <a href={preview} class="btn btn-primary btn-lg">Open the preview <span class="arrow" aria-hidden="true">→</span></a>
+          <a href="#notify" class="btn btn-ghost btn-lg">Notify me <span class="arrow" aria-hidden="true">↓</span></a>
         </div>
       </div>
 
@@ -28,9 +32,35 @@ const s = await getSite();
           <label class="grid gap-1.5"><span class="label text-mute">Email or Telegram</span><input class="field" name="contact" autocomplete="email" required maxlength="200" /></label>
           <label class="grid gap-1.5"><span class="label text-mute">What would you use it for? <span class="normal-case">(optional, but flattering)</span></span><textarea class="field" name="note" rows="3" maxlength="2000"></textarea></label>
           <button type="submit" class="btn btn-primary">Notify me</button>
-          <p class="privacy-note">Used once, for the launch. Never shared, never a newsletter.</p>
+          <p class="privacy-note">Used once, for the launch. Never shared, never a newsletter. Or write to <a href={`https://t.me/${s.telegram}`} class="hover:text-signal" target="_blank" rel="noopener">@{s.telegram}</a>.</p>
         </form>
       </div>
+    </div>
+  </section>
+
+  <section class="sec" aria-labelledby="h-preview">
+    <div class="wrap">
+      <div class="flex flex-wrap items-end justify-between gap-4">
+        <div>
+          <p class="label text-signal">Live preview</p>
+          <h2 id="h-preview" class="display-md mt-3">Click around. Nothing breaks.</h2>
+        </div>
+        <a href={preview} class="label inline-flex items-center gap-2 text-signal hover:text-paper">Full page with controls <span class="arrow" aria-hidden="true">→</span></a>
+      </div>
+      <div class="mt-8 hidden aspect-[16/10] w-full overflow-hidden border border-hair-strong bg-ink-soft sm:block">
+        <iframe src={`${preview}?bare`} title={`I/TD shell ${version}, interactive preview`} loading="lazy" class="block h-full w-full border-0"></iframe>
+      </div>
+      <a href={preview} class="mt-8 block border border-hair-strong sm:hidden" aria-label="Open the I/TD shell preview">
+        <picture>
+          <source type="image/webp" srcset="/images/apps/shell-card.webp" />
+          <img src="/images/apps/shell-card.jpg" width="720" height="450" alt="I/TD shell desktop: clock, widgets, dock and the taskbar with tray icons" loading="lazy" decoding="async" class="block h-auto w-full" />
+        </picture>
+      </a>
+      <ul class="mt-6 grid gap-2 text-sm text-mute sm:grid-cols-3">
+        <li><b class="text-fog">Alt Space</b> search · <b class="text-fog">Ctrl Alt Space</b> Start · <b class="text-fog">Ctrl 1–5</b> sections.</li>
+        <li>Right-click a tray icon; past eight icons the oldest fold behind the chevron.</li>
+        <li>Simulated disk, apps and windows. Settings stay in this browser.</li>
+      </ul>
     </div>
   </section>
 </Base>
