@@ -39,18 +39,18 @@ main { padding: 20px 24px 48px; max-width: 1560px; margin: 0 auto; }
 .shell { top: 0; width: 1440px; height: 852px; }
 .shell.full { height: 900px; }
 .shell.away { visibility: hidden; }
-.tb { bottom: 0; width: 1440px; height: 48px; z-index: 2; }
+.tb { bottom: 0; width: 1440px; height: 48px; z-index: 200; }
 .tb[hidden] { display: none; }
-.lock { inset: 0; width: 1440px; height: 900px; z-index: 5; background: #000; }
+.lock { inset: 0; width: 1440px; height: 900px; z-index: 300; background: #000; }
 
-.toasts { position: absolute; right: 16px; bottom: 64px; z-index: 6; display: grid; gap: 8px; width: 360px; pointer-events: none; }
+.toasts { position: absolute; right: 16px; bottom: 64px; z-index: 310; display: grid; gap: 8px; width: 360px; pointer-events: none; }
 .toast { pointer-events: auto; background: rgb(20 18 30 / .94); border: 1px solid var(--hair2); border-left: 3px solid var(--signal); padding: 12px 14px; font-size: 14px; box-shadow: 0 12px 40px rgb(0 0 0 / .5); animation: tin .18s ease-out; }
 .toast b { display: block; font-weight: 600; }
 .toast small { display: block; color: var(--fog); margin-top: 2px; font-size: 13px; }
 .toast.out { opacity: 0; transform: translateY(6px); transition: .2s; }
 @keyframes tin { from { opacity: 0; transform: translateY(8px); } }
 
-.traymenu { position: absolute; right: 150px; bottom: 56px; z-index: 7; min-width: 230px; background: #16141f; border: 1px solid var(--hair2); padding: 6px; box-shadow: 0 16px 50px rgb(0 0 0 / .6); font-size: 14px; }
+.traymenu { position: absolute; right: 150px; bottom: 56px; z-index: 320; min-width: 230px; background: #16141f; border: 1px solid var(--hair2); padding: 6px; box-shadow: 0 16px 50px rgb(0 0 0 / .6); font-size: 14px; }
 .traymenu p { margin: 4px 10px 6px; font-family: "Geist Mono", monospace; font-size: 11px; color: var(--mute); text-transform: uppercase; letter-spacing: .06em; }
 .traymenu button { display: block; width: 100%; text-align: left; background: none; border: 0; padding: 8px 10px; cursor: pointer; }
 .traymenu button:hover, .traymenu button:focus-visible { background: rgb(178 141 255 / .16); outline: none; }
